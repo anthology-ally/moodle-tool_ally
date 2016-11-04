@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class files_iterator implements \IteratorAggregate {
+class files_iterator implements \Iterator {
     /**
      * @var array
      */
@@ -50,6 +50,16 @@ class files_iterator implements \IteratorAggregate {
     private $assignments;
 
     /**
+     * @var \moodle_recordset
+     */
+    private $rs;
+
+    /**
+     * @var \stored_file
+     */
+    private $current;
+
+    /**
      * @param array $userids
      * @param role_assignments|null $assignments
      * @param \file_storage|null $storage
@@ -61,24 +71,28 @@ class files_iterator implements \IteratorAggregate {
     }
 
     /**
-     * Get files that should be processed for accessibility.
-     *
-     * @return \Generator|\stored_file[]
+     * @param \stdClass $row
+     * @return \context
      */
-    public function getIterator() { // @codingStandardsIgnoreLine
-        global $DB;
+    private function extract_context($row) {
+        // This loads the context into cache and strips the context fields from the row.
+        \context_helper::preload_from_record($row);
 
-        $contextsql = \context_helper::get_preload_record_columns_sql('c');
+        return \context::instance_by_id($row->contextid);
+    }
 
-        $rs = $DB->get_recordset_sql("
-            SELECT f.*, $contextsql
-              FROM {files} f
-              JOIN {context} c ON c.id = f.contextid
-             WHERE f.filename != '.'
-               AND c.contextlevel NOT IN(?, ?, ?)
-        ", [CONTEXT_USER, CONTEXT_COURSECAT, CONTEXT_SYSTEM]);
+    /**
+     * @return \stored_file
+     */
+    public function current() {
+        return $this->current;
+    }
 
-        foreach ($rs as $row) {
+    public function next() {
+        while ($this->rs instanceof \moodle_recordset && $this->rs->valid()) {
+            $row = $this->rs->current();
+            $this->rs->next();
+
             $context = $this->extract_context($row);
 
             $validuser = empty($row->userid) || array_key_exists($row->userid, $this->userids) ||
@@ -88,19 +102,38 @@ class files_iterator implements \IteratorAggregate {
                 continue;
             }
 
-            yield $this->storage->get_file_instance($row);
+            $this->current = $this->storage->get_file_instance($row);
+            return;
         }
-        $rs->close();
+        $this->current = null;
     }
 
-    /**
-     * @param \stdClass $row
-     * @return \context
-     */
-    private function extract_context($row) {
-        // This loads the context into cache and strips the context fields from the row.
-        \context_helper::preload_from_record($row);
+    public function key() {
+        if ($this->current instanceof \stored_file) {
+            return (int) $this->current->get_id();
+        }
 
-        return \context::instance_by_id($row->contextid);
+        return null;
+    }
+
+    public function valid() {
+        return $this->current instanceof \stored_file;
+    }
+
+    public function rewind() {
+        global $DB;
+
+        $contextsql = \context_helper::get_preload_record_columns_sql('c');
+
+        $this->rs = $DB->get_recordset_sql("
+            SELECT f.*, $contextsql
+              FROM {files} f
+              JOIN {context} c ON c.id = f.contextid
+             WHERE f.filename != '.'
+               AND c.contextlevel NOT IN(?, ?, ?)
+        ", [CONTEXT_USER, CONTEXT_COURSECAT, CONTEXT_SYSTEM]);
+
+        // Must populate current.
+        $this->next();
     }
 }
