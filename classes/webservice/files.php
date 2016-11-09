@@ -55,10 +55,10 @@ class files extends \external_api {
     public static function service_returns() {
         return new \external_multiple_structure(
             new \external_single_structure([
-                'id'          => new \external_value(PARAM_ALPHANUM, 'File path name hash', VALUE_REQUIRED),
-                'courseid'    => new \external_value(PARAM_INT, 'Course ID of the file', VALUE_REQUIRED),
-                'mimetype'    => new \external_value(PARAM_RAW, 'File mime type', VALUE_REQUIRED),
-                'contenthash' => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash', VALUE_REQUIRED),
+                'id'          => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
+                'courseid'    => new \external_value(PARAM_INT, 'Course ID of the file'),
+                'mimetype'    => new \external_value(PARAM_RAW, 'File mime type'),
+                'contenthash' => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
             ])
         );
     }
