@@ -32,6 +32,13 @@ $functions = [
         'type'         => 'read',
         'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses',
     ],
+    'tool_ally_get_file' => [
+        'classname'    => 'tool_ally\\webservice\\file',
+        'methodname'   => 'service',
+        'description'  => 'Get file information',
+        'type'         => 'read',
+        'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses',
+    ],
 ];
 
 $services = [
@@ -40,6 +47,7 @@ $services = [
             'core_course_get_courses',
             'core_enrol_get_enrolled_users',
             'tool_ally_get_files',
+            'tool_ally_get_file',
         ],
         'enabled'         => 0,
         'restrictedusers' => 0,

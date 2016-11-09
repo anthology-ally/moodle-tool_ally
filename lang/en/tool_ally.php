@@ -26,4 +26,5 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['contentauthors'] = 'Content authors';
 $string['contentauthorsdesc'] = 'Administrators and users assigned to these selected roles will have their uploaded course files evaluated for accessibility. The files are given an accessibility rating. Low ratings mean that the file needs changes to be more accessible.';
+$string['filecoursenotfound'] = 'The passed in file does not belong to any course';
 $string['pluginname'] = 'Ally';
