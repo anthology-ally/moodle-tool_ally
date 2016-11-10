@@ -39,6 +39,13 @@ $functions = [
         'type'         => 'read',
         'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses',
     ],
+    'tool_ally_get_file_updates' => [
+        'classname'    => 'tool_ally\\webservice\\file_updates',
+        'methodname'   => 'service',
+        'description'  => 'Get file update information',
+        'type'         => 'read',
+        'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses',
+    ],
 ];
 
 $services = [
@@ -48,6 +55,7 @@ $services = [
             'core_enrol_get_enrolled_users',
             'tool_ally_get_files',
             'tool_ally_get_file',
+            'tool_ally_get_file_updates',
         ],
         'enabled'         => 0,
         'restrictedusers' => 0,

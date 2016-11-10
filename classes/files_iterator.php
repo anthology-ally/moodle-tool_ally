@@ -60,14 +60,23 @@ class files_iterator implements \Iterator {
     private $current;
 
     /**
+     * @var int|null
+     */
+    private $since;
+
+    /**
      * @param array $userids
      * @param role_assignments|null $assignments
      * @param \file_storage|null $storage
+     * @param int|null $since
      */
-    public function __construct(array $userids = [], role_assignments $assignments = null, \file_storage $storage = null) {
+    public function __construct(array $userids = [], role_assignments $assignments = null,
+                \file_storage $storage = null, $since = null) {
+
         $this->userids     = $userids;
         $this->assignments = $assignments ?: new role_assignments();
         $this->storage     = $storage ?: get_file_storage();
+        $this->since       = $since;
     }
 
     /**
@@ -124,14 +133,20 @@ class files_iterator implements \Iterator {
         global $DB;
 
         $contextsql = \context_helper::get_preload_record_columns_sql('c');
+        $timemodified = '';
+        $params = [CONTEXT_USER, CONTEXT_COURSECAT, CONTEXT_SYSTEM];
 
+        if (!empty($this->since)) {
+            $timemodified = 'AND f.timemodified > ?';
+            array_unshift($params, $this->since);
+        }
         $this->rs = $DB->get_recordset_sql("
             SELECT f.*, $contextsql
               FROM {files} f
               JOIN {context} c ON c.id = f.contextid
-             WHERE f.filename != '.'
+             WHERE f.filename != '.' $timemodified
                AND c.contextlevel NOT IN(?, ?, ?)
-        ", [CONTEXT_USER, CONTEXT_COURSECAT, CONTEXT_SYSTEM]);
+        ", $params);
 
         // Must populate current.
         $this->next();

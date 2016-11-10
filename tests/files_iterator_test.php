@@ -94,4 +94,40 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $files = new files_iterator(local::get_adminids(), new role_assignments(local::get_roleids()));
         $this->assertEmpty(iterator_to_array($files));
     }
+
+    /**
+     * Test get_files using the since parameter.
+     */
+    public function test_get_files_since() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $course    = $this->getDataGenerator()->create_course();
+        $user      = $this->getDataGenerator()->create_user();
+        $roleid    = $DB->get_field('role', 'id', ['shortname' => 'editingteacher'], MUST_EXIST);
+
+        $this->getDataGenerator()->enrol_user($user->id, $course->id, $roleid);
+        $this->setUser($user);
+
+        $resource1 = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
+        $resource2 = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
+        $resource3 = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
+        $file1     = $this->get_resource_file($resource1);
+        $file2     = $this->get_resource_file($resource2);
+        $file3     = $this->get_resource_file($resource3);
+
+        $datetime = new \DateTimeImmutable('October 21 2015', new \DateTimeZone('UTC'));
+        $earlier  = $datetime->sub(new \DateInterval('P2D'));
+        $later    = $datetime->add(new \DateInterval('P2D'));
+
+        $file1->set_timemodified($earlier->getTimestamp());
+        $file2->set_timemodified($datetime->getTimestamp());
+        $file3->set_timemodified($later->getTimestamp());
+
+        $files = new files_iterator([], null, null, $datetime->getTimestamp());
+        foreach ($files as $file) {
+            $this->assertStoredFileEquals($file3, $file);
+        }
+    }
 }
