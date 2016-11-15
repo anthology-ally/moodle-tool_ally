@@ -23,6 +23,7 @@
  */
 
 use tool_ally\webservice\file;
+use tool_ally\local;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -53,8 +54,7 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
         $file = file::service($expectedfile->get_pathnamehash());
         $file = external_api::clean_returnvalue(file::service_returns(), $file);
 
-        $timemodified = \DateTime::createFromFormat(\DateTime::ISO8601, $file['timemodified'],
-            new \DateTimeZone('UTC'))->getTimestamp();
+        $timemodified = local::iso_8601_to_timestamp($file['timemodified']);
 
         $this->assertNotEmpty($file);
         $this->assertEquals($expectedfile->get_pathnamehash(), $file['id']);

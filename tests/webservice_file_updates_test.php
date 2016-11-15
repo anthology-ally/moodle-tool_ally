@@ -60,11 +60,11 @@ class tool_ally_webservice_file_updates_testcase extends tool_ally_abstract_test
 
         $expectedfilecreated = [
             'metadata' => [
-                'hostname'    => parse_url($CFG->wwwroot, PHP_URL_HOST),
+                'hostname'    => $CFG->wwwroot,
                 'eventname'   => 'created',
                 'eventtime'   => local::iso_8601($filecreated->get_timemodified()),
                 'contexttype' => 'course',
-                'contextid'   => (string) $course->id,
+                'contextid'   => $course->id,
             ],
             'body' => [
                 'id'          => $filecreated->get_pathnamehash(),
@@ -74,7 +74,7 @@ class tool_ally_webservice_file_updates_testcase extends tool_ally_abstract_test
         ];
         $expectedfileupdated = [
             'metadata' => [
-                'hostname'    => parse_url($CFG->wwwroot, PHP_URL_HOST),
+                'hostname'    => $CFG->wwwroot,
                 'eventname'   => 'updated',
                 'eventtime'   => local::iso_8601($fileupdated->get_timemodified()),
                 'contexttype' => 'course',

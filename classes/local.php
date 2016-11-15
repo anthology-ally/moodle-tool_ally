@@ -88,6 +88,16 @@ class local {
     }
 
     /**
+     * @param string $iso8601
+     * @return int
+     */
+    public static function iso_8601_to_timestamp($iso8601) {
+        $dt = \DateTime::createFromFormat(\DateTime::ISO8601, $iso8601, new \DateTimeZone('UTC'));
+
+        return $dt->getTimestamp();
+    }
+
+    /**
      * Plugin file URL from stored file.
      *
      * @param \stored_file $file

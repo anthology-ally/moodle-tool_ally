@@ -125,7 +125,9 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $file2->set_timemodified($datetime->getTimestamp());
         $file3->set_timemodified($later->getTimestamp());
 
-        $files = new files_iterator([], null, null, $datetime->getTimestamp());
+        // Make sure only files with times modified since the $since param, i.e. only $file3 here.
+        $files = new files_iterator();
+        $files->since($datetime->getTimestamp());
         foreach ($files as $file) {
             $this->assertStoredFileEquals($file3, $file);
         }

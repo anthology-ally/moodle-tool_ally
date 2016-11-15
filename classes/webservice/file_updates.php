@@ -57,16 +57,16 @@ class file_updates extends \external_api {
         return new \external_multiple_structure(
             new \external_single_structure([
                 'metadata' => new \external_single_structure([
-                    'hostname' => new \external_value(PARAM_URL, 'Host name', VALUE_REQUIRED),
-                    'eventname' => new \external_value(PARAM_ALPHA, 'Name of the event', VALUE_REQUIRED),
-                    'eventtime' => new \external_value(PARAM_TEXT, 'ISO8601 timestamp for the event', VALUE_REQUIRED),
-                    'contexttype' => new \external_value(PARAM_ALPHA, 'The context type of the file', VALUE_REQUIRED),
-                    'contextid' => new \external_value(PARAM_INT, 'ID of the context of the file', VALUE_REQUIRED),
+                    'hostname' => new \external_value(PARAM_URL, 'Host name'),
+                    'eventname' => new \external_value(PARAM_ALPHA, 'Name of the event'),
+                    'eventtime' => new \external_value(PARAM_TEXT, 'ISO8601 timestamp for the event'),
+                    'contexttype' => new \external_value(PARAM_ALPHA, 'The context type of the file'),
+                    'contextid' => new \external_value(PARAM_INT, 'ID of the context of the file'),
                 ]),
                 'body' => new \external_single_structure([
-                    'id' => new \external_value(PARAM_ALPHANUM, 'File path name hash', VALUE_REQUIRED),
-                    'mimetype'    => new \external_value(PARAM_RAW, 'File mime type', VALUE_REQUIRED),
-                    'contenthash' => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash', VALUE_REQUIRED),
+                    'id' => new \external_value(PARAM_ALPHANUM, 'File path name hash'),
+                    'mimetype'    => new \external_value(PARAM_RAW, 'File mime type'),
+                    'contenthash' => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
                 ]),
             ])
         );
@@ -89,8 +89,9 @@ class file_updates extends \external_api {
         // We are betting that most courses have files, so better to preload than to fetch one at a time.
         local::preload_course_contexts();
 
-        $dt = \DateTime::createFromFormat(\DateTime::ISO8601, $since, new \DateTimeZone('UTC'));
-        $files  = new files_iterator($userids, new role_assignments($roleids), null, $dt->getTimestamp());
+        $sincets = local::iso_8601_to_timestamp($since);
+        $files  = new files_iterator($userids, new role_assignments($roleids));
+        $files->since($sincets);
 
         $return = array();
         foreach ($files as $file) {
@@ -100,11 +101,11 @@ class file_updates extends \external_api {
                 continue; // Currently not supported by Ally.
             }
 
-            $newfile = ($file->get_timecreated() == $file->get_timemodified());
+            $newfile = ($file->get_timecreated() === $file->get_timemodified());
 
             $return[] = [
                 'metadata' => [
-                    'hostname'    => parse_url($CFG->wwwroot, PHP_URL_HOST),
+                    'hostname'    => $CFG->wwwroot,
                     'eventname'   => $newfile ? 'created' : 'updated',
                     'eventtime'   => local::iso_8601($file->get_timemodified()),
                     'contexttype' => 'course',

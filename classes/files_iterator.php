@@ -68,15 +68,12 @@ class files_iterator implements \Iterator {
      * @param array $userids
      * @param role_assignments|null $assignments
      * @param \file_storage|null $storage
-     * @param int|null $since
      */
-    public function __construct(array $userids = [], role_assignments $assignments = null,
-                \file_storage $storage = null, $since = null) {
+    public function __construct(array $userids = [], role_assignments $assignments = null, \file_storage $storage = null) {
 
         $this->userids     = $userids;
         $this->assignments = $assignments ?: new role_assignments();
         $this->storage     = $storage ?: get_file_storage();
-        $this->since       = $since;
     }
 
     /**
@@ -150,5 +147,15 @@ class files_iterator implements \Iterator {
 
         // Must populate current.
         $this->next();
+    }
+
+    /**
+     * @param int $timestamp
+     * @return self
+     */
+    public function since($timestamp) {
+        $this->since = $timestamp;
+
+        return $this;
     }
 }
