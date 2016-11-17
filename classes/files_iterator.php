@@ -65,12 +65,16 @@ class files_iterator implements \Iterator {
     private $since;
 
     /**
+     * @var \context|null
+     */
+    private $context;
+
+    /**
      * @param array $userids
      * @param role_assignments|null $assignments
      * @param \file_storage|null $storage
      */
     public function __construct(array $userids = [], role_assignments $assignments = null, \file_storage $storage = null) {
-
         $this->userids     = $userids;
         $this->assignments = $assignments ?: new role_assignments();
         $this->storage     = $storage ?: get_file_storage();
@@ -130,19 +134,24 @@ class files_iterator implements \Iterator {
         global $DB;
 
         $contextsql = \context_helper::get_preload_record_columns_sql('c');
-        $timemodified = '';
-        $params = [CONTEXT_USER, CONTEXT_COURSECAT, CONTEXT_SYSTEM];
+        $params     = ['usr' => CONTEXT_USER, 'cat' => CONTEXT_COURSECAT, 'sys' => CONTEXT_SYSTEM];
+        $filtersql  = '';
 
         if (!empty($this->since)) {
-            $timemodified = 'AND f.timemodified > ?';
-            array_unshift($params, $this->since);
+            $filtersql .= ' AND f.timemodified > :since';
+            $params['since'] = $this->since;
         }
+        if ($this->context instanceof \context) {
+            $filtersql .= ' AND '.$DB->sql_like('c.path', ':path');
+            $params['path'] = $this->context->path.'%';
+        }
+
         $this->rs = $DB->get_recordset_sql("
             SELECT f.*, $contextsql
               FROM {files} f
               JOIN {context} c ON c.id = f.contextid
-             WHERE f.filename != '.' $timemodified
-               AND c.contextlevel NOT IN(?, ?, ?)
+             WHERE f.filename != '.'$filtersql
+               AND c.contextlevel NOT IN(:usr, :cat, :sys)
         ", $params);
 
         // Must populate current.
@@ -150,11 +159,25 @@ class files_iterator implements \Iterator {
     }
 
     /**
+     * Return files that have been modified after this time.
+     *
      * @param int $timestamp
      * @return self
      */
     public function since($timestamp) {
         $this->since = $timestamp;
+
+        return $this;
+    }
+
+    /**
+     * Return files that belong to this context or lower.
+     *
+     * @param \context $context
+     * @return self
+     */
+    public function in_context(\context $context) {
+        $this->context = $context;
 
         return $this;
     }

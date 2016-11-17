@@ -62,12 +62,22 @@ class local {
 
     /**
      * Load all course contexts into context cache.
+     *
+     * @param array $courseids
      */
-    public static function preload_course_contexts() {
+    public static function preload_course_contexts(array $courseids = []) {
         global $DB;
 
         $fields = \context_helper::get_preload_record_columns_sql('c');
-        $rs     = $DB->get_recordset_sql("SELECT $fields FROM {context} c WHERE c.contextlevel = ?", [CONTEXT_COURSE]);
+        $params = ['contextlevel' => CONTEXT_COURSE];
+        $insql  = '';
+
+        if (!empty($courseids)) {
+            $result = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'cid');
+            $insql  = ' AND c.instanceid '.$result[0];
+            $params = array_merge($params, $result[1]);
+        }
+        $rs = $DB->get_recordset_sql("SELECT $fields FROM {context} c WHERE c.contextlevel = :contextlevel$insql", $params);
         foreach ($rs as $context) {
             \context_helper::preload_from_record($context);
         }
