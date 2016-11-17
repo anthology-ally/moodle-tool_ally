@@ -22,6 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_ally\local;
 use tool_ally\webservice\files;
 
 defined('MOODLE_INTERNAL') || die();
@@ -56,7 +57,9 @@ class tool_ally_webservice_files_testcase extends tool_ally_abstract_testcase {
 
         $this->assertEquals($expectedfile->get_pathnamehash(), $file['id']);
         $this->assertEquals($course->id, $file['courseid']);
+        $this->assertEquals($expectedfile->get_filename(), $file['name']);
         $this->assertEquals($expectedfile->get_mimetype(), $file['mimetype']);
         $this->assertEquals($expectedfile->get_contenthash(), $file['contenthash']);
+        $this->assertEquals($expectedfile->get_timemodified(), local::iso_8601_to_timestamp($file['timemodified']));
     }
 }

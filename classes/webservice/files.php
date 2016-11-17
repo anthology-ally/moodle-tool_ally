@@ -55,10 +55,12 @@ class files extends \external_api {
     public static function service_returns() {
         return new \external_multiple_structure(
             new \external_single_structure([
-                'id'          => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
-                'courseid'    => new \external_value(PARAM_INT, 'Course ID of the file'),
-                'mimetype'    => new \external_value(PARAM_RAW, 'File mime type'),
-                'contenthash' => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
+                'id'           => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
+                'courseid'     => new \external_value(PARAM_INT, 'Course ID of the file'),
+                'name'         => new \external_value(PARAM_TEXT, 'File name'),
+                'mimetype'     => new \external_value(PARAM_RAW, 'File mime type'),
+                'contenthash'  => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
+                'timemodified' => new \external_value(PARAM_TEXT, 'Last modified time of the file'),
             ])
         );
     }
@@ -87,10 +89,12 @@ class files extends \external_api {
             }
 
             $return[] = [
-                'id'          => $file->get_pathnamehash(),
-                'courseid'    => $coursecontext->instanceid,
-                'mimetype'    => $file->get_mimetype(),
-                'contenthash' => $file->get_contenthash(),
+                'id'           => $file->get_pathnamehash(),
+                'courseid'     => $coursecontext->instanceid,
+                'name'         => $file->get_filename(),
+                'mimetype'     => $file->get_mimetype(),
+                'contenthash'  => $file->get_contenthash(),
+                'timemodified' => local::iso_8601($file->get_timemodified()),
             ];
         }
 
