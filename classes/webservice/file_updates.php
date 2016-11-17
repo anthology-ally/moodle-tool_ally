@@ -79,6 +79,7 @@ class file_updates extends \external_api {
     public static function service($since) {
         global $CFG;
 
+        $params  = self::validate_parameters(self::service_parameters(), ['since' => $since]);
         $userids = local::get_adminids();
         $roleids = local::get_roleids();
 
@@ -89,9 +90,8 @@ class file_updates extends \external_api {
         // We are betting that most courses have files, so better to preload than to fetch one at a time.
         local::preload_course_contexts();
 
-        $sincets = local::iso_8601_to_timestamp($since);
-        $files  = new files_iterator($userids, new role_assignments($roleids));
-        $files->since($sincets);
+        $files = new files_iterator($userids, new role_assignments($roleids));
+        $files->since(local::iso_8601_to_timestamp($params['since']));
 
         $return = array();
         foreach ($files as $file) {
