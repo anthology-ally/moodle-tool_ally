@@ -76,7 +76,6 @@ class file_updates extends \external_api {
      * @return array
      */
     public static function service($since) {
-        global $CFG;
 
         $params = self::validate_parameters(self::service_parameters(), ['since' => $since]);
 
@@ -90,22 +89,7 @@ class file_updates extends \external_api {
         $files  = local_file::iterator()->since(local::iso_8601_to_timestamp($params['since']));
         $return = [];
         foreach ($files as $file) {
-            $newfile = ($file->get_timecreated() === $file->get_timemodified());
-
-            $return[] = [
-                'metadata' => [
-                    'hostname'    => $CFG->wwwroot,
-                    'eventname'   => $newfile ? 'created' : 'updated',
-                    'eventtime'   => local::iso_8601($file->get_timemodified()),
-                    'contexttype' => 'course',
-                    'contextid'   => local_file::courseid($file),
-                ],
-                'body'     => [
-                    'id'          => $file->get_pathnamehash(),
-                    'mimetype'    => $file->get_mimetype(),
-                    'contenthash' => $file->get_contenthash(),
-                ],
-            ];
+            $return[] = local_file::to_crud($file);
         }
 
         return $return;

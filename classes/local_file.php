@@ -104,4 +104,34 @@ class local_file {
         return \moodle_url::make_webservice_pluginfile_url($file->get_contextid(), $file->get_component(),
             $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
     }
+
+    /**
+     * A message to send to Ally about a file being updated, created, etc.
+     *
+     * Warning: be very careful about editing this message.  It's used
+     * for webservices and for messaging queue.
+     *
+     * @param \stored_file $file
+     * @return array
+     */
+    public static function to_crud(\stored_file $file) {
+        global $CFG;
+
+        $newfile = ($file->get_timecreated() === $file->get_timemodified());
+
+        return [
+            'metadata' => [
+                'hostname'    => $CFG->wwwroot,
+                'eventname'   => $newfile ? 'created' : 'updated',
+                'eventtime'   => local::iso_8601($file->get_timemodified()),
+                'contexttype' => 'course',
+                'contextid'   => self::courseid($file),
+            ],
+            'body'     => [
+                'id'          => $file->get_pathnamehash(),
+                'mimetype'    => $file->get_mimetype(),
+                'contenthash' => $file->get_contenthash(),
+            ],
+        ];
+    }
 }

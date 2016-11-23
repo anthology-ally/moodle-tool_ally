@@ -30,9 +30,7 @@ use tool_ally\role_assignments;
 
 defined('MOODLE_INTERNAL') || die();
 
-global $CFG;
-
-require_once($CFG->libdir.'/externallib.php');
+require_once(__DIR__.'/../../../../../lib/externallib.php');
 
 /**
  * Provide a list of course files to process for accessibility.

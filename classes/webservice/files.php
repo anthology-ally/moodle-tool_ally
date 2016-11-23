@@ -29,9 +29,7 @@ use tool_ally\local_file;
 
 defined('MOODLE_INTERNAL') || die();
 
-global $CFG;
-
-require_once($CFG->libdir.'/externallib.php');
+require_once(__DIR__.'/../../../../../lib/externallib.php');
 
 /**
  * Provide a list of files to process for accessibility.
