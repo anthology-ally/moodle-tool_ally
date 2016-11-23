@@ -35,6 +35,24 @@ defined('MOODLE_INTERNAL') || die();
  */
 class local_file {
     /**
+     * Factory method for file iterator.
+     *
+     * @param array|null $userids
+     * @param array|null $roleids
+     * @return files_iterator
+     */
+    public static function iterator(array $userids = null, array $roleids = null) {
+        if ($userids === null) {
+            $userids = local::get_adminids();
+        }
+        if ($roleids === null) {
+            $roleids = local::get_roleids();
+        }
+
+        return new files_iterator($userids, new role_assignments($roleids));
+    }
+
+    /**
      * Get a file's course context if it exists.
      *
      * @param \stored_file $file

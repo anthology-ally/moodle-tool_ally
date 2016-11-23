@@ -24,10 +24,8 @@
 
 namespace tool_ally\webservice;
 
-use tool_ally\files_iterator;
 use tool_ally\local;
 use tool_ally\local_file;
-use tool_ally\role_assignments;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -70,9 +68,6 @@ class files extends \external_api {
      * @return array
      */
     public static function service() {
-        $userids = local::get_adminids();
-        $roleids = local::get_roleids();
-
         self::validate_context(\context_system::instance());
         require_capability('moodle/course:view', \context_system::instance());
         require_capability('moodle/course:viewhiddencourses', \context_system::instance());
@@ -80,9 +75,8 @@ class files extends \external_api {
         // We are betting that most courses have files, so better to preload than to fetch one at a time.
         local::preload_course_contexts();
 
-        $files  = new files_iterator($userids, new role_assignments($roleids));
         $return = array();
-        foreach ($files as $file) {
+        foreach (local_file::iterator() as $file) {
             $return[] = [
                 'id'           => $file->get_pathnamehash(),
                 'courseid'     => local_file::courseid($file),

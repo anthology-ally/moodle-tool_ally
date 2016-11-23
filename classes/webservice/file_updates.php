@@ -24,14 +24,12 @@
  */
 namespace tool_ally\webservice;
 
-use tool_ally\files_iterator;
 use tool_ally\local;
 use tool_ally\local_file;
-use tool_ally\role_assignments;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/../../../../../lib/externallib.php');
+require_once(__DIR__.'/../../../../../lib/externallib.php');
 
 /**
  * File updates web service class definition.
@@ -58,14 +56,14 @@ class file_updates extends \external_api {
         return new \external_multiple_structure(
             new \external_single_structure([
                 'metadata' => new \external_single_structure([
-                    'hostname' => new \external_value(PARAM_URL, 'Host name'),
-                    'eventname' => new \external_value(PARAM_ALPHA, 'Name of the event'),
-                    'eventtime' => new \external_value(PARAM_TEXT, 'ISO8601 timestamp for the event'),
+                    'hostname'    => new \external_value(PARAM_URL, 'Host name'),
+                    'eventname'   => new \external_value(PARAM_ALPHA, 'Name of the event'),
+                    'eventtime'   => new \external_value(PARAM_TEXT, 'ISO8601 timestamp for the event'),
                     'contexttype' => new \external_value(PARAM_ALPHA, 'The context type of the file'),
-                    'contextid' => new \external_value(PARAM_INT, 'ID of the context of the file'),
+                    'contextid'   => new \external_value(PARAM_INT, 'ID of the context of the file'),
                 ]),
-                'body' => new \external_single_structure([
-                    'id' => new \external_value(PARAM_ALPHANUM, 'File path name hash'),
+                'body'     => new \external_single_structure([
+                    'id'          => new \external_value(PARAM_ALPHANUM, 'File path name hash'),
                     'mimetype'    => new \external_value(PARAM_RAW, 'File mime type'),
                     'contenthash' => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
                 ]),
@@ -80,9 +78,7 @@ class file_updates extends \external_api {
     public static function service($since) {
         global $CFG;
 
-        $params  = self::validate_parameters(self::service_parameters(), ['since' => $since]);
-        $userids = local::get_adminids();
-        $roleids = local::get_roleids();
+        $params = self::validate_parameters(self::service_parameters(), ['since' => $since]);
 
         self::validate_context(\context_system::instance());
         require_capability('moodle/course:view', \context_system::instance());
@@ -91,10 +87,8 @@ class file_updates extends \external_api {
         // We are betting that most courses have files, so better to preload than to fetch one at a time.
         local::preload_course_contexts();
 
-        $files = new files_iterator($userids, new role_assignments($roleids));
-        $files->since(local::iso_8601_to_timestamp($params['since']));
-
-        $return = array();
+        $files  = local_file::iterator()->since(local::iso_8601_to_timestamp($params['since']));
+        $return = [];
         foreach ($files as $file) {
             $newfile = ($file->get_timecreated() === $file->get_timemodified());
 
@@ -106,7 +100,7 @@ class file_updates extends \external_api {
                     'contexttype' => 'course',
                     'contextid'   => local_file::courseid($file),
                 ],
-                'body' => [
+                'body'     => [
                     'id'          => $file->get_pathnamehash(),
                     'mimetype'    => $file->get_mimetype(),
                     'contenthash' => $file->get_contenthash(),
