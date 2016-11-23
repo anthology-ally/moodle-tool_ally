@@ -115,23 +115,16 @@ class local_file {
      * @return array
      */
     public static function to_crud(\stored_file $file) {
-        global $CFG;
 
         $newfile = ($file->get_timecreated() === $file->get_timemodified());
 
         return [
-            'metadata' => [
-                'hostname'    => $CFG->wwwroot,
-                'eventname'   => $newfile ? 'created' : 'updated',
-                'eventtime'   => local::iso_8601($file->get_timemodified()),
-                'contexttype' => 'course',
-                'contextid'   => self::courseid($file),
-            ],
-            'body'     => [
-                'id'          => $file->get_pathnamehash(),
-                'mimetype'    => $file->get_mimetype(),
-                'contenthash' => $file->get_contenthash(),
-            ],
+            'entity_id'    => $file->get_pathnamehash(),
+            'context_id'   => self::courseid($file),
+            'event_name'   => $newfile ? 'file_created' : 'file_updated',
+            'event_time'   => local::iso_8601($file->get_timemodified()),
+            'mime_type'    => $file->get_mimetype(),
+            'content_hash' => $file->get_contenthash(),
         ];
     }
 }

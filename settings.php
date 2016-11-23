@@ -30,5 +30,8 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_pickroles('tool_ally/roles', new lang_string('contentauthors', 'tool_ally'),
         new lang_string('contentauthorsdesc', 'tool_ally'), ['manager', 'coursecreator', 'editingteacher']));
 
+    $settings->add(new admin_setting_configtext('tool_ally/pushurl', new lang_string('pushurl', 'tool_ally'),
+        new lang_string('pushurldesc', 'tool_ally'), '', PARAM_URL, 60));
+
     $ADMIN->add('tools', $settings);
 }

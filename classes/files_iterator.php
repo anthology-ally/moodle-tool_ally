@@ -70,6 +70,13 @@ class files_iterator implements \Iterator {
     private $context;
 
     /**
+     * SQL sorting.
+     *
+     * @var string
+     */
+    private $sort = '';
+
+    /**
      * @param array $userids
      * @param role_assignments|null $assignments
      * @param \file_storage|null $storage
@@ -154,7 +161,7 @@ class files_iterator implements \Iterator {
               FROM {files} f
               JOIN {context} c ON c.id = f.contextid
              WHERE f.filename != '.'$filtersql
-               AND c.contextlevel NOT IN(:usr, :cat, :sys)
+               AND c.contextlevel NOT IN(:usr, :cat, :sys) {$this->sort}
         ", $params);
 
         // Must populate current.
@@ -181,6 +188,20 @@ class files_iterator implements \Iterator {
      */
     public function in_context(\context $context) {
         $this->context = $context;
+
+        return $this;
+    }
+
+    /**
+     * Sort the files.
+     *
+     * @param string $field
+     * @param int $direction
+     * @return self
+     */
+    public function sort_by($field, $direction = SORT_ASC) {
+        $this->sort = 'ORDER BY f.'.$field.' ';
+        $this->sort .= $direction === SORT_ASC ? 'ASC' : 'DESC';
 
         return $this;
     }

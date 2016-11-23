@@ -55,18 +55,12 @@ class file_updates extends \external_api {
     public static function service_returns() {
         return new \external_multiple_structure(
             new \external_single_structure([
-                'metadata' => new \external_single_structure([
-                    'hostname'    => new \external_value(PARAM_URL, 'Host name'),
-                    'eventname'   => new \external_value(PARAM_ALPHA, 'Name of the event'),
-                    'eventtime'   => new \external_value(PARAM_TEXT, 'ISO8601 timestamp for the event'),
-                    'contexttype' => new \external_value(PARAM_ALPHA, 'The context type of the file'),
-                    'contextid'   => new \external_value(PARAM_INT, 'ID of the context of the file'),
-                ]),
-                'body'     => new \external_single_structure([
-                    'id'          => new \external_value(PARAM_ALPHANUM, 'File path name hash'),
-                    'mimetype'    => new \external_value(PARAM_RAW, 'File mime type'),
-                    'contenthash' => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
-                ]),
+                'entity_id'    => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
+                'context_id'   => new \external_value(PARAM_INT, 'ID of the context of the file'),
+                'event_name'   => new \external_value(PARAM_ALPHAEXT, 'Name of the event'),
+                'event_time'   => new \external_value(PARAM_TEXT, 'ISO8601 timestamp for the event'),
+                'mime_type'    => new \external_value(PARAM_RAW, 'File mime type'),
+                'content_hash' => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
             ])
         );
     }

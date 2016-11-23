@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version.
+ * Scheduled tasks.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
@@ -24,9 +24,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/** @var stdClass $plugin */
-$plugin->version   = 2016113000;
-$plugin->requires  = 2016052301;
-$plugin->component = 'tool_ally';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.1.3 (Build: 20161114)';
+$tasks = [
+    [
+        'classname' => '\tool_ally\task\file_updates_task',
+        'blocking'  => 0,
+        'minute'    => '*',
+        'hour'      => '*',
+        'day'       => '*',
+        'dayofweek' => '*',
+        'month'     => '*'
+    ],
+];

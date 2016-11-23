@@ -26,5 +26,12 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['contentauthors'] = 'Content authors';
 $string['contentauthorsdesc'] = 'Administrators and users assigned to these selected roles will have their uploaded course files evaluated for accessibility. The files are given an accessibility rating. Low ratings mean that the file needs changes to be more accessible.';
+$string['curlerror'] = 'cURL error: {$a}';
+$string['curlinvalidhttpcode'] = 'Invalid HTTP status code: {$a}';
+$string['curlnohttpcode'] = 'Unable to verify HTTP status code';
 $string['filecoursenotfound'] = 'The passed in file does not belong to any course';
+$string['fileupdatestask'] = 'Push file updates to Ally';
 $string['pluginname'] = 'Ally';
+$string['pushurl'] = 'File updates URL';
+$string['pushurldesc'] = 'Push notifications about file updates to this URL.';
+$string['queuesendmessagesfailure'] = 'An error occurred while sending messages to the AWS SQS. Error data: $a';

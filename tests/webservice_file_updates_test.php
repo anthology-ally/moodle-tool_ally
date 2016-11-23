@@ -59,32 +59,20 @@ class tool_ally_webservice_file_updates_testcase extends tool_ally_abstract_test
         $fileupdated->set_timemodified($filedate->getTimestamp());
 
         $expectedfilecreated = [
-            'metadata' => [
-                'hostname'    => $CFG->wwwroot,
-                'eventname'   => 'created',
-                'eventtime'   => local::iso_8601($filecreated->get_timemodified()),
-                'contexttype' => 'course',
-                'contextid'   => $course->id,
-            ],
-            'body' => [
-                'id'          => $filecreated->get_pathnamehash(),
-                'mimetype'    => $filecreated->get_mimetype(),
-                'contenthash' => $filecreated->get_contenthash(),
-            ],
+            'entity_id'    => $filecreated->get_pathnamehash(),
+            'context_id'   => $course->id,
+            'event_name'   => 'file_created',
+            'event_time'   => local::iso_8601($filecreated->get_timemodified()),
+            'mime_type'    => $filecreated->get_mimetype(),
+            'content_hash' => $filecreated->get_contenthash(),
         ];
         $expectedfileupdated = [
-            'metadata' => [
-                'hostname'    => $CFG->wwwroot,
-                'eventname'   => 'updated',
-                'eventtime'   => local::iso_8601($fileupdated->get_timemodified()),
-                'contexttype' => 'course',
-                'contextid'   => $course->id,
-            ],
-            'body' => [
-                'id'          => $fileupdated->get_pathnamehash(),
-                'mimetype'    => $fileupdated->get_mimetype(),
-                'contenthash' => $fileupdated->get_contenthash(),
-            ],
+            'entity_id'    => $fileupdated->get_pathnamehash(),
+            'context_id'   => $course->id,
+            'event_name'   => 'file_updated',
+            'event_time'   => local::iso_8601($fileupdated->get_timemodified()),
+            'mime_type'    => $fileupdated->get_mimetype(),
+            'content_hash' => $fileupdated->get_contenthash(),
         ];
 
         $files = file_updates::service($since->format(\DateTime::ISO8601));
@@ -93,7 +81,7 @@ class tool_ally_webservice_file_updates_testcase extends tool_ally_abstract_test
         $this->assertCount(2, $files);
 
         foreach ($files as $file) {
-            if ($file['body']['id'] == $fileupdated->get_pathnamehash()) {
+            if ($file['entity_id'] == $fileupdated->get_pathnamehash()) {
                 $this->assertEquals($expectedfileupdated, $file);
             } else {
                 $this->assertEquals($expectedfilecreated, $file);
