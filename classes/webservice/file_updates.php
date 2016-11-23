@@ -26,6 +26,7 @@ namespace tool_ally\webservice;
 
 use tool_ally\files_iterator;
 use tool_ally\local;
+use tool_ally\local_file;
 use tool_ally\role_assignments;
 
 defined('MOODLE_INTERNAL') || die();
@@ -95,12 +96,6 @@ class file_updates extends \external_api {
 
         $return = array();
         foreach ($files as $file) {
-            $context       = \context::instance_by_id($file->get_contextid());
-            $coursecontext = $context->get_course_context(false);
-            if (!$coursecontext instanceof \context_course) {
-                continue; // Currently not supported by Ally.
-            }
-
             $newfile = ($file->get_timecreated() === $file->get_timemodified());
 
             $return[] = [
@@ -109,7 +104,7 @@ class file_updates extends \external_api {
                     'eventname'   => $newfile ? 'created' : 'updated',
                     'eventtime'   => local::iso_8601($file->get_timemodified()),
                     'contexttype' => 'course',
-                    'contextid'   => $coursecontext->instanceid,
+                    'contextid'   => local_file::courseid($file),
                 ],
                 'body' => [
                     'id'          => $file->get_pathnamehash(),

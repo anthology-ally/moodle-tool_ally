@@ -106,26 +106,4 @@ class local {
 
         return $dt->getTimestamp();
     }
-
-    /**
-     * Plugin file URL from stored file.
-     *
-     * @param \stored_file $file
-     * @return \moodle_url
-     */
-    public static function file_url(\stored_file $file) {
-        return \moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
-            $file->get_itemid(), $file->get_filepath(), $file->get_filename());
-    }
-
-    /**
-     * Webservice plugin file URL from stored file.
-     *
-     * @param \stored_file $file
-     * @return \moodle_url
-     */
-    public static function webservice_file_url(\stored_file $file) {
-        return \moodle_url::make_webservice_pluginfile_url($file->get_contextid(), $file->get_component(),
-            $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
-    }
 }

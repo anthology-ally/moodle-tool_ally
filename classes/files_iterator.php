@@ -111,6 +111,9 @@ class files_iterator implements \Iterator {
             if (!$validuser) {
                 continue;
             }
+            if (!$context->get_course_context(false) instanceof \context_course) {
+                continue; // Only files that belong to a course are supported by Ally.
+            }
 
             $this->current = $this->storage->get_file_instance($row);
             return;

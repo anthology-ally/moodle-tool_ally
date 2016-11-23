@@ -26,6 +26,7 @@ namespace tool_ally\webservice;
 
 use tool_ally\file_url_resolver;
 use tool_ally\local;
+use tool_ally\local_file;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -81,11 +82,7 @@ class file extends \external_api {
             throw new \moodle_exception('filenotfound', 'error');
         }
 
-        $context       = \context::instance_by_id($file->get_contextid());
-        $coursecontext = $context->get_course_context(false);
-        if (!$coursecontext instanceof \context_course) {
-            throw new \moodle_exception('filecoursenotfound', 'tool_ally');
-        }
+        $context = \context::instance_by_id($file->get_contextid());
 
         self::validate_context($context);
         require_capability('moodle/course:view', $context);
@@ -95,14 +92,14 @@ class file extends \external_api {
 
         return [
             'id'           => $file->get_pathnamehash(),
-            'courseid'     => $coursecontext->instanceid,
+            'courseid'     => local_file::courseid($file),
             'userid'       => $file->get_userid(),
             'name'         => $file->get_filename(),
             'mimetype'     => $file->get_mimetype(),
             'contenthash'  => $file->get_contenthash(),
             'timemodified' => local::iso_8601($file->get_timemodified()),
-            'url'          => local::file_url($file)->out(false),
-            'downloadurl'  => local::webservice_file_url($file)->out(false),
+            'url'          => local_file::url($file)->out(false),
+            'downloadurl'  => local_file::webservice_url($file)->out(false),
             'location'     => $resolver->resolve_url($file)->out(false),
         ];
     }

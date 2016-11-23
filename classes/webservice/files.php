@@ -26,6 +26,7 @@ namespace tool_ally\webservice;
 
 use tool_ally\files_iterator;
 use tool_ally\local;
+use tool_ally\local_file;
 use tool_ally\role_assignments;
 
 defined('MOODLE_INTERNAL') || die();
@@ -82,15 +83,9 @@ class files extends \external_api {
         $files  = new files_iterator($userids, new role_assignments($roleids));
         $return = array();
         foreach ($files as $file) {
-            $context       = \context::instance_by_id($file->get_contextid());
-            $coursecontext = $context->get_course_context(false);
-            if (!$coursecontext instanceof \context_course) {
-                continue; // Currently not supported by Ally.
-            }
-
             $return[] = [
                 'id'           => $file->get_pathnamehash(),
-                'courseid'     => $coursecontext->instanceid,
+                'courseid'     => local_file::courseid($file),
                 'name'         => $file->get_filename(),
                 'mimetype'     => $file->get_mimetype(),
                 'contenthash'  => $file->get_contenthash(),
