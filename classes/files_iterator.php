@@ -160,7 +160,7 @@ class files_iterator implements \Iterator {
             SELECT f.*, $contextsql
               FROM {files} f
               JOIN {context} c ON c.id = f.contextid
-             WHERE f.filename != '.'$filtersql
+             WHERE f.filename <> '.'$filtersql
                AND c.contextlevel NOT IN(:usr, :cat, :sys) {$this->sort}
         ", $params);
 
