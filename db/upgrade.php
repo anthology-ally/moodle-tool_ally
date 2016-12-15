@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version.
+ * Upgrade path.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
@@ -24,9 +24,29 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-/** @var stdClass $plugin */
-$plugin->version   = 2016121501;
-$plugin->requires  = 2016052301;
-$plugin->component = 'tool_ally';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.1.3 (Build: 20161114)';
+/**
+ * Upgrade path.
+ *
+ * @param int $oldversion
+ * @return bool
+ */
+function xmldb_tool_ally_upgrade($oldversion) {
+
+    if ($oldversion < 2016121501) {
+        // Migrate settings from report_allylti to tool_ally.
+        $settings = ['key', 'secret', 'adminurl'];
+        foreach ($settings as $setting) {
+            $value = get_config('report_allylti', $setting);
+
+            if ($value !== false) {
+                set_config($setting, $value, 'tool_ally');
+            }
+
+            unset_config($setting, 'report_allylti');
+        }
+
+        upgrade_plugin_savepoint(true, 2016121501, 'tool', 'ally');
+    }
+
+    return true;
+}

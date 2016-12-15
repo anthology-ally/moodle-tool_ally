@@ -30,6 +30,15 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_pickroles('tool_ally/roles', new lang_string('contentauthors', 'tool_ally'),
         new lang_string('contentauthorsdesc', 'tool_ally'), ['manager', 'coursecreator', 'editingteacher']));
 
+    $settings->add(new admin_setting_configtext('tool_ally/key', new lang_string('key', 'tool_ally'),
+        new lang_string('keydesc', 'tool_ally'), '', PARAM_ALPHANUMEXT));
+
+    $settings->add(new admin_setting_configpasswordunmask('tool_ally/secret',
+        new lang_string('secret', 'tool_ally'), new lang_string('secretdesc', 'tool_ally'), ''));
+
+    $settings->add(new admin_setting_configtext('tool_ally/adminurl', new lang_string('adminurl', 'tool_ally'),
+        new lang_string('adminurldesc', 'tool_ally'), '', PARAM_URL, 60));
+
     $settings->add(new admin_setting_configtext('tool_ally/pushurl', new lang_string('pushurl', 'tool_ally'),
         new lang_string('pushurldesc', 'tool_ally'), '', PARAM_URL, 60));
 

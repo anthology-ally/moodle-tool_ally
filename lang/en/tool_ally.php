@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['adminurl'] = 'Launch URL';
+$string['adminurldesc'] = 'The LTI launch URL used to access the Accessibility report.';
 $string['contentauthors'] = 'Content authors';
 $string['contentauthorsdesc'] = 'Administrators and users assigned to these selected roles will have their uploaded course files evaluated for accessibility. The files are given an accessibility rating. Low ratings mean that the file needs changes to be more accessible.';
 $string['curlerror'] = 'cURL error: {$a}';
@@ -31,7 +33,11 @@ $string['curlinvalidhttpcode'] = 'Invalid HTTP status code: {$a}';
 $string['curlnohttpcode'] = 'Unable to verify HTTP status code';
 $string['filecoursenotfound'] = 'The passed in file does not belong to any course';
 $string['fileupdatestask'] = 'Push file updates to Ally';
+$string['key'] = 'Key';
+$string['keydesc'] = 'The LTI consumer key.';
 $string['pluginname'] = 'Ally';
 $string['pushurl'] = 'File updates URL';
 $string['pushurldesc'] = 'Push notifications about file updates to this URL.';
 $string['queuesendmessagesfailure'] = 'An error occurred while sending messages to the AWS SQS. Error data: $a';
+$string['secret'] = 'Secret';
+$string['secretdesc'] = 'The LTI secret.';
