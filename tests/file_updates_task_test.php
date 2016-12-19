@@ -72,7 +72,7 @@ class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
     /**
      * Ensure that basic execution and timestamp management is working.
      */
-    public function test_execute() {
+    public function test_push_updates() {
         $this->resetAfterTest();
 
         $this->setAdminUser();
@@ -99,7 +99,7 @@ class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
     /**
      * Ensure that our batch looping is working as expected.
      */
-    public function test_execute_batching() {
+    public function test_push_updates_batching() {
         $this->resetAfterTest();
         $this->setAdminUser();
 
@@ -120,5 +120,34 @@ class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
         $task->execute();
 
         $updates->checkProphecyMethodsPredictions();
+    }
+
+    /**
+     * Test pushing of file deletions.
+     */
+    public function test_push_deletes() {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        set_config('push_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
+
+        $this->loadDataSet(
+            $this->createArrayDataSet(include(__DIR__.'/fixtures/deleted_files.php'))
+        );
+
+        $updates = $this->prophesize(push_file_updates::class);
+        $updates->send(Argument::type('array'))->shouldBeCalledTimes(3);
+
+        $task          = new file_updates_task();
+        $task->config  = new push_config('url', 'key', 'sceret', 2);
+        $task->updates = $updates->reveal();
+
+        $task->execute();
+
+        $updates->checkProphecyMethodsPredictions();
+
+        $this->assertEmpty($DB->get_records('tool_ally_deleted_files'));
     }
 }

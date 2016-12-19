@@ -31,6 +31,9 @@ defined('MOODLE_INTERNAL') || die();
  * @return bool
  */
 function xmldb_tool_ally_upgrade($oldversion) {
+    global $DB;
+
+    $dbman = $DB->get_manager();
 
     if ($oldversion < 2016121501) {
         // Migrate settings from report_allylti to tool_ally.
@@ -46,6 +49,31 @@ function xmldb_tool_ally_upgrade($oldversion) {
         }
 
         upgrade_plugin_savepoint(true, 2016121501, 'tool', 'ally');
+    }
+
+    if ($oldversion < 2016121900) {
+
+        // Define table tool_ally_deleted_files to be created.
+        $table = new xmldb_table('tool_ally_deleted_files');
+
+        // Adding fields to table tool_ally_deleted_files.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('pathnamehash', XMLDB_TYPE_CHAR, '40', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('contenthash', XMLDB_TYPE_CHAR, '40', null, null, null, null);
+        $table->add_field('mimetype', XMLDB_TYPE_CHAR, '100', null, null, null, null);
+        $table->add_field('timedeleted', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table tool_ally_deleted_files.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for tool_ally_deleted_files.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Ally savepoint reached.
+        upgrade_plugin_savepoint(true, 2016121900, 'tool', 'ally');
     }
 
     return true;

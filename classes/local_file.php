@@ -77,10 +77,12 @@ class local_file {
      *
      * @param \stored_file $file
      * @param int $strictness Throw an exception if set to MUST_EXIST
-     * @return int
+     * @return int|null
      */
     public static function courseid(\stored_file $file, $strictness = MUST_EXIST) {
-        return self::course_context($file, $strictness)->instanceid;
+        $context = self::course_context($file, $strictness);
+
+        return ($context instanceof \context_course) ? $context->instanceid : null;
     }
 
     /**
@@ -109,22 +111,37 @@ class local_file {
      * A message to send to Ally about a file being updated, created, etc.
      *
      * Warning: be very careful about editing this message.  It's used
-     * for webservices and for messaging queue.
+     * for webservices and for pushed updates.
      *
-     * @param \stored_file $file
+     * @param \stored_file|\stdClass $file
      * @return array
      */
-    public static function to_crud(\stored_file $file) {
+    public static function to_crud($file) {
 
-        $newfile = ($file->get_timecreated() === $file->get_timemodified());
+        if ($file instanceof \stored_file) {
+            $newfile = ($file->get_timecreated() === $file->get_timemodified());
 
-        return [
-            'entity_id'    => $file->get_pathnamehash(),
-            'context_id'   => self::courseid($file),
-            'event_name'   => $newfile ? 'file_created' : 'file_updated',
-            'event_time'   => local::iso_8601($file->get_timemodified()),
-            'mime_type'    => $file->get_mimetype(),
-            'content_hash' => $file->get_contenthash(),
-        ];
+            return [
+                'entity_id'    => $file->get_pathnamehash(),
+                'context_id'   => self::courseid($file),
+                'event_name'   => $newfile ? 'file_created' : 'file_updated',
+                'event_time'   => local::iso_8601($file->get_timemodified()),
+                'mime_type'    => $file->get_mimetype(),
+                'content_hash' => $file->get_contenthash(),
+            ];
+        }
+
+        if ($file instanceof \stdClass) {
+            return [
+                'entity_id'    => $file->pathnamehash,
+                'context_id'   => $file->courseid,
+                'event_name'   => 'file_deleted',
+                'event_time'   => local::iso_8601($file->timedeleted),
+                'mime_type'    => $file->mimetype,
+                'content_hash' => $file->contenthash,
+            ];
+        }
+
+        throw new \coding_exception('Unexpected parameter type passed, not stored_file or stdClass');
     }
 }

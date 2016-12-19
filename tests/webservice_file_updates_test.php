@@ -41,8 +41,6 @@ class tool_ally_webservice_file_updates_testcase extends tool_ally_abstract_test
      * Test the web service.
      */
     public function test_service() {
-        global $CFG;
-
         $this->resetAfterTest();
         $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);

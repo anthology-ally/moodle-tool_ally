@@ -67,7 +67,24 @@ class file_updates_task extends scheduled_task {
             return;
         }
 
-        $updates    = $this->updates ?: new push_file_updates($config);
+        $updates = $this->updates ?: new push_file_updates($config);
+
+        // Push file updates.
+        $this->push_updates($config, $updates, $time);
+
+        // Push deleted files.
+        $this->push_deletes($config, $updates);
+    }
+
+    /**
+     * Push file updates to Ally.
+     *
+     * @param push_config $config
+     * @param push_file_updates $updates
+     * @param int $time Push updates for files that have been modified after this time
+     * @throws \Exception
+     */
+    private function push_updates(push_config $config, push_file_updates $updates, $time) {
         $files      = local_file::iterator()->since($time)->sort_by('timemodified');
         $payload    = [];
         $timetosave = 0;
@@ -100,9 +117,44 @@ class file_updates_task extends scheduled_task {
     }
 
     /**
+     * Push file deletions to Ally.
+     *
+     * @param push_config $config
+     * @param push_file_updates $updates
+     */
+    private function push_deletes(push_config $config, push_file_updates $updates) {
+        global $DB;
+
+        $ids     = [];
+        $payload = [];
+        $deletes = $DB->get_recordset('tool_ally_deleted_files', null, 'id');
+
+        while ($deletes->valid()) {
+            $file = $deletes->current();
+            $deletes->next();
+
+            $ids[]     = $file->id;
+            $payload[] = local_file::to_crud($file);
+
+            // Check to see if we have our batch size or if we are at the last file.
+            if (count($payload) >= $config->get_batch_size() || !$deletes->valid()) {
+                $updates->send($payload);
+
+                // Successfully sent, remove.
+                $DB->delete_records_list('tool_ally_deleted_files', 'id', $ids);
+
+                // Reset arrays for next payload.
+                $ids     = [];
+                $payload = [];
+            }
+        }
+        $deletes->close();
+    }
+
+    /**
      * Save push timestamp.  This is our file last modified window.
      *
-     * @param $timestamp
+     * @param int $timestamp
      */
     private function set_push_timestamp($timestamp) {
         if (!empty($timestamp)) {
