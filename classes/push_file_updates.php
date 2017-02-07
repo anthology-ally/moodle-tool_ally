@@ -54,7 +54,7 @@ class push_file_updates {
      * @param \curl|null $curl Don't pass this in unless its for testing.  Don't re-use curl class between requests.
      */
     public function send(array $payload, \curl $curl = null) {
-        $content = json_encode($payload);
+        $content = json_encode(['key' => $this->config->get_key(), 'data' => $payload]);
 
         $curl = $curl ?: new \curl(['debug' => $this->config->get_debug()]);
         $curl->setHeader('Authorization: Bearer '.$this->config->get_secret());
