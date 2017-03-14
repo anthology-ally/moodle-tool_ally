@@ -119,7 +119,7 @@ class local_file {
     public static function to_crud($file) {
 
         if ($file instanceof \stored_file) {
-            $newfile = ($file->get_timecreated() === $file->get_timemodified());
+            $newfile = ($file->get_timecreated() + 2 >= $file->get_timemodified());
 
             return [
                 'entity_id'    => $file->get_pathnamehash(),

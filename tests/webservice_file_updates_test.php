@@ -41,6 +41,7 @@ class tool_ally_webservice_file_updates_testcase extends tool_ally_abstract_test
      * Test the web service.
      */
     public function test_service() {
+        global $DB;
         $this->resetAfterTest();
         $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
@@ -54,7 +55,13 @@ class tool_ally_webservice_file_updates_testcase extends tool_ally_abstract_test
         $since = new \DateTimeImmutable('October 21 2015', new \DateTimeZone('UTC'));
         $filedate = $since->add(new \DateInterval('P3D'));
 
-        $fileupdated->set_timemodified($filedate->getTimestamp());
+        $tempobject = new stdClass();
+        $tempobject->id = $fileupdated->get_id();
+        $tempobject->timemodified = $filedate->getTimestamp();
+        $tempobject->timecreated = $filedate->getTimestamp() - DAYSECS;
+
+        $DB->update_record('files', $tempobject);
+        $fileupdated = $this->get_resource_file($resource2);
 
         $expectedfilecreated = [
             'entity_id'    => $filecreated->get_pathnamehash(),
