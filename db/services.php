@@ -46,6 +46,13 @@ $functions = [
         'type'         => 'read',
         'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses',
     ],
+    'tool_ally_delete_file' => [
+        'classname'    => 'tool_ally\\webservice\\delete_file',
+        'methodname'   => 'service',
+        'description'  => 'Delete a file',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses, moodle/course:managefiles',
+    ],
     'tool_ally_get_file_updates' => [
         'classname'    => 'tool_ally\\webservice\\file_updates',
         'methodname'   => 'service',
@@ -63,6 +70,7 @@ $services = [
             'tool_ally_get_files',
             'tool_ally_get_course_files',
             'tool_ally_get_file',
+            'tool_ally_delete_file',
             'tool_ally_get_file_updates',
         ],
         'enabled'         => 0,

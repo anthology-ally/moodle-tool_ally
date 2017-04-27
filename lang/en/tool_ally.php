@@ -41,3 +41,4 @@ $string['pushurldesc'] = 'Push notifications about file updates to this URL.';
 $string['queuesendmessagesfailure'] = 'An error occurred while sending messages to the AWS SQS. Error data: $a';
 $string['secret'] = 'Secret';
 $string['secretdesc'] = 'The LTI secret.';
+$string['usercapabilitymissing'] = 'The supplied user does not have the capability to delete this file.';
