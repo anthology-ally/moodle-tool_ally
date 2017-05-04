@@ -60,6 +60,13 @@ $functions = [
         'type'         => 'read',
         'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses',
     ],
+    'tool_ally_replace_file' => [
+        'classname'    => 'tool_ally\\webservice\\replace_file',
+        'methodname'   => 'service',
+        'description'  => 'Replace a file with new content',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses, moodle/course:managefiles',
+    ],
 ];
 
 $services = [
@@ -72,6 +79,7 @@ $services = [
             'tool_ally_get_file',
             'tool_ally_delete_file',
             'tool_ally_get_file_updates',
+            'tool_ally_replace_file',
         ],
         'enabled'         => 0,
         'restrictedusers' => 0,

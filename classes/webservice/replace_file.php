@@ -1,0 +1,139 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Replace a file.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace tool_ally\webservice;
+
+use tool_ally\file_url_resolver;
+use tool_ally\local;
+use tool_ally\local_file;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once(__DIR__.'/../../../../../lib/externallib.php');
+
+/**
+ * Replace a file.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class replace_file extends \external_api {
+    /**
+     * @return \external_function_parameters
+     */
+    public static function service_parameters() {
+        return new \external_function_parameters([
+            'id' => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
+            'userid' => new \external_value(PARAM_INT, 'User id with access to file'),
+            'draftitemid' => new \external_value(PARAM_INT, 'itemid of new file uploaded'),
+        ]);
+    }
+
+    /**
+     * @return \external_single_structure
+     */
+    public static function service_returns() {
+        return new \external_single_structure([
+            'success'    => new \external_value(PARAM_BOOL, 'File replaced succesfully?'),
+            'newid'      => new \external_value(PARAM_ALPHANUM, 'New file path name hash'),
+        ]);
+    }
+
+    /**
+     * @param string $id The file path name hash
+     * @param int $userid User with teacher access to file
+     * @param int $draftitemid New file uploaded to draft area
+     */
+    public static function service($id, $userid, $draftitemid) {
+        global $DB, $USER;
+
+        $params = [
+            'id' => $id,
+            'userid' => $userid,
+            'draftitemid' => $draftitemid,
+        ];
+        $params = self::validate_parameters(self::service_parameters(), $params);
+
+        $fs = get_file_storage();
+        $oldfile = $fs->get_file_by_hash($params['id']);
+        if (!$oldfile instanceof \stored_file) {
+            throw new \moodle_exception('filenotfound', 'error');
+        }
+
+        $user = $DB->get_record('user', ['id' => $userid], '*', MUST_EXIST);
+
+        $context = \context::instance_by_id($oldfile->get_contextid());
+
+        self::validate_context($context);
+        require_capability('moodle/course:view', $context);
+        require_capability('moodle/course:viewhiddencourses', $context);
+        require_capability('moodle/course:managefiles', $context);
+
+        $replaced = false;
+        $capabilities = array(
+            'moodle/course:update',
+            'moodle/course:managefiles',
+        );
+
+        if (!has_all_capabilities($capabilities, $context, $user)) {
+            throw new \moodle_exception('usercapabilitymissing', 'tool_ally');
+        }
+
+        $filerecord = new \stdClass();
+        $filerecord->contextid = $oldfile->get_contextid();
+        $filerecord->component = $oldfile->get_component();
+        $filerecord->filearea  = $oldfile->get_filearea();
+        $filerecord->filepath  = $oldfile->get_filepath();
+        $filerecord->itemid    = $oldfile->get_itemid();
+        $filerecord->userid    = $oldfile->get_userid();
+        $filerecord->license   = $oldfile->get_license();
+        $filerecord->author    = $oldfile->get_author();
+        $filerecord->source    = $oldfile->get_source();
+
+        $usercontext = \context_user::instance($USER->id);
+
+        $uploadedfiles = $fs->get_area_files(
+            $usercontext->id,
+            'user',
+            'draft',
+            $draftitemid,
+            '',
+            false
+        );
+        $newfile = reset($uploadedfiles);
+
+        $filerecord->filename = $newfile->get_filename();
+
+        $oldfile->delete();
+
+        $file = $fs->create_file_from_storedfile($filerecord, $newfile);
+        $replaced = true;
+
+        return [
+            'success' => $replaced,
+            'newid' => $file->get_pathnamehash(),
+        ];
+    }
+}
