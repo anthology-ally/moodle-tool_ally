@@ -67,6 +67,13 @@ $functions = [
         'type'         => 'write',
         'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses, moodle/course:managefiles',
     ],
+    'tool_ally_request_view_completion' => [
+        'classname'    => 'tool_ally\\webservice\\mod_file_view',
+        'methodname'   => 'service',
+        'description'  => 'Mark a file resource as complete when viewed',
+        'type'         => 'write',
+        'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses, mod/resource:view',
+    ]
 ];
 
 $services = [
