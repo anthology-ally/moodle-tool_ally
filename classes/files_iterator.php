@@ -70,6 +70,26 @@ class files_iterator implements \Iterator {
     private $context;
 
     /**
+     * @var string|null
+     */
+    private $component;
+
+    /**
+     * @var string|null
+     */
+    private $filearea;
+
+    /**
+     * @var int|null
+     */
+    private $itemid;
+
+    /**
+     * @var string
+     */
+    private $mimetype;
+
+    /**
      * SQL sorting.
      *
      * @var string
@@ -155,6 +175,26 @@ class files_iterator implements \Iterator {
             $filtersql .= ' AND '.$DB->sql_like('c.path', ':path');
             $params['path'] = $this->context->path.'%';
         }
+        if (!empty($this->component)) {
+            $filtersql .= ' AND f.component = :component ';
+            $params['component'] = $this->component;
+        }
+        if (!empty($this->filearea)) {
+            $filtersql .= ' AND f.filearea = :filearea ';
+            $params['filearea'] = $this->filearea;
+        }
+        if (!empty($this->itemid)) {
+            $filtersql .= ' AND f.itemid = :itemid ';
+            $params['itemid'] = $this->itemid;
+        }
+        if (!empty($this->mimetype)) {
+            if (strpos($this->mimetype, '%') !== false) {
+                $filtersql .= ' AND '.$DB->sql_like('f.mimetype', ':mimetype').' ';
+            } else {
+                $filtersql .= 'AND f.mimetype = :mimetype ';
+            }
+            $params['mimetype'] = $this->mimetype;
+        }
 
         $this->rs = $DB->get_recordset_sql("
             SELECT f.*, $contextsql
@@ -188,6 +228,52 @@ class files_iterator implements \Iterator {
      */
     public function in_context(\context $context) {
         $this->context = $context;
+
+        return $this;
+    }
+
+    /**
+     * Restrict files to a specific component.
+     *
+     * @param $component
+     * @return $this
+     */
+    public function with_component($component) {
+        $this->component = $component;
+
+        return $this;
+    }
+
+    /**
+     * Restrict files to a specific file area.
+     *
+     * @param $filearea
+     * @return $this
+     */
+    public function with_filearea($filearea) {
+        $this->filearea = $filearea;
+
+        return $this;
+    }
+
+    /**
+     * Restrict files to a specific item id.
+     * @param $itemid
+     * @return $this
+     */
+    public function with_itemid($itemid) {
+        $this->itemid = $itemid;
+
+        return $this;
+    }
+
+    /**
+     * Restrict files to a specific mimetype.
+     * @param $mimetype
+     * @return $this
+     */
+    public function with_mimetype($mimetype) {
+        $this->mimetype = $mimetype;
 
         return $this;
     }
