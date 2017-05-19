@@ -42,5 +42,8 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtext('tool_ally/pushurl', new lang_string('pushurl', 'tool_ally'),
         new lang_string('pushurldesc', 'tool_ally'), '', PARAM_URL, 60));
 
+    $settings->add(new admin_setting_configtext('tool_ally/clientid', new lang_string('clientid', 'tool_ally'),
+        new lang_string('clientiddesc', 'tool_ally'), '', PARAM_INT, 5));
+
     $ADMIN->add('tools', $settings);
 }

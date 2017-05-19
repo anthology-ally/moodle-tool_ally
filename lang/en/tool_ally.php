@@ -26,6 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['adminurl'] = 'Launch URL';
 $string['adminurldesc'] = 'The LTI launch URL used to access the Accessibility report.';
+$string['clientid'] = 'Client id';
+$string['clientiddesc'] = 'The Ally client id';
 $string['contentauthors'] = 'Content authors';
 $string['contentauthorsdesc'] = 'Administrators and users assigned to these selected roles will have their uploaded course files evaluated for accessibility. The files are given an accessibility rating. Low ratings mean that the file needs changes to be more accessible.';
 $string['curlerror'] = 'cURL error: {$a}';
