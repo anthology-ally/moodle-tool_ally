@@ -103,6 +103,7 @@ class local_file {
      * @return \moodle_url
      */
     public static function webservice_url(\stored_file $file) {
+        // This fixes an issue where the forum page attachment is referred as post with id 0.
         if ($file->get_component() === 'mod_forum' && $file->get_itemid() == 0) {
             return \moodle_url::make_webservice_pluginfile_url($file->get_contextid(), $file->get_component(),
                 $file->get_filearea(), null, $file->get_filepath(), $file->get_filename());

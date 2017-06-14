@@ -38,7 +38,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  */
 class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
     /**
-     * Test the web service.
+     * Test the web service when used to get a resource file.
      */
     public function test_service() {
         global $CFG;
@@ -67,5 +67,118 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
         $this->assertRegExp('/.*pluginfile\.php.*mod_resource.*/', $file['url']);
         $this->assertRegExp('/.*webservice\/pluginfile\.php.*mod_resource.*/', $file['downloadurl']);
         $this->assertEquals($CFG->wwwroot.'/mod/resource/view.php?id='.$resource->cmid, $file['location']);
+    }
+
+    /**
+     * Test the web service when used to get a forum post attachment.
+     */
+    public function test_forum_post() {
+        global $CFG;
+
+        $this->resetAfterTest();
+        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
+
+        $course       = $this->getDataGenerator()->create_course();
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $options = array('course' => $course->id);
+        $forum = $this->getDataGenerator()->create_module('forum', $options);
+        $forumcontext = context_module::instance($forum->cmid);
+
+        // Add a discussion.
+        $record = array();
+        $record['course'] = $course->id;
+        $record['forum'] = $forum->id;
+        $record['userid'] = $user->id;
+        $discussion = $this->getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($record);
+
+        // Add a post with an attachment.
+        $record = new stdClass();
+        $record->discussion = $discussion->id;
+        $record->userid = $user->id;
+        $post = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_post($record);
+        $filename = 'shouldbeanimage.jpg';
+        $filecontents = 'image contents (not really)';
+        // Add a fake inline image to the post.
+        $filerecordinline = array(
+            'contextid' => $forumcontext->id,
+            'component' => 'mod_forum',
+            'filearea'  => 'post',
+            'itemid'    => $post->id,
+            'filepath'  => '/',
+            'filename'  => $filename,
+        );
+        $fs = get_file_storage();
+        $expectedfile = $fs->create_file_from_string($filerecordinline, $filecontents);
+
+        $file = file::service($expectedfile->get_pathnamehash());
+        $file = external_api::clean_returnvalue(file::service_returns(), $file);
+
+        $timemodified = local::iso_8601_to_timestamp($file['timemodified']);
+
+        $this->assertNotEmpty($file);
+        $this->assertEquals($expectedfile->get_pathnamehash(), $file['id']);
+        $this->assertEquals($course->id, $file['courseid']);
+        $this->assertEquals($expectedfile->get_userid(), $file['userid']);
+        $this->assertEquals($expectedfile->get_filename(), $file['name']);
+        $this->assertEquals($expectedfile->get_mimetype(), $file['mimetype']);
+        $this->assertEquals($expectedfile->get_contenthash(), $file['contenthash']);
+        $this->assertEquals($expectedfile->get_timemodified(), $timemodified);
+        $this->assertRegExp('/.*pluginfile\.php.*mod_forum.*/', $file['url']);
+        $this->assertRegExp('/.*webservice\/pluginfile\.php.*mod_forum.*/', $file['downloadurl']);
+        $this->assertEquals($CFG->wwwroot.'/mod/forum/discuss.php?d='.$discussion->id.'#p'.$post->id, $file['location']);
+    }
+
+    /**
+     * Test the web service when used to get a forum main page attachment.
+     */
+    public function test_forum_main_page() {
+        global $CFG;
+
+        $this->resetAfterTest();
+        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
+
+        $course       = $this->getDataGenerator()->create_course();
+        $user = $this->getDataGenerator()->create_user();
+        $this->getDataGenerator()->enrol_user($user->id, $course->id);
+
+        $options = array('course' => $course->id);
+        $forum = $this->getDataGenerator()->create_module('forum', $options);
+        $forumcontext = context_module::instance($forum->cmid);
+
+        // Add a post with an attachment.
+        $filename = 'shouldbeanimage.jpg';
+        $filecontents = 'image contents (not really)';
+        // Add a fake inline image to the forum.
+        $filerecordinline = array(
+            'contextid' => $forumcontext->id,
+            'component' => 'mod_forum',
+            'filearea'  => 'intro',
+            'itemid'    => 0,
+            'filepath'  => '/',
+            'filename'  => $filename,
+        );
+        $fs = get_file_storage();
+        $expectedfile = $fs->create_file_from_string($filerecordinline, $filecontents);
+
+        $file = file::service($expectedfile->get_pathnamehash());
+        $file = external_api::clean_returnvalue(file::service_returns(), $file);
+
+        $timemodified = local::iso_8601_to_timestamp($file['timemodified']);
+
+        $this->assertNotEmpty($file);
+        $this->assertEquals($expectedfile->get_pathnamehash(), $file['id']);
+        $this->assertEquals($course->id, $file['courseid']);
+        $this->assertEquals($expectedfile->get_userid(), $file['userid']);
+        $this->assertEquals($expectedfile->get_filename(), $file['name']);
+        $this->assertEquals($expectedfile->get_mimetype(), $file['mimetype']);
+        $this->assertEquals($expectedfile->get_contenthash(), $file['contenthash']);
+        $this->assertEquals($expectedfile->get_timemodified(), $timemodified);
+        $this->assertRegExp('/.*pluginfile\.php.*mod_forum.*/', $file['url']);
+        $this->assertRegExp('/.*webservice\/pluginfile\.php.*mod_forum.*/', $file['downloadurl']);
+        $this->assertEquals($CFG->wwwroot.'/mod/forum/view.php?id='.$forum->cmid, $file['location']);
     }
 }
