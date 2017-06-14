@@ -103,8 +103,14 @@ class local_file {
      * @return \moodle_url
      */
     public static function webservice_url(\stored_file $file) {
-        return \moodle_url::make_webservice_pluginfile_url($file->get_contextid(), $file->get_component(),
-            $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+        if ($file->get_component() === 'mod_forum' && $file->get_itemid() == 0) {
+            return \moodle_url::make_webservice_pluginfile_url($file->get_contextid(), $file->get_component(),
+                $file->get_filearea(), null, $file->get_filepath(), $file->get_filename());
+
+        } else {
+            return \moodle_url::make_webservice_pluginfile_url($file->get_contextid(), $file->get_component(),
+                $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+        }
     }
 
     /**
