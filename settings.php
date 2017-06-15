@@ -24,6 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// We have to include this so that it's available before an upgrade completes and registers the class for autoloading.
+require_once($CFG->dirroot.'/admin/tool/ally/classes/admin_setting_ally_config.php');
+
+use tool_ally\admin_setting_ally_config;
+
 if ($hassiteconfig) {
     $settings = new admin_settingpage('tool_ally', get_string('pluginname', 'tool_ally'));
 
@@ -44,6 +49,9 @@ if ($hassiteconfig) {
 
     $settings->add(new admin_setting_configtext('tool_ally/clientid', new lang_string('clientid', 'tool_ally'),
         new lang_string('clientiddesc', 'tool_ally'), '', PARAM_INT, 5));
+
+    $settings->add(new admin_setting_ally_config('tool_ally/autconf', new lang_string('autoconfigure', 'tool_ally'),
+        new lang_string('autoconfiguredesc', 'tool_ally'), ''));
 
     $ADMIN->add('tools', $settings);
 }
