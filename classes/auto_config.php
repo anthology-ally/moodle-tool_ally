@@ -161,7 +161,49 @@ class auto_config {
         }
         set_config('webserviceprotocols', implode(',', $activewebservices));
 
+        $this->enable_ally_web_service();
         $this->create_ws_token();
+    }
+
+    /**
+     * Enable ally web service.
+     * @throws \coding_exception
+     */
+    private function enable_ally_web_service() {
+        global $DB;
+
+        $webservicemanager = new \webservice;
+
+        $servicedata = (object) [
+            'name' => 'Ally integration services',
+            'component' => 'tool_ally',
+            'timecreated' => time(),
+            'timemodified' => time(),
+            'shortname' => 'tool_ally',
+            'restrictedusers' => 0,
+            'enabled' => 1,
+            'downloadfiles' => 1,
+            'uploadfiles' => 1
+        ];
+
+        $row = $DB->get_record('external_services', ['component' => 'tool_ally']);
+        if (!$row) {
+            $servicedata->id = $webservicemanager->add_external_service($servicedata);
+            $servicedata->timecreated = $row->timecreated;
+            $params = array(
+                'objectid' => $servicedata->id
+            );
+            $event = \core\event\webservice_service_created::create($params);
+            $event->trigger();
+        } else {
+            $servicedata->id = $row->id;
+            $webservicemanager->update_external_service($servicedata);
+            $params = array(
+                'objectid' => $servicedata->id
+            );
+            $event = \core\event\webservice_service_updated::create($params);
+            $event->trigger();
+        }
     }
 
     /**
