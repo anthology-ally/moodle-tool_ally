@@ -15,18 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version.
- *
- * @package   tool_ally
- * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
+ * Event observers for ally admin tool.
+ * @author    Guy Thomas <gthomas@moodlerooms.com>
+ * @copyright Copyright (c) 2017 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-/** @var stdClass $plugin */
-$plugin->version   = 2016121906;
-$plugin->requires  = 2016052301;
-$plugin->component = 'tool_ally';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.1.3';
+$observers = array(
+    array (
+        'eventname' => '\core\event\course_module_created',
+        'callback'  => '\tool_ally\event_handlers::course_module_created',
+    ),
+    array (
+        'eventname' => '\core\event\course_module_updated',
+        'callback'  => '\tool_ally\event_handlers::course_module_updated'
+    )
+);
