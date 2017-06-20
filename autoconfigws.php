@@ -44,7 +44,7 @@ if ($action === 'confirm') {
     echo $OUTPUT->continue_button(new moodle_url('/admin/settings.php', ['section' => 'tool_ally']));
 } else {
     $continueurl = new moodle_url('/admin/tool/ally/autoconfigws.php', ['action' => 'confirm']);
-    $cancelurl = new moodle_url('admin/settings.php', ['section' => 'tool_ally']);
+    $cancelurl = new moodle_url('/admin/settings.php', ['section' => 'tool_ally']);
     echo $OUTPUT->confirm(get_string('autoconfigureconfirmation', 'tool_ally'), $continueurl, $cancelurl);
 }
 
