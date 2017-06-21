@@ -92,8 +92,9 @@ class local_file {
      * @return \moodle_url
      */
     public static function url(\stored_file $file) {
+        $itemid = self::preprocess_stored_file_itemid($file);
         return \moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
-            $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+            $itemid, $file->get_filepath(), $file->get_filename());
     }
 
     /**
@@ -103,15 +104,32 @@ class local_file {
      * @return \moodle_url
      */
     public static function webservice_url(\stored_file $file) {
-        // This fixes an issue where the forum page attachment is referred as post with id 0.
-        if ($file->get_component() === 'mod_forum' && $file->get_itemid() == 0) {
-            return \moodle_url::make_webservice_pluginfile_url($file->get_contextid(), $file->get_component(),
-                $file->get_filearea(), null, $file->get_filepath(), $file->get_filename());
+        $itemid = self::preprocess_stored_file_itemid($file);
+        return \moodle_url::make_webservice_pluginfile_url($file->get_contextid(), $file->get_component(),
+            $file->get_filearea(), $itemid, $file->get_filepath(), $file->get_filename());
+    }
 
-        } else {
-            return \moodle_url::make_webservice_pluginfile_url($file->get_contextid(), $file->get_component(),
-                $file->get_filearea(), $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+    /**
+     * Pre process stored file for getting a plugin or webservice url.
+     * This fixes an issue with some modules that have a root page, so they use an item id = 0 when there should be no id.
+     * @param \stored_file $file
+     * @return mixed null if fixing, item's id otherwise
+     */
+    private static function preprocess_stored_file_itemid(\stored_file $file) {
+        $itemid = $file->get_itemid();
+
+        // Some plugins do not like an itemid of 0 in the web service download path.
+        $compareas = [
+            'block_html~content',
+            'course~legacy',
+            'course~summary'
+        ];
+        if ($file->get_filearea() === 'intro' && $itemid == 0) {
+            $itemid = null;
+        } else if (in_array($file->get_component().'~'.$file->get_filearea(), $compareas) && $itemid == 0) {
+            $itemid = null;
         }
+        return $itemid;
     }
 
     /**
