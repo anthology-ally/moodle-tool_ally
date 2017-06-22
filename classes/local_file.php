@@ -92,6 +92,10 @@ class local_file {
      * @return \moodle_url
      */
     public static function url(\stored_file $file) {
+        if ($file->get_component() === 'question') {
+            return self::generate_question_preview_url($file);
+        }
+
         $itemid = self::preprocess_stored_file_itemid($file);
         return \moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
             $itemid, $file->get_filepath(), $file->get_filename());
@@ -104,6 +108,10 @@ class local_file {
      * @return \moodle_url
      */
     public static function webservice_url(\stored_file $file) {
+        if ($file->get_component() === 'question') {
+            return self::generate_question_preview_url($file, true);
+        }
+
         $itemid = self::preprocess_stored_file_itemid($file);
         return \moodle_url::make_webservice_pluginfile_url($file->get_contextid(), $file->get_component(),
             $file->get_filearea(), $itemid, $file->get_filepath(), $file->get_filename());
@@ -130,6 +138,34 @@ class local_file {
             $itemid = null;
         }
         return $itemid;
+    }
+
+    /**
+     * Generates a question preview URL for downloading a question's content file.
+     *
+     * @param \stored_file $file
+     * @param bool $forwebservice Is it for a webservice URL?
+     * @return \moodle_url
+     */
+    private static function generate_question_preview_url(\stored_file $file, $forwebservice = false) {
+        global $CFG;
+        $urlbase = $CFG->httpswwwroot;
+        if ($forwebservice) {
+            $urlbase .= '/webservice';
+        }
+        $urlbase .= '/pluginfile.php';
+
+        require_once($CFG->libdir . '/questionlib.php');
+
+        $quba = \question_engine::make_questions_usage_by_activity('core_question_preview', \context_system::instance());
+        $quba->set_preferred_behaviour('deferredfeedback');
+        $question = \question_bank::load_question($file->get_itemid());
+        $slot = $quba->add_question($question);
+        $quba->start_question($slot);
+        \question_engine::save_questions_usage_by_activity($quba);
+
+        return \moodle_url::make_file_url($urlbase, '/'.$file->get_contextid().'/question/'.$file->get_filearea().'/'
+                .$quba->get_id().'/'.$slot.'/'.$file->get_itemid().$file->get_filepath().$file->get_filename());
     }
 
     /**
