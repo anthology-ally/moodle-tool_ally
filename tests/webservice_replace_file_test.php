@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once(__DIR__.'/abstract_testcase.php');
 require_once($CFG->dirroot . '/files/externallib.php');
+require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
 
 /**
  * Test for file replace webservice.
@@ -39,13 +40,21 @@ require_once($CFG->dirroot . '/files/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_testcase {
-    /**
-     * Test the web service.
-     *
-     */
-    public function test_service() {
-        global $DB, $USER;
 
+    /**
+     * @var stdClass
+     */
+    private $course;
+
+    /**
+     * @var stdClass
+     */
+    private $teacher;
+
+    /**
+     * @throws dml_exception
+     */
+    public function setUp() {
         $this->resetAfterTest();
 
         $datagen = $this->getDataGenerator();
@@ -53,32 +62,74 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
         $this->assignUserCapability('moodle/course:managefiles', context_system::instance()->id, $roleid);
+        $this->teacher = $datagen->create_user();
+        $this->course = $datagen->create_course();
 
-        $teacher = $datagen->create_user();
-        $teacherrole = $DB->get_record('role', ['shortname' => 'editingteacher']);
+        $datagen->enrol_user($this->teacher->id, $this->course->id, 'editingteacher');
+    }
 
-        $course = $datagen->create_course();
-
-        $datagen->enrol_user($teacher->id, $course->id, $teacherrole->id);
-
-        $resource = $datagen->create_module('resource', ['course' => $course->id]);
-        $file = $this->get_resource_file($resource);
-
+    /**
+     * Create and return draft file.
+     * @return array
+     * @throws coding_exception
+     * @throws moodle_exception
+     */
+    private function create_draft_file() {
+        global $USER;
         $usercontext = context_user::instance($USER->id);
         $filename = "reddot.png";
         $filecontent = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38"
             . "GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
         $draftfile = core_files_external::upload($usercontext->id, 'user', 'draft', 0, '/', $filename, $filecontent, null, null);
+        $draftfile['filecontent'] = $filecontent;
+        return $draftfile;
+    }
 
-        $return = replace_file::service($file->get_pathnamehash(), $teacher->id, $draftfile['itemid']);
+    /**
+     * Create test file.
+     * @param int $contextid
+     * @param string $component
+     * @param string $filearea
+     * @return stored_file
+     * @throws file_exception
+     * @throws stored_file_creation_exception
+     */
+    private function create_test_file($contextid, $component, $filearea, $itemid = 0) {
+        global $CFG;
+        $filepath = $CFG->libdir.'/tests/fixtures/gd-logo.png';
+        $filerecord = array(
+            'contextid' => $contextid,
+            'component' => $component,
+            'filearea'  => $filearea,
+            'itemid'    => $itemid,
+            'filepath'  => '/',
+            'filename'  => 'gd-logo.png',
+        );
+        $fs = \get_file_storage();
+        $file = $fs->create_file_from_pathname($filerecord, $filepath);
+        return $file;
+    }
+
+    /**
+     * Test the web service.
+     */
+    public function test_service() {
+        $datagen = $this->getDataGenerator();
+
+        $resource = $datagen->create_module('resource', ['course' => $this->course->id]);
+        $file = $this->get_resource_file($resource);
+
+        $draftfile = $this->create_draft_file();
+
+        $return = replace_file::service($file->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
         $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
 
         $this->assertSame($return['success'], true);
         $this->assertNotSame($return['newid'], $file->get_itemid());
 
         $file = $this->get_resource_file($resource);
-        $this->assertSame($file->get_filename(), $filename);
-        $this->assertSame($file->get_content(), base64_decode($filecontent));
+        $this->assertSame($file->get_filename(), $draftfile['filename']);
+        $this->assertSame($file->get_content(), base64_decode($draftfile['filecontent']));
         // This should test that the userid of the file creator gets copied,
         // but the mod resource generator always sets the userid to null,
         // Can still test it copies the null value correctly though.
@@ -86,16 +137,9 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
     }
 
     public function test_service_invalid_user() {
-        $this->resetAfterTest();
-
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
-        $this->assignUserCapability('moodle/course:managefiles', context_system::instance()->id, $roleid);
-
         $otheruser = $this->getDataGenerator()->create_user();
 
-        $course      = $this->getDataGenerator()->create_course();
-        $resource    = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
+        $resource    = $this->getDataGenerator()->create_module('resource', ['course' => $this->course->id]);
         $file        = $this->get_resource_file($resource);
 
         // Can use fake as user check will fail before it is used.
@@ -103,7 +147,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
 
         $this->expectException(\moodle_exception::class);
         $return = replace_file::service($file->get_pathnamehash(), $otheruser->id, $fakeitemid);
-        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+        external_api::clean_returnvalue(replace_file::service_returns(), $return);
 
         // Check file has not been changed.
         $newfile = $this->get_resource_file($resource);
@@ -113,28 +157,293 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
     }
 
     public function test_service_invalid_file() {
-        global $DB;
-
-        $this->resetAfterTest();
-
-        $datagen = $this->getDataGenerator();
-
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
-        $this->assignUserCapability('moodle/course:managefiles', context_system::instance()->id, $roleid);
-
-        $teacher = $datagen->create_user();
-        $teacherrole = $DB->get_record('role', ['shortname' => 'editingteacher']);
-
-        $course      = $datagen->create_course();
-
-        $datagen->enrol_user($teacher->id, $course->id, $teacherrole->id);
-
         // Can use fake as file check will fail before it is used.
         $fakeitemid = '123';
 
         $nonexistantfile = 'BADC0FFEE';
         $this->expectException(\moodle_exception::class);
-        replace_file::service($nonexistantfile, $teacher->id, $fakeitemid);
+        replace_file::service($nonexistantfile, $this->teacher->id, $fakeitemid);
+    }
+
+    /**
+     * Test replacing files within label module intro.
+     */
+    public function test_service_label_html() {
+        global $DB;
+
+        $datagen = $this->getDataGenerator();
+
+        $label = $datagen->create_module('label', ['course' => $this->course->id]);
+        $context = context_module::instance($label->cmid);
+
+        $file = $this->create_test_file($context->id, 'mod_label', 'intro');
+
+        $dobj = (object) [
+            'id' => $label->id
+        ];
+        $dobj->intro = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $DB->update_record('label', $dobj);
+
+        $draftfile = $this->create_draft_file();
+
+        $return = replace_file::service($file->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
+        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+
+        $this->assertSame($return['success'], true);
+        $this->assertNotSame($return['newid'], $file->get_itemid());
+
+        $label = $DB->get_record('label', ['id' => $label->id]);
+        $this->assertNotContains('gd-logo.png', $label->intro);
+        $this->assertContains('reddot.png', $label->intro);
+    }
+
+    /**
+     * Test replacing files within page module intro.
+     */
+    public function test_service_page_html() {
+        global $DB;
+
+        $datagen = $this->getDataGenerator();
+
+        $page = $datagen->create_module('page', ['course' => $this->course->id]);
+        $context = context_module::instance($page->cmid);
+
+        $introfile = $this->create_test_file($context->id, 'mod_page', 'intro');
+        $contentfile = $this->create_test_file($context->id, 'mod_page', 'content');
+
+        $dobj = (object) [
+            'id' => $page->id
+        ];
+        $dobj->intro = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $dobj->content = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $DB->update_record('page', $dobj);
+
+        $this->replace_file($introfile);
+
+        // Make sure only the intro field was updated in the page module instance.
+        $page = $DB->get_record('page', ['id' => $page->id]);
+        $this->assertNotContains('gd-logo.png', $page->intro);
+        $this->assertContains('reddot.png', $page->intro);
+        $this->assertContains('gd-logo.png', $page->content);
+        $this->assertNotContains('reddot.png', $page->content);
+
+        $this->replace_file($contentfile);
+
+        // Make sure that the content field was update in the page module instance.
+        $page = $DB->get_record('page', ['id' => $page->id]);
+        $this->assertNotContains('gd-logo.png', $page->content);
+        $this->assertContains('reddot.png', $page->content);
+    }
+
+    /**
+     * Test replacing files within course summary.
+     */
+    public function test_service_course_html() {
+        global $DB;
+
+        $context = context_course::instance($this->course->id);
+        $file = $this->create_test_file($context->id, 'course', 'summary');
+
+        $dobj = (object) [
+            'id' => $this->course->id
+        ];
+        $dobj->summary = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $DB->update_record('course', $dobj);
+
+        $draftfile = $this->create_draft_file();
+
+        $return = replace_file::service($file->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
+        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+
+        $this->assertSame($return['success'], true);
+        $this->assertNotSame($return['newid'], $file->get_itemid());
+
+        $course = $DB->get_record('course', ['id' => $this->course->id]);
+        $this->assertNotContains('gd-logo.png', $course->summary);
+        $this->assertContains('reddot.png', $course->summary);
+    }
+
+    /**
+     * Test replacing files within course section html.
+     */
+    public function test_service_course_section_html() {
+        global $DB;
+
+        $datagen = $this->getDataGenerator();
+
+        $course = (object) ['numsections' => 2];
+        $course = $datagen->create_course($course, ['createsections' => true]);
+
+        $datagen->enrol_user($this->teacher->id, $course->id, 'editingteacher');
+
+        $context = context_course::instance($course->id);
+        $file = $this->create_test_file($context->id, 'course', 'section');
+
+        $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 1]);
+        $section->summary = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $DB->update_record('course_sections', $section);
+        $draftfile = $this->create_draft_file();
+
+        $return = replace_file::service($file->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
+        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+
+        $this->assertSame($return['success'], true);
+        $this->assertNotSame($return['newid'], $file->get_itemid());
+
+        $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 1]);
+        $this->assertNotContains('gd-logo.png', $section->summary);
+        $this->assertContains('reddot.png', $section->summary);
+    }
+
+    /**
+     * Test replacing files within course section html.
+     */
+    public function test_service_block_html() {
+        global $DB;
+
+        $configdata = (object) [
+            'text' => '',
+            'title' => 'test block',
+            'format' => FORMAT_HTML
+        ];
+
+        $blockinsert = (object) [
+            'blockname' => 'html',
+            'parentcontextid' => context_course::instance($this->course->id)->id,
+            'pagetypepattern' => 'course-view-*',
+            'defaultregion' => 'side-pre',
+            'defaultweight' => 1,
+            'configdata' => base64_encode(serialize($configdata)),
+            'showinsubcontexts' => 1
+        ];
+        $blockid = $DB->insert_record('block_instances', $blockinsert);
+        $block = $DB->get_record('block_instances', ['id' => $blockid]);
+
+        $context = context_block::instance($block->id);
+        $file = $this->create_test_file($context->id, 'block_html', 'content');
+
+        $configdata = (object) [
+            'text' => '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">',
+            'title' => 'test block',
+            'format' => FORMAT_HTML
+        ];
+        $block->configdata = base64_encode(serialize($configdata));
+
+        $DB->update_record('block_instances', $block);
+
+        $draftfile = $this->create_draft_file();
+
+        $return = replace_file::service($file->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
+        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+
+        $this->assertSame($return['success'], true);
+        $this->assertNotSame($return['newid'], $file->get_itemid());
+
+        $block = $DB->get_record('block_instances', ['id' => $block->id]);
+        $blockconfig = unserialize(base64_decode($block->configdata));
+        $blockhtml = $blockconfig->text;
+        $this->assertNotContains('gd-logo.png', $blockhtml);
+        $this->assertContains('reddot.png', $blockhtml);
+    }
+
+    /**
+     * Replace file.
+     * @param stored_file $originalfile
+     * @throws invalid_response_exception
+     * @throws moodle_exception
+     */
+    protected function replace_file(\stored_file $originalfile) {
+        // Replace main forum file.
+        $draftfile = $this->create_draft_file();
+        $return = replace_file::service($originalfile->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
+        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+        $this->assertSame($return['success'], true);
+        $this->assertNotSame($return['newid'], $originalfile->get_itemid());
+    }
+
+    /**
+     * Test replacing files within forum module intro / discussion / posts.
+     */
+    public function test_service_forum_html($forumtype = 'forum') {
+        global $DB;
+
+        $datagen = $this->getDataGenerator();
+
+        $forum = $datagen->create_module($forumtype, ['course' => $this->course->id]);
+        $context = context_module::instance($forum->cmid);
+        $forumfile = $this->create_test_file($context->id, 'mod_'.$forumtype, 'intro');
+        $dobj = (object) [
+            'id' => $forum->id
+        ];
+        $dobj->intro = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $dobj->content = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $DB->update_record($forumtype, $dobj);
+
+        $fdg = $datagen->get_plugin_generator('mod_'.$forumtype);
+
+        // Create discussion / post.
+        $record = new stdClass();
+        $record->course = $this->course->id;
+        $record->userid = $this->teacher->id;
+        $record->forum = $forum->id;
+        // Add file to discussion post.
+        $discussion = $fdg->create_discussion($record);
+        $discussionpost = $DB->get_record($forumtype.'_posts', ['discussion' => $discussion->id]);
+        $discussionfile = $this->create_test_file($context->id, 'mod_'.$forumtype, 'post', $discussionpost->id);
+        $discussionpost->message = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $DB->update_record($forumtype.'_posts', $discussionpost);
+
+        // Create post replying to discussion.
+        $record = new stdClass();
+        $record->discussion = $discussionpost->discussion;
+        $record->parent = $discussionpost->id;
+        $record->userid = $this->teacher->id;
+        $post = $fdg->create_post($record);
+        // Add file to reply.
+        $postfile = $this->create_test_file($context->id, 'mod_'.$forumtype, 'post', $post->id);
+        $post->message = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $DB->update_record($forumtype.'_posts', $post);
+
+        // Replace main forum file.
+        $this->replace_file($forumfile);
+
+        // Ensure that forum main record has had file link replaced in HTML.
+        $forum = $DB->get_record($forumtype, ['id' => $forum->id]);
+        $this->assertNotContains('gd-logo.png', $forum->intro);
+        $this->assertContains('reddot.png', $forum->intro);
+
+        // Ensure that both discussion post and reply post have NOT had file link replaced in HTML.
+        $discussionpost = $DB->get_record($forumtype.'_posts', ['id' => $discussionpost->id, 'parent' => 0]);
+        $post = $DB->get_record($forumtype.'_posts', ['id' => $post->id]);
+        $this->assertContains('gd-logo.png', $discussionpost->message);
+        $this->assertNotContains('reddot.png', $discussionpost->message);
+        $this->assertContains('gd-logo.png', $post->message);
+        $this->assertNotContains('reddot.png', $post->message);
+
+        // Replace discussion file.
+        $this->replace_file($discussionfile);
+
+        // Ensure that discussion post has had file link replaced but reply post has not.
+        $discussionpost = $DB->get_record($forumtype.'_posts', ['id' => $discussionpost->id, 'parent' => 0]);
+        $post = $DB->get_record($forumtype.'_posts', ['id' => $post->id]);
+        $this->assertNotContains('gd-logo.png', $discussionpost->message);
+        $this->assertContains('reddot.png', $discussionpost->message);
+        $this->assertContains('gd-logo.png', $post->message);
+        $this->assertNotContains('reddot.png', $post->message);
+
+        // Replace reply post file.
+        $this->replace_file($postfile);
+
+        // Ensure that reply post has had file links replaced.
+        $post = $DB->get_record($forumtype.'_posts', ['id' => $post->id]);
+        $this->assertNotContains('gd-logo.png', $post->message);
+        $this->assertContains('reddot.png', $post->message);
+    }
+
+    /**
+     * Test replacing files within hsuforum module intro / discussion / posts.
+     */
+    public function test_service_hsuforum_html() {
+        $this->test_service_forum_html('hsuforum');
     }
 }

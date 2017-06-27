@@ -81,6 +81,7 @@ class replace_file extends \external_api {
         if (!$oldfile instanceof \stored_file) {
             throw new \moodle_exception('filenotfound', 'error');
         }
+        $oldfilename = $oldfile->get_filename();
 
         $user = $DB->get_record('user', ['id' => $userid], '*', MUST_EXIST);
 
@@ -130,6 +131,13 @@ class replace_file extends \external_api {
 
         $file = $fs->create_file_from_storedfile($filerecord, $newfile);
         $replaced = true;
+
+        if ($oldfilename != $file->get_filename()) {
+            local_file::replace_html_links($oldfilename, $file);
+
+            // We have to do this so that it will regen the label text with the new file path.
+            rebuild_course_cache($context->get_course_context()->instanceid, true);
+        }
 
         return [
             'success' => $replaced,

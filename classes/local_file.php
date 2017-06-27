@@ -26,6 +26,8 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_ally\modulesupport\html_base;
+
 /**
  * File library.
  *
@@ -70,6 +72,26 @@ class local_file {
         }
 
         return $coursecontext;
+    }
+
+    /**
+     * Resolve course module from file
+     *
+     * @param \stored_file $file
+     * @return \cm_info | false
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public static function resolve_cm_from_file(\stored_file $file) {
+        $context = \context::instance_by_id($file->get_contextid());
+        if ($context->contextlevel !== CONTEXT_MODULE) {
+            return false;
+        }
+        $coursecontext = $context->get_course_context();
+        $modinfo = get_fast_modinfo($coursecontext->instanceid);
+        $cmid = $context->instanceid;
+        $cm = $modinfo->get_cm($cmid);
+        return $cm;
     }
 
     /**
@@ -204,5 +226,193 @@ class local_file {
         }
 
         throw new \coding_exception('Unexpected parameter type passed, not stored_file or stdClass');
+    }
+
+    /**
+     * Replace contents of field with new file
+     * @param string $field
+     * @param string $table
+     * @param string $filter
+     * @param array $fparams filter parameters.
+     * @param string $oldfname
+     * @param string $newfname
+     */
+    public static function update_filenames_in_html($field, $table, $filter, array $fparams, $oldfname, $newfname) {
+        global $DB;
+
+        if (!$DB->replace_all_text_supported()) {
+            return;
+        }
+
+        $search = '@@PLUGINFILE@@/'.$oldfname;
+        $replace = '@@PLUGINFILE@@/'.$newfname;
+
+        $params = [$search, $replace];
+
+        $fieldsql = "\n $field = REPLACE($field, ?, ?)";
+        $fieldwhere = " $field IS NOT NULL";
+
+        $sql = "UPDATE {".$table."}
+                   SET $fieldsql
+                 WHERE $fieldwhere AND $filter";
+
+        $params = array_merge($params, $fparams);
+
+        $DB->execute($sql, $params);
+    }
+
+    /**
+     * @param string $oldfilename
+     * @param \stored_file $file
+     */
+    public static function replace_course_html_link($oldfilename, \stored_file $file) {
+
+        $coursecontext = self::course_context($file);
+
+        if ($file->get_filearea() === 'section') {
+
+            self::update_filenames_in_html(
+                'summary',
+                'course_sections',
+                'course = ?',
+                [$coursecontext->instanceid],
+                $oldfilename,
+                $file->get_filename()
+            );
+
+        } else if ($file->get_filearea() === 'summary') {
+
+            self::update_filenames_in_html(
+                'summary',
+                'course',
+                'id = ?',
+                [$coursecontext->instanceid],
+                $oldfilename,
+                $file->get_filename()
+            );
+        }
+    }
+
+    /**
+     * @param string $oldfilename
+     * @param \stored_file $file
+     */
+    public static function replace_block_html_link($oldfilename, \stored_file $file) {
+        global $DB;
+
+        $search = '@@PLUGINFILE@@/'.$oldfilename;
+        $replace = '@@PLUGINFILE@@/'.$file->get_filename();
+
+        $contextid = $file->get_contextid();
+        $blockcontext = \context::instance_by_id($contextid);
+        $blockinst = $DB->get_record('block_instances', ['id' => $blockcontext->instanceid]);
+        $configdata = unserialize(base64_decode($blockinst->configdata));
+        $configdata->text = str_replace($search, $replace, $configdata->text);
+        $blockinst->configdata = base64_encode(serialize($configdata));
+        $DB->update_record('block_instances', $blockinst);
+    }
+
+    /**
+     * Replace any references to file in module html fields.
+     * @param string $oldfilename
+     * @param \stored_file
+     */
+    public static function replace_html_links($oldfilename, \stored_file $file) {
+        global $DB, $CFG;
+
+        $component = $file->get_component();
+
+        if ($component === 'course') {
+            self::replace_course_html_link($oldfilename, $file);
+            return;
+        }
+
+        if ($component === 'block_html') {
+            self::replace_block_html_link($oldfilename, $file);
+            return;
+        }
+
+        $cm = self::resolve_cm_from_file($file);
+        if (!$cm) {
+            // Not a module, not yet supported.
+            return;
+        }
+
+        $component = $cm->modname;
+
+        $tables = $DB->get_tables();
+        if (!in_array($component, $tables)) {
+            return;
+        }
+
+        // Process the main table for the plugin if the file filearea is intro or content.
+        $stdfields = ['intro', 'content'];
+        if (in_array($file->get_filearea(), $stdfields)) {
+            $instancerow = $DB->get_record($component, ['id' => $cm->instance]);
+
+            $fieldtoupdate = null;
+
+            foreach ($stdfields as $fld) {
+                if (isset($instancerow->$fld) && $file->get_filearea() === $fld) {
+                    $fieldtoupdate = $fld;
+                }
+            }
+            if (!empty($fieldtoupdate)) {
+                // Update.
+                $newfilename = $file->get_filename();
+                self::update_filenames_in_html(
+                    $fieldtoupdate,
+                    $component,
+                    'id = ?',
+                    [$cm->instance],
+                    $oldfilename,
+                    $newfilename
+                );
+            }
+        } else {
+            // Process any other tables related to this module.
+            $moduleclassname = $component . '_html';
+            $moduleclassname = 'tool_ally\\modulesupport\\'.$moduleclassname;
+            if (class_exists($moduleclassname)) {
+                /** @var html_base $instance */
+                $instance = new $moduleclassname($oldfilename, $file);
+                $instance->replace_file_links();
+            }
+        }
+    }
+
+    /**
+     * List copmonents which support html file replacements.
+     * @return string[]
+     */
+    public static function list_html_file_supported_components() {
+        global $CFG;
+        $modulesupportpath = $CFG->dirroot . '/admin/tool/ally/classes/modulesupport';
+        $dir = new \DirectoryIterator($modulesupportpath);
+
+        $components = [
+            'course',
+            'block_html',
+            'mod_assign',
+            'mod_label',
+            'mod_page',
+            'mod_folder'
+        ];
+
+        foreach ($dir as $fileinfo) {
+            if (!$fileinfo->isDot()) {
+
+                $regex = '/(.*)(?:_html.php)$/';
+
+                $matches = [];
+
+                $ismodulesupportfile = preg_match($regex, $fileinfo->getBasename(), $matches);
+
+                if ($ismodulesupportfile) {
+                    $components[] = 'mod_'.$matches[1];
+                }
+            }
+        }
+        return $components;
     }
 }
