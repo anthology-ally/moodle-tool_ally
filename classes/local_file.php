@@ -244,8 +244,8 @@ class local_file {
             return;
         }
 
-        $search = '@@PLUGINFILE@@/'.$oldfname;
-        $replace = '@@PLUGINFILE@@/'.$newfname;
+        $search = '@@PLUGINFILE@@/'.rawurlencode($oldfname);
+        $replace = '@@PLUGINFILE@@/'.rawurlencode($newfname);
 
         $params = [$search, $replace];
 

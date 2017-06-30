@@ -77,7 +77,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
     private function create_draft_file() {
         global $USER;
         $usercontext = context_user::instance($USER->id);
-        $filename = "reddot.png";
+        $filename = "red dot.png";
         $filecontent = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38"
             . "GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
         $draftfile = core_files_external::upload($usercontext->id, 'user', 'draft', 0, '/', $filename, $filecontent, null, null);
@@ -103,7 +103,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
             'filearea'  => $filearea,
             'itemid'    => $itemid,
             'filepath'  => '/',
-            'filename'  => 'gd-logo.png',
+            'filename'  => 'gd logo.png',
         );
         $fs = \get_file_storage();
         $file = $fs->create_file_from_pathname($filerecord, $filepath);
@@ -181,7 +181,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $dobj = (object) [
             'id' => $label->id
         ];
-        $dobj->intro = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $dobj->intro = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
         $DB->update_record('label', $dobj);
 
         $draftfile = $this->create_draft_file();
@@ -193,8 +193,8 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $this->assertNotSame($return['newid'], $file->get_itemid());
 
         $label = $DB->get_record('label', ['id' => $label->id]);
-        $this->assertNotContains('gd-logo.png', $label->intro);
-        $this->assertContains('reddot.png', $label->intro);
+        $this->assertNotContains('gd%20logo.png', $label->intro);
+        $this->assertContains('red%20dot.png', $label->intro);
     }
 
     /**
@@ -214,25 +214,25 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $dobj = (object) [
             'id' => $page->id
         ];
-        $dobj->intro = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
-        $dobj->content = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $dobj->intro = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $dobj->content = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
         $DB->update_record('page', $dobj);
 
         $this->replace_file($introfile);
 
         // Make sure only the intro field was updated in the page module instance.
         $page = $DB->get_record('page', ['id' => $page->id]);
-        $this->assertNotContains('gd-logo.png', $page->intro);
-        $this->assertContains('reddot.png', $page->intro);
-        $this->assertContains('gd-logo.png', $page->content);
-        $this->assertNotContains('reddot.png', $page->content);
+        $this->assertNotContains('gd%20logo.png', $page->intro);
+        $this->assertContains('red%20dot.png', $page->intro);
+        $this->assertContains('gd%20logo.png', $page->content);
+        $this->assertNotContains('red%20dot.png', $page->content);
 
         $this->replace_file($contentfile);
 
         // Make sure that the content field was update in the page module instance.
         $page = $DB->get_record('page', ['id' => $page->id]);
-        $this->assertNotContains('gd-logo.png', $page->content);
-        $this->assertContains('reddot.png', $page->content);
+        $this->assertNotContains('gd%20logo.png', $page->content);
+        $this->assertContains('red%20dot.png', $page->content);
     }
 
     /**
@@ -247,7 +247,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $dobj = (object) [
             'id' => $this->course->id
         ];
-        $dobj->summary = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $dobj->summary = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
         $DB->update_record('course', $dobj);
 
         $draftfile = $this->create_draft_file();
@@ -259,8 +259,8 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $this->assertNotSame($return['newid'], $file->get_itemid());
 
         $course = $DB->get_record('course', ['id' => $this->course->id]);
-        $this->assertNotContains('gd-logo.png', $course->summary);
-        $this->assertContains('reddot.png', $course->summary);
+        $this->assertNotContains('gd%20logo.png', $course->summary);
+        $this->assertContains('red%20dot.png', $course->summary);
     }
 
     /**
@@ -280,7 +280,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $file = $this->create_test_file($context->id, 'course', 'section');
 
         $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 1]);
-        $section->summary = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $section->summary = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
         $DB->update_record('course_sections', $section);
         $draftfile = $this->create_draft_file();
 
@@ -291,8 +291,8 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $this->assertNotSame($return['newid'], $file->get_itemid());
 
         $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 1]);
-        $this->assertNotContains('gd-logo.png', $section->summary);
-        $this->assertContains('reddot.png', $section->summary);
+        $this->assertNotContains('gd%20logo.png', $section->summary);
+        $this->assertContains('red%20dot.png', $section->summary);
     }
 
     /**
@@ -323,7 +323,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $file = $this->create_test_file($context->id, 'block_html', 'content');
 
         $configdata = (object) [
-            'text' => '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">',
+            'text' => '<img src="@@PLUGINFILE@@/gd logo.png" alt="" width="100" height="100">',
             'title' => 'test block',
             'format' => FORMAT_HTML
         ];
@@ -342,8 +342,8 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $block = $DB->get_record('block_instances', ['id' => $block->id]);
         $blockconfig = unserialize(base64_decode($block->configdata));
         $blockhtml = $blockconfig->text;
-        $this->assertNotContains('gd-logo.png', $blockhtml);
-        $this->assertContains('reddot.png', $blockhtml);
+        $this->assertNotContains('gd logo.png', $blockhtml);
+        $this->assertContains('red dot.png', $blockhtml);
     }
 
     /**
@@ -375,8 +375,8 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $dobj = (object) [
             'id' => $forum->id
         ];
-        $dobj->intro = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
-        $dobj->content = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $dobj->intro = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $dobj->content = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
         $DB->update_record($forumtype, $dobj);
 
         $fdg = $datagen->get_plugin_generator('mod_'.$forumtype);
@@ -390,7 +390,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $discussion = $fdg->create_discussion($record);
         $discussionpost = $DB->get_record($forumtype.'_posts', ['discussion' => $discussion->id]);
         $discussionfile = $this->create_test_file($context->id, 'mod_'.$forumtype, 'post', $discussionpost->id);
-        $discussionpost->message = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $discussionpost->message = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
         $DB->update_record($forumtype.'_posts', $discussionpost);
 
         // Create post replying to discussion.
@@ -401,7 +401,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $post = $fdg->create_post($record);
         // Add file to reply.
         $postfile = $this->create_test_file($context->id, 'mod_'.$forumtype, 'post', $post->id);
-        $post->message = '<img src="@@PLUGINFILE@@/gd-logo.png" alt="" width="100" height="100">';
+        $post->message = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
         $DB->update_record($forumtype.'_posts', $post);
 
         // Replace main forum file.
@@ -409,16 +409,16 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
 
         // Ensure that forum main record has had file link replaced in HTML.
         $forum = $DB->get_record($forumtype, ['id' => $forum->id]);
-        $this->assertNotContains('gd-logo.png', $forum->intro);
-        $this->assertContains('reddot.png', $forum->intro);
+        $this->assertNotContains('gd%20logo.png', $forum->intro);
+        $this->assertContains('red%20dot.png', $forum->intro);
 
         // Ensure that both discussion post and reply post have NOT had file link replaced in HTML.
         $discussionpost = $DB->get_record($forumtype.'_posts', ['id' => $discussionpost->id, 'parent' => 0]);
         $post = $DB->get_record($forumtype.'_posts', ['id' => $post->id]);
-        $this->assertContains('gd-logo.png', $discussionpost->message);
-        $this->assertNotContains('reddot.png', $discussionpost->message);
-        $this->assertContains('gd-logo.png', $post->message);
-        $this->assertNotContains('reddot.png', $post->message);
+        $this->assertContains('gd%20logo.png', $discussionpost->message);
+        $this->assertNotContains('red%20dot.png', $discussionpost->message);
+        $this->assertContains('gd%20logo.png', $post->message);
+        $this->assertNotContains('red%20dot.png', $post->message);
 
         // Replace discussion file.
         $this->replace_file($discussionfile);
@@ -426,18 +426,18 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         // Ensure that discussion post has had file link replaced but reply post has not.
         $discussionpost = $DB->get_record($forumtype.'_posts', ['id' => $discussionpost->id, 'parent' => 0]);
         $post = $DB->get_record($forumtype.'_posts', ['id' => $post->id]);
-        $this->assertNotContains('gd-logo.png', $discussionpost->message);
-        $this->assertContains('reddot.png', $discussionpost->message);
-        $this->assertContains('gd-logo.png', $post->message);
-        $this->assertNotContains('reddot.png', $post->message);
+        $this->assertNotContains('gd%20logo.png', $discussionpost->message);
+        $this->assertContains('red%20dot.png', $discussionpost->message);
+        $this->assertContains('gd%20logo.png', $post->message);
+        $this->assertNotContains('red%20dot.png', $post->message);
 
         // Replace reply post file.
         $this->replace_file($postfile);
 
         // Ensure that reply post has had file links replaced.
         $post = $DB->get_record($forumtype.'_posts', ['id' => $post->id]);
-        $this->assertNotContains('gd-logo.png', $post->message);
-        $this->assertContains('reddot.png', $post->message);
+        $this->assertNotContains('gd%20logo.png', $post->message);
+        $this->assertContains('red%20dot.png', $post->message);
     }
 
     /**
