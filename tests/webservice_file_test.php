@@ -126,7 +126,6 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
         $this->assertEquals($expectedfile->get_mimetype(), $file['mimetype']);
         $this->assertEquals($expectedfile->get_contenthash(), $file['contenthash']);
         $this->assertEquals($expectedfile->get_timemodified(), $timemodified);
-        $this->assertRegExp('/.*pluginfile\.php.*mod_forum.*/', $file['url']);
         $this->assertRegExp('/.*webservice\/pluginfile\.php.*mod_forum.*/', $file['downloadurl']);
         $this->assertEquals($CFG->wwwroot.'/mod/forum/discuss.php?d='.$discussion->id.'#p'.$post->id, $file['location']);
     }

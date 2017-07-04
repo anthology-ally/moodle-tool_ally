@@ -21,7 +21,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_ally\modulesupport;
+namespace tool_ally\componentsupport;
 
 defined ('MOODLE_INTERNAL') || die();
 
@@ -36,6 +36,10 @@ use tool_ally\local_file;
 class forum_html extends html_base {
 
     protected $table = 'forum_posts';
+
+    public static function component_type() {
+        return self::TYPE_MOD;
+    }
 
     public function replace_file_links() {
 

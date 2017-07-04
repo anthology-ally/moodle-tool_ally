@@ -96,7 +96,7 @@ class file extends \external_api {
             'mimetype'     => $file->get_mimetype(),
             'contenthash'  => $file->get_contenthash(),
             'timemodified' => local::iso_8601($file->get_timemodified()),
-            'url'          => local_file::url($file)->out(false),
+            'url'          => local_file::webservice_url($file)->out(false),
             'downloadurl'  => local_file::webservice_url($file)->out(false),
             'location'     => $resolver->resolve_url($file)->out(false),
         ];

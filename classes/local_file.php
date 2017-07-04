@@ -26,7 +26,7 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
-use tool_ally\modulesupport\html_base;
+use tool_ally\componentsupport\html_base;
 
 /**
  * File library.
@@ -108,86 +108,16 @@ class local_file {
     }
 
     /**
-     * Plugin file URL from stored file.
-     *
-     * @param \stored_file $file
-     * @return \moodle_url
-     */
-    public static function url(\stored_file $file) {
-        if ($file->get_component() === 'question') {
-            return self::generate_question_preview_url($file);
-        }
-
-        $itemid = self::preprocess_stored_file_itemid($file);
-        return \moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
-            $itemid, $file->get_filepath(), $file->get_filename());
-    }
-
-    /**
      * Webservice plugin file URL from stored file.
      *
      * @param \stored_file $file
      * @return \moodle_url
      */
     public static function webservice_url(\stored_file $file) {
-        if ($file->get_component() === 'question') {
-            return self::generate_question_preview_url($file, true);
-        }
-
-        $itemid = self::preprocess_stored_file_itemid($file);
-        return \moodle_url::make_webservice_pluginfile_url($file->get_contextid(), $file->get_component(),
-            $file->get_filearea(), $itemid, $file->get_filepath(), $file->get_filename());
-    }
-
-    /**
-     * Pre process stored file for getting a plugin or webservice url.
-     * This fixes an issue with some modules that have a root page, so they use an item id = 0 when there should be no id.
-     * @param \stored_file $file
-     * @return mixed null if fixing, item's id otherwise
-     */
-    private static function preprocess_stored_file_itemid(\stored_file $file) {
-        $itemid = $file->get_itemid();
-
-        // Some plugins do not like an itemid of 0 in the web service download path.
-        $compareas = [
-            'block_html~content',
-            'course~legacy',
-            'course~summary'
-        ];
-        if ($file->get_filearea() === 'intro' && $itemid == 0) {
-            $itemid = null;
-        } else if (in_array($file->get_component().'~'.$file->get_filearea(), $compareas) && $itemid == 0) {
-            $itemid = null;
-        }
-        return $itemid;
-    }
-
-    /**
-     * Generates a question preview URL for downloading a question's content file.
-     *
-     * @param \stored_file $file
-     * @param bool $forwebservice Is it for a webservice URL?
-     * @return \moodle_url
-     */
-    private static function generate_question_preview_url(\stored_file $file, $forwebservice = false) {
         global $CFG;
-        $urlbase = $CFG->httpswwwroot;
-        if ($forwebservice) {
-            $urlbase .= '/webservice';
-        }
-        $urlbase .= '/pluginfile.php';
 
-        require_once($CFG->libdir . '/questionlib.php');
-
-        $quba = \question_engine::make_questions_usage_by_activity('core_question_preview', \context_system::instance());
-        $quba->set_preferred_behaviour('deferredfeedback');
-        $question = \question_bank::load_question($file->get_itemid());
-        $slot = $quba->add_question($question);
-        $quba->start_question($slot);
-        \question_engine::save_questions_usage_by_activity($quba);
-
-        return \moodle_url::make_file_url($urlbase, '/'.$file->get_contextid().'/question/'.$file->get_filearea().'/'
-                .$quba->get_id().'/'.$slot.'/'.$file->get_itemid().$file->get_filepath().$file->get_filename());
+        return new \moodle_url($CFG->wwwroot.'/admin/tool/ally/pluginfile.php',
+                ['pathnamehash' => $file->get_pathnamehash()]);
     }
 
     /**
@@ -313,12 +243,28 @@ class local_file {
     }
 
     /**
-     * Replace any references to file in module html fields.
+     * Get type of component support for specific component.
+     *
+     * @param string $component
+     * @return string | bool
+     */
+    private static function get_component_support_type($component) {
+        // Process any other tables related to this plugin.
+        $componentclassname = $component . '_html';
+        $componentclassname = 'tool_ally\\componentsupport\\'.$componentclassname;
+        if (class_exists($componentclassname)) {
+            return $componentclassname::component_type();
+        }
+        return false;
+    }
+
+    /**
+     * Replace any references to file in component html fields.
      * @param string $oldfilename
      * @param \stored_file
      */
     public static function replace_html_links($oldfilename, \stored_file $file) {
-        global $DB, $CFG;
+        global $DB;
 
         $component = $file->get_component();
 
@@ -333,51 +279,49 @@ class local_file {
         }
 
         $cm = self::resolve_cm_from_file($file);
-        if (!$cm) {
-            // Not a module, not yet supported.
-            return;
-        }
+        if ($cm) {
+            $component = $cm->modname;
 
-        $component = $cm->modname;
+            $tables = $DB->get_tables();
+            if (!in_array($component, $tables)) {
+                return;
+            }
 
-        $tables = $DB->get_tables();
-        if (!in_array($component, $tables)) {
-            return;
-        }
+            // Process the main table for the plugin if the file filearea is intro or content.
+            $stdfields = ['intro', 'content'];
+            if (in_array($file->get_filearea(), $stdfields)) {
+                $instancerow = $DB->get_record($component, ['id' => $cm->instance]);
 
-        // Process the main table for the plugin if the file filearea is intro or content.
-        $stdfields = ['intro', 'content'];
-        if (in_array($file->get_filearea(), $stdfields)) {
-            $instancerow = $DB->get_record($component, ['id' => $cm->instance]);
+                $fieldtoupdate = null;
 
-            $fieldtoupdate = null;
-
-            foreach ($stdfields as $fld) {
-                if (isset($instancerow->$fld) && $file->get_filearea() === $fld) {
-                    $fieldtoupdate = $fld;
+                foreach ($stdfields as $fld) {
+                    if (isset($instancerow->$fld) && $file->get_filearea() === $fld) {
+                        $fieldtoupdate = $fld;
+                    }
                 }
+                if (!empty($fieldtoupdate)) {
+                    // Update.
+                    $newfilename = $file->get_filename();
+                    self::update_filenames_in_html(
+                        $fieldtoupdate,
+                        $component,
+                        'id = ?',
+                        [$cm->instance],
+                        $oldfilename,
+                        $newfilename
+                    );
+                }
+                return;
             }
-            if (!empty($fieldtoupdate)) {
-                // Update.
-                $newfilename = $file->get_filename();
-                self::update_filenames_in_html(
-                    $fieldtoupdate,
-                    $component,
-                    'id = ?',
-                    [$cm->instance],
-                    $oldfilename,
-                    $newfilename
-                );
-            }
-        } else {
-            // Process any other tables related to this module.
-            $moduleclassname = $component . '_html';
-            $moduleclassname = 'tool_ally\\modulesupport\\'.$moduleclassname;
-            if (class_exists($moduleclassname)) {
-                /** @var html_base $instance */
-                $instance = new $moduleclassname($oldfilename, $file);
-                $instance->replace_file_links();
-            }
+        }
+
+        // Process any other tables related to this component.
+        $componentclassname = $component . '_html';
+        $componentclassname = 'tool_ally\\componentsupport\\'.$componentclassname;
+        if (class_exists($componentclassname)) {
+            /** @var html_base $instance */
+            $instance = new $componentclassname($oldfilename, $file);
+            $instance->replace_file_links();
         }
     }
 
@@ -387,8 +331,8 @@ class local_file {
      */
     public static function list_html_file_supported_components() {
         global $CFG;
-        $modulesupportpath = $CFG->dirroot . '/admin/tool/ally/classes/modulesupport';
-        $dir = new \DirectoryIterator($modulesupportpath);
+        $componentsupportpath = $CFG->dirroot . '/admin/tool/ally/classes/componentsupport';
+        $dir = new \DirectoryIterator($componentsupportpath);
 
         $components = [
             'course',
@@ -406,10 +350,22 @@ class local_file {
 
                 $matches = [];
 
-                $ismodulesupportfile = preg_match($regex, $fileinfo->getBasename(), $matches);
+                $iscomponentsupportfile = preg_match($regex, $fileinfo->getBasename(), $matches);
 
-                if ($ismodulesupportfile) {
-                    $components[] = 'mod_'.$matches[1];
+                if (empty($matches[1])) {
+                    continue;
+                }
+
+                $component = $matches[1];
+
+                if ($iscomponentsupportfile) {
+                    $type = self::get_component_support_type($component);
+                    if ($type != html_base::TYPE_CORE) {
+                        $fullcomponent = $type . '_' . $component;
+                    } else {
+                        $fullcomponent = $component;
+                    }
+                    $components[] = $fullcomponent;
                 }
             }
         }
