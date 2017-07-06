@@ -28,11 +28,12 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/admin/tool/ally/classes/admin_setting_ally_config.php');
 
 use tool_ally\admin_setting_ally_config;
+use tool_ally\admin_setting_ally_pickroles;
 
 if ($hassiteconfig) {
     $settings = new admin_settingpage('tool_ally', get_string('pluginname', 'tool_ally'));
 
-    $settings->add(new admin_setting_pickroles('tool_ally/roles', new lang_string('contentauthors', 'tool_ally'),
+    $settings->add(new admin_setting_ally_pickroles('tool_ally/roles', new lang_string('contentauthors', 'tool_ally'),
         new lang_string('contentauthorsdesc', 'tool_ally'), ['manager', 'coursecreator', 'editingteacher']));
 
     $settings->add(new admin_setting_configtext('tool_ally/key', new lang_string('key', 'tool_ally'),
