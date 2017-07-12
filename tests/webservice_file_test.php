@@ -65,7 +65,7 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
         $this->assertEquals($expectedfile->get_contenthash(), $file['contenthash']);
         $this->assertEquals($expectedfile->get_timemodified(), $timemodified);
         $this->assertRegExp('/.*pluginfile\.php.*mod_resource.*/', $file['url']);
-        $this->assertRegExp('/.*webservice\/pluginfile\.php.*mod_resource.*/', $file['downloadurl']);
+        $this->assertRegExp('/.*admin\/tool\/ally\/wspluginfile\.php\?pathnamehash=/', $file['downloadurl']);
         $this->assertEquals($CFG->wwwroot.'/mod/resource/view.php?id='.$resource->cmid, $file['location']);
     }
 
@@ -126,7 +126,8 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
         $this->assertEquals($expectedfile->get_mimetype(), $file['mimetype']);
         $this->assertEquals($expectedfile->get_contenthash(), $file['contenthash']);
         $this->assertEquals($expectedfile->get_timemodified(), $timemodified);
-        $this->assertRegExp('/.*webservice\/pluginfile\.php.*mod_forum.*/', $file['downloadurl']);
+        $this->assertRegExp('/.*pluginfile\.php.*mod_forum.*/', $file['url']);
+        $this->assertRegExp('/.*admin\/tool\/ally\/wspluginfile\.php\?pathnamehash=/', $file['downloadurl']);
         $this->assertEquals($CFG->wwwroot.'/mod/forum/discuss.php?d='.$discussion->id.'#p'.$post->id, $file['location']);
     }
 
@@ -177,7 +178,7 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
         $this->assertEquals($expectedfile->get_contenthash(), $file['contenthash']);
         $this->assertEquals($expectedfile->get_timemodified(), $timemodified);
         $this->assertRegExp('/.*pluginfile\.php.*mod_forum.*/', $file['url']);
-        $this->assertRegExp('/.*webservice\/pluginfile\.php.*mod_forum.*/', $file['downloadurl']);
+        $this->assertRegExp('/.*admin\/tool\/ally\/wspluginfile\.php\?pathnamehash=/', $file['downloadurl']);
         $this->assertEquals($CFG->wwwroot.'/mod/forum/view.php?id='.$forum->cmid, $file['location']);
     }
 }

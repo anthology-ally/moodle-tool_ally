@@ -108,6 +108,45 @@ class local_file {
     }
 
     /**
+     * Plugin file URL from stored file.
+     *
+     * @param \stored_file $file
+     * @return \moodle_url
+     */
+    public static function url(\stored_file $file) {
+        if ($file->get_component() === 'question') {
+            return new \moodle_url('tool/ally/pluginfile.php', ['pathnamehash' => $file->get_pathnamehash()]);
+        }
+
+        $itemid = self::preprocess_stored_file_itemid($file);
+        return \moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
+            $itemid, $file->get_filepath(), $file->get_filename());
+    }
+
+    /**
+     * Pre process stored file for getting a plugin or webservice url.
+     * This fixes an issue with some modules that have a root page, so they use an item id = 0 when there should be no id.
+     * @param \stored_file $file
+     * @return mixed null if fixing, item's id otherwise
+     */
+    private static function preprocess_stored_file_itemid(\stored_file $file) {
+        $itemid = $file->get_itemid();
+
+        // Some plugins do not like an itemid of 0 in the web service download path.
+        $compareas = [
+            'block_html~content',
+            'course~legacy',
+            'course~summary'
+        ];
+        if ($file->get_filearea() === 'intro' && $itemid == 0) {
+            $itemid = null;
+        } else if (in_array($file->get_component().'~'.$file->get_filearea(), $compareas) && $itemid == 0) {
+            $itemid = null;
+        }
+        return $itemid;
+    }
+
+    /**
      * Webservice plugin file URL from stored file.
      *
      * @param \stored_file $file
@@ -116,7 +155,7 @@ class local_file {
     public static function webservice_url(\stored_file $file) {
         global $CFG;
 
-        return new \moodle_url($CFG->wwwroot.'/admin/tool/ally/pluginfile.php',
+        return new \moodle_url($CFG->wwwroot.'/admin/tool/ally/wspluginfile.php',
                 ['pathnamehash' => $file->get_pathnamehash()]);
     }
 

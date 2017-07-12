@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Handles simplified download links for files in questions.
+ * Handles web service download links.
  * @author    Guy Thomas <gthomas@moodlerooms.com>
  * @copyright Copyright (c) 2017 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -23,8 +23,26 @@
 
 use tool_ally\local_file;
 
+// Define as an AJAX_SCRIPT so exceptions are converted into JSON.
+define('AJAX_SCRIPT', true);
+
+// Web service end point does not use cookies.
+define('NO_MOODLE_COOKIES', true);
+
 require(__DIR__ . '/../../../config.php');
 require_once($CFG->libdir . '/filelib.php');
+require_once($CFG->dirroot . '/webservice/lib.php');
+
+$token = required_param('token', PARAM_ALPHANUM);
+
+$webservicelib = new webservice();
+$authenticationinfo = $webservicelib->authenticate_user($token);
+
+// Ensure that the service allows file downloads.
+$enabledfiledownload = (int) ($authenticationinfo['service']->downloadfiles);
+if (empty($enabledfiledownload)) {
+    throw new webservice_access_exception('Web service file downloading must be enabled in external service settings');
+}
 
 $pathnamehash = required_param('pathnamehash', PARAM_ALPHANUM);
 
