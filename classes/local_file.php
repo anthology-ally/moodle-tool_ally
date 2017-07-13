@@ -114,8 +114,10 @@ class local_file {
      * @return \moodle_url
      */
     public static function url(\stored_file $file) {
+        global $CFG;
+
         if ($file->get_component() === 'question') {
-            return new \moodle_url('tool/ally/pluginfile.php', ['pathnamehash' => $file->get_pathnamehash()]);
+            return new \moodle_url($CFG->wwwroot.'/admin/tool/ally/pluginfile.php', ['pathnamehash' => $file->get_pathnamehash()]);
         }
 
         $itemid = self::preprocess_stored_file_itemid($file);

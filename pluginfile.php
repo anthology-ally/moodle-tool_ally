@@ -33,9 +33,14 @@ $file = $fs->get_file_by_hash($pathnamehash);
 if (!$file) {
     throw new moodle_exception('filenotfound', 'error');
 }
+if ($file->get_component() !== 'question') {
+    throw new moodle_exception('error:pluginfilequestiononly', 'tool_ally');
+}
 $coursecontext = local_file::course_context($file);
 $cm = local_file::resolve_cm_from_file($file);
 $cm = $cm ?: false;
 
 require_login($coursecontext->instanceid, true, $cm);
+require_capability('moodle/question:editall', $coursecontext);
+
 send_stored_file($file, 0, 0, true);

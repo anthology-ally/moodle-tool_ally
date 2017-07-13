@@ -33,6 +33,7 @@ $string['contentauthorsdesc'] = 'Administrators and users assigned to these sele
 $string['curlerror'] = 'cURL error: {$a}';
 $string['curlinvalidhttpcode'] = 'Invalid HTTP status code: {$a}';
 $string['curlnohttpcode'] = 'Unable to verify HTTP status code';
+$string['error:pluginfilequestiononly'] = 'Only question components are supported for this url';
 $string['filecoursenotfound'] = 'The passed in file does not belong to any course';
 $string['fileupdatestask'] = 'Push file updates to Ally';
 $string['key'] = 'Key';
