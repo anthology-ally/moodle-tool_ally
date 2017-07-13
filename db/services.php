@@ -75,7 +75,14 @@ $functions = [
         'description'  => 'Mark a file resource as complete when viewed',
         'type'         => 'write',
         'capabilities' => 'moodle/course:view,  moodle/course:viewhiddenactivities, moodle/course:viewhiddencourses,
-                mod/resource:view',
+                mod/resource:view'
+    ],
+    'tool_ally_version_info' => [
+        'classname'    => 'tool_ally\\webservice\\version_info',
+        'methodname'   => 'service',
+        'description'  => 'Return key version info for ally tool, filter and moodle',
+        'type'         => 'read',
+        'capabilities' => 'moodle/site:configview'
     ]
 ];
 
@@ -90,6 +97,8 @@ $services = [
             'tool_ally_delete_file',
             'tool_ally_get_file_updates',
             'tool_ally_replace_file',
+            'tool_ally_request_view_completion',
+            'tool_ally_version_info'
         ],
         'enabled'         => 0,
         'restrictedusers' => 0,

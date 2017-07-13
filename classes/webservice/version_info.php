@@ -1,0 +1,94 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Get version information.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace tool_ally\webservice;
+
+use tool_ally\file_url_resolver;
+use tool_ally\local;
+use tool_ally\local_file;
+use tool_ally\version_information;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once(__DIR__.'/../../../../../lib/externallib.php');
+
+/**
+ * Get version information.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class version_info extends \external_api {
+    /**
+     * @return \external_function_parameters
+     */
+    public static function service_parameters() {
+        return new \external_function_parameters([]);
+    }
+
+    /**
+     * @return \external_single_structure
+     */
+    public static function service_returns() {
+        return new \external_single_structure([
+            'tool_ally' => new \external_single_structure([
+                'version'  => new \external_value(PARAM_INT, 'Ally admin tool version'),
+                'requires' => new \external_value(PARAM_INT, 'Ally admin tool requires Moodle version'),
+                'release'  => new \external_value(PARAM_TEXT, 'Ally admin tool release'),
+            ]),
+            'filter_ally'  => new \external_single_structure([
+                'version'  => new \external_value(PARAM_INT, 'Ally filter version'),
+                'requires' => new \external_value(PARAM_INT, 'Ally filter requires Moodle version'),
+                'release'  => new \external_value(PARAM_TEXT, 'Ally filter release'),
+                'active'   => new \external_value(PARAM_BOOL, 'Ally filter active at system level')
+            ]),
+            'report_allylti' => new \external_single_structure([
+                'version'    => new \external_value(PARAM_INT, 'Ally LTI report version'),
+                'requires'   => new \external_value(PARAM_INT, 'Ally LTI report requires Moodle version'),
+                'release'    => new \external_value(PARAM_TEXT, 'Ally LTI report release'),
+            ]),
+            'moodle' => new \external_single_structure([
+                'version' => new \external_value(PARAM_INT, 'Moodle version'),
+                'release' => new \external_value(PARAM_TEXT, 'Moodle release'),
+                'branch'  => new \external_value(PARAM_FLOAT, 'Moodle branch')
+            ])
+        ]);
+    }
+
+    /**
+     * @return array
+     */
+    public static function service() {
+
+        $versioninfo = new version_information();
+
+        return [
+            'tool_ally'       => $versioninfo->toolally,
+            'filter_ally'     => $versioninfo->filterally,
+            'report_allylti'  => $versioninfo->reportally,
+            'moodle'          => $versioninfo->core
+        ];
+    }
+}

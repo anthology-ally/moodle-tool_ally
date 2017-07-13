@@ -115,6 +115,7 @@ class auto_config {
             "moodle/course:viewhiddenactivities",
             "moodle/course:viewparticipants",
             "moodle/question:useall",
+            "moodle/site:configview",
             "moodle/site:viewparticipants",
             "moodle/site:accessallgroups",
             "moodle/user:update",
