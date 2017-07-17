@@ -15,37 +15,32 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Html file replacement support for core forum module
+ * Handles simplified download links for files in questions.
  * @author    Guy Thomas <gthomas@moodlerooms.com>
  * @copyright Copyright (c) 2017 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace tool_ally\modulesupport;
-
-defined ('MOODLE_INTERNAL') || die();
 
 use tool_ally\local_file;
 
-/**
- * Html file replacement support for core forum module
- * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2017 Blackboard Inc.
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class forum_html extends html_base {
+require(__DIR__ . '/../../../config.php');
+require_once($CFG->libdir . '/filelib.php');
 
-    protected $table = 'forum_posts';
+$pathnamehash = required_param('pathnamehash', PARAM_ALPHANUM);
 
-    public function replace_file_links() {
-
-        $file = $this->file;
-
-        $area = $file->get_filearea();
-        $itemid = $file->get_itemid();
-        if ($area === 'post') {
-            local_file::update_filenames_in_html('message', $this->table, ' id = ? ',
-                    ['id' => $itemid], $this->oldfilename, $file->get_filename());
-        }
-    }
+$fs = get_file_storage();
+$file = $fs->get_file_by_hash($pathnamehash);
+if (!$file) {
+    throw new moodle_exception('filenotfound', 'error');
 }
+if ($file->get_component() !== 'question') {
+    throw new moodle_exception('error:pluginfilequestiononly', 'tool_ally');
+}
+$coursecontext = local_file::course_context($file);
+$cm = local_file::resolve_cm_from_file($file);
+$cm = $cm ?: false;
+
+require_login($coursecontext->instanceid, true, $cm);
+require_capability('moodle/question:editall', $coursecontext);
+
+send_stored_file($file, 0, 0, true);

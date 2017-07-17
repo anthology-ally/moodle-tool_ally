@@ -21,7 +21,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_ally\modulesupport;
+namespace tool_ally\componentsupport;
 
 defined ('MOODLE_INTERNAL') || die();
 
@@ -33,6 +33,10 @@ defined ('MOODLE_INTERNAL') || die();
  */
 
 abstract class html_base {
+
+    const TYPE_CORE = 'core';
+
+    const TYPE_MOD = 'mod';
 
     /**
      * @var string
@@ -54,7 +58,12 @@ abstract class html_base {
         if ($namespacedel !== false ) {
             $class = substr($class, $namespacedel + 1);
         }
-        $modcheck = 'mod_'.substr($class, 0, strrpos($class, '_'));
+        if ($this->component_type() === self::TYPE_MOD) {
+            $modcheck = 'mod_';
+        } else {
+            $modcheck = '';
+        }
+        $modcheck .= substr($class, 0, strrpos($class, '_'));
         if ($modcheck !== $file->get_component()) {
             throw new \coding_exception('Using incorrect module support class ('.$class.') for file with component '.
                     $file->get_component());
@@ -65,6 +74,13 @@ abstract class html_base {
      * Replace file links.
      */
     abstract public function replace_file_links();
+
+    /**
+     * Return component type for this component - a class constant beginning with TYPE_
+     *
+     * @return int
+     */
+    abstract public static function component_type();
 
     /**
      * Method for replacing file links within html fields.

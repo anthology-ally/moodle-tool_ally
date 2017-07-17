@@ -349,13 +349,16 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
     /**
      * Replace file.
      * @param stored_file $originalfile
+     * @param stdClass | bool $user
      * @throws invalid_response_exception
      * @throws moodle_exception
      */
-    protected function replace_file(\stored_file $originalfile) {
-        // Replace main forum file.
+    protected function replace_file(\stored_file $originalfile, $user = null) {
+        if (empty($user)) {
+            $user = $this->teacher;
+        }
         $draftfile = $this->create_draft_file();
-        $return = replace_file::service($originalfile->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
+        $return = replace_file::service($originalfile->get_pathnamehash(), $user->id, $draftfile['itemid']);
         $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
         $this->assertSame($return['success'], true);
         $this->assertNotSame($return['newid'], $originalfile->get_itemid());
@@ -445,5 +448,34 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
      */
     public function test_service_hsuforum_html() {
         $this->test_service_forum_html('hsuforum');
+    }
+
+    /**
+     * Test replacing files within questions.
+     */
+    public function test_service_question_html() {
+        global $DB;
+
+        $datagen = $this->getDataGenerator();
+        $qgen = $datagen->get_plugin_generator('core_question');
+
+        $cat = $qgen->create_question_category();
+        $question = $qgen->create_question('shortanswer', null, array('category' => $cat->id));
+        $questionrow = $DB->get_record('question', ['id' => $question->id]);
+
+        $quiz = $this->getDataGenerator()->create_module('quiz', array('course' => $this->course->id));
+        $context = context_course::instance($this->course->id);
+        quiz_add_quiz_question($question->id, $quiz);
+
+        $qfile = $this->create_test_file($context->id, 'question', 'questiontext', $question->id);
+        $questionrow->questiontext = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $DB->update_record('question', $questionrow);
+
+        // Replace file.
+        $this->replace_file($qfile);
+
+        $questionrow = $DB->get_record('question', ['id' => $question->id]);
+        $this->assertNotContains('gd%20logo.png', $questionrow->questiontext);
+        $this->assertContains('red%20dot.png', $questionrow->questiontext);
     }
 }

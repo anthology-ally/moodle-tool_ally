@@ -135,7 +135,7 @@ class replace_file extends \external_api {
         if ($oldfilename != $file->get_filename()) {
             local_file::replace_html_links($oldfilename, $file);
 
-            // We have to do this so that it will regen the label text with the new file path.
+            // We have to do this so that it will regen module text with the new file path.
             rebuild_course_cache($context->get_course_context()->instanceid, true);
         }
 
