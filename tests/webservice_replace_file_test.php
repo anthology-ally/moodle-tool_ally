@@ -478,4 +478,48 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $this->assertNotContains('gd%20logo.png', $questionrow->questiontext);
         $this->assertContains('red%20dot.png', $questionrow->questiontext);
     }
+
+    /**
+     * Test replacing files within lesson module intro / pages.
+     */
+    public function test_service_lesson_html() {
+        global $DB;
+
+        // Lesson intro file replacement testing.
+        $lesson = $this->getDataGenerator()->create_module('lesson', array('course' => $this->course->id));
+        $dobj = (object) [
+            'id' => $lesson->id
+        ];
+        $dobj->intro = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $context = context_module::instance($lesson->cmid);
+        $DB->update_record('lesson', $dobj);
+
+        $lfile = $this->create_test_file($context->id, 'mod_lesson', 'intro');
+
+        // Replace file.
+        $this->replace_file($lfile);
+
+        $lessonrow = $DB->get_record('lesson', ['id' => $lesson->id]);
+        $this->assertNotContains('gd%20logo.png', $lessonrow->intro);
+        $this->assertContains('red%20dot.png', $lessonrow->intro);
+
+        // Lesson page content file replacement testing.
+        $lessongenerator = $this->getDataGenerator()->get_plugin_generator('mod_lesson');
+
+        $page = $lessongenerator->create_content($lesson, array('title' => 'Simple page'));
+        $dobj = (object) [
+            'id' => $page->id
+        ];
+        $dobj->contents = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $DB->update_record('lesson_pages', $dobj);
+
+        $pfile = $this->create_test_file($context->id, 'mod_lesson', 'page_contents', $page->id);
+
+        // Replace file.
+        $this->replace_file($pfile);
+
+        $pagerow = $DB->get_record('lesson_pages', ['id' => $page->id]);
+        $this->assertNotContains('gd%20logo.png', $pagerow->contents);
+        $this->assertContains('red%20dot.png', $pagerow->contents);
+    }
 }
