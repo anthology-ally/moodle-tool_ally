@@ -74,10 +74,9 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
      * @throws coding_exception
      * @throws moodle_exception
      */
-    private function create_draft_file() {
+    private function create_draft_file($filename = 'red dot.png') {
         global $USER;
         $usercontext = context_user::instance($USER->id);
-        $filename = "red dot.png";
         $filecontent = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38"
             . "GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
         $draftfile = core_files_external::upload($usercontext->id, 'user', 'draft', 0, '/', $filename, $filecontent, null, null);
@@ -94,7 +93,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
      * @throws file_exception
      * @throws stored_file_creation_exception
      */
-    private function create_test_file($contextid, $component, $filearea, $itemid = 0) {
+    private function create_test_file($contextid, $component, $filearea, $itemid = 0, $filename = 'gd logo.png') {
         global $CFG;
         $filepath = $CFG->libdir.'/tests/fixtures/gd-logo.png';
         $filerecord = array(
@@ -103,7 +102,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
             'filearea'  => $filearea,
             'itemid'    => $itemid,
             'filepath'  => '/',
-            'filename'  => 'gd logo.png',
+            'filename'  => $filename,
         );
         $fs = \get_file_storage();
         $file = $fs->create_file_from_pathname($filerecord, $filepath);
@@ -487,7 +486,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
 
         // Lesson intro file replacement testing.
         $lesson = $this->getDataGenerator()->create_module('lesson', array('course' => $this->course->id));
-        $dobj = (object) [
+        $dobj = (object)[
             'id' => $lesson->id
         ];
         $dobj->intro = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
@@ -507,7 +506,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $lessongenerator = $this->getDataGenerator()->get_plugin_generator('mod_lesson');
 
         $page = $lessongenerator->create_content($lesson, array('title' => 'Simple page'));
-        $dobj = (object) [
+        $dobj = (object)[
             'id' => $page->id
         ];
         $dobj->contents = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
@@ -521,5 +520,44 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $pagerow = $DB->get_record('lesson_pages', ['id' => $page->id]);
         $this->assertNotContains('gd%20logo.png', $pagerow->contents);
         $this->assertContains('red%20dot.png', $pagerow->contents);
+    }
+
+    /**
+     * Test replacing file where filename already exists.
+     */
+    public function test_service_replace_existing_filename() {
+        global $DB;
+
+        $datagen = $this->getDataGenerator();
+
+        $label = $datagen->create_module('label', ['course' => $this->course->id]);
+        $context = context_module::instance($label->cmid);
+
+        $filetoreplacename = 'file to replace.png';
+        $filetoreplace = $this->create_test_file($context->id, 'mod_label', 'intro', 0, $filetoreplacename);
+
+        $filename = 'name to increment.png';
+        $this->create_test_file($context->id, 'mod_label', 'intro', 0, $filename);
+
+        $dobj = (object) [
+            'id' => $label->id
+        ];
+        $dobj->intro = '<img src="@@PLUGINFILE@@/'.rawurlencode($filename).'" alt="" width="100" height="100">'.
+                '<img src="@@PLUGINFILE@@/'.rawurlencode($filetoreplacename).'" alt="" width="100" height="100">';
+        $DB->update_record('label', $dobj);
+
+        // Draft file will have the same filename.
+        $draftfile = $this->create_draft_file($filename);
+
+        $return = replace_file::service($filetoreplace->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
+        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+
+        $this->assertSame($return['success'], true);
+        $this->assertNotSame($return['newid'], $filetoreplace->get_itemid());
+
+        $label = $DB->get_record('label', ['id' => $label->id]);
+        $this->assertContains(rawurlencode($filename), $label->intro);
+        $this->assertContains(rawurlencode('name to increment (1).png'), $label->intro);
+        $this->assertNotContains(rawurlencode($filetoreplacename), $label->intro);
     }
 }
