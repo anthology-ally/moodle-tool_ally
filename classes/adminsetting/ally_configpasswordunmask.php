@@ -22,7 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_ally;
+namespace tool_ally\adminsetting;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -31,15 +31,22 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class admin_setting_ally_config extends \admin_setting_heading {
+class ally_configpasswordunmask extends \admin_setting_configpasswordunmask {
 
-    /**
-     * Returns an HTML string
-     * @return string Returns an HTML string
-     */
-    public function output_html($data, $query='') {
-        global $OUTPUT, $CFG;
-        $context = (object) ['href' => $CFG->wwwroot.'/admin/tool/ally/autoconfigws.php'];
-        return $OUTPUT->render_from_template('tool_ally/setting_ally_config', $context);
+    public function write_setting($data) {
+        global $CFG;
+        if (!empty($CFG->preventexecpath)) {
+            if ($this->get_setting() === null) {
+                // Use default during installation.
+                $data = $this->get_defaultsetting();
+                if ($data === null) {
+                    $data = '';
+                }
+            } else {
+                return '';
+            }
+        }
+        $data = trim($data);
+        return parent::write_setting($data);
     }
 }

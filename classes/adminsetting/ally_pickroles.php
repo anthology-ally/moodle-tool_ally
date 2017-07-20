@@ -22,7 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_ally;
+namespace tool_ally\adminsetting;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright Copyright (c) 2017 Moodlerooms Inc. (http://www.moodlerooms.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class admin_setting_ally_pickroles extends \admin_setting_pickroles {
+class ally_pickroles extends \admin_setting_pickroles {
 
     /**
      * @inheritdoc

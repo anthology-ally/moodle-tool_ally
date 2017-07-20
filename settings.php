@@ -24,22 +24,27 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// We have to include this so that it's available before an upgrade completes and registers the class for autoloading.
-require_once($CFG->dirroot.'/admin/tool/ally/classes/admin_setting_ally_config.php');
+// We have to include this so that it's available before an upgrade completes and registers the classes for autoloading.
+require_once($CFG->dirroot.'/admin/tool/ally/classes/adminsetting/ally_config.php');
+require_once($CFG->dirroot.'/admin/tool/ally/classes/adminsetting/ally_configpasswordunmask.php');
+require_once($CFG->dirroot.'/admin/tool/ally/classes/adminsetting/ally_pickroles.php');
+require_once($CFG->dirroot.'/admin/tool/ally/classes/adminsetting/ally_trim.php');
 
-use tool_ally\admin_setting_ally_config;
-use tool_ally\admin_setting_ally_pickroles;
+use tool_ally\adminsetting\ally_config;
+use tool_ally\adminsetting\ally_configpasswordunmask;
+use tool_ally\adminsetting\ally_pickroles;
+use tool_ally\adminsetting\ally_trim;
 
 if ($hassiteconfig) {
     $settings = new admin_settingpage('tool_ally', get_string('pluginname', 'tool_ally'));
 
-    $settings->add(new admin_setting_ally_pickroles('tool_ally/roles', new lang_string('contentauthors', 'tool_ally'),
+    $settings->add(new ally_pickroles('tool_ally/roles', new lang_string('contentauthors', 'tool_ally'),
         new lang_string('contentauthorsdesc', 'tool_ally'), ['manager', 'coursecreator', 'editingteacher']));
 
-    $settings->add(new admin_setting_configtext('tool_ally/key', new lang_string('key', 'tool_ally'),
+    $settings->add(new ally_trim('tool_ally/key', new lang_string('key', 'tool_ally'),
         new lang_string('keydesc', 'tool_ally'), '', PARAM_ALPHANUMEXT));
 
-    $settings->add(new admin_setting_configpasswordunmask('tool_ally/secret',
+    $settings->add(new ally_configpasswordunmask('tool_ally/secret',
         new lang_string('secret', 'tool_ally'), new lang_string('secretdesc', 'tool_ally'), ''));
 
     $settings->add(new admin_setting_configtext('tool_ally/adminurl', new lang_string('adminurl', 'tool_ally'),
@@ -51,7 +56,7 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtext('tool_ally/clientid', new lang_string('clientid', 'tool_ally'),
         new lang_string('clientiddesc', 'tool_ally'), '', PARAM_INT, 5));
 
-    $settings->add(new admin_setting_ally_config('tool_ally/autconf', new lang_string('autoconfigure', 'tool_ally'),
+    $settings->add(new ally_config('tool_ally/autconf', new lang_string('autoconfigure', 'tool_ally'),
         new lang_string('autoconfiguredesc', 'tool_ally'), ''));
 
     $ADMIN->add('tools', $settings);
