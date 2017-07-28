@@ -523,6 +523,51 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
     }
 
     /**
+     * Test replacing files within glossary module intro / pages.
+     */
+    public function test_service_glossary_html() {
+        global $DB;
+
+        // Glossary intro file replacement testing.
+        $this->setAdminUser();
+        $glossary = $this->getDataGenerator()->create_module('glossary', array('course' => $this->course->id));
+        $dobj = (object)[
+            'id' => $glossary->id
+        ];
+        $dobj->intro = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $context = context_module::instance($glossary->cmid);
+        $DB->update_record('glossary', $dobj);
+
+        $gfile = $this->create_test_file($context->id, 'mod_glossary', 'intro');
+
+        // Replace file.
+        $this->replace_file($gfile);
+
+        $glossaryrow = $DB->get_record('glossary', ['id' => $glossary->id]);
+        $this->assertNotContains('gd%20logo.png', $glossaryrow->intro);
+        $this->assertContains('red%20dot.png', $glossaryrow->intro);
+
+        // Glossary entry file replacement testing.
+        $glossarygenerator = $this->getDataGenerator()->get_plugin_generator('mod_glossary');
+
+        $entry = $glossarygenerator->create_content($glossary);
+        $dobj = (object)[
+            'id' => $entry->id,
+            'definition' => '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">'
+        ];
+        $DB->update_record('glossary_entries', $dobj);
+
+        $efile = $this->create_test_file($context->id, 'mod_glossary', 'entry', $entry->id);
+
+        // Replace file.
+        $this->replace_file($efile);
+
+        $entryrow = $DB->get_record('glossary_entries', ['id' => $entry->id]);
+        $this->assertNotContains('gd%20logo.png', $entryrow->definition);
+        $this->assertContains('red%20dot.png', $entryrow->definition);
+    }
+
+    /**
      * Test replacing file where filename already exists.
      */
     public function test_service_replace_existing_filename() {
