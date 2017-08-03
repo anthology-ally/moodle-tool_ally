@@ -284,13 +284,27 @@ class local_file {
     }
 
     /**
+     * Get plugin file url properties for a specific component.
+     * @param string $component
+     * @param string $pluginfileurl
+     * @return bool | array
+     */
+    public static function get_component_support_fileurlproperties($component, $pluginfileurl) {
+        $componentclassname = $component . '_html';
+        $componentclassname = 'tool_ally\\componentsupport\\'.$componentclassname;
+        if (class_exists($componentclassname)) {
+            return $componentclassname::fileurlproperties($pluginfileurl);
+        }
+        return false;
+    }
+
+    /**
      * Get type of component support for specific component.
      *
      * @param string $component
      * @return string | bool
      */
     private static function get_component_support_type($component) {
-        // Process any other tables related to this plugin.
         $componentclassname = $component . '_html';
         $componentclassname = 'tool_ally\\componentsupport\\'.$componentclassname;
         if (class_exists($componentclassname)) {
@@ -410,6 +424,7 @@ class local_file {
                 }
             }
         }
+
         return $components;
     }
 }

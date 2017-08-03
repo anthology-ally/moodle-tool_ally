@@ -43,6 +43,36 @@ class question_html extends html_base {
         return self::TYPE_CORE;
     }
 
+    public static function fileurlproperties($pluginfileurl) {
+        $regex = '/(?:.*)pluginfile\.php(?:\?file=|)(?:\/|%2F)(\d*?)(?:\/|%2F)(.*)$/';
+        $matches = [];
+        $matched = preg_match($regex, $pluginfileurl, $matches);
+        if (!$matched) {
+            return;
+        }
+        $contextid = $matches[1];
+        if (strpos($matches[2], '%2F') !== false) {
+            $del = '%2F';
+        } else {
+            $del = '/';
+        }
+        $arr = explode($del, $matches[2]);
+        $component = urldecode(array_shift($arr));
+        $filearea = array_shift($arr);
+        array_shift($arr); // Remove previewcontextid.
+        array_shift($arr); // Remove previewcomponent.
+        $itemid = array_shift($arr);
+        $filename = array_shift($arr);
+
+        return [
+            $contextid,
+            $component,
+            $filearea,
+            $itemid,
+            $filename
+        ];
+    }
+
     /**
      * Get question record.
      * @param $id
@@ -89,6 +119,17 @@ class question_html extends html_base {
                     break;
                 case 'ddmarker' :
                     $table = 'qtype_ddmarker';
+                    break;
+                case 'ddmatch' :
+                    if ($area === 'correctfeedback'
+                        || $area === 'incorrectfeedback'
+                        || $area === 'partiallycorrectfeedback') {
+                        $table = 'qtype_ddmatch_options';
+                        $idfield = 'questionid';
+                    } else {
+                        debugging('Area of '.$area.' is not yet supported for qtype_ddmatch_html');
+                        return;
+                    }
                     break;
                 case 'ddwtos' :
                     $table = 'question_ddwtos';

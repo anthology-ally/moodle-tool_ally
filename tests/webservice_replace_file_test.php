@@ -109,6 +109,10 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         return $file;
     }
 
+    private function std_img_html() {
+        return '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+    }
+
     /**
      * Test the web service.
      */
@@ -180,7 +184,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $dobj = (object) [
             'id' => $label->id
         ];
-        $dobj->intro = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $dobj->intro = '<p>Test label text '.$this->std_img_html().'</p>';
         $DB->update_record('label', $dobj);
 
         $draftfile = $this->create_draft_file();
@@ -213,8 +217,8 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $dobj = (object) [
             'id' => $page->id
         ];
-        $dobj->intro = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
-        $dobj->content = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $dobj->intro = '<p>Test intro text '.$this->std_img_html().'</p>';
+        $dobj->content = '<div>Test content text</div>'.$this->std_img_html();
         $DB->update_record('page', $dobj);
 
         $this->replace_file($introfile);
@@ -246,7 +250,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $dobj = (object) [
             'id' => $this->course->id
         ];
-        $dobj->summary = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $dobj->summary = '<p>Course summary text '.$this->std_img_html().'</p>';
         $DB->update_record('course', $dobj);
 
         $draftfile = $this->create_draft_file();
@@ -279,7 +283,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $file = $this->create_test_file($context->id, 'course', 'section');
 
         $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 1]);
-        $section->summary = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $section->summary = '<span>Course section text '.$this->std_img_html().'</span>';
         $DB->update_record('course_sections', $section);
         $draftfile = $this->create_draft_file();
 
@@ -377,8 +381,8 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $dobj = (object) [
             'id' => $forum->id
         ];
-        $dobj->intro = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
-        $dobj->content = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $dobj->intro = 'forum intro '.$this->std_img_html();
+        $dobj->content = '<p>Forum content '.$this->std_img_html().'</p>';
         $DB->update_record($forumtype, $dobj);
 
         $fdg = $datagen->get_plugin_generator('mod_'.$forumtype);
@@ -392,7 +396,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $discussion = $fdg->create_discussion($record);
         $discussionpost = $DB->get_record($forumtype.'_posts', ['discussion' => $discussion->id]);
         $discussionfile = $this->create_test_file($context->id, 'mod_'.$forumtype, 'post', $discussionpost->id);
-        $discussionpost->message = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $discussionpost->message = $this->std_img_html();
         $DB->update_record($forumtype.'_posts', $discussionpost);
 
         // Create post replying to discussion.
@@ -403,7 +407,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $post = $fdg->create_post($record);
         // Add file to reply.
         $postfile = $this->create_test_file($context->id, 'mod_'.$forumtype, 'post', $post->id);
-        $post->message = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $post->message = '<div>'.$this->std_img_html().'</div>';
         $DB->update_record($forumtype.'_posts', $post);
 
         // Replace main forum file.
@@ -467,7 +471,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         quiz_add_quiz_question($question->id, $quiz);
 
         $qfile = $this->create_test_file($context->id, 'question', 'questiontext', $question->id);
-        $questionrow->questiontext = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $questionrow->questiontext = 'Question text '.$this->std_img_html();
         $DB->update_record('question', $questionrow);
 
         // Replace file.
@@ -628,6 +632,154 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $this->assert_file_processed_in_text($ans1->feedback);
         $this->assert_file_processed_in_text($ans2->answer);
         $this->assert_file_processed_in_text($ans2->feedback);
+    }
+
+    public function test_service_qtype_ddmatch_html() {
+        global $CFG, $DB, $USER;
+
+        require_once($CFG->libdir . '/questionlib.php');
+
+        $datagen = $this->getDataGenerator();
+        $qgen = $datagen->get_plugin_generator('core_question');
+
+        $cat = $qgen->create_question_category();
+
+        $this->setAdminUser();
+
+        // Sadly we can't use a question generator for ddmatch because the qtype_ddmatch_test_helper class is missing
+        // a get_test_questions method.
+        $questionid = $DB->insert_record('question', (object) [
+            'category' => $cat->id,
+            'parent' => 0,
+            'name' => 'DD match test',
+            'questiontext' => 'Question text '.$this->std_img_html(),
+            'questiontextformat' => FORMAT_HTML,
+            'generalfeedback' => 'General feedabck text '.$this->std_img_html(),
+            'generalfeedbackformat' => FORMAT_HTML,
+            'defaultmark' => 1,
+            'penalty' => 1,
+            'qtype' => 'ddmatch',
+            'length' => 1,
+            'hidden' => 0,
+            'timecreated' => time(),
+            'timemodified' => time(),
+            'createdby' => $USER->id,
+            'modifiedby' => $USER->id,
+            'stamp' => make_unique_id_code(),
+        ]);
+        $question = $DB->get_record('question', ['id' => $questionid]);
+        $DB->set_field('question', 'version', question_hash($question),
+            array('id' => $questionid));
+
+        $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $this->course->id]);
+        $context = context_course::instance($this->course->id);
+        quiz_add_quiz_question($questionid, $quiz);
+
+        $qfile = $this->create_test_file($context->id, 'question', 'questiontext', $questionid);
+
+        // Replace question file.
+        $this->replace_file($qfile);
+
+        // Make sure question has been processed.
+        $question = $DB->get_record('question', ['id' => $questionid]);
+        $this->assertNotContains('gd%20logo.png', $question->questiontext);
+        $this->assertContains('red%20dot.png', $question->questiontext);
+
+        // Create sub questions.
+        $subqa = (object) [
+            'questionid' => $questionid,
+            'questiontext' => 'Subquestion A Question text'.$this->std_img_html(),
+            'questiontextformat' => FORMAT_HTML,
+            'answertext' => 'Subquestion A Answer text'.$this->std_img_html(),
+            'answertextformat' => FORMAT_HTML
+        ];
+        $subqaid = $DB->insert_record('qtype_ddmatch_subquestions', $subqa);
+        $subqarow = $DB->get_record('qtype_ddmatch_subquestions', ['id' => $subqaid]);
+        $subqaquestionfile = $this->create_test_file(
+                $context->id, 'qtype_ddmatch', 'subquestion', $subqarow->id);
+        $subqaanswerfile = $this->create_test_file(
+                $context->id, 'qtype_ddmatch', 'subanswer', $subqarow->id);
+
+        $subqb = (object) [
+            'questionid' => $questionid,
+            'questiontext' => 'Subquestion B '.$this->std_img_html(),
+            'questiontextformat' => FORMAT_HTML,
+            'answertext' => 'Subquestion B Answer text'.$this->std_img_html(),
+            'answertextformat' => FORMAT_HTML
+        ];
+        $subqbid = $DB->insert_record('qtype_ddmatch_subquestions', $subqb);
+        $subqbrow = $DB->get_record('qtype_ddmatch_subquestions', ['id' => $subqbid]);
+        $subqbquestionfile = $this->create_test_file(
+            $context->id, 'qtype_ddmatch', 'subquestion', $subqbrow->id);
+        $subqbanswerfile = $this->create_test_file(
+            $context->id, 'qtype_ddmatch', 'subanswer', $subqbrow->id);
+
+        // Test replacing file in just one questions question field.
+        $this->replace_file($subqaquestionfile);
+        $subqarow = $DB->get_record('qtype_ddmatch_subquestions', ['id' => $subqaid]);
+        $subqbrow = $DB->get_record('qtype_ddmatch_subquestions', ['id' => $subqbid]);
+        $this->assert_file_processed_in_text($subqarow->questiontext);
+        $this->assert_file_not_processed_in_text($subqarow->answertext);
+        $this->assert_file_not_processed_in_text($subqbrow->questiontext);
+        $this->assert_file_not_processed_in_text($subqbrow->answertext);
+
+        // Test replacing files in just one questions question and answer field.
+        $this->replace_file($subqaanswerfile);
+        $subqarow = $DB->get_record('qtype_ddmatch_subquestions', ['id' => $subqaid]);
+        $subqbrow = $DB->get_record('qtype_ddmatch_subquestions', ['id' => $subqbid]);
+        $this->assert_file_processed_in_text($subqarow->questiontext);
+        $this->assert_file_processed_in_text($subqarow->answertext);
+        $this->assert_file_not_processed_in_text($subqbrow->questiontext);
+        $this->assert_file_not_processed_in_text($subqbrow->answertext);
+
+        // Test replacing files for two questions for both question and answer field.
+        $this->replace_file($subqbquestionfile);
+        $this->replace_file($subqbanswerfile);
+        $subqarow = $DB->get_record('qtype_ddmatch_subquestions', ['id' => $subqaid]);
+        $subqbrow = $DB->get_record('qtype_ddmatch_subquestions', ['id' => $subqbid]);
+        $this->assert_file_processed_in_text($subqarow->questiontext);
+        $this->assert_file_processed_in_text($subqarow->answertext);
+        $this->assert_file_processed_in_text($subqbrow->questiontext);
+        $this->assert_file_processed_in_text($subqbrow->answertext);
+
+        // Create match options.
+        $options = (object) [
+            'questionid' => $questionid,
+            'suffleanswers' => 1,
+            'correctfeedback' => '<span>Correct feedback '.$this->std_img_html().'</span>',
+            'partiallycorrectfeedback' => '<p>Partially Correct feedback</p>'.$this->std_img_html(),
+            'incorrectfeedback' => '<div>Incorrect feedback</div>'.$this->std_img_html(),
+        ];
+        $optionsrowid = $DB->insert_record('qtype_ddmatch_options', $options);
+        $optionsrow = $DB->get_record('qtype_ddmatch_options', ['id' => $optionsrowid]);
+        // Create files for optionsrow.
+        $correctfeedbackfile = $this->create_test_file(
+                $context->id, 'question', 'correctfeedback', $question->id);
+        $partiallycorrectfeedbackfile = $this->create_test_file(
+                $context->id, 'question', 'partiallycorrectfeedback', $question->id);
+        $incorrectfeedbackfile = $this->create_test_file(
+                $context->id, 'question', 'incorrectfeedback', $question->id);
+
+        // Test replacing file in correct feedback text.
+        $this->replace_file($correctfeedbackfile);
+        $optionsrow = $DB->get_record('qtype_ddmatch_options', ['id' => $optionsrowid]);
+        $this->assert_file_processed_in_text($optionsrow->correctfeedback);
+        $this->assert_file_not_processed_in_text($optionsrow->partiallycorrectfeedback);
+        $this->assert_file_not_processed_in_text($optionsrow->incorrectfeedback);
+
+        // Test replacing file in partially correct feedback text.
+        $this->replace_file($partiallycorrectfeedbackfile);
+        $optionsrow = $DB->get_record('qtype_ddmatch_options', ['id' => $optionsrowid]);
+        $this->assert_file_processed_in_text($optionsrow->correctfeedback);
+        $this->assert_file_processed_in_text($optionsrow->partiallycorrectfeedback);
+        $this->assert_file_not_processed_in_text($optionsrow->incorrectfeedback);
+
+        // Test replacing file in incorrect feedback text.
+        $this->replace_file($incorrectfeedbackfile);
+        $optionsrow = $DB->get_record('qtype_ddmatch_options', ['id' => $optionsrowid]);
+        $this->assert_file_processed_in_text($optionsrow->correctfeedback);
+        $this->assert_file_processed_in_text($optionsrow->partiallycorrectfeedback);
+        $this->assert_file_processed_in_text($optionsrow->incorrectfeedback);
     }
 
     /**
