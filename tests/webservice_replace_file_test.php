@@ -479,6 +479,158 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
     }
 
     /**
+     * Assert file processed in text.
+     * @param string $text
+     */
+    private function assert_file_processed_in_text($text) {
+        $this->assertNotContains('gd%20logo.png', $text);
+        $this->assertContains('red%20dot.png', $text);
+    }
+
+    /**
+     * Assert file not processed in text.
+     * @param string $text
+     */
+    private function assert_file_not_processed_in_text($text) {
+        $this->assertContains('gd%20logo.png', $text);
+        $this->assertNotContains('red%20dot.png', $text);
+    }
+
+    /**
+     * Test replacing files within questions.
+     */
+    public function test_service_question_html_multichoice() {
+        global $DB;
+
+        $datagen = $this->getDataGenerator();
+        $qgen = $datagen->get_plugin_generator('core_question');
+
+        $cat = $qgen->create_question_category();
+        $question = $qgen->create_question('multichoice', null, array('category' => $cat->id));
+        $questionrow = $DB->get_record('question', ['id' => $question->id]);
+
+        $quiz = $this->getDataGenerator()->create_module('quiz', array('course' => $this->course->id));
+        $context = context_course::instance($this->course->id);
+        quiz_add_quiz_question($question->id, $quiz);
+
+        $qfile = $this->create_test_file($context->id, 'question', 'questiontext', $question->id);
+        $questionrow->questiontext = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
+        $DB->update_record('question', $questionrow);
+
+        // Replace file.
+        $this->replace_file($qfile);
+
+        $questionrow = $DB->get_record('question', ['id' => $question->id]);
+        $this->assert_file_processed_in_text($questionrow->questiontext);
+
+        $combinedfeedback = $DB->get_record('qtype_multichoice_options', ['questionid' => $question->id]);
+        $cfid = $combinedfeedback->id;
+
+        // Test multichoice combined feedback.
+        $combinedfeedback = (object) [
+            'id' => $cfid,
+            'questionid' => $question->id,
+            'correctfeedback' => '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">',
+            'correctfeedbackformat' => FORMAT_HTML,
+            'partiallycorrectfeedback' => '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">',
+            'partiallycorrectfeedbackformat' => FORMAT_HTML,
+            'incorrectfeedback' => '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">',
+            'incorrectfeedbackformat' => FORMAT_HTML
+        ];
+        $DB->update_record('qtype_multichoice_options', $combinedfeedback);
+
+        $correctfeedbackfile = $this->create_test_file(
+                $context->id, 'question', 'correctfeedback', $question->id);
+        $partiallycorrectfeedbackfile = $this->create_test_file(
+            $context->id, 'question', 'partiallycorrectfeedback', $question->id);
+        $incorrectfeedbackfile = $this->create_test_file(
+                $context->id, 'question', 'incorrectfeedback', $question->id);
+
+        $combinedfeedback = $DB->get_record('qtype_multichoice_options', ['id' => $cfid]);
+        $this->assert_file_not_processed_in_text($combinedfeedback->correctfeedback);
+        $this->assert_file_not_processed_in_text($combinedfeedback->partiallycorrectfeedback);
+        $this->assert_file_not_processed_in_text($combinedfeedback->incorrectfeedback);
+
+        $this->replace_file($correctfeedbackfile);
+        $combinedfeedback = $DB->get_record('qtype_multichoice_options', ['id' => $cfid]);
+        $this->assert_file_processed_in_text($combinedfeedback->correctfeedback);
+        $this->assert_file_not_processed_in_text($combinedfeedback->partiallycorrectfeedback);
+        $this->assert_file_not_processed_in_text($combinedfeedback->incorrectfeedback);
+
+        $this->replace_file($partiallycorrectfeedbackfile);
+        $combinedfeedback = $DB->get_record('qtype_multichoice_options', ['id' => $cfid]);
+        $this->assert_file_processed_in_text($combinedfeedback->correctfeedback);
+        $this->assert_file_processed_in_text($combinedfeedback->partiallycorrectfeedback);
+        $this->assert_file_not_processed_in_text($combinedfeedback->incorrectfeedback);
+
+        $this->replace_file($incorrectfeedbackfile);
+        $combinedfeedback = $DB->get_record('qtype_multichoice_options', ['id' => $cfid]);
+        $this->assert_file_processed_in_text($combinedfeedback->correctfeedback);
+        $this->assert_file_processed_in_text($combinedfeedback->partiallycorrectfeedback);
+        $this->assert_file_processed_in_text($combinedfeedback->incorrectfeedback);
+
+        // Test multiple choice answers.
+        // Make sure each file replace does not affect other fields or answer rows.
+        $ans = (object) [
+            'question' => $question->id,
+            'answer' => 'Answer : <img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">',
+            'answerformat' => FORMAT_HTML,
+            'fraction' => 0,
+            'feedback' => 'Feedback : <img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">',
+            'feedbackformat' => FORMAT_HTML
+        ];
+        $ans1id = $DB->insert_record('question_answers', $ans);
+        $ans2id = $DB->insert_record('question_answers', $ans);
+        $ans1answerfile = $this->create_test_file(
+            $context->id, 'question', 'answer', $ans1id);
+        $ans1feedbackfile = $this->create_test_file(
+            $context->id, 'question', 'answerfeedback', $ans1id);
+        $ans2answerfile = $this->create_test_file(
+            $context->id, 'question', 'answer', $ans2id);
+        $ans2feedbackfile = $this->create_test_file(
+            $context->id, 'question', 'answerfeedback', $ans2id);
+
+        $ans1 = $DB->get_record('question_answers', ['id' => $ans1id]);
+        $ans2 = $DB->get_record('question_answers', ['id' => $ans2id]);
+        $this->assert_file_not_processed_in_text($ans1->answer);
+        $this->assert_file_not_processed_in_text($ans1->feedback);
+        $this->assert_file_not_processed_in_text($ans2->answer);
+        $this->assert_file_not_processed_in_text($ans2->feedback);
+
+        $this->replace_file($ans1answerfile);
+        $ans1 = $DB->get_record('question_answers', ['id' => $ans1id]);
+        $ans2 = $DB->get_record('question_answers', ['id' => $ans2id]);
+        $this->assert_file_processed_in_text($ans1->answer);
+        $this->assert_file_not_processed_in_text($ans1->feedback);
+        $this->assert_file_not_processed_in_text($ans2->answer);
+        $this->assert_file_not_processed_in_text($ans2->feedback);
+
+        $this->replace_file($ans1feedbackfile);
+        $ans1 = $DB->get_record('question_answers', ['id' => $ans1id]);
+        $ans2 = $DB->get_record('question_answers', ['id' => $ans2id]);
+        $this->assert_file_processed_in_text($ans1->answer);
+        $this->assert_file_processed_in_text($ans1->feedback);
+        $this->assert_file_not_processed_in_text($ans2->answer);
+        $this->assert_file_not_processed_in_text($ans2->feedback);
+
+        $this->replace_file($ans2answerfile);
+        $ans1 = $DB->get_record('question_answers', ['id' => $ans1id]);
+        $ans2 = $DB->get_record('question_answers', ['id' => $ans2id]);
+        $this->assert_file_processed_in_text($ans1->answer);
+        $this->assert_file_processed_in_text($ans1->feedback);
+        $this->assert_file_processed_in_text($ans2->answer);
+        $this->assert_file_not_processed_in_text($ans2->feedback);
+
+        $this->replace_file($ans2feedbackfile);
+        $ans1 = $DB->get_record('question_answers', ['id' => $ans1id]);
+        $ans2 = $DB->get_record('question_answers', ['id' => $ans2id]);
+        $this->assert_file_processed_in_text($ans1->answer);
+        $this->assert_file_processed_in_text($ans1->feedback);
+        $this->assert_file_processed_in_text($ans2->answer);
+        $this->assert_file_processed_in_text($ans2->feedback);
+    }
+
+    /**
      * Test replacing files within lesson module intro / pages.
      */
     public function test_service_lesson_html() {

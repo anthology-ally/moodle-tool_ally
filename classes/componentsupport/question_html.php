@@ -69,29 +69,29 @@ class question_html extends html_base {
 
         $idfield = null;
         $table = null;
+        $field = $area;
 
         if ($area === 'questiontext' || $area === 'generalfeedback') {
             $table = 'question';
             $idfield = 'id';
-        } else if ($area === 'answerfeedback') {
+        } else if ($area === 'answer' || $area === 'answerfeedback') {
             $table = 'question_answers';
-            $idfield = 'question';
+            $idfield = 'id';
+            $field = $area === 'answer' ? 'answer' : 'feedback';
         } else if (in_array($area, $inorcorrectfbareas)) {
             $question = $this->get_question($itemid);
             $qtype = $question->qtype;
+            $idfield = 'questionid';
 
             switch ($qtype) {
                 case 'ddimageortext' :
                     $table = 'qtype_ddimageortext';
-                    $idfield = 'questionid';
                     break;
                 case 'ddmarker' :
                     $table = 'qtype_ddmarker';
-                    $idfield = 'questionid';
                     break;
                 case 'ddwtos' :
                     $table = 'question_ddwtos';
-                    $idfield = 'questionid';
                     break;
                 case 'gapfill' :
                     $table = 'question_gapfill';
@@ -99,18 +99,14 @@ class question_html extends html_base {
                     break;
                 case 'gapselect' :
                     $table = 'question_gapselect';
-                    $idfield = 'questionid';
                     break;
                 case 'match' :
-                    $idfield = 'questionid';
                     $table = 'qtype_match_options';
                     break;
                 case 'multichoice' :
-                    $idfield = 'question';
-                    $table = 'question_calculated_options';
+                    $table = 'qtype_multichoice_options';
                     break;
                 case 'randomsamatch' :
-                    $idfield = 'questionid';
                     $table = 'qtype_randomsamatch_options';
                     break;
                 default :
@@ -126,8 +122,8 @@ class question_html extends html_base {
             return;
         }
 
-        local_file::update_filenames_in_html($area, $table, ' id = ? ',
-            [$idfield => $itemid], $this->oldfilename, $file->get_filename());
+        local_file::update_filenames_in_html($field, $table, ' '.$idfield.' = ? ',
+            [$itemid], $this->oldfilename, $file->get_filename());
 
         \question_finder::get_instance()->uncache_question($itemid);
     }
