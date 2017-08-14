@@ -54,6 +54,7 @@ class question_html extends html_base {
     }
 
     public function replace_file_links() {
+        global $DB;
 
         $file = $this->file;
 
@@ -70,16 +71,21 @@ class question_html extends html_base {
         $idfield = null;
         $table = null;
         $field = $area;
+        $questionid = null;
 
         if ($area === 'questiontext' || $area === 'generalfeedback') {
             $table = 'question';
             $idfield = 'id';
+            $questionid = $itemid;
         } else if ($area === 'answer' || $area === 'answerfeedback') {
             $table = 'question_answers';
             $idfield = 'id';
             $field = $area === 'answer' ? 'answer' : 'feedback';
+            $sqrow = $DB->get_record($table, ['id' => $itemid]);
+            $questionid = $sqrow->question;
         } else if (in_array($area, $inorcorrectfbareas)) {
             $question = $this->get_question($itemid);
+            $questionid = $question->id;
             $qtype = $question->qtype;
             $idfield = 'questionid';
 
@@ -125,6 +131,6 @@ class question_html extends html_base {
         local_file::update_filenames_in_html($field, $table, ' '.$idfield.' = ? ',
             [$itemid], $this->oldfilename, $file->get_filename());
 
-        \question_finder::get_instance()->uncache_question($itemid);
+        \question_finder::get_instance()->uncache_question($questionid);
     }
 }
