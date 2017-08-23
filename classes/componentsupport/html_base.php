@@ -83,6 +83,15 @@ abstract class html_base {
     abstract public static function component_type();
 
     /**
+     * Return the properties for a specific pluginfileurl.
+     * @param string $pluginfileurl
+     * @return bool | array
+     */
+    public static function fileurlproperties($pluginfileurl) {
+        return false;
+    }
+
+    /**
      * Method for replacing file links within html fields.
      *
      * @param string $oldfilename
