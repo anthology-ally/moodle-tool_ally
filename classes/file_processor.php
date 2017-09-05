@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Event handlers for Ally.
+ * File processor for Ally.
  * @package   tool_ally
  * @author    Guy Thomas <gthomas@moodlerooms.com>
  * @copyright Copyright (c) 2017 Blackboard Inc.
@@ -25,22 +25,37 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
-use core\event\course_module_created,
-    core\event\course_module_updated,
-    tool_ally\task\file_updates_task,
-    tool_ally\push_config,
+use tool_ally\push_config,
     tool_ally\push_file_updates,
     tool_ally\local_file,
     tool_ally\files_iterator;
 
 /**
- * Event handlers for Ally.
+ * File processor for Ally.
+ * Can be used to process individual or groups of files.
+ *
  * @package   tool_ally
  * @author    Guy Thomas <gthomas@moodlerooms.com>
  * @copyright Copyright (c) 2017 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class event_handlers {
+class file_processor {
+
+    /**
+     * Push file updats to Ally without batching, etc.
+     *
+     * @param push_file_updates $updates
+     * @param \stored_file $file
+     */
+    private static function push_update(push_file_updates $updates, \stored_file $file) {
+        // Ignore draft files and files in the recycle bin.
+        $filearea = $file->get_filearea();
+        if ($filearea === 'draft' || $filearea === 'recyclebin_course') {
+            return;
+        }
+        $payload = [local_file::to_crud($file)];
+        $updates->send($payload);
+    }
 
     /**
      * Push file updates to Ally without batching, etc.
@@ -53,6 +68,11 @@ class event_handlers {
         $payload = [];
         try {
             foreach ($files as $file) {
+                // Ignore draft files and files in the recycle bin.
+                $filearea = $file->get_filearea();
+                if ($filearea === 'draft' || $filearea === 'recyclebin_course') {
+                    continue;
+                }
                 $payload[] = local_file::to_crud($file);
             }
             if (!empty($payload)) {
@@ -66,7 +86,7 @@ class event_handlers {
 
     /**
      * Get ally config.
-     * @return null|\tool_ally\push_config
+     * @return null|push_config
      */
     private static function get_config() {
         static $config = null;
@@ -77,36 +97,39 @@ class event_handlers {
     }
 
     /**
-     * Deal with course module creation / updates.
-     * @param \core\event\base $event
+     * Push updates for files.
+     * @param files_iterator $files
      * @throws \Exception
      */
-    private static function course_module_createdorupdated(\core\event\base $event) {
+    public static function push_file_updates(files_iterator $files) {
         $config = self::get_config();
         if (!$config->is_valid()) {
             return;
         }
         $updates = new push_file_updates($config);
-        // Time since is event time - 5 minutes padding (in case files took a long time to upload).
-        $time = $event->timecreated - (MINSECS * 5);
-        $files = local_file::iterator()->in_context($event->get_context()); // Just get files for this module.
-        $files = $files->since($time)->sort_by('timemodified');
         self::push_updates($updates, $files);
     }
 
     /**
-     * Handle course module created.
-     * @param course_module_created $event
+     * Push updates for files.
+     * @param \stored_file $file;
+     * @throws \Exception
      */
-    public static function course_module_created(course_module_created $event) {
-        self::course_module_createdorupdated($event);
-    }
+    public static function push_file_update(\stored_file $file) {
+        $config = self::get_config();
+        if (!$config->is_valid()) {
+            return;
+        }
 
-    /**
-     * Handle course module updated.
-     * @param course_module_updated $event
-     */
-    public static function course_module_updated(course_module_updated $event) {
-        self::course_module_createdorupdated($event);
+        // Make sure file has a course context - Ally doesn't support files without a course context at the moment.
+        // We don't want to throw any errors or it wont be possible to add files outside of courses.
+        $context = \context::instance_by_id($file->get_contextid());
+        $coursecontext = $context->get_course_context(false);
+        if (!$coursecontext) {
+            return;
+        }
+
+        $updates = new push_file_updates($config);
+        self::push_update($updates, $file);
     }
 }

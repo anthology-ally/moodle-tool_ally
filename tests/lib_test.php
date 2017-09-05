@@ -15,14 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for observer.
+ * Tests for main lib.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-use tool_ally\observer;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -35,22 +33,16 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_observer_testcase extends tool_ally_abstract_testcase {
+class tool_ally_lib_testcase extends tool_ally_abstract_testcase {
     protected function setUp() {
-        observer::$deletionenabled = true;
-
         // Prevent it from creating a backup of the deleted module.
         set_config('coursebinenable', 0, 'tool_recyclebin');
     }
 
-    protected function tearDown() {
-        observer::$deletionenabled = null;
-    }
-
     /**
-     * Test file deletion observation.
+     * Test file deletion callback.
      */
-    public function test_file_deleted() {
+    public function test_tool_ally_after_file_deleted() {
         global $DB;
 
         $this->resetAfterTest();
