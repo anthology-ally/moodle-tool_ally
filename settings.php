@@ -57,7 +57,7 @@ if ($hassiteconfig) {
         new lang_string('clientiddesc', 'tool_ally'), '', PARAM_INT, 5));
 
     $settings->add(new ally_config('tool_ally/autconf', new lang_string('autoconfigure', 'tool_ally'),
-        new lang_string('autoconfiguredesc', 'tool_ally'), ''));
+        new lang_string('autoconfiguredesc', 'tool_ally')));
 
     $ADMIN->add('tools', $settings);
 }
