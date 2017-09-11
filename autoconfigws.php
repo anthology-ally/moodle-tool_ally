@@ -29,6 +29,9 @@ $PAGE->set_url(new moodle_url('/admin/tool/ally/autoconfigws.php'));
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title(get_string('autoconfigure', 'tool_ally'));
 
+require_login();
+require_capability('moodle/site:config', context_system::instance());
+
 $action = optional_param('action', null, PARAM_ALPHA);
 
 echo $OUTPUT->header();
