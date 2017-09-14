@@ -37,8 +37,8 @@ echo $OUTPUT->heading(get_string('autoconfigure', 'tool_ally'));
 
 if ($action === 'confirm') {
     $ac = new auto_config();
-    $sampleapicall = $CFG->wwwroot.'/webservice/rest/server.php?wstoken='.$ac->token.'&wsfunction=tool_ally_get_files&'.
-            'moodlewsrestformat=json';
+    $sampleapicall = $CFG->wwwroot.'/webservice/rest/server.php?wstoken='.$ac->token.
+            '&wsfunction=tool_ally_version_info&'.'moodlewsrestformat=json';
     $context = (object) ['token' => $ac->token, 'sampleapicall' => $sampleapicall];
     echo $OUTPUT->render_from_template('tool_ally/auto_conf_result', $context);
     echo $OUTPUT->continue_button(new moodle_url('/admin/settings.php', ['section' => 'tool_ally']));
