@@ -76,5 +76,17 @@ function xmldb_tool_ally_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2016121900, 'tool', 'ally');
     }
 
+    if ($oldversion < 2016121910) {
+        $user = $DB->get_record('user', ['username' => 'ally_webuser']);
+        if ($user) {
+            // We only do this if auto config has created a user, we are not doing auto config here.
+            $user->policyagreed = 1;
+            $DB->update_record('user', $user);
+        }
+
+        // Ally savepoint reached.
+        upgrade_plugin_savepoint(true, 2016121910, 'tool', 'ally');
+    }
+
     return true;
 }

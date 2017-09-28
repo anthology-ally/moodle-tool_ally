@@ -67,17 +67,20 @@ class auto_config {
     private function create_user() {
         global $DB;
 
-        $webuserpwd = bin2hex(openssl_random_pseudo_bytes(8));
+        $webuserpwd = strval(new password());
 
         $user = $DB->get_record('user', ['username' => 'ally_webuser']);
         if ($user) {
             $user->password = $webuserpwd;
+            $user->policyagreed = 1;
             user_update_user($user);
             $this->user = $user;
             return;
         }
 
         $user = create_user_record('ally_webuser', $webuserpwd);
+        $user->policyagreed = 1;
+        $user->password = $webuserpwd;
         $user->firstname = 'Ally';
         $user->lastname = 'Webservice';
         $user->email = 'allywebservice@test.local'; // Fake email address.
