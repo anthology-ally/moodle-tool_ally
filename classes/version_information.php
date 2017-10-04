@@ -27,7 +27,8 @@ namespace tool_ally;
 defined('MOODLE_INTERNAL') || die();
 
 use core_component,
-    core_plugin_manager;
+    core_plugin_manager,
+    moodle_exception;
 
 /**
  * Version information class
@@ -62,14 +63,28 @@ class version_information {
      * Constructor.
      */
     public function __construct() {
+        $this->warn_on_site_policy_not_accepted();
         $this->core = $this->get_component_version('core');
-
         $this->toolally = $this->get_component_version('tool_ally');
-
         $this->filterally = $this->get_component_version('filter_ally');
         $this->filterally->active = $this->check_filter_active();
-
         $this->reportally = $this->get_component_version('report_allylti');
+    }
+
+    /**
+     * Throw an error if site policy not accepted.
+     * @throws moodle_exception
+     */
+    private function warn_on_site_policy_not_accepted() {
+        global $CFG, $USER;
+        // Check that the user has agreed to a site policy if there is one - do not test in case of admins.
+        if (empty($USER->policyagreed) and !is_siteadmin()) {
+            if (!empty($CFG->sitepolicy) and !isguestuser()) {
+                throw new moodle_exception('sitepolicynotagreed', 'error', '', $CFG->sitepolicy);
+            } else if (!empty($CFG->sitepolicyguest) and isguestuser()) {
+                throw new moodle_exception('sitepolicynotagreed', 'error', '', $CFG->sitepolicyguest);
+            }
+        }
     }
 
     /**
