@@ -25,6 +25,7 @@
 use tool_ally\files_iterator;
 use tool_ally\local;
 use tool_ally\role_assignments;
+use tool_ally\local_file;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -54,14 +55,34 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $this->getDataGenerator()->enrol_user($user->id, $course->id, $roleid);
         $this->setUser($user);
 
-        $resource1 = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
-        $resource2 = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
-        $file1     = $this->get_resource_file($resource1);
-        $file2     = $this->get_resource_file($resource2);
-        $hashes    = [$file1->get_pathnamehash(), $file2->get_pathnamehash()];
+        $fs = get_file_storage();
+        $filerecord = array(
+            'contextid' => context_course::instance($course->id)->id,
+            'component' => 'mod_notwhitelisted',
+            'filearea' => 'content',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'test_has_userid.txt',
+            'userid' => $user->id,
+            'modified' => time()
+        );
+        $teststring = 'moodletest';
+        $file1 = $fs->create_file_from_string($filerecord, $teststring);
 
-        // Set owner to our user.
-        $DB->set_field('files', 'userid', $user->id, ['id' => $file1->get_id()]);
+        $filerecord = array(
+            'contextid' => context_course::instance($course->id)->id,
+            'component' => 'mod_notwhitelisted',
+            'filearea' => 'content',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'test_no_userid.txt',
+            'userid' => null,
+            'modified' => time()
+        );
+        $teststring = 'moodletest';
+        $file2 = $fs->create_file_from_string($filerecord, $teststring);
+
+        $hashes    = [$file1->get_pathnamehash(), $file2->get_pathnamehash()];
 
         // Check that if a role or user did not make content, that we only get files with null user ID.
         $files = new files_iterator([get_admin()->id], new role_assignments([$managerid]));
@@ -131,5 +152,164 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         foreach ($files as $file) {
             $this->assertStoredFileEquals($file3, $file);
         }
+    }
+
+    /**
+     * Simplified unenrolment of user from course using default options.
+     *
+     * It is strongly recommended to use only this method for 'manual' and 'self' plugins only!!!
+     *
+     * @param int $userid
+     * @param int $courseid
+     * @param string $enrol name of enrol plugin,
+     *     there must be exactly one instance in course,
+     *     it must support enrol_user() method.
+     * @return bool success
+     */
+    private function unenrol_user($userid, $courseid, $enrol = 'manual') {
+        global $DB;
+
+        if (!$plugin = enrol_get_plugin($enrol)) {
+            return false;
+        }
+
+        $instances = $DB->get_records('enrol', array('courseid' => $courseid, 'enrol' => $enrol));
+        if (count($instances) != 1) {
+            return false;
+        }
+        $instance = reset($instances);
+
+        $plugin->unenrol_user($instance, $userid);
+        return true;
+    }
+
+    public function test_white_listing() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $dg = $this->getDataGenerator();
+        $course = $dg->create_course();
+        $user = $this->getDataGenerator()->create_user();
+        $dg->enrol_user($user->id, $course->id, 'editingteacher');
+        $this->setUser($user);
+
+        $now = time();
+        $resource = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
+        $file     = $this->get_resource_file($resource);
+        $DB->update_record('files',  (object) ['id' => $file->get_id(), 'userid' => $user->id]);
+
+        $files = local_file::iterator();
+        $files->since($now - DAYSECS);
+        $fcount = 0;
+        foreach ($files as $filetocheck) {
+            $fcount++;
+            $this->assertStoredFileEquals($file, $filetocheck);
+        }
+        $this->assertEquals(1, $fcount);
+
+        // Now unenrol user from course - whitelisting should still allow mod_resource file through.
+        $this->unenrol_user($user->id, $course->id);
+        $files = local_file::iterator();
+        $files->since($now - DAYSECS);
+        $fcount = 0;
+        foreach ($files as $filetocheck) {
+            $fcount++;
+            $this->assertStoredFileEquals($file, $filetocheck);
+        }
+        $this->assertEquals(1, $fcount);
+    }
+
+    /**
+     * Make sure a file created within a course but not in a whitelisted module is accessible when created by
+     * someone with a teacher role but not when a student.
+     */
+    public function test_without_white_listing() {
+
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $now = time();
+
+        $dg = $this->getDataGenerator();
+        $course1 = $dg->create_course();
+        $course2 = $dg->create_course();
+        $user = $this->getDataGenerator()->create_user();
+        $dg->enrol_user($user->id, $course1->id, 'editingteacher');
+        $dg->enrol_user($user->id, $course2->id, 'student');
+        $this->setUser($user);
+
+        $fs = get_file_storage();
+        $filerecord = array(
+            'contextid' => context_course::instance($course1->id)->id,
+            'component' => 'mod_notwhitelisted',
+            'filearea' => 'content',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'test.txt',
+            'userid' => $user->id,
+            'modified' => $now
+        );
+        $teststring = 'moodletest';
+        $testfile1 = $fs->create_file_from_string($filerecord, $teststring);
+
+        $files = local_file::iterator();
+        $files->since($now - DAYSECS);
+        $fcount = 0;
+        foreach ($files as $filetocheck) {
+            $fcount++;
+            $this->assertStoredFileEquals($testfile1, $filetocheck);
+        }
+        $this->assertEquals(1, $fcount);
+
+        // Add another file in course where user is teacher.
+        // Make sure files iterator includes it.
+        $fs = get_file_storage();
+        $filerecord = array(
+            'contextid' => context_course::instance($course1->id)->id,
+            'component' => 'mod_notwhitelisted',
+            'filearea' => 'content',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'test2.txt',
+            'userid' => $user->id,
+            'modified' => $now
+        );
+        $teststring = 'moodletest2';
+        $testfile2 = $fs->create_file_from_string($filerecord, $teststring);
+        $files = local_file::iterator();
+        $files->since($now - WEEKSECS);
+        $fcount = 0;
+        $testfiles = [$testfile1, $testfile2];
+        foreach ($files as $filetocheck) {
+            $fcount++;
+            $this->assertTrue(in_array($filetocheck, $testfiles));
+        }
+        $this->assertEquals(2, $fcount);
+
+        // Add a file in course where user is not a teacher.
+        // Make sure files iterator does not include it.
+        $fs = get_file_storage();
+        $filerecord = array(
+            'contextid' => context_course::instance($course2->id)->id,
+            'component' => 'mod_notwhitelisted',
+            'filearea' => 'content',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'test3.txt',
+            'userid' => $user->id,
+            'modified' => $now
+        );
+        $teststring = 'moodletest3';
+        $testfile3 = $fs->create_file_from_string($filerecord, $teststring);
+        $files = local_file::iterator();
+        $files->since($now - WEEKSECS);
+        $fcount = 0;
+        foreach ($files as $filetocheck) {
+            $fcount++;
+            $this->assertFalse($filetocheck->get_pathnamehash() === $testfile3->get_pathnamehash());
+        }
+        $this->assertEquals(2, $fcount); // Count should be 2 as file in course2 was not created by teacher.
     }
 }
