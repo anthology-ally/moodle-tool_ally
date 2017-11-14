@@ -30,8 +30,18 @@ class tool_ally_auto_config_test extends advanced_testcase {
         $this->resetAfterTest();
 
         $ac = new auto_config();
+        $ac->configure();
+
         $this->assertNotEmpty($ac->token);
         $this->assertNotEmpty($ac->user);
         $this->assertNotEmpty($ac->role);
+    }
+
+    public function test_auto_config_update_user() {
+        $this->resetAfterTest();
+        $this->getDataGenerator()->create_user(['username' => 'ally_webuser']);
+
+        $ac = new auto_config();
+        $ac->configure();
     }
 }

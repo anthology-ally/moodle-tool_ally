@@ -25,17 +25,19 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . "/webservice/lib.php");
+require_once(__DIR__ . "/../../../../webservice/lib.php");
+require_once(__DIR__ . "/../../../../user/lib.php");
+
 
 class auto_config {
 
     /**
-     * @var stdClass - web user
+     * @var /stdClass - web user
      */
     public $user;
 
     /**
-     * @var stdClass - role
+     * @var /stdClass - role
      */
     public $role;
 
@@ -45,16 +47,9 @@ class auto_config {
     public $token;
 
     /**
-     * auto_config constructor.
-     */
-    public function __construct() {
-        $this->configure();
-    }
-
-    /**
      * Main configuration.
      */
-    private function configure() {
+    public function configure() {
         $this->create_user();
         $this->create_role();
         $this->enable_web_service();
