@@ -93,5 +93,7 @@ class tool_ally_auto_configurator_testcase extends advanced_testcase {
 
         $configurator = new auto_configurator();
         $configurator->configure_webservices($wsconfig);
+
+        $this->assertNotEmpty($wsconfig->token);
     }
 }

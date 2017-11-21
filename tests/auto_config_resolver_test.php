@@ -48,7 +48,7 @@ class tool_ally_auto_config_resolver_testcase extends advanced_testcase {
         ];
 
         $resolver = new auto_config_resolver(json_encode($configs));
-        $this->assertEquals($configs, $resolver->resolve());
+        $this->assertSame($configs, $resolver->resolve());
     }
 
     public function test_resolve_envvar() {
@@ -59,22 +59,22 @@ class tool_ally_auto_config_resolver_testcase extends advanced_testcase {
             'pushurl'  => 'http://someotherfakeurl.invalid',
         ];
         $configstr = json_encode($configs);
-        putenv("TOOL_ALLY_AUTO_CONFIGS=$configstr");
+        putenv("MOODLE_TOOL_ALLY_AUTO_CONFIGS=$configstr");
 
         $resolver = new auto_config_resolver('');
 
-        $this->assertEquals($configs, $resolver->resolve());
+        $this->assertSame($configs, $resolver->resolve());
     }
 
     /**
      * @expectedException \coding_exception
      * @expectedExceptionMessage No configs supplied.
-     * You provide configs by using the 'configs' CLI option or by setting them to TOOL_ALLY_AUTO_CONFIGS
+     * You provide configs by using the 'configs' CLI option or by setting them to MOODLE_TOOL_ALLY_AUTO_CONFIGS
      * environment variable
      */
     public function test_resolve_noconfigs() {
         // Be sure that the env variable is not set any longer.
-        putenv('TOOL_ALLY_AUTO_CONFIGS');
+        putenv('MOODLE_TOOL_ALLY_AUTO_CONFIGS');
 
         $resolver = new auto_config_resolver('');
         $resolver->resolve();

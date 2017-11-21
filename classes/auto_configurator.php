@@ -74,7 +74,7 @@ class auto_configurator {
         $wsconfig->configure();
 
         if (empty($wsconfig->user) || empty($wsconfig->token || empty($wsconfig->role))) {
-            throw new \Exception('Web service configuration failed');
+            throw new \coding_exception('Web service configuration failed');
         }
     }
 }

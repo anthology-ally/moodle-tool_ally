@@ -32,12 +32,12 @@ require_once(__DIR__ . "/../../../../user/lib.php");
 class auto_config {
 
     /**
-     * @var /stdClass - web user
+     * @var \stdClass - web user
      */
     public $user;
 
     /**
-     * @var /stdClass - role
+     * @var \stdClass - role
      */
     public $role;
 

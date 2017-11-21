@@ -48,7 +48,7 @@ class auto_config_resolver {
 
     public function __construct($clioption) {
         $this->clioption = $clioption;
-        $this->env = getenv('TOOL_ALLY_AUTO_CONFIGS');
+        $this->env = getenv('MOODLE_TOOL_ALLY_AUTO_CONFIGS');
     }
 
     /**
@@ -65,11 +65,11 @@ class auto_config_resolver {
 
         if (empty($configstr)) {
             $msg = 'No configs supplied. You provide configs by using the \'configs\' CLI option' .
-                ' or by setting them to TOOL_ALLY_AUTO_CONFIGS environment variable';
+                ' or by setting them to MOODLE_TOOL_ALLY_AUTO_CONFIGS environment variable';
             throw new \coding_exception($msg);
         }
 
-        $configs = (array) @json_decode($configstr);
+        $configs = json_decode($configstr, true);
         if (empty($configs)) {
             throw new \coding_exception('Config string was not valid');
         }

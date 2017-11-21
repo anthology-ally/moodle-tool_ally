@@ -43,5 +43,7 @@ class tool_ally_auto_config_test extends advanced_testcase {
 
         $ac = new auto_config();
         $ac->configure();
+
+        $this->assertDebuggingNotCalled();
     }
 }
