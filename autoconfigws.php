@@ -40,6 +40,7 @@ echo $OUTPUT->heading(get_string('autoconfigure', 'tool_ally'));
 
 if ($action === 'confirm') {
     $ac = new auto_config();
+    $ac->configure();
     $sampleapicall = $CFG->wwwroot.'/webservice/rest/server.php?wstoken='.$ac->token.
             '&wsfunction=tool_ally_version_info&'.'moodlewsrestformat=json';
     $context = (object) ['token' => $ac->token, 'sampleapicall' => $sampleapicall];
