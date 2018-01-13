@@ -83,6 +83,13 @@ $functions = [
         'description'  => 'Return key version info for ally tool, filter and moodle',
         'type'         => 'read',
         'capabilities' => 'moodle/site:configview'
+    ],
+    'tool_ally_get_courses' => [
+        'classname'    => 'tool_ally\\webservice\\courses',
+        'methodname'   => 'service',
+        'description'  => 'Lists all the courses on the site',
+        'type'         => 'read',
+        'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses'
     ]
 ];
 
@@ -98,7 +105,8 @@ $services = [
             'tool_ally_get_file_updates',
             'tool_ally_replace_file',
             'tool_ally_request_view_completion',
-            'tool_ally_version_info'
+            'tool_ally_version_info',
+            'tool_ally_get_courses',
         ],
         'enabled'         => 0,
         'restrictedusers' => 0,
