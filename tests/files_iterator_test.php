@@ -312,4 +312,55 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         }
         $this->assertEquals(2, $fcount); // Count should be 2 as file in course2 was not created by teacher.
     }
+
+    /**
+     * Test records paging.
+     */
+    public function test_files_paging() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $course    = $this->getDataGenerator()->create_course();
+        $user      = $this->getDataGenerator()->create_user();
+        $roleid    = $DB->get_field('role', 'id', ['shortname' => 'editingteacher'], MUST_EXIST);
+
+        $this->getDataGenerator()->enrol_user($user->id, $course->id, $roleid);
+        $this->setUser($user);
+
+        $fs = get_file_storage();
+        $teststring = 'moodletest_';
+        $hashes = [];
+
+        $pagesize = 5;
+        $filecount = 100;
+        for ($i = 0; $i < $filecount; $i++) {
+            $filerecord = array(
+                'contextid' => context_course::instance($course->id)->id,
+                'component' => 'mod_notwhitelisted',
+                'filearea' => 'content',
+                'itemid' => 0,
+                'filepath' => '/',
+                'filename' => "test_file_$i.txt",
+                'userid' => $user->id,
+                'modified' => time()
+            );
+            $file = $fs->create_file_from_string($filerecord, $teststring.$i);
+            $hashes[] = $file->get_pathnamehash();
+        }
+
+        // Review if all path name hashes are the same with paging turned on.
+        $files = new files_iterator([], new role_assignments([$roleid]));
+        $files->set_page_size($pagesize);
+        $queriedhashes = [];
+        foreach ($files as $file) {
+            $queriedhashes[] = $file->get_pathnamehash();
+        }
+
+        $this->assertSameSize($hashes, $queriedhashes);
+
+        foreach ($hashes as $hash) {
+            $this->assertContains($hash, $queriedhashes);
+        }
+    }
 }

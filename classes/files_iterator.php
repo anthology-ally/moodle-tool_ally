@@ -35,6 +35,12 @@ defined('MOODLE_INTERNAL') || die();
  */
 class files_iterator implements \Iterator {
     /**
+     * Number of records to fetch at a time.
+     * @var int
+     */
+    private $pagesize = 5000;
+
+    /**
      * @var array
      */
     private $userids;
@@ -50,9 +56,14 @@ class files_iterator implements \Iterator {
     private $assignments;
 
     /**
-     * @var \moodle_recordset
+     * @var array
      */
-    private $rs;
+    private $records = [];
+
+    /**
+     * @var int
+     */
+    private $page = 0;
 
     /**
      * @var \stored_file
@@ -175,9 +186,12 @@ class files_iterator implements \Iterator {
     }
 
     public function next() {
-        while ($this->rs instanceof \moodle_recordset && $this->rs->valid()) {
-            $row = $this->rs->current();
-            $this->rs->next();
+        while (($row = current($this->records)) !== false) {
+            if (next($this->records) === false) {
+                if (count($this->records) !== 0 && count($this->records) === $this->pagesize) {
+                    $this->next_page();
+                }
+            }
 
             $context = $this->extract_context($row);
 
@@ -213,6 +227,13 @@ class files_iterator implements \Iterator {
     }
 
     public function rewind() {
+        $this->page = 0;
+        $this->next_page();
+        // Must populate current.
+        $this->next();
+    }
+
+    private function next_page() {
         global $DB;
 
         $contextsql = \context_helper::get_preload_record_columns_sql('c');
@@ -248,16 +269,16 @@ class files_iterator implements \Iterator {
             $params['mimetype'] = $this->mimetype;
         }
 
-        $this->rs = $DB->get_recordset_sql("
+        $this->records = $DB->get_records_sql("
             SELECT f.*, $contextsql
               FROM {files} f
               JOIN {context} c ON c.id = f.contextid
              WHERE f.filename <> '.'$filtersql
                AND c.contextlevel NOT IN(:usr, :cat, :sys) {$this->sort}
-        ", $params);
+        ", $params, $this->page * $this->pagesize, $this->pagesize);
 
-        // Must populate current.
-        $this->next();
+        reset($this->records);
+        $this->page++;
     }
 
     /**
@@ -342,5 +363,12 @@ class files_iterator implements \Iterator {
         $this->sort .= $direction === SORT_ASC ? 'ASC' : 'DESC';
 
         return $this;
+    }
+
+    /**
+     * @param int $pagesize
+     */
+    public function set_page_size($pagesize) {
+        $this->pagesize = $pagesize;
     }
 }
