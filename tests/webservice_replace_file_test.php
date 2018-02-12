@@ -310,6 +310,8 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
             'format' => FORMAT_HTML
         ];
 
+        $time = new DateTime("now", core_date::get_user_timezone_object());
+
         $blockinsert = (object) [
             'blockname' => 'html',
             'parentcontextid' => context_course::instance($this->course->id)->id,
@@ -317,7 +319,9 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
             'defaultregion' => 'side-pre',
             'defaultweight' => 1,
             'configdata' => base64_encode(serialize($configdata)),
-            'showinsubcontexts' => 1
+            'showinsubcontexts' => 1,
+            'timecreated' => $time->getTimestamp(),
+            'timemodified' => $time->getTimestamp()
         ];
         $blockid = $DB->insert_record('block_instances', $blockinsert);
         $block = $DB->get_record('block_instances', ['id' => $blockid]);

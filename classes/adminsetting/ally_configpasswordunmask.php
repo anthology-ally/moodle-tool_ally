@@ -26,6 +26,8 @@ namespace tool_ally\adminsetting;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->libdir . '/adminlib.php');
+
 /**
  * No setting - just heading and text.
  *
