@@ -119,7 +119,8 @@ class auto_config {
             "moodle/user:update",
             "moodle/user:viewdetails",
             "moodle/user:viewhiddendetails",
-            "webservice/rest:use"
+            "webservice/rest:use",
+            "mod/resource:view"
         ];
         foreach ($caps as $cap) {
             assign_capability($cap, CAP_ALLOW, $roleid, $contextid);
