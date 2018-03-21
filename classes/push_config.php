@@ -34,6 +34,17 @@ defined('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class push_config {
+
+    /**
+     * Timeout to be used if config for tasks.
+     */
+    const TASKTIMEOUT = 60;
+
+    /**
+     * Timeout to be used if config is for live push.
+     */
+    const LIVETIMEOUT = 30;
+
     /**
      * Push file updates to this URL.
      *
@@ -63,7 +74,7 @@ class push_config {
     /**
      * @var int
      */
-    private $timeout = 60;
+    private static $timeout;
 
     /**
      * @var int
@@ -74,6 +85,16 @@ class push_config {
      * @var bool
      */
     private $debug = false;
+
+    /**
+     * @var bool
+     */
+    private $clionly = false;
+
+    /**
+     * @var int
+     */
+    private $maxpushattempts = 3;
 
     /**
      * @param string|null $url
@@ -109,14 +130,24 @@ class push_config {
                     $this->batch = 500;
                 }
             }
-            if (isset($config->push_timeout)) {
-                $this->timeout = (int) $config->push_timeout;
+            if (CLI_SCRIPT) {
+                self::$timeout = isset($config->push_timeout_cli) ?
+                    $config->push_timeout_cli : self::TASKTIMEOUT;
+            } else {
+                self::$timeout = isset($config->push_timeout) ?
+                    $config->push_timeout : self::LIVETIMEOUT;
             }
             if (isset($config->push_connect_timeout)) {
                 $this->connecttimeout = (int) $config->push_connect_timeout;
             }
             if (isset($config->push_debug)) {
                 $this->debug = (bool) $config->push_debug;
+            }
+            if (isset($config->push_cli_only)) {
+                $this->clionly = (bool) $config->push_cli_only;
+            }
+            if (isset($config->max_push_attempts)) {
+                $this->maxpushattempts = (int) $config->max_push_attempts;
             }
         }
     }
@@ -162,7 +193,7 @@ class push_config {
      * @return int
      */
     public function get_timeout() {
-        return $this->timeout;
+        return self::$timeout;
     }
 
     /**
@@ -177,5 +208,19 @@ class push_config {
      */
     public function get_debug() {
         return $this->debug;
+    }
+
+    /**
+     * @return bool
+     */
+    public function is_cli_only() {
+        return $this->clionly;
+    }
+
+    /**
+     * @return int
+     */
+    public function get_max_push_attempts() {
+        return $this->maxpushattempts;
     }
 }

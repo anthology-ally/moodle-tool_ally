@@ -1,0 +1,120 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Error event logging for file updates push.
+ *
+ * @package    tool_ally
+ * @author     David Castro <david.castro@blackboard.com>
+ * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+namespace tool_ally\event;
+use core\event\base;
+defined('MOODLE_INTERNAL') || die();
+
+
+/**
+ * Class push_file_updates_error.
+ *
+ * @package    tool_ally
+ * @author     David Castro <david.castro@blackboard.com>
+ * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class push_file_updates_error extends base {
+
+    /**
+     * @var string PLUGIN
+     */
+    const PLUGIN = 'tool_ally';
+
+    /**
+     * Init method.
+     */
+    protected function init() {
+        $this->data['crud'] = 'r';
+        $this->data['edulevel'] = self::LEVEL_OTHER;
+        $this->context = \context_system::instance();
+    }
+
+    /**
+     * Returns the event name.
+     *
+     * @return string
+     */
+    public static function get_name() {
+        return new \lang_string('pushfileserror', self::PLUGIN);
+    }
+
+    /**
+     * @return string
+     */
+    public function get_description() {
+        return 'Unexpected error: '.$this->other['message'];
+    }
+
+    /**
+     * @return string
+     */
+    public static function get_explanation() {
+        return new \lang_string('pushfileserror:explanation', self::PLUGIN);
+    }
+
+    /**
+     * Validate event data.
+     *
+     * @throws \coding_exception
+     */
+    protected function validate_data() {
+        if (empty($this->other['message'])) {
+            throw new \coding_exception('The error message must be set');
+        }
+        if (!array_key_exists('code', $this->other)) {
+            throw new \coding_exception('The error code must be set');
+        }
+    }
+
+    /**
+     * @param \Exception $exception
+     * @return \core\event\base
+     * @throws \coding_exception
+     */
+    public static function create_from_exception(\Exception $exception) {
+        return self::create([
+            'other' => [
+                'message' => $exception->getMessage(),
+                'code'    => $exception->getCode(),
+                'trace'   => $exception->getTraceAsString(),
+            ]
+        ]);
+    }
+
+    /**
+     * @param string $msg
+     * @return \core\event\base
+     * @throws \coding_exception
+     */
+    public static function create_from_msg($msg) {
+        return self::create([
+            'other' => [
+                'message' => $msg,
+                'code'    => 0,
+            ]
+        ]);
+    }
+}

@@ -51,3 +51,6 @@ $string['autoconfigureconfirmation'] = 'Automatically create web service role an
 $string['autoconfigsuccess'] = 'Success - the Ally web service has been automatically configured.';
 $string['autoconfigtoken'] = 'The web service token is as follows:';
 $string['autoconfigapicall'] = 'You can test that the webservice is working via the following url:';
+$string['pushfileserror'] = 'Ally file updates error.';
+$string['pushfileserror:explanation'] = 'Errors associated with file updates push to Ally services.';
+$string['pushfileserror:skip'] = 'Skipping file(s) push due to communication problems.';

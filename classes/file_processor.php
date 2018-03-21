@@ -28,7 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 use tool_ally\push_config,
     tool_ally\push_file_updates,
     tool_ally\local_file,
-    tool_ally\files_iterator;
+    tool_ally\files_iterator,
+    tool_ally\event\push_file_updates_error;
 
 /**
  * File processor for Ally.
@@ -46,42 +47,24 @@ class file_processor {
      *
      * @param push_file_updates $updates
      * @param \stored_file $file
+     * @return bool Successfully pushed file.
      */
     private static function push_update(push_file_updates $updates, \stored_file $file) {
+        $config = self::get_config();
+        if ($config->is_cli_only()) {
+            // Skip update, will try after cron cleans up cli only usage.
+            push_file_updates_error::create_from_msg(get_string('pushfileserror:skip', 'tool_ally'))->trigger();
+            return false;
+        }
+
         // Ignore draft files and files in the recycle bin.
         $filearea = $file->get_filearea();
         if ($filearea === 'draft' || $filearea === 'recyclebin_course') {
-            return;
+            return false;
         }
         $payload = [local_file::to_crud($file)];
         $updates->send($payload);
-    }
-
-    /**
-     * Push file updates to Ally without batching, etc.
-     *
-     * @param push_file_updates $updates
-     * @param files_iterator $files
-     * @throws \Exception
-     */
-    private static function push_updates(push_file_updates $updates, files_iterator $files) {
-        $payload = [];
-        try {
-            foreach ($files as $file) {
-                // Ignore draft files and files in the recycle bin.
-                $filearea = $file->get_filearea();
-                if ($filearea === 'draft' || $filearea === 'recyclebin_course') {
-                    continue;
-                }
-                $payload[] = local_file::to_crud($file);
-            }
-            if (!empty($payload)) {
-                $updates->send($payload);
-            }
-        } catch (\Exception $e) {
-            // Don't throw any errors - if it fails then the scheduled task will take care of it.
-            unset($payload);
-        }
+        return true;
     }
 
     /**
@@ -90,7 +73,7 @@ class file_processor {
      */
     private static function get_config() {
         static $config = null;
-        if ($config === null) {
+        if ($config === null || PHPUNIT_TEST) {
             $config = new push_config();
         }
         return $config;
@@ -98,27 +81,14 @@ class file_processor {
 
     /**
      * Push updates for files.
-     * @param files_iterator $files
-     * @throws \Exception
-     */
-    public static function push_file_updates(files_iterator $files) {
-        $config = self::get_config();
-        if (!$config->is_valid()) {
-            return;
-        }
-        $updates = new push_file_updates($config);
-        self::push_updates($updates, $files);
-    }
-
-    /**
-     * Push updates for files.
      * @param \stored_file $file;
+     * @return bool Successfully pushed file.
      * @throws \Exception
      */
     public static function push_file_update(\stored_file $file) {
         $config = self::get_config();
         if (!$config->is_valid()) {
-            return;
+            return false;
         }
 
         // Make sure file has a course context - Ally doesn't support files without a course context at the moment.
@@ -126,10 +96,10 @@ class file_processor {
         $context = \context::instance_by_id($file->get_contextid());
         $coursecontext = $context->get_course_context(false);
         if (!$coursecontext) {
-            return;
+            return false;
         }
 
         $updates = new push_file_updates($config);
-        self::push_update($updates, $file);
+        return self::push_update($updates, $file);
     }
 }
