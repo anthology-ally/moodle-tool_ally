@@ -49,6 +49,11 @@ class file_updates_task extends scheduled_task {
      */
     public $updates;
 
+    /**
+     * @var bool
+     */
+    private $clionly;
+
     public function get_name() {
         return get_string('fileupdatestask', 'tool_ally');
     }
@@ -68,6 +73,8 @@ class file_updates_task extends scheduled_task {
         }
 
         $updates = $this->updates ?: new push_file_updates($config);
+
+        $this->clionly = $config->is_cli_only();
 
         // Push file updates.
         $this->push_updates($config, $updates, $time);
@@ -100,6 +107,12 @@ class file_updates_task extends scheduled_task {
                 // Check to see if we have our batch size or if we are at the last file.
                 if (count($payload) >= $config->get_batch_size() || !$files->valid()) {
                     $updates->send($payload);
+
+                    if ($this->clionly) {
+                        // Successful send, enable live push updates.
+                        set_config('push_cli_only', 0, 'tool_ally');
+                        $this->clionly = false;
+                    }
 
                     // Reset payload and track last successful and latest time modified.
                     $payload    = [];
@@ -139,6 +152,12 @@ class file_updates_task extends scheduled_task {
             // Check to see if we have our batch size or if we are at the last file.
             if (count($payload) >= $config->get_batch_size() || !$deletes->valid()) {
                 $updates->send($payload);
+
+                if ($this->clionly) {
+                    // Successful send, enable live push updates.
+                    set_config('push_cli_only', 0, 'tool_ally');
+                    $this->clionly = false;
+                }
 
                 // Successfully sent, remove.
                 $DB->delete_records_list('tool_ally_deleted_files', 'id', $ids);
