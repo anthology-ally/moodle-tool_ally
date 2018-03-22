@@ -25,12 +25,6 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
-use tool_ally\push_config,
-    tool_ally\push_file_updates,
-    tool_ally\local_file,
-    tool_ally\files_iterator,
-    tool_ally\event\push_file_updates_error;
-
 /**
  * File processor for Ally.
  * Can be used to process individual or groups of files.
