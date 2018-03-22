@@ -53,4 +53,4 @@ $string['autoconfigtoken'] = 'The web service token is as follows:';
 $string['autoconfigapicall'] = 'You can test that the webservice is working via the following url:';
 $string['pushfileserror'] = 'Ally file updates error.';
 $string['pushfileserror:explanation'] = 'Errors associated with file updates push to Ally services.';
-$string['pushfileserror:skip'] = 'Skipping file(s) push due to communication problems.';
+$string['pushfileserror:skip'] = 'Skipping live file(s) push due to communication problems. Live file push will be restored when file updates task is successful. Please, review your configuration.';

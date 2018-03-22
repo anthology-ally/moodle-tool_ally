@@ -43,7 +43,7 @@ class push_config {
     /**
      * Timeout to be used if config is for live push.
      */
-    const LIVETIMEOUT = 30;
+    const LIVETIMEOUT = 10;
 
     /**
      * Push file updates to this URL.
@@ -74,7 +74,7 @@ class push_config {
     /**
      * @var int
      */
-    private static $timeout;
+    private $timeout;
 
     /**
      * @var int
@@ -131,10 +131,10 @@ class push_config {
                 }
             }
             if (CLI_SCRIPT) {
-                self::$timeout = isset($config->push_timeout_cli) ?
+                $this->timeout = isset($config->push_timeout_cli) ?
                     $config->push_timeout_cli : self::TASKTIMEOUT;
             } else {
-                self::$timeout = isset($config->push_timeout) ?
+                $this->timeout = isset($config->push_timeout) ?
                     $config->push_timeout : self::LIVETIMEOUT;
             }
             if (isset($config->push_connect_timeout)) {
@@ -193,7 +193,7 @@ class push_config {
      * @return int
      */
     public function get_timeout() {
-        return self::$timeout;
+        return $this->timeout;
     }
 
     /**

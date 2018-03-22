@@ -50,13 +50,6 @@ class file_processor {
      * @return bool Successfully pushed file.
      */
     private static function push_update(push_file_updates $updates, \stored_file $file) {
-        $config = self::get_config();
-        if ($config->is_cli_only()) {
-            // Skip update, will try after cron cleans up cli only usage.
-            push_file_updates_error::create_from_msg(get_string('pushfileserror:skip', 'tool_ally'))->trigger();
-            return false;
-        }
-
         // Ignore draft files and files in the recycle bin.
         $filearea = $file->get_filearea();
         if ($filearea === 'draft' || $filearea === 'recyclebin_course') {
@@ -87,7 +80,7 @@ class file_processor {
      */
     public static function push_file_update(\stored_file $file) {
         $config = self::get_config();
-        if (!$config->is_valid()) {
+        if (!$config->is_valid() || $config->is_cli_only()) {
             return false;
         }
 

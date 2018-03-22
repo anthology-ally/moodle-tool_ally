@@ -73,14 +73,17 @@ class push_file_updates {
 
             $this->verify_error($curl);
             $this->verify_http_code($curl);
-        } catch (\moodle_exception $e) {
-            push_file_updates_error::create_from_exception($e)->trigger();
+        } catch (\Exception $e) {
             if ($retrycount < $this->config->get_max_push_attempts()) {
                 usleep(rand(100000, 500000)); // Sleep between 0.1 and 0.5 second.
-                $this->send($payload, $curl, $retrycount + 1);
+                $this->send($payload, null, $retrycount + 1);
             } else {
                 // Too many errors, ensure it only runs on cli.
                 set_config('push_cli_only', 1, 'tool_ally');
+                // Log exception after max attempts.
+                push_file_updates_error::create_from_exception($e)->trigger();
+                // Log live push skip due to errors and switch to cli only.
+                push_file_updates_error::create_from_msg(get_string('pushfileserror:skip', 'tool_ally'))->trigger();
             }
         }
     }
