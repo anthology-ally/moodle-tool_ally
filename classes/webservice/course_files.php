@@ -24,8 +24,10 @@
 
 namespace tool_ally\webservice;
 
+use tool_ally\file_validator;
 use tool_ally\files_iterator;
 use tool_ally\local;
+use tool_ally\local_file;
 use tool_ally\role_assignments;
 
 defined('MOODLE_INTERNAL') || die();
@@ -72,8 +74,6 @@ class course_files extends \external_api {
     public static function service($ids) {
 
         $params      = self::validate_parameters(self::service_parameters(), ['ids' => $ids]);
-        $userids     = local::get_adminids();
-        $assignments = new role_assignments(local::get_roleids());
 
         self::validate_context(\context_system::instance());
         require_capability('moodle/course:view', \context_system::instance());
@@ -84,7 +84,7 @@ class course_files extends \external_api {
         $return = array();
         foreach ($params['ids'] as $id) {
             $context = \context_course::instance($id);
-            $files = new files_iterator($userids, $assignments);
+            $files = local_file::iterator();
             $files->in_context($context);
 
             foreach ($files as $file) {

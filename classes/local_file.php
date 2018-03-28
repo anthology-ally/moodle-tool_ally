@@ -39,19 +39,28 @@ class local_file {
     /**
      * Factory method for file iterator.
      *
-     * @param array|null $userids
-     * @param array|null $roleids
+     * @param file_validator|null $validator
      * @return files_iterator
      */
-    public static function iterator(array $userids = null, array $roleids = null) {
-        if ($userids === null) {
-            $userids = local::get_adminids();
-        }
-        if ($roleids === null) {
-            $roleids = local::get_roleids();
+    public static function iterator(file_validator $validator = null) {
+        $validator = $validator ?: self::file_validator();
+
+        return new files_iterator($validator);
+    }
+
+    /**
+     * Factory method for file iterator.
+     *
+     * @return file_validator
+     */
+    public static function file_validator() {
+        static $validator;
+
+        if ($validator === null || PHPUNIT_TEST) {
+            $validator = new file_validator(local::get_adminids(), new role_assignments(local::get_roleids()));
         }
 
-        return new files_iterator($userids, new role_assignments($roleids));
+        return $validator;
     }
 
     /**

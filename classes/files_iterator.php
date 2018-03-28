@@ -41,19 +41,14 @@ class files_iterator implements \Iterator {
     private $pagesize = 5000;
 
     /**
-     * @var array
+     * @var file_validator
      */
-    private $userids;
+    private $validator;
 
     /**
      * @var \file_storage
      */
     private $storage;
-
-    /**
-     * @var role_assignments
-     */
-    private $assignments;
 
     /**
      * @var array
@@ -108,14 +103,12 @@ class files_iterator implements \Iterator {
     private $sort = '';
 
     /**
-     * @param array $userids
-     * @param role_assignments|null $assignments
+     * @param file_validator $validator
      * @param \file_storage|null $storage
      */
-    public function __construct(array $userids = [], role_assignments $assignments = null, \file_storage $storage = null) {
-        $this->userids     = $userids;
-        $this->assignments = $assignments ?: new role_assignments();
-        $this->storage     = $storage ?: get_file_storage();
+    public function __construct(file_validator $validator, \file_storage $storage = null) {
+        $this->validator = $validator;
+        $this->storage   = $storage ?: get_file_storage();
     }
 
     /**
@@ -136,55 +129,6 @@ class files_iterator implements \Iterator {
         return $this->current;
     }
 
-    /**
-     * Check component and area to see if it's whitelisted as a teacher authored file - return true if it is.
-     * @param \stdClass $filerow
-     * @return bool
-     */
-    protected function check_component_area_teacher_whitelist(\stdClass $filerow) {
-
-        $whitelist = [
-            // Resources.
-            'mod_book~chapter',
-            'mod_book~intro',
-            'mod_folder~content',
-            'mod_folder~intro',
-            'mod_label~intro',
-            'mod_page~content',
-            'mod_page~intro',
-            'mod_resource~content',
-            'mod_resource~intro',
-            // Activities.
-            'mod_assign~intro',
-            'mod_assign~introattachment',
-            'mod_forum~intro', // Note students can create files in discussion topics / replies. This is the best we can do.
-            'mod_hsuforum~intro',
-            'mod_glossary~intro', // We can't do glossary entries as students can add these.
-            'mod_lesson~intro',
-            'mod_lesson~page_contents',
-            'mod_lesson~page_responses',
-            'mod_lesson~page_answers',
-            'mod_quiz~intro',
-            // Whitelist other.
-            'block_html~content',
-            'course~overviewfiles',
-            'course~section',
-            'course~summary',
-            'question~questiontext',
-            'question~generalfeedback',
-            'question~answer',
-            'question~answerfeedback',
-            'question~correctfeedback',
-            'question~incorrectfeedback',
-            'question~partiallycorrectfeedback',
-            'qtype_ddmatch~subanswer',
-            'qtype_ddmatch~subquestion'
-        ];
-
-        $key = $filerow->component.'~'.$filerow->filearea;
-        return in_array($key, $whitelist);
-    }
-
     public function next() {
         while (($row = current($this->records)) !== false) {
             if (next($this->records) === false) {
@@ -194,21 +138,13 @@ class files_iterator implements \Iterator {
             }
 
             $context = $this->extract_context($row);
+            $file    = $this->storage->get_file_instance($row);
 
-            if (!$this->check_component_area_teacher_whitelist($row)) {
-                // Component + area are not whitelisted so check if user is an editing teacher / manager / admin / etc.
-                $validuser = empty($row->userid) || array_key_exists($row->userid, $this->userids) ||
-                    $this->assignments->has($row->userid, $context);
-                if (!$validuser) {
-                    continue;
-                }
+            if (!$this->validator->validate_stored_file($file, $context)) {
+                continue;
             }
 
-            if (!$context->get_course_context(false) instanceof \context_course) {
-                continue; // Only files that belong to a course are supported by Ally.
-            }
-
-            $this->current = $this->storage->get_file_instance($row);
+            $this->current = $file;
             return;
         }
         $this->current = null;

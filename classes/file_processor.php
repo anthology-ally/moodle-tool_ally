@@ -78,11 +78,7 @@ class file_processor {
             return false;
         }
 
-        // Make sure file has a course context - Ally doesn't support files without a course context at the moment.
-        // We don't want to throw any errors or it wont be possible to add files outside of courses.
-        $context = \context::instance_by_id($file->get_contextid());
-        $coursecontext = $context->get_course_context(false);
-        if (!$coursecontext) {
+        if (!local_file::file_validator()->validate_stored_file($file)) {
             return false;
         }
 
