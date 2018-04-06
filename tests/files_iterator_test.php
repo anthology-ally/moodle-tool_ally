@@ -26,6 +26,7 @@ use tool_ally\files_iterator;
 use tool_ally\local;
 use tool_ally\role_assignments;
 use tool_ally\local_file;
+use tool_ally\file_validator;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -85,20 +86,23 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $hashes    = [$file1->get_pathnamehash(), $file2->get_pathnamehash()];
 
         // Check that if a role or user did not make content, that we only get files with null user ID.
-        $files = new files_iterator([get_admin()->id], new role_assignments([$managerid]));
+        $validator = new file_validator([get_admin()->id], new role_assignments([$managerid]));
+        $files = new files_iterator($validator);
         foreach ($files as $file) {
             $this->assertStoredFileEquals($file2, $file);
             $this->assertNull($file->get_userid());
         }
 
         // Ensure user role works.
-        $files = new files_iterator([], new role_assignments([$roleid]));
+        $validator = new file_validator([], new role_assignments([$roleid]));
+        $files = new files_iterator($validator);
         foreach ($files as $file) {
             $this->assertContains($file->get_pathnamehash(), $hashes);
         }
 
         // Ensure user ID works.
-        $files = new files_iterator([$user->id]);
+        $validator = new file_validator([$user->id]);
+        $files = new files_iterator($validator);
         foreach ($files as $file) {
             $this->assertContains($file->get_pathnamehash(), $hashes);
         }
@@ -112,7 +116,8 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
 
         $course = $this->getDataGenerator()->create_course();
         $this->getDataGenerator()->create_module('forum', ['course' => $course->id]);
-        $files = new files_iterator(local::get_adminids(), new role_assignments(local::get_roleids()));
+        $validator = new file_validator(local::get_adminids(), new role_assignments(local::get_roleids()));
+        $files = new files_iterator($validator);
         $this->assertEmpty(iterator_to_array($files));
     }
 
@@ -147,7 +152,8 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $file3->set_timemodified($later->getTimestamp());
 
         // Make sure only files with times modified since the $since param, i.e. only $file3 here.
-        $files = new files_iterator();
+        $validator = new file_validator();
+        $files = new files_iterator($validator);
         $files->since($datetime->getTimestamp());
         foreach ($files as $file) {
             $this->assertStoredFileEquals($file3, $file);
@@ -350,7 +356,8 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         }
 
         // Review if all path name hashes are the same with paging turned on.
-        $files = new files_iterator([], new role_assignments([$roleid]));
+        $validator = new file_validator([], new role_assignments([$roleid]));
+        $files = new files_iterator($validator);
         $files->set_page_size($pagesize);
         $queriedhashes = [];
         foreach ($files as $file) {

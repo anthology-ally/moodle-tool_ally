@@ -23,8 +23,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-use tool_ally\push_config,
-    tool_ally\file_processor,
+use tool_ally\file_processor,
     tool_ally\local_file;
 
 /**
@@ -38,7 +37,7 @@ function tool_ally_after_file_deleted($filerecord) {
     $file = $fs->get_file_instance($filerecord);
 
     $courseid = local_file::courseid($file, IGNORE_MISSING);
-    if (empty($courseid)) {
+    if (!local_file::file_validator()->validate_stored_file($file)) {
         return; // Ally does not support files outside of a course.
     }
 
