@@ -28,6 +28,7 @@ use core\task\scheduled_task;
 use tool_ally\local_file;
 use tool_ally\push_config;
 use tool_ally\push_file_updates;
+use tool_ally\event\push_file_updates_summary;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -92,6 +93,8 @@ class file_updates_task extends scheduled_task {
      * @throws \Exception
      */
     private function push_updates(push_config $config, push_file_updates $updates, $time) {
+        global $CFG;
+
         $files      = local_file::iterator()->since($time)->sort_by('timemodified');
         $payload    = [];
         $timetosave = 0;
@@ -107,6 +110,9 @@ class file_updates_task extends scheduled_task {
                 // Check to see if we have our batch size or if we are at the last file.
                 if (count($payload) >= $config->get_batch_size() || !$files->valid()) {
                     $updates->send($payload);
+                    if (!empty($CFG->tool_ally_log_file_updates)) {
+                        push_file_updates_summary::create_from_payload($payload)->trigger();
+                    }
 
                     if ($this->clionly) {
                         // Successful send, enable live push updates.
@@ -136,7 +142,7 @@ class file_updates_task extends scheduled_task {
      * @param push_file_updates $updates
      */
     private function push_deletes(push_config $config, push_file_updates $updates) {
-        global $DB;
+        global $DB, $CFG;
 
         $ids     = [];
         $payload = [];
@@ -152,6 +158,9 @@ class file_updates_task extends scheduled_task {
             // Check to see if we have our batch size or if we are at the last file.
             if (count($payload) >= $config->get_batch_size() || !$deletes->valid()) {
                 $updates->send($payload);
+                if (!empty($CFG->tool_ally_log_file_updates)) {
+                    push_file_updates_summary::create_from_payload($payload, true)->trigger();
+                }
 
                 if ($this->clionly) {
                     // Successful send, enable live push updates.
