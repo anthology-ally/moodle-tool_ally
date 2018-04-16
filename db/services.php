@@ -90,6 +90,27 @@ $functions = [
         'description'  => 'Lists all the courses on the site',
         'type'         => 'read',
         'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses'
+    ],
+    'tool_ally_list_content' => [
+        'classname'    => 'tool_ally\\webservice\\course_content',
+        'methodname'   => 'service',
+        'description'  => 'Lists all instances of content',
+        'type'         => 'read',
+        'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses'
+    ],
+    'tool_ally_get_content' => [
+        'classname'    => 'tool_ally\\webservice\\content',
+        'methodname'   => 'service',
+        'description'  => 'Get specific component instance content',
+        'type'         => 'read',
+        'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses'
+    ],
+    'tool_ally_replace_content' => [
+        'classname'    => 'tool_ally\\webservice\\replace_content',
+        'methodname'   => 'service',
+        'description'  => 'Get specific component instance content',
+        'type'         => 'read',
+        'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses'
     ]
 ];
 
@@ -107,6 +128,9 @@ $services = [
             'tool_ally_request_view_completion',
             'tool_ally_version_info',
             'tool_ally_get_courses',
+            'tool_ally_list_content',
+            'tool_ally_get_content',
+            'tool_ally_replace_content'
         ],
         'enabled'         => 0,
         'restrictedusers' => 0,

@@ -25,12 +25,12 @@
 defined('MOODLE_INTERNAL') || die();
 
 // We have to include this so that it's available before an upgrade completes and registers the classes for autoloading.
-require_once($CFG->dirroot.'/admin/tool/ally/classes/adminsetting/ally_config.php');
+require_once($CFG->dirroot.'/admin/tool/ally/classes/adminsetting/ally_config_link.php');
 require_once($CFG->dirroot.'/admin/tool/ally/classes/adminsetting/ally_configpasswordunmask.php');
 require_once($CFG->dirroot.'/admin/tool/ally/classes/adminsetting/ally_pickroles.php');
 require_once($CFG->dirroot.'/admin/tool/ally/classes/adminsetting/ally_trim.php');
 
-use tool_ally\adminsetting\ally_config;
+use tool_ally\adminsetting\ally_config_link;
 use tool_ally\adminsetting\ally_configpasswordunmask;
 use tool_ally\adminsetting\ally_pickroles;
 use tool_ally\adminsetting\ally_trim;
@@ -56,8 +56,18 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtext('tool_ally/clientid', new lang_string('clientid', 'tool_ally'),
         new lang_string('clientiddesc', 'tool_ally'), '', PARAM_INT, 5));
 
-    $settings->add(new ally_config('tool_ally/autconf', new lang_string('autoconfigure', 'tool_ally'),
-        new lang_string('autoconfiguredesc', 'tool_ally')));
+    $settings->add(new ally_config_link('tool_ally/autconf', new lang_string('autoconfigure', 'tool_ally'),
+        new moodle_url('/admin/tool/ally/autoconfigws.php')));
 
-    $ADMIN->add('tools', $settings);
+    $settings->add(new ally_config_link('tool_ally/allyclientconfig', new lang_string('allyclientconfig', 'tool_ally'),
+        new moodle_url('/admin/tool/ally/lti/view.php')));
 }
+
+$config     = get_config('tool_ally');
+$configured = !empty($config) && !empty($config->adminurl) && !empty($config->key) && !empty($config->secret);
+if ($configured) {
+    $ADMIN->add('tools', new admin_externalpage('allyclientconfig', get_string('allyclientconfig', 'tool_ally'),
+        "$CFG->wwwroot/admin/tool/ally/lti/view.php", 'tool/ally:clientconfig'));
+}
+
+$ADMIN->add('tools', $settings);

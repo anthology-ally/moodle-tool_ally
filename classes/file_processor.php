@@ -39,7 +39,7 @@ defined('MOODLE_INTERNAL') || die();
 class file_processor {
 
     /**
-     * Push file updats to Ally without batching, etc.
+     * Push file updates to Ally without batching, etc.
      *
      * @param push_file_updates $updates
      * @param \stored_file $file

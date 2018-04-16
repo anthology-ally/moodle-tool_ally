@@ -37,7 +37,7 @@ require_once($CFG->dirroot.'/question/engine/bank.php');
  * @copyright Copyright (c) 2017 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class question_html extends html_base {
+class question_component extends file_component_base {
 
     public static function component_type() {
         return self::TYPE_CORE;

@@ -15,26 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Html file replacement support for Moodlerooms forum module
- * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2017 Blackboard Inc.
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Error event logging for content updates push.
+ *
+ * @package    tool_ally
+ * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_ally\componentsupport;
+namespace tool_ally\event;
+defined('MOODLE_INTERNAL') || die();
 
-defined ('MOODLE_INTERNAL') || die();
-
-use tool_ally\local_file;
 
 /**
- * Html file replacement support for Moodlerooms forum module
- * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2017 Blackboard Inc.
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * Class push_content_updates_error.
+ *
+ * @package    tool_ally
+ * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class hsuforum_html extends forum_html {
-
-    protected $table = 'hsuforum_posts';
-
+class push_content_updates_error extends base_push_updates_error {
+    const ERRORKEY = 'pushcontenterror';
 }

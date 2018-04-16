@@ -117,4 +117,32 @@ class local {
         $runningbehattest = defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING;
         return ($runningphpunittest || $runningbehattest);
     }
+
+    /**
+     * Get component class with namespace.
+     * @param string $component
+     * @return string
+     */
+    public static function get_component_class($component) {
+        if (strpos($component, 'mod_') === 0) {
+            $component = substr($component, strlen('mod_'));
+        }
+        $componentclassname = $component . '_component';
+        $componentclassname = 'tool_ally\\componentsupport\\'.$componentclassname;
+        return $componentclassname;
+    }
+
+    /**
+     * Get type of component support for specific component.
+     *
+     * @param string $component
+     * @return string | bool
+     */
+    public static function get_component_support_type($component) {
+        $componentclassname = self::get_component_class($component);
+        if (class_exists($componentclassname)) {
+            return $componentclassname::component_type();
+        }
+        return false;
+    }
 }

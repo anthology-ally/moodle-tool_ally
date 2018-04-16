@@ -15,32 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Scheduled tasks.
- *
- * @package   tool_ally
- * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
+ * Interface for supporting html content annotation mapping.
+ * @author    Guy Thomas <gthomas@moodlerooms.com>
+ * @copyright Copyright (c) 2018 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace tool_ally\componentsupport\interfaces;
 
-$tasks = [
-    [
-        'classname' => '\tool_ally\task\file_updates_task',
-        'blocking'  => 0,
-        'minute'    => '*',
-        'hour'      => '*',
-        'day'       => '*',
-        'dayofweek' => '*',
-        'month'     => '*'
-    ],
-    [
-        'classname' => '\tool_ally\task\content_deletion_task',
-        'blocking'  => 0,
-        'minute'    => '*',
-        'hour'      => '*',
-        'day'       => '*',
-        'dayofweek' => '*',
-        'month'     => '*'
-    ],
-];
+defined ('MOODLE_INTERNAL') || die();
+
+interface annotation_map {
+
+    /**
+     * @param int $courseid
+     *
+     * @return array
+     */
+    public function get_annotation_maps($courseid);
+}

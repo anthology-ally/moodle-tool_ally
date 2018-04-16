@@ -113,42 +113,43 @@ class push_config {
 
     private function apply_default_configs() {
         $config = get_config('tool_ally');
-        if (!empty($config)) {
-            if (is_null($this->url) && !empty($config->pushurl)) {
-                $this->url = $config->pushurl;
-            }
-            if (is_null($this->key) && !empty($config->key)) {
-                $this->key = $config->key;
-            }
-            if (is_null($this->secret) && !empty($config->secret)) {
-                $this->secret = $config->secret;
-            }
-            if (is_null($this->batch)) {
-                if (!empty($config->push_batch_size) && is_numeric($config->push_batch_size)) {
-                    $this->batch = (int) $config->push_batch_size;
-                } else {
-                    $this->batch = 500;
-                }
-            }
-            if (CLI_SCRIPT) {
-                $this->timeout = isset($config->push_timeout_cli) ?
-                    $config->push_timeout_cli : self::TASKTIMEOUT;
+        if (empty($config)) {
+            return;
+        }
+        if (is_null($this->url) && !empty($config->pushurl)) {
+            $this->url = $config->pushurl;
+        }
+        if (is_null($this->key) && !empty($config->key)) {
+            $this->key = $config->key;
+        }
+        if (is_null($this->secret) && !empty($config->secret)) {
+            $this->secret = $config->secret;
+        }
+        if (is_null($this->batch)) {
+            if (!empty($config->push_batch_size) && is_numeric($config->push_batch_size)) {
+                $this->batch = (int) $config->push_batch_size;
             } else {
-                $this->timeout = isset($config->push_timeout) ?
-                    $config->push_timeout : self::LIVETIMEOUT;
+                $this->batch = 500;
             }
-            if (isset($config->push_connect_timeout)) {
-                $this->connecttimeout = (int) $config->push_connect_timeout;
-            }
-            if (isset($config->push_debug)) {
-                $this->debug = (bool) $config->push_debug;
-            }
-            if (isset($config->push_cli_only)) {
-                $this->clionly = (bool) $config->push_cli_only;
-            }
-            if (isset($config->max_push_attempts)) {
-                $this->maxpushattempts = (int) $config->max_push_attempts;
-            }
+        }
+        if (CLI_SCRIPT) {
+            $this->timeout = isset($config->push_timeout_cli) ?
+                $config->push_timeout_cli : self::TASKTIMEOUT;
+        } else {
+            $this->timeout = isset($config->push_timeout) ?
+                $config->push_timeout : self::LIVETIMEOUT;
+        }
+        if (isset($config->push_connect_timeout)) {
+            $this->connecttimeout = (int) $config->push_connect_timeout;
+        }
+        if (isset($config->push_debug)) {
+            $this->debug = (bool) $config->push_debug;
+        }
+        if (isset($config->push_cli_only)) {
+            $this->clionly = (bool) $config->push_cli_only;
+        }
+        if (isset($config->max_push_attempts)) {
+            $this->maxpushattempts = (int) $config->max_push_attempts;
         }
     }
 

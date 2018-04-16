@@ -454,7 +454,10 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
      * Test replacing files within hsuforum module intro / discussion / posts.
      */
     public function test_service_hsuforum_html() {
-        $this->test_service_forum_html('hsuforum');
+        global $CFG;
+        if (file_exists($CFG->dirroot.'/mod/hsuforum')) {
+            $this->test_service_forum_html('hsuforum');
+        }
     }
 
     /**
@@ -640,6 +643,10 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
 
     public function test_service_qtype_ddmatch_html() {
         global $CFG, $DB, $USER;
+
+        if (!file_exists($CFG->dirroot.'/question/type/ddmatch')) {
+            return;
+        }
 
         require_once($CFG->libdir . '/questionlib.php');
 
