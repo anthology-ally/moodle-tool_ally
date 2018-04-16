@@ -33,6 +33,6 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class push_content_updates_error extends base_error {
+class push_content_updates_error extends base_push_updates_error {
     const ERRORKEY = 'pushcontenterror';
 }

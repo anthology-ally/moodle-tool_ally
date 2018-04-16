@@ -45,6 +45,7 @@ use mod_hsuforum\event\discussion_created as hsu_discussion_created;
 use mod_hsuforum\event\discussion_updated as hsu_discussion_updated;
 use mod_hsuforum\event\discussion_deleted as hsu_discussion_deleted;
 use mod_hsuforum\event\post_updated as hsu_post_updated;
+use mod_hsuforum\event\post_updated as hsu_post_created;
 
 use tool_ally\models\component_content;
 
