@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Html file replacement support for core questions
- * @package tool_ally
+ * Html file replacement support for Moodlerooms forum module.
  * @author    Guy Thomas <gthomas@moodlerooms.com>
  * @copyright Copyright (c) 2017 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,34 +28,18 @@ defined ('MOODLE_INTERNAL') || die();
 use tool_ally\local_file;
 
 /**
- * Html file replacement support for glossary
- * @package tool_ally
+ * Html file replacement support for Moodlerooms forum module.
  * @author    Guy Thomas <gthomas@moodlerooms.com>
  * @copyright Copyright (c) 2017 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class glossary_html extends html_base {
+class hsuforum_component extends forum_component {
 
-    public static function component_type() {
-        return self::TYPE_MOD;
-    }
+    protected $type = 'hsuforum';
 
-    public function replace_file_links() {
+    protected $tablefields = [
+        'hsuforum' => ['intro'],
+        'hsuforum_posts' => ['message']
+    ];
 
-        $file = $this->file;
-
-        $area = $file->get_filearea();
-        if ($area !== 'entry') {
-            debugging('Glossary area of '.$area.' is not yet supported');
-            return;
-        }
-
-        $itemid = $file->get_itemid();
-        $table = 'glossary_entries';
-        $idfield = 'id';
-        $repfield = 'definition';
-
-        local_file::update_filenames_in_html($repfield, $table, ' id = ? ',
-            [$idfield => $itemid], $this->oldfilename, $file->get_filename());
-    }
 }

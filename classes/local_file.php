@@ -26,7 +26,9 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
-use tool_ally\componentsupport\html_base;
+use tool_ally\componentsupport\component_base;
+use tool_ally\componentsupport\file_component_base;
+use tool_ally\componentsupport\interfaces\file_replacement;
 
 /**
  * File library.
@@ -299,25 +301,11 @@ class local_file {
      * @return bool | array
      */
     public static function get_component_support_fileurlproperties($component, $pluginfileurl) {
-        $componentclassname = $component . '_html';
-        $componentclassname = 'tool_ally\\componentsupport\\'.$componentclassname;
+        $componentclassname = local::get_component_class($component);
         if (class_exists($componentclassname)) {
-            return $componentclassname::fileurlproperties($pluginfileurl);
-        }
-        return false;
-    }
-
-    /**
-     * Get type of component support for specific component.
-     *
-     * @param string $component
-     * @return string | bool
-     */
-    private static function get_component_support_type($component) {
-        $componentclassname = $component . '_html';
-        $componentclassname = 'tool_ally\\componentsupport\\'.$componentclassname;
-        if (class_exists($componentclassname)) {
-            return $componentclassname::component_type();
+            if (method_exists($componentclassname, 'fileurlproperties')) {
+                return $componentclassname::fileurlproperties($pluginfileurl);
+            }
         }
         return false;
     }
@@ -380,12 +368,14 @@ class local_file {
         }
 
         // Process any other tables related to this component.
-        $componentclassname = $component . '_html';
-        $componentclassname = 'tool_ally\\componentsupport\\'.$componentclassname;
+        $componentclassname = local::get_component_class($component);
         if (class_exists($componentclassname)) {
-            /** @var html_base $instance */
-            $instance = new $componentclassname($oldfilename, $file);
-            $instance->replace_file_links();
+            /** @var component_base $instance */
+            $instance = new $componentclassname();
+            if ($instance instanceof file_component_base) {
+                $instance->setup_file_and_validate($oldfilename, $file);
+                $instance->replace_file_links();
+            }
         }
     }
 
@@ -401,8 +391,6 @@ class local_file {
         $components = [
             'course',
             'block_html',
-            'mod_assign',
-            'mod_label',
             'mod_page',
             'mod_folder'
         ];
@@ -410,7 +398,7 @@ class local_file {
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot()) {
 
-                $regex = '/(.*)(?:_html.php)$/';
+                $regex = '/(.*)(?:_component.php)$/';
 
                 $matches = [];
 
@@ -423,8 +411,8 @@ class local_file {
                 $component = $matches[1];
 
                 if ($iscomponentsupportfile) {
-                    $type = self::get_component_support_type($component);
-                    if ($type != html_base::TYPE_CORE) {
+                    $type = local::get_component_support_type($component);
+                    if ($type != component_base::TYPE_CORE) {
                         $fullcomponent = $type . '_' . $component;
                     } else {
                         $fullcomponent = $component;

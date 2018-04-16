@@ -1,6 +1,10 @@
-.ally-auto-config {
+.ally-config-row {
     margin: 1em 0;
 }
 .ally-pad {
     margin: 1em 0;
+}
+
+#page-admin-tool-ally-lti-view iframe#contentframe {
+    padding: 1em;
 }

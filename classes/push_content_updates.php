@@ -24,7 +24,7 @@
 
 namespace tool_ally;
 
-use tool_ally\event\push_file_updates_error;
+use tool_ally\event\push_content_updates_error;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -36,17 +36,17 @@ require_once($CFG->libdir.'/filelib.php');
  * Push file updates.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class push_file_updates extends push_updates{
+class push_content_updates extends push_updates{
 
     public function handle_send_error(\Exception $e) {
         // Too many errors, ensure it only runs on cli.
         set_config('push_cli_only', 1, 'tool_ally');
         // Log exception after max attempts.
-        push_file_updates_error::create_from_exception($e)->trigger();
+        push_content_updates_error::create_from_exception($e)->trigger();
         // Log live push skip due to errors and switch to cli only.
-        push_file_updates_error::create_from_msg(get_string('pushfileserror:skip', 'tool_ally'))->trigger();
+        push_content_updates_error::create_from_msg(get_string('pushcontenterror:skip', 'tool_ally'))->trigger();
     }
 }

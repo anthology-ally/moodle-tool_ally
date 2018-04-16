@@ -54,23 +54,23 @@ class version_info extends \external_api {
     public static function service_returns() {
         return new \external_single_structure([
             'tool_ally' => new \external_single_structure([
-                'version'  => new \external_value(PARAM_INT, 'Ally admin tool version'),
-                'requires' => new \external_value(PARAM_INT, 'Ally admin tool requires Moodle version'),
+                'version'  => new \external_value(PARAM_FLOAT, 'Ally admin tool version'),
+                'requires' => new \external_value(PARAM_FLOAT, 'Ally admin tool requires Moodle version'),
                 'release'  => new \external_value(PARAM_TEXT, 'Ally admin tool release'),
             ]),
             'filter_ally'  => new \external_single_structure([
-                'version'  => new \external_value(PARAM_INT, 'Ally filter version'),
-                'requires' => new \external_value(PARAM_INT, 'Ally filter requires Moodle version'),
+                'version'  => new \external_value(PARAM_FLOAT, 'Ally filter version'),
+                'requires' => new \external_value(PARAM_FLOAT, 'Ally filter requires Moodle version'),
                 'release'  => new \external_value(PARAM_TEXT, 'Ally filter release'),
                 'active'   => new \external_value(PARAM_BOOL, 'Ally filter active at system level')
             ]),
             'report_allylti' => new \external_single_structure([
-                'version'    => new \external_value(PARAM_INT, 'Ally LTI report version'),
-                'requires'   => new \external_value(PARAM_INT, 'Ally LTI report requires Moodle version'),
+                'version'    => new \external_value(PARAM_FLOAT, 'Ally LTI report version'),
+                'requires'   => new \external_value(PARAM_FLOAT, 'Ally LTI report requires Moodle version'),
                 'release'    => new \external_value(PARAM_TEXT, 'Ally LTI report release'),
             ]),
             'moodle' => new \external_single_structure([
-                'version' => new \external_value(PARAM_INT, 'Moodle version'),
+                'version' => new \external_value(PARAM_FLOAT, 'Moodle version'),
                 'release' => new \external_value(PARAM_TEXT, 'Moodle release'),
                 'branch'  => new \external_value(PARAM_FLOAT, 'Moodle branch')
             ])

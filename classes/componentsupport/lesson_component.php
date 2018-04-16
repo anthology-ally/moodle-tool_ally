@@ -15,8 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Html file replacement support for core forum module
- * @author    Guy Thomas <gthomas@moodlerooms.com>
+ * Html file replacement support for core lessons.
+ * @package tool_ally
+ * @author    David Castro <david.castro@blackboard.com>
  * @copyright Copyright (c) 2017 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,28 +29,28 @@ defined ('MOODLE_INTERNAL') || die();
 use tool_ally\local_file;
 
 /**
- * Html file replacement support for core forum module
- * @author    Guy Thomas <gthomas@moodlerooms.com>
+ * Class lesson_component.
+ * Html file replacement support for core lessons.
+ * @package tool_ally
+ * @author    David Castro <david.castro@blackboard.com>
  * @copyright Copyright (c) 2017 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class forum_html extends html_base {
-
-    protected $table = 'forum_posts';
+class lesson_component extends file_component_base {
 
     public static function component_type() {
         return self::TYPE_MOD;
     }
 
     public function replace_file_links() {
-
         $file = $this->file;
 
         $area = $file->get_filearea();
         $itemid = $file->get_itemid();
-        if ($area === 'post') {
-            local_file::update_filenames_in_html('message', $this->table, ' id = ? ',
-                    ['id' => $itemid], $this->oldfilename, $file->get_filename());
+
+        if ($area === 'page_contents') {
+            local_file::update_filenames_in_html('contents', 'lesson_pages', ' id = ? ',
+                ['id' => $itemid], $this->oldfilename, $file->get_filename());
         }
     }
 }
