@@ -370,4 +370,63 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
             $this->assertContains($hash, $queriedhashes);
         }
     }
+
+    /**
+     * Test using the iterator with validation disabled.
+     */
+    public function test_files_without_valid_filter() {
+        $this->resetAfterTest();
+
+        $now = time();
+
+        $dg = $this->getDataGenerator();
+        $course1 = $dg->create_course();
+        $course2 = $dg->create_course();
+        $user = $this->getDataGenerator()->create_user();
+        $dg->enrol_user($user->id, $course1->id, 'editingteacher');
+        $dg->enrol_user($user->id, $course2->id, 'student');
+        $this->setUser($user);
+
+        // Add a file in course where user is a teacher.
+        $fs = get_file_storage();
+        $filerecord = array(
+            'contextid' => context_course::instance($course1->id)->id,
+            'component' => 'mod_notwhitelisted',
+            'filearea' => 'content',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'test.txt',
+            'userid' => $user->id,
+            'modified' => $now
+        );
+        $teststring = 'moodletest';
+        $testfile1 = $fs->create_file_from_string($filerecord, $teststring);
+
+        // Add a file in course where user is not a teacher.
+        $fs = get_file_storage();
+        $filerecord = array(
+            'contextid' => context_course::instance($course2->id)->id,
+            'component' => 'mod_notwhitelisted',
+            'filearea' => 'content',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'test2.txt',
+            'userid' => $user->id,
+            'modified' => $now
+        );
+        $teststring = 'moodletest2';
+        $testfile2 = $fs->create_file_from_string($filerecord, $teststring);
+
+        $files = local_file::iterator();
+        $files->since($now - DAYSECS)->with_valid_filter(false);
+        $fcount = 0;
+        $testfiles = [$testfile1, $testfile2];
+        foreach ($files as $filetocheck) {
+            $fcount++;
+            $this->assertTrue(in_array($filetocheck, $testfiles));
+        }
+
+        // Should be getting $fcount === 2 because student files are now also included.
+        $this->assertEquals(2, $fcount);
+    }
 }
