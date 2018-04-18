@@ -32,12 +32,22 @@ require_once($CFG->libdir.'/clilib.php');
 
 list($options, $unrecognized) = cli_get_params(
     [
-        'help'    => false,
-        'since'   => 0
+        'help'        => false,
+        'since'       => 0,
+        'component'   => false,
+        'filearea'    => false,
+        'itemid'      => false,
+        'mimetype'    => false,
+        'omitvalid'   => false,
     ],
     [
         'h' => 'help',
-        's' => 'since'
+        's' => 'since',
+        'c' => 'component',
+        'f' => 'filearea',
+        'i' => 'itemid',
+        'm' => 'mimetype',
+        'o' => 'omitvalid'
     ]
 );
 
@@ -66,7 +76,26 @@ $ sudo -u www-data /usr/bin/php admin/tool/ally/cli/validfiles.php -s=1000000000
     die;
 }
 
-$files = local_file::iterator()->since($options['since'])->sort_by('timemodified');
+$files = local_file::iterator();
+if (!empty($options['since'])) {
+    $files->since($options['since']);
+}
+if (!empty($options['component'])) {
+    $files->with_component($options['component']);
+}
+if (!empty($options['filearea'])) {
+    $files->with_filearea($options['filearea']);
+}
+if (!empty($options['itemid'])) {
+    $files->with_itemid($options['itemid']);
+}
+if (!empty($options['mimetype'])) {
+    $files->with_mimetype($options['mimetype']);
+}
+$files->with_valid_filter(empty($options['omitvalid']));
+
+$files->sort_by('timemodified');
+
 $files->rewind();
 
 // JSON is written line by line to avoid having to buffer output.

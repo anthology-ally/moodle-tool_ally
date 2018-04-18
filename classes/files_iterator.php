@@ -96,6 +96,11 @@ class files_iterator implements \Iterator {
     private $mimetype;
 
     /**
+     * @var boolean
+     */
+    private $validfilter = true;
+
+    /**
      * SQL sorting.
      *
      * @var string
@@ -140,7 +145,7 @@ class files_iterator implements \Iterator {
             $context = $this->extract_context($row);
             $file    = $this->storage->get_file_instance($row);
 
-            if (!$this->validator->validate_stored_file($file, $context)) {
+            if (!empty($this->validfilter) && !$this->validator->validate_stored_file($file, $context)) {
                 continue;
             }
 
@@ -306,5 +311,17 @@ class files_iterator implements \Iterator {
      */
     public function set_page_size($pagesize) {
         $this->pagesize = $pagesize;
+    }
+
+    /**
+     * Enable/disable validation.
+     *
+     * @param boolean $validfilter
+     * @return self
+     */
+    public function with_valid_filter($validfilter) {
+        $this->validfilter = $validfilter;
+
+        return $this;
     }
 }
