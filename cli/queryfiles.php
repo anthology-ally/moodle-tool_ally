@@ -26,6 +26,7 @@
 define('CLI_SCRIPT', true);
 
 use tool_ally\local_file;
+use tool_ally\local;
 
 require(__DIR__ . '/../../../../config.php');
 require_once($CFG->libdir.'/clilib.php');
@@ -61,17 +62,26 @@ if (!empty($options['help'])) {
     echo "Ally valid files.
 
 Outputs a json array with:
-* entity_id
-* context_id
+* id
+* courseid
+* name
+* mimetype
+* contenthash
+* timemodified
 
-For files which are valid for Ally usage.
+For files targeted for Ally usage.
 
 Options:
--h, --help  Print out this help
--s, --since Start timestamp for file modification filtering
+-h, --help      Print out this help
+-s, --since     Start timestamp for file modification filtering
+-c, --component Component identifier
+-f, --filearea  File area identifier
+-i, --itemid    Item id
+-m, --mimetype  MIME type
+-o, --omitvalid If we should omit validation of Ally files, this would show all files
 
 Example:
-$ sudo -u www-data /usr/bin/php admin/tool/ally/cli/validfiles.php -s=1000000000 > /tmp/allyvalidfiles.json" . PHP_EOL;
+$ sudo -u www-data /usr/bin/php admin/tool/ally/cli/queryfiles.php -s=1000000000 > /tmp/allyvalidfiles.json" . PHP_EOL;
 
     die;
 }
@@ -102,8 +112,15 @@ $files->rewind();
 cli_write('[' . PHP_EOL);
 while ($files->valid()) {
     $file = $files->current();
-    cli_write('  { "entity_id": "' . $file->get_pathnamehash() . '", ');
-    cli_write('"context_id": ' . local_file::courseid($file) . ' }');
+    $response = [
+        'id'           => $file->get_pathnamehash(),
+        'courseid'     => local_file::courseid($file),
+        'name'         => $file->get_filename(),
+        'mimetype'     => $file->get_mimetype(),
+        'contenthash'  => $file->get_contenthash(),
+        'timemodified' => local::iso_8601($file->get_timemodified()),
+    ];
+    cli_write(json_encode($response));
 
     $files->next();
     if ($files->valid()) {
