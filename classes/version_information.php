@@ -77,12 +77,15 @@ class version_information {
      */
     private function warn_on_site_policy_not_accepted() {
         global $CFG, $USER;
+        $manager = new \core_privacy\local\sitepolicy\manager();
         // Check that the user has agreed to a site policy if there is one - do not test in case of admins.
         if (empty($USER->policyagreed) and !is_siteadmin()) {
-            if (!empty($CFG->sitepolicy) and !isguestuser()) {
-                throw new moodle_exception('sitepolicynotagreed', 'error', '', $CFG->sitepolicy);
-            } else if (!empty($CFG->sitepolicyguest) and isguestuser()) {
-                throw new moodle_exception('sitepolicynotagreed', 'error', '', $CFG->sitepolicyguest);
+            if ($manager->is_defined() and !isguestuser()) {
+                $url = $manager->get_embed_url();
+                throw new moodle_exception('sitepolicynotagreed', 'error', '', $url->get_path());
+            } else if ($manager->is_defined(true) and isguestuser()) {
+                $guesturl = $manager->get_embed_url(true);
+                throw new moodle_exception('sitepolicynotagreed', 'error', '', $guesturl->get_path());
             }
         }
     }
