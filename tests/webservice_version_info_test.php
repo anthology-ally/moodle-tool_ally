@@ -60,4 +60,32 @@ class tool_ally_webservice_version_info_testcase extends tool_ally_abstract_test
         // We do not test anything else with the report as we have no control over it's state.
         $this->assertNotEmpty($info->report_allylti);
     }
+
+    public function test_warn_on_site_policy_not_accepted() {
+        $this->resetAfterTest();
+        global $DB, $CFG;
+        set_config('sitepolicy', 'sitepolicyURL.com');
+        set_config('sitepolicyguest', 'sitepolicyURLguest.com');
+
+        try {
+            version_info::service();
+        } catch (moodle_exception $e) {
+            $this->assertInstanceOf(moodle_exception::class, $e);
+            $this->assertEquals($e->errorcode, 'sitepolicynotagreed');
+            $this->assertEquals($e->module, 'error');
+            $this->assertEquals($e->a, 'sitepolicyURL.com');
+        }
+
+        $guest = $DB->get_record('user', array('id' => $CFG->siteguest));
+        $this->setUser($guest);
+
+        try {
+            version_info::service();
+        } catch (moodle_exception $e) {
+            $this->assertInstanceOf(moodle_exception::class, $e);
+            $this->assertEquals($e->errorcode, 'sitepolicynotagreed');
+            $this->assertEquals($e->module, 'error');
+            $this->assertEquals($e->a, 'sitepolicyURLguest.com');
+        }
+    }
 }
