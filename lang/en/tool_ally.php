@@ -54,3 +54,4 @@ $string['autoconfigapicall'] = 'You can test that the webservice is working via 
 $string['pushfileserror'] = 'Ally file updates error.';
 $string['pushfileserror:explanation'] = 'Errors associated with file updates push to Ally services.';
 $string['pushfileserror:skip'] = 'Skipping live file(s) push due to communication problems. Live file push will be restored when file updates task is successful. Please, review your configuration.';
+$string['cachedef_request'] = 'Ally filter request cache';
