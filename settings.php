@@ -71,13 +71,9 @@ if ($hassiteconfig) {
 
     $settings->add(new ally_config_link('tool_ally/allyclientconfig', new lang_string('allyclientconfig', 'tool_ally'),
         new moodle_url('/admin/tool/ally/lti/view.php')));
+
+    $ADMIN->add('tools', $settings);
 }
 
-$config     = get_config('tool_ally');
-$configured = !empty($config) && !empty($config->adminurl) && !empty($config->key) && !empty($config->secret);
-if ($configured) {
-    $ADMIN->add('tools', new admin_externalpage('allyclientconfig', get_string('allyclientconfig', 'tool_ally'),
-        "$CFG->wwwroot/admin/tool/ally/lti/view.php", 'tool/ally:clientconfig'));
-}
 
-$ADMIN->add('tools', $settings);
+

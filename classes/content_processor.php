@@ -67,7 +67,7 @@ class content_processor {
      * @param push_content_updates $updates
      * @param component_content[] | component_content $content
      * @param string $eventname
-     * @return bool
+     * @return bool true on success
      */
     public static function push_update(push_content_updates $updates, $content, $eventname) {
         if (!is_array($content)) {
@@ -97,12 +97,12 @@ class content_processor {
             self::$pushtrace[$eventname][] = $payload;
 
             // If we aren't using a mock version of $updates service then return now.
-            if (!$updates instanceof \Prophecy\Prophecy\ProphecySubjectInterface) {
-                return true;
+            if ($updates instanceof \Prophecy\Prophecy\ProphecySubjectInterface) {
+                $updates->send($payload);
             }
+            return true; // Return true always for PHPUNIT_TEST.
         }
-        $updates->send($payload);
-        return true;
+        return $updates->send($payload);
     }
 
     /**
@@ -133,7 +133,7 @@ class content_processor {
                 return;
             }
             $contentrow = (object) [
-                'componentid' => $contentitem->id,
+                'comprowid' => $contentitem->id,
                 'component' => $contentitem->component,
                 'comptable' => $contentitem->table,
                 'compfield' => $contentitem->field,

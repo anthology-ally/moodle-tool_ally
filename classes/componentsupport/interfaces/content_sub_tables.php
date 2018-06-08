@@ -15,22 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version.
- *
- * @package   tool_ally
- * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
+ * Interface for supporting modules with content stored in sub tables.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2018 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace tool_ally\componentsupport\interfaces;
 
-/** @var stdClass $plugin */
-$plugin->version   = 2018080200;
-$plugin->requires  = 2017111300;
-$plugin->component = 'tool_ally';
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.4.1';
-$plugin->dependencies = [
-    'filter_ally'    => 2018080200,
-    'report_allylti' => 2017120801,
-];
+defined ('MOODLE_INTERNAL') || die();
+
+use cm_info;
+
+interface content_sub_tables {
+    public function queue_delete_sub_tables(cm_info $cm);
+}

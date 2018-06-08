@@ -78,7 +78,10 @@ class file_updates_task extends scheduled_task {
         $this->clionly = $config->is_cli_only();
 
         // Push file updates.
-        $this->push_updates($config, $updates, $time);
+        $pushupdatesok = $this->push_updates($config, $updates, $time);
+        if (!$pushupdatesok) {
+            return;
+        }
 
         // Push deleted files.
         $this->push_deletes($config, $updates);
@@ -91,6 +94,7 @@ class file_updates_task extends scheduled_task {
      * @param push_file_updates $updates
      * @param int $time Push updates for files that have been modified after this time
      * @throws \Exception
+     * @return bool
      */
     private function push_updates(push_config $config, push_file_updates $updates, $time) {
         global $CFG;
@@ -109,7 +113,16 @@ class file_updates_task extends scheduled_task {
 
                 // Check to see if we have our batch size or if we are at the last file.
                 if (count($payload) >= $config->get_batch_size() || !$files->valid()) {
-                    $updates->send($payload);
+                    $sendsuccess = $updates->send($payload);
+                    if (!$sendsuccess) {
+                        // Failed to send, might as well switch on cli only mode to avoid slowness on front end.
+                        set_config('push_cli_only', 1, 'tool_ally');
+                        $this->clionly = true;
+                        // Give up at this point.
+                        // Time stamp is set to last successful batches final file time modified.
+                        $this->set_push_timestamp($timetosave);
+                        return false;
+                    }
                     if (!empty($CFG->tool_ally_log_file_updates)) {
                         push_file_updates_summary::create_from_payload($payload)->trigger();
                     }
@@ -133,6 +146,8 @@ class file_updates_task extends scheduled_task {
 
         // Everything went according to plan, update our timestamp.
         $this->set_push_timestamp($timetosave);
+
+        return true;
     }
 
     /**
@@ -157,7 +172,15 @@ class file_updates_task extends scheduled_task {
 
             // Check to see if we have our batch size or if we are at the last file.
             if (count($payload) >= $config->get_batch_size() || !$deletes->valid()) {
-                $updates->send($payload);
+                $sendsuccess = $updates->send($payload);
+                if (!$sendsuccess) {
+                    // Failed to send, might as well switch on cli only mode to avoid slowness on front end.
+                    set_config('push_cli_only', 1, 'tool_ally');
+                    $this->clionly = true;
+                    // Give up at this point.
+                    return false;
+                }
+
                 if (!empty($CFG->tool_ally_log_file_updates)) {
                     push_file_updates_summary::create_from_payload($payload, true)->trigger();
                 }

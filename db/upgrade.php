@@ -146,5 +146,60 @@ function xmldb_tool_ally_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017120822, 'tool', 'ally');
     }
 
+    if ($oldversion < 2017120824) {
+
+        // Define field attempts to be added to tool_ally_content_queue.
+        $table = new xmldb_table('tool_ally_content_queue');
+
+        $field = new xmldb_field('content', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null, 'eventname');
+
+        // Conditionally launch add field content.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('attempts', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'content');
+
+        // Conditionally launch add field attempts.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Ally savepoint reached.
+        upgrade_plugin_savepoint(true, 2017120824, 'tool', 'ally');
+    }
+
+    if ($oldversion < 2017120827) {
+
+        // Rename field field on table tool_ally_deleted_content to compfield.
+        $table = new xmldb_table('tool_ally_deleted_content');
+        $field = new xmldb_field('field', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null, 'instanceid');
+
+        // Launch rename field compfield.
+        $dbman->rename_field($table, $field, 'compfield');
+
+        // Rename field instanceid on table tool_ally_deleted_content to comprowid.
+        $field = new xmldb_field('instanceid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'comptable');
+
+        // Launch rename field comprowid.
+        $dbman->rename_field($table, $field, 'comprowid');
+
+        // Conditionally launch add field timeprocessed.
+        $field = new xmldb_field('timeprocessed', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'timedeleted');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Rename field componentid on table tool_ally_content_queue to comprowid.
+        $table = new xmldb_table('tool_ally_content_queue');
+        $field = new xmldb_field('componentid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'id');
+
+        // Launch rename field comprowid.
+        $dbman->rename_field($table, $field, 'comprowid');
+
+        // Ally savepoint reached.
+        upgrade_plugin_savepoint(true, 2017120827, 'tool', 'ally');
+    }
+
     return true;
 }

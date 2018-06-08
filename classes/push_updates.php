@@ -55,6 +55,7 @@ abstract class push_updates {
      * @param array $payload The data to send.
      * @param \curl|null $curl Don't pass this in unless its for testing.  Don't re-use curl class between requests.
      * @param int $retrycount
+     * @return bool - successful?
      */
     public function send(array $payload, \curl $curl = null, $retrycount = 0) {
         $content = json_encode(['key' => $this->config->get_key(), 'data' => $payload]);
@@ -63,6 +64,8 @@ abstract class push_updates {
         $curl->setHeader('Authorization: Bearer '.$this->config->get_secret());
         $curl->setHeader('Content-Type: application/json');
         $curl->setHeader('Content-Length: '.strlen($content));
+
+        $senderrors = false;
 
         try {
             $curl->post($this->config->get_url(), $content, [
@@ -74,13 +77,18 @@ abstract class push_updates {
             $this->verify_error($curl);
             $this->verify_http_code($curl);
         } catch (\Exception $e) {
+            $senderrors = true;
             if ($retrycount < $this->config->get_max_push_attempts()) {
                 usleep(rand(100000, 500000)); // Sleep between 0.1 and 0.5 second.
-                $this->send($payload, null, $retrycount + 1);
+                $senderrors = $this->send($payload, null, $retrycount + 1);
             } else {
                 $this->handle_send_error($e);
             }
         }
+
+        $success = !$senderrors;
+
+        return $success;
     }
 
     /**
