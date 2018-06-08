@@ -145,6 +145,5 @@ function xmldb_tool_ally_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017120822, 'tool', 'ally');
     }
 
-
     return true;
 }
