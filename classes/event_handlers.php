@@ -223,7 +223,7 @@ class event_handlers {
         $postid = $recordsnapshot->firstpost;
 
         $table = $forumtype.'_posts';
-        if ($event instanceof discussion_deleted) {
+        if ($event instanceof discussion_deleted || $event instanceof hsu_discussion_deleted) {
             $content = local_content::get_html_content_deleted($postid, $module, $table, 'message', $event->courseid);
         } else {
             $content = local_content::get_html_content($postid, $module, $table, 'message', $event->courseid);
