@@ -129,6 +129,9 @@ class content_processor {
             $content = [$content];
         }
         foreach ($content as $contentitem) {
+            if (empty($contentitem->content)) {
+                return;
+            }
             $contentrow = (object) [
                 'componentid' => $contentitem->id,
                 'component' => $contentitem->component,
