@@ -32,6 +32,7 @@ $string['clientid'] = 'Client id';
 $string['clientiddesc'] = 'The Ally client id';
 $string['contentauthors'] = 'Content authors';
 $string['contentauthorsdesc'] = 'Administrators and users assigned to these selected roles will have their uploaded course files evaluated for accessibility. The files are given an accessibility rating. Low ratings mean that the file needs changes to be more accessible.';
+$string['contentupdatestask'] = 'Content updates task';
 $string['curlerror'] = 'cURL error: {$a}';
 $string['curlinvalidhttpcode'] = 'Invalid HTTP status code: {$a}';
 $string['curlnohttpcode'] = 'Unable to verify HTTP status code';

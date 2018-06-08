@@ -35,7 +35,7 @@ $tasks = [
         'month'     => '*'
     ],
     [
-        'classname' => '\tool_ally\task\content_deletion_task',
+        'classname' => '\tool_ally\task\content_updates_task',
         'blocking'  => 0,
         'minute'    => '*',
         'hour'      => '*',

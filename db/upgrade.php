@@ -114,5 +114,37 @@ function xmldb_tool_ally_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017120811, 'tool', 'ally');
     }
 
+    if ($oldversion < 2017120822) {
+
+        // Define table tool_ally_content_queue to be created.
+        $table = new xmldb_table('tool_ally_content_queue');
+
+        // Adding fields to table tool_ally_content_queue.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('componentid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('component', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('comptable', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('compfield', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('eventtime', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('eventname', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table tool_ally_content_queue.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table tool_ally_content_queue.
+        $table->add_index('courseid', XMLDB_INDEX_NOTUNIQUE, array('courseid'));
+        $table->add_index('component', XMLDB_INDEX_NOTUNIQUE, array('component'));
+
+        // Conditionally launch create table for tool_ally_content_queue.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Ally savepoint reached.
+        upgrade_plugin_savepoint(true, 2017120822, 'tool', 'ally');
+    }
+
+
     return true;
 }

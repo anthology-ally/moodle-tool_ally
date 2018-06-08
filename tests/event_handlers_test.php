@@ -38,7 +38,7 @@ use \mod_forum\event\post_updated;
 
 use tool_ally\content_processor;
 use tool_ally\event_handlers;
-use tool_ally\task\content_deletion_task;
+use tool_ally\task\content_updates_task;
 /**
  * Tests for event handlers.
  *
@@ -54,7 +54,9 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
         set_config('pushurl', 'url', 'tool_ally');
         set_config('key', 'key', 'tool_ally');
         set_config('secret', 'secret', 'tool_ally');
+        set_config('push_cli_only', 0, 'tool_ally');
         content_processor::clear_push_traces();
+        content_processor::get_config(true);
     }
 
     /**
@@ -244,7 +246,7 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
         ]);
         $this->assertNotEmpty($row);
 
-        $cdt = new content_deletion_task();
+        $cdt = new content_updates_task();
         $cdt->execute();
         $cdt->execute(); // We have to execute again because first time just sets exec window.
 

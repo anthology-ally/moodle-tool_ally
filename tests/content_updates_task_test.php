@@ -15,17 +15,19 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tests for file updates task.
+ * Tests for content updates task.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use Prophecy\Argument;
+use \core\event\course_module_updated;
 use tool_ally\push_config;
-use tool_ally\push_file_updates;
-use tool_ally\task\file_updates_task;
+use tool_ally\push_content_updates;
+use tool_ally\task\content_updates_task;
+
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -33,88 +35,102 @@ require_once(__DIR__.'/abstract_testcase.php');
 require_once(__DIR__.'/../../../../vendor/phpunit/dbunit/src/DataSet/DefaultTableMetadata.php');
 
 /**
- * Tests for file updates task.
+ * Tests for content updates task.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
+class tool_ally_content_updates_task_testcase extends tool_ally_abstract_testcase {
     /**
      * First run should set the timestamp then exit.
      */
     public function test_initial_run() {
         $this->resetAfterTest();
 
-        $this->assertEmpty(get_config('tool_ally', 'push_timestamp'));
+        $this->assertEmpty(get_config('tool_ally', 'push_content_timestamp'));
 
-        $task          = new file_updates_task();
+        $task          = new content_updates_task();
         $task->config  = new push_config('url', 'key', 'sceret');
-        $task->updates = $this->prophesize(push_file_updates::class)->reveal();
+        $task->updates = $this->prophesize(push_content_updates::class)->reveal();
 
         $expected = time();
         $task->execute();
 
-        $this->assertGreaterThanOrEqual($expected, get_config('tool_ally', 'push_timestamp'));
+        $this->assertGreaterThanOrEqual($expected, get_config('tool_ally', 'push_content_timestamp'));
     }
 
     /**
      * Nothing should happen if config is invalid.
      */
     public function test_invalid_config() {
-        $task          = new file_updates_task();
-        $task->updates = $this->prophesize(push_file_updates::class)->reveal();
+        $task          = new content_updates_task();
+        $task->updates = $this->prophesize(push_content_updates::class)->reveal();
 
         $task->execute();
 
-        $this->assertEmpty(get_config('tool_ally', 'push_timestamp'));
+        $this->assertEmpty(get_config('tool_ally', 'push_content_timestamp'));
     }
 
     /**
      * Ensure that basic execution and timestamp management is working.
      */
     public function test_push_updates() {
+        global $DB;
+
         $this->resetAfterTest();
 
         $this->setAdminUser();
 
-        set_config('push_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
+        set_config('push_cli_only', 1, 'tool_ally');
+        set_config('push_content_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
 
         $course      = $this->getDataGenerator()->create_course();
-        $resource    = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
-        $resource2   = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
-        $filecreated = $this->get_resource_file($resource);
-        $fileupdated = $this->get_resource_file($resource2);
+        $label    = $this->getDataGenerator()->create_module('label',
+                ['introformat' => FORMAT_HTML, 'course' => $course->id]);
 
-        $fileupdated->set_timemodified(time() - WEEKSECS);
+        // Wipe out content queue - it will already have been populated by events triggered whilst creating course, etc.
+        $DB->delete_records('tool_ally_content_queue');
 
-        $task          = new file_updates_task();
+        list ($course, $cm) = get_course_and_cm_from_cmid($label->cmid);
+        course_module_updated::create_from_cm($cm)->trigger();
+
+        $task          = new content_updates_task();
         $task->config  = new push_config('url', 'key', 'sceret');
-        $task->updates = $this->prophesize(push_file_updates::class)->reveal();
+        $updates = $this->prophesize(push_content_updates::class);
+        $updates->send(Argument::type('array'))->shouldBeCalledTimes(1);
+        $task->updates = $updates->reveal();
 
         $task->execute();
-
-        $this->assertEquals($filecreated->get_timemodified(), get_config('tool_ally', 'push_timestamp'));
+        $updates->checkProphecyMethodsPredictions();
     }
 
     /**
      * Ensure that our batch looping is working as expected.
      */
     public function test_push_updates_batching() {
+        global $DB;
+
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        set_config('push_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
+        set_config('push_content_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
 
         $course = $this->getDataGenerator()->create_course();
+
+        // Wipe out content queue - it will already have been populated by events triggered whilst creating course.
+        $DB->delete_records('tool_ally_content_queue');
+
+        // Create 5 supported components.
         for ($i = 0; $i < 5; $i++) {
-            $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
+            $this->getDataGenerator()->create_module('label',
+                    ['introformat' => FORMAT_HTML, 'course' => $course->id]);
         }
 
-        $updates = $this->prophesize(push_file_updates::class);
+        $updates = $this->prophesize(push_content_updates::class);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(3);
 
-        $task          = new file_updates_task();
+        $task          = new content_updates_task();
         $task->config  = new push_config('url', 'key', 'sceret', 2);
         $task->updates = $updates->reveal();
 
@@ -124,7 +140,7 @@ class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
     }
 
     /**
-     * Test pushing of file deletions.
+     * Test pushing of content deletions.
      */
     public function test_push_deletes() {
         global $DB;
@@ -132,16 +148,16 @@ class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
         $this->resetAfterTest();
         $this->setAdminUser();
 
-        set_config('push_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
+        set_config('push_content_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
 
         $this->loadDataSet(
-            $this->createArrayDataSet(include(__DIR__.'/fixtures/deleted_files.php'))
+            $this->createArrayDataSet(include(__DIR__.'/fixtures/deleted_content.php'))
         );
 
-        $updates = $this->prophesize(push_file_updates::class);
+        $updates = $this->prophesize(push_content_updates::class);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(3);
 
-        $task          = new file_updates_task();
+        $task          = new content_updates_task();
         $task->config  = new push_config('url', 'key', 'sceret', 2);
         $task->updates = $updates->reveal();
 
@@ -149,6 +165,6 @@ class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
 
         $updates->checkProphecyMethodsPredictions();
 
-        $this->assertEmpty($DB->get_records('tool_ally_deleted_files'));
+        $this->assertEmpty($DB->get_records('tool_ally_deleted_content'));
     }
 }
