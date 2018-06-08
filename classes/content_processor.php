@@ -69,36 +69,37 @@ class content_processor {
      * @param string $eventname
      * @return bool
      */
-    private static function push_update(push_content_updates $updates, $content, $eventname) {
-        if (is_array($content)) {
-            $payload = [];
-            foreach ($content as $item) {
-                if (!$item instanceof component_content) {
-                    throw new \coding_exception('$content array should only contain instances of component_content');
-                }
-                if (strval($item->contentformat) !== FORMAT_HTML) {
-                    // Only HTML formatted content is supported.
-                    continue;
-                }
-                $payload[] = local_content::to_crud($item, $eventname);
-            }
-        } else {
-            if (strval($content->contentformat) === FORMAT_HTML) {
-                // Only HTML formatted content is supported.
-                $payload = [local_content::to_crud($content, $eventname)];
-            } else {
-                $payload = [];
-            }
+    public static function push_update(push_content_updates $updates, $content, $eventname) {
+        if (!is_array($content)) {
+            $content = [$content];
         }
+
+        $payload = [];
+        foreach ($content as $item) {
+            if (!$item instanceof component_content) {
+                throw new \coding_exception('$content array should only contain instances of component_content');
+            }
+            if (strval($item->contentformat) !== FORMAT_HTML) {
+                // Only HTML formatted content is supported.
+                continue;
+            }
+            $payload[] = local_content::to_crud($item, $eventname);
+        }
+
         if (empty($payload)) {
             return true;
         }
+
         if (PHPUNIT_TEST) {
             if (!isset(self::$pushtrace[$eventname])) {
                 self::$pushtrace[$eventname] = [];
             }
             self::$pushtrace[$eventname][] = $payload;
-            return true;
+
+            // If we aren't using a mock version of $updates service then return now.
+            if (!$updates instanceof \Prophecy\Prophecy\ProphecySubjectInterface) {
+                return true;
+            }
         }
         $updates->send($payload);
         return true;
@@ -106,14 +107,40 @@ class content_processor {
 
     /**
      * Get ally config.
+     * @param boolean $reset
      * @return null|push_config
      */
-    private static function get_config() {
+    public static function get_config($reset = false) {
         static $config = null;
-        if ($config === null) {
+        if ($config === null || $reset) {
             $config = new push_config();
         }
         return $config;
+    }
+
+    /**
+     * @param component_content[]|component_content $content
+     * @param string $eventname
+     */
+    private static function add_to_content_queue($content, $eventname) {
+        global $DB;
+
+        if (!array($content)) {
+            $content = [$content];
+        }
+        foreach ($content as $contentitem) {
+            $contentrow = (object) [
+                'componentid' => $contentitem->id,
+                'component' => $contentitem->component,
+                'comptable' => $contentitem->table,
+                'compfield' => $contentitem->field,
+                'courseid' => $contentitem->get_courseid(),
+                'eventtime' => time(),
+                'eventname' => $eventname,
+                'content' => $contentitem->content
+            ];
+            $DB->insert_record('tool_ally_content_queue', $contentrow);
+        }
     }
 
     /**
@@ -125,6 +152,7 @@ class content_processor {
     public static function push_content_update($content, $eventname) {
         $config = self::get_config();
         if (!$config->is_valid() || $config->is_cli_only()) {
+            self::add_to_content_queue($content, $eventname);
             return false;
         }
         if (empty(self::$updates)) {
