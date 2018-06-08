@@ -68,6 +68,7 @@ class tool_ally_push_file_updates_error_retry_test extends tool_ally_abstract_te
         // Since the file was not pushed above, the task should call cURL push once.
         $updates = $this->prophesize(push_file_updates::class);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(1);
+        $updates->send(Argument::type('array'))->willReturn(true);
 
         $task          = new file_updates_task();
         $task->config  = new push_config('url', 'key', 'sceret');

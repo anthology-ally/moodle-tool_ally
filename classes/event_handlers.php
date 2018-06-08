@@ -47,6 +47,10 @@ use mod_hsuforum\event\discussion_deleted as hsu_discussion_deleted;
 use mod_hsuforum\event\post_updated as hsu_post_updated;
 use mod_hsuforum\event\post_updated as hsu_post_created;
 
+use mod_glossary\event\entry_created;
+use mod_glossary\event\entry_updated;
+use mod_glossary\event\entry_deleted;
+
 use tool_ally\models\component_content;
 
 defined('MOODLE_INTERNAL') || die();
@@ -85,30 +89,11 @@ class event_handlers {
     }
 
     /**
-     * @param int $courseid
-     * @param string $component
-     * @param base $event
-     * @throws \dml_exception
-     */
-    private static function queue_delete($courseid, $id, $component, $table, $field, base $event) {
-        global $DB;
-
-        $DB->insert_record_raw('tool_ally_deleted_content', [
-            'instanceid'        => $id,
-            'courseid'     => $courseid,
-            'component'    => $component,
-            'comptable'        => $table,
-            'field'        => $field,
-            'timedeleted'  => $event->timecreated,
-        ], false);
-    }
-
-    /**
      * @param course_deleted $event
      */
     public static function course_deleted(course_deleted $event) {
         $courseid = $event->courseid;
-        self::queue_delete($courseid, $courseid, 'course', 'course', 'summary', $event);
+        local_content::queue_delete($courseid, $courseid, 'course', 'course', 'summary');
     }
 
     /**
@@ -127,7 +112,7 @@ class event_handlers {
             $section = $DB->get_record('course_sections', ['id' => $sectionid]);
             $content = $section->summary;
         } else {
-            self::queue_delete($courseid, $sectionid, 'course', 'course_sections', 'summary', $event);
+            local_content::queue_delete($courseid, $sectionid, 'course', 'course_sections', 'summary');
             return;
         }
 
@@ -201,12 +186,13 @@ class event_handlers {
             return;
         }
 
-        self::queue_delete($event->courseid, $id, $module, $module, 'intro', $event);
+        local_content::queue_delete($event->courseid, $id, $module, $module, 'intro');
     }
 
     /**
      * @param base $event
      * @param string $eventname
+     * @param string $forumtype
      * @throws \coding_exception
      * @throws \moodle_exception
      */
@@ -270,6 +256,7 @@ class event_handlers {
      * Note - although we are only interested in discussions, if we alter a discussions message we are in fact altering
      * the corersponding post.
      * @param post_updated $event
+     * @param string $forumtype
      */
     public static function forum_post_updated(base $event, $forumtype = 'forum') {
         $module = $forumtype;
@@ -333,4 +320,69 @@ class event_handlers {
     public static function hsuforum_post_updated(hsu_post_updated $event) {
         self::forum_post_updated($event, 'hsuforum');
     }
+
+
+    /**
+     * General method for dealing with crud for sub tables of modules - e.g. glossary entries.
+     * NOTE: forum is too complicated to use here.
+     * @param base $event
+     * @param string $eventname
+     * @param string $contentfield
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    private static function module_item_crud(base $event, $eventname, $contentfield) {;
+        $module = local::clean_component_string($event->component);
+        $component = local_content::component_instance($module);
+        $userid = $event->userid;
+        // Don't go any further if user is not a teacher / manager / admin, etc..
+        if (!$component->user_is_approved_author_type($userid, $event->get_context())) {
+            return;
+        }
+
+        $id = $event->objectid;
+        $table = $event->objecttable;
+
+        if ($eventname ===  self::API_DELETED) {
+            $content = local_content::get_html_content_deleted($id, $module, $table, $contentfield, $event->courseid);
+        } else {
+            $content = local_content::get_html_content($id, $module, $table, $contentfield, $event->courseid);
+        }
+        if (!$content) {
+            $a = (object) [
+                'component' => $module,
+                'id' => $id
+            ];
+            throw new \moodle_exception('error:componentcontentnotfound', 'tool_ally', '', $a);
+        }
+        content_processor::push_content_update([$content], $eventname);
+    }
+
+    /**
+     * @param entry_created $event
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public static function glossary_entry_created(entry_created $event) {
+        self::module_item_crud($event, self::API_CREATED, 'definition');
+    }
+
+    /**
+     * @param entry_updated $event
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public static function glossary_entry_updated(entry_updated $event) {
+        self::module_item_crud($event, self::API_UPDATED, 'definition');
+    }
+
+    /**
+     * @param entry_deleted $event
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public static function glossary_entry_deleted(entry_deleted $event) {
+        self::module_item_crud($event, self::API_DELETED, 'definition');
+    }
+
 }

@@ -90,7 +90,9 @@ class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
 
         $task          = new file_updates_task();
         $task->config  = new push_config('url', 'key', 'sceret');
-        $task->updates = $this->prophesize(push_file_updates::class)->reveal();
+        $updates = $this->prophesize(push_file_updates::class);
+        $updates->send(Argument::type('array'))->willReturn(true);
+        $task->updates = $updates->reveal();
 
         $task->execute();
 
@@ -112,6 +114,7 @@ class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
         }
 
         $updates = $this->prophesize(push_file_updates::class);
+        $updates->send(Argument::type('array'))->willReturn(true);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(3);
 
         $task          = new file_updates_task();
@@ -139,6 +142,7 @@ class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
         );
 
         $updates = $this->prophesize(push_file_updates::class);
+        $updates->send(Argument::type('array'))->willReturn(true);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(3);
 
         $task          = new file_updates_task();

@@ -36,6 +36,10 @@ use core\event\course_module_updated;
 use \mod_forum\event\discussion_created;
 use \mod_forum\event\post_updated;
 
+use \mod_glossary\event\entry_created;
+use \mod_glossary\event\entry_updated;
+use \mod_glossary\event\entry_deleted;
+
 use tool_ally\content_processor;
 use tool_ally\event_handlers;
 use tool_ally\task\content_updates_task;
@@ -239,24 +243,28 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
         // Push should not have happened - it needs cron task to make it happen.
         $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_DELETED, $entityid);
 
-        $row = $DB->get_record('tool_ally_deleted_content', [
+        $delfilter = [
             'component' => 'label',
             'comptable' => 'label',
             'courseid' => (int) $course->id,
-            'instanceid' => (int) $label->id
-        ]);
+            'comprowid' => (int) $label->id
+        ];
+
+        $row = $DB->get_record('tool_ally_deleted_content', $delfilter);
         $this->assertNotEmpty($row);
+        $this->assertEmpty($row->timeprocessed);
 
         $cdt = new content_updates_task();
         $cdt->execute();
         $cdt->execute(); // We have to execute again because first time just sets exec window.
 
-        $row = $DB->get_record('tool_ally_deleted_content', [
-            'component' => 'label',
-            'comptable' => 'label',
-            'courseid' => (int) $course->id,
-            'instanceid' => (int) $label->id
-        ]);
+        $row = $DB->get_record('tool_ally_deleted_content', $delfilter);
+        $this->assertNotEmpty($row);
+        $this->assertNotEmpty($row->timeprocessed);
+
+        // Execute again to purge deletion queue of processed items.
+        $cdt->execute();
+        $row = $DB->get_record('tool_ally_deleted_content', $delfilter);
         $this->assertEmpty($row);
 
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_DELETED, $entityid);
@@ -352,5 +360,73 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
         // Both entities should be traced.
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $introentityid);
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $postentityid);
+    }
+
+    public function test_glossary_events() {
+        global $USER;
+
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+
+        $glossary = $this->getDataGenerator()->create_module('glossary',
+            ['course' => $course->id, 'introformat' => FORMAT_HTML]);
+        $glossaryentityid = 'glossary:glossary:intro:'.$glossary->id;
+        list ($course, $cm) = get_course_and_cm_from_cmid($glossary->cmid);
+        course_module_created::create_from_cm($cm)->trigger();
+
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $glossaryentityid);
+
+        // Add an entry
+        $record = new stdClass();
+        $record->course = $course->id;
+        $record->glossary = $glossary->id;
+        $record->userid = $USER->id;
+        $record->definitionformat = FORMAT_HTML;
+        $entry = self::getDataGenerator()->get_plugin_generator('mod_glossary')->create_content($glossary, $record);
+
+        $params = array(
+            'context' => $cm->context,
+            'objectid' => $entry->id,
+            'other' => array(
+                'glossaryid' => $glossary->id
+            )
+        );
+        $event = entry_created::create($params);
+        $event->add_record_snapshot('glossary_entries', $entry);
+        $event->trigger();
+
+        $entityid = 'glossary:glossary_entries:definition:'.$entry->id;
+
+        // Assert pushtrace contains entry.
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $entityid);
+
+        // Modify entry.
+        $entry->definition .= 'modified !!!';
+        $params = array(
+            'context' => $cm->context,
+            'objectid' => $entry->id,
+            'other' => array(
+                'glossaryid' => $glossary->id
+            )
+        );
+        $event = entry_updated::create($params);
+        $event->add_record_snapshot('glossary_entries', $entry);
+        $event->trigger();
+
+        // Assert pushtrace contains updated entry.
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
+
+        course_delete_module($glossary->cmid);
+
+        // Note, there shouldn't be any deletion events at this point because deletes need the task to be dealt with.
+        $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_DELETED, $glossaryentityid);
+
+        $cdt = new content_updates_task();
+        $cdt->execute();
+        $cdt->execute(); // We have to execute again because first time just sets exec window.
+
+        // After running the task it has pushed the deletion event.
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_DELETED, $glossaryentityid);
     }
 }
