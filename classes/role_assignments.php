@@ -78,6 +78,19 @@ class role_assignments {
     }
 
     /**
+     * Return users with acceptable role assignments for a specific context.
+     * @param \context $context
+     * @return array
+     */
+    public function user_ids_for_context(\context $context) {
+        $this->load_role_assignments();
+        if (empty($this->data[$context->id])) {
+            return [];
+        }
+        return $this->data[$context->id];
+    }
+
+    /**
      * Load all role assignments that we care about and store them into the class.
      */
     private function load_role_assignments() {

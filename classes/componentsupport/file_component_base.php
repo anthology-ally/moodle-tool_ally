@@ -32,11 +32,7 @@ defined ('MOODLE_INTERNAL') || die();
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-abstract class html_base {
-
-    const TYPE_CORE = 'core';
-
-    const TYPE_MOD = 'mod';
+abstract class file_component_base extends component_base {
 
     /**
      * @var string
@@ -66,21 +62,9 @@ abstract class html_base {
         $modcheck .= substr($class, 0, strrpos($class, '_'));
         if ($modcheck !== $file->get_component()) {
             throw new \coding_exception('Using incorrect module support class ('.$class.') for file with component '.
-                    $file->get_component());
+                $file->get_component());
         }
     }
-
-    /**
-     * Replace file links.
-     */
-    abstract public function replace_file_links();
-
-    /**
-     * Return component type for this component - a class constant beginning with TYPE_
-     *
-     * @return int
-     */
-    abstract public static function component_type();
 
     /**
      * Return the properties for a specific pluginfileurl.
@@ -92,15 +76,18 @@ abstract class html_base {
     }
 
     /**
-     * Method for replacing file links within html fields.
-     *
      * @param string $oldfilename
      * @param \stored_file $file
      * @return void
      */
-    public function __construct($oldfilename, \stored_file $file) {
+    public function setup_file_and_validate($oldfilename, \stored_file $file) {
         $this->oldfilename = $oldfilename;
         $this->file = $file;
         $this->validate_file_component($file);
     }
+
+    /**
+     * Replace file links.
+     */
+    abstract public function replace_file_links();
 }

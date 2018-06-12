@@ -18,13 +18,11 @@
  * Error event logging for file updates push.
  *
  * @package    tool_ally
- * @author     David Castro <david.castro@blackboard.com>
  * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_ally\event;
-use core\event\base;
 defined('MOODLE_INTERNAL') || die();
 
 
@@ -36,85 +34,6 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class push_file_updates_error extends base {
-
-    /**
-     * @var string PLUGIN
-     */
-    const PLUGIN = 'tool_ally';
-
-    /**
-     * Init method.
-     */
-    protected function init() {
-        $this->data['crud'] = 'r';
-        $this->data['edulevel'] = self::LEVEL_OTHER;
-        $this->context = \context_system::instance();
-    }
-
-    /**
-     * Returns the event name.
-     *
-     * @return string
-     */
-    public static function get_name() {
-        return new \lang_string('pushfileserror', self::PLUGIN);
-    }
-
-    /**
-     * @return string
-     */
-    public function get_description() {
-        return 'Unexpected error: '.$this->other['message'];
-    }
-
-    /**
-     * @return string
-     */
-    public static function get_explanation() {
-        return new \lang_string('pushfileserror:explanation', self::PLUGIN);
-    }
-
-    /**
-     * Validate event data.
-     *
-     * @throws \coding_exception
-     */
-    protected function validate_data() {
-        if (empty($this->other['message'])) {
-            throw new \coding_exception('The error message must be set');
-        }
-        if (!array_key_exists('code', $this->other)) {
-            throw new \coding_exception('The error code must be set');
-        }
-    }
-
-    /**
-     * @param \Exception $exception
-     * @return \core\event\base
-     * @throws \coding_exception
-     */
-    public static function create_from_exception(\Exception $exception) {
-        return self::create([
-            'other' => [
-                'message' => $exception->getMessage(),
-                'code'    => $exception->getCode(),
-                'trace'   => $exception->getTraceAsString(),
-            ]
-        ]);
-    }
-
-    /**
-     * @param string $msg
-     * @return \core\event\base
-     * @throws \coding_exception
-     */
-    public static function create_from_msg($msg) {
-        return self::create([
-            'other' => [
-                'message' => $msg,
-                'code'    => 0,
-            ]
-        ]);
-    }
+class push_file_updates_error extends base_push_updates_error {
+    const ERRORKEY = 'pushfileserror';
 }

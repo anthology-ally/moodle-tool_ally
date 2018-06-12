@@ -15,31 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Admin setting for auto configuration.
+ * Ally filter capabilities.
  * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2017 Blackboard Inc.
- * @package   tool_ally
+ * @copyright Copyright (c) 2018 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_ally\adminsetting;
-
 defined('MOODLE_INTERNAL') || die();
 
-/**
- * No setting - just heading and text.
- *
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class ally_config extends \admin_setting_heading {
-
-    /**
-     * Returns an HTML string
-     * @return string Returns an HTML string
-     */
-    public function output_html($data, $query='') {
-        global $OUTPUT, $CFG;
-        $context = (object) ['href' => $CFG->wwwroot.'/admin/tool/ally/autoconfigws.php'];
-        return $OUTPUT->render_from_template('tool_ally/setting_ally_config', $context);
-    }
-}
+$capabilities = [
+    'tool/ally:clientconfig' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager' => CAP_ALLOW
+        ]
+    ]
+];
