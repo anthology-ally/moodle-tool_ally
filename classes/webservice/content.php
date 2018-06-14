@@ -77,7 +77,7 @@ class content extends \external_api {
      * @param string $component
      * @param string $table
      * @param string $field
-     * @return array
+     * @return component_content
      * @throws \dml_exception
      * @throws \invalid_parameter_exception
      * @throws \required_capability_exception

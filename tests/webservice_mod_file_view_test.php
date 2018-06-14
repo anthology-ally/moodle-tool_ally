@@ -152,10 +152,8 @@ class tool_ally_webservice_mod_file_view_testcase extends tool_ally_abstract_tes
         $datagen->enrol_user($teacher->id, $course->id, $teacherrole->id);
 
         // Can use fake as file check will fail before it is used.
-        $fakeitemid = '123';
-
         $nonexistantfile = 'BADC0FFEE';
         $this->expectException(\moodle_exception::class);
-        mod_file_view::service($nonexistantfile, $teacher->id, $fakeitemid);
+        mod_file_view::service($nonexistantfile, $teacher->id);
     }
 }

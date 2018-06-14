@@ -162,8 +162,6 @@ SQL;
         $discussionarray = $this->get_discussion_html_content_items($courseid);
 
         return array_merge($introarray, $discussionarray);
-
-        return $array;
     }
 
     public function get_annotation_maps($courseid) {
@@ -199,7 +197,7 @@ SQL;
 
     public function get_html_content($id, $table, $field, $courseid = null) {
         if (!$this->module_installed()) {
-            return;
+            return null;
         }
 
         if ($table === $this->type.'_posts') {
@@ -212,7 +210,7 @@ SQL;
         global $DB;
 
         if (!$this->module_installed()) {
-            return;
+            return [];
         }
 
         $main = $this->get_html_content($id, $this->type, 'intro');
@@ -240,7 +238,7 @@ SQL;
         global $DB;
 
         if (!$this->module_installed()) {
-            return;
+            return -1;
         }
 
         if ($table === $this->type) {
@@ -281,5 +279,6 @@ SQL;
             $discussionid = $this->get_discussion_id_from_post_id($id);
             return new moodle_url('/mod/'.$this->type.'/discuss.php?d='.$discussionid.'#p'.$id).'';
         }
+        return null;
     }
 }

@@ -51,49 +51,11 @@ abstract class component_base {
      */
     abstract public static function component_type();
 
-    protected function installed_modules() {
-        global $DB;
-
-        static $installed = []; // Static caching.
-        if (!empty($installed)) {
-            return $installed;
-        }
-
-        $sqllike = $DB->sql_like('plugin', '?');
-        $params = [$DB->sql_like_escape('mod').'%'];
-        $sql = <<<SQL
-        SELECT plugin FROM {config_plugins} WHERE name = 'version' AND $sqllike
-SQL;
-        $pluginswithversions = $DB->get_records_sql($sql, $params);
-        $pluginswithversions = array_map(function($item) {
-            return $item->plugin;
-        }, $pluginswithversions);
-
-        $pluginlist = \core_component::get_plugin_list('mod');
-        foreach ($pluginlist as $plugin => $dir) {
-            if (in_array('mod_'.$plugin, $pluginswithversions)) {
-                $installed[] = $plugin;
-            }
-        }
-
-        return $installed;
-    }
-
     /**
      * @return bool
      */
     public function module_installed() {
-        if ($this->component_type() !== self::TYPE_MOD) {
-            return true;
-        }
-
-        $installed = $this->installed_modules();
-        $component = $this->get_component_name();
-        if (!in_array($component, $installed)) {
-            return false;
-        }
-
-        return true;
+        return \core_component::get_component_directory($this->get_component_name()) !== null;
     }
 
     /**

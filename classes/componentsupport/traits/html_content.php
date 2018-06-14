@@ -41,13 +41,12 @@ trait html_content {
     protected function std_get_course_html_content_items($courseid) {
         global $DB;
 
-        if (!$this->module_installed()) {
-            return;
-        }
-        $component = $this->get_component_name();
-
         $array = [];
+        if (!$this->module_installed()) {
+            return $array;
+        }
 
+        $component = $this->get_component_name();
         $select = "course = ? AND introformat = ? AND intro !=''";
         $rs = $DB->get_recordset_select($component, $select, [$courseid, FORMAT_HTML]);
         foreach ($rs as $row) {
@@ -78,7 +77,7 @@ trait html_content {
         global $DB;
 
         if (!$this->module_installed()) {
-            return;
+            return null;
         }
 
         $component = $this->get_component_name();
@@ -116,7 +115,7 @@ trait html_content {
      */
     public function get_html_content_deleted($id, $table, $field, $courseid, $timemodified = null) {
         if (!$this->module_installed()) {
-            return;
+            return null;
         }
 
         $timemodified = $timemodified ? $timemodified : time();
@@ -139,7 +138,7 @@ trait html_content {
         global $DB;
 
         if (!$this->module_installed()) {
-            return;
+            return null;
         }
 
         $this->validate_component_table_field($table, $field);

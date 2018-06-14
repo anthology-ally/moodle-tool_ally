@@ -164,7 +164,7 @@ class local_content {
      * @param string $field
      * @param null|int $courseid
      * @param null|int $timemodified
-     * @return component_content
+     * @return component_content|bool
      */
     public static function get_html_content_deleted($id, $component, $table, $field,
                                                     $courseid = null, $timemodified = null) {

@@ -49,7 +49,7 @@ class course_content extends \external_api {
     }
 
     /**
-     * @return \external_single_structure
+     * @return \external_multiple_structure
      */
     public static function service_returns() {
         return new \external_multiple_structure(

@@ -138,6 +138,7 @@ class course_component extends component_base implements iface_html_content {
             }
             return new moodle_url('/course/view.php?id='.$courseid.'#section-'.$sectionnumber).'';
         }
+        return null;
     }
 
     public function get_all_html_content($id) {

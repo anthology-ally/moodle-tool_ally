@@ -48,7 +48,7 @@ class question_component extends file_component_base {
         $matches = [];
         $matched = preg_match($regex, $pluginfileurl, $matches);
         if (!$matched) {
-            return;
+            return false;
         }
         $contextid = $matches[1];
         if (strpos($matches[2], '%2F') !== false) {

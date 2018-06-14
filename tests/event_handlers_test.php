@@ -62,7 +62,7 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
     /**
      * @param string $eventname
      * @param string $entityid
-     * @return array
+     * @return void
      * @throws coding_exception
      */
     private function assert_pushtrace_contains_entity_id($eventname, $entityid) {
@@ -74,11 +74,12 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
         foreach ($pushtraces as $pushtrace) {
             foreach ($pushtrace as $row) {
                 if ($row['entity_id'] === $entityid) {
-                    return $row;
+                    return;
                 }
             }
         }
         $this->fail('Push trace does not contain an entity id of '.$entityid);
+        return;
     }
 
     /**

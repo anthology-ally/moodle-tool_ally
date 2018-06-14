@@ -94,7 +94,7 @@ class version_information {
      * Returns the version information of an installed component.
      *
      * @param string $component component name
-     * @return stdClass|bool version data or false if the component is not found
+     * @return \stdClass|bool version data or false if the component is not found
      */
     private function get_component_version($component) {
         global $CFG;

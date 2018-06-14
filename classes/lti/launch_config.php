@@ -37,7 +37,7 @@ use stdClass;
  * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class launch_config extends base_launch_config{
+class launch_config extends base_launch_config {
 
     /**
      * launch_config constructor.
