@@ -106,4 +106,15 @@ class local {
 
         return $dt->getTimestamp();
     }
+
+    /**
+     * Is this script running during testing?
+     *
+     * @return bool
+     */
+    public static function duringtesting() {
+        $runningphpunittest = defined('PHPUNIT_TEST') && PHPUNIT_TEST;
+        $runningbehattest = defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING;
+        return ($runningphpunittest || $runningbehattest);
+    }
 }

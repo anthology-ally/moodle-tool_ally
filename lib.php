@@ -24,7 +24,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 use tool_ally\file_processor,
-    tool_ally\local_file;
+    tool_ally\local_file,
+    tool_ally\cache;
 
 /**
  * Callback for after file deleted.
@@ -48,6 +49,8 @@ function tool_ally_after_file_deleted($filerecord) {
         'mimetype'     => $file->get_mimetype(),
         'timedeleted'  => time(),
     ], false);
+
+    cache::instance()->invalidate_file_keys($file);
 }
 
 /**
@@ -58,6 +61,8 @@ function tool_ally_after_file_created($filerecord) {
     $fs = get_file_storage();
     $file = $fs->get_file_instance($filerecord);
     file_processor::push_file_update($file);
+
+    cache::instance()->invalidate_file_keys($file);
 }
 
 /**
@@ -68,4 +73,6 @@ function tool_ally_after_file_updated($filerecord) {
     $fs = get_file_storage();
     $file = $fs->get_file_instance($filerecord);
     file_processor::push_file_update($file);
+
+    cache::instance()->invalidate_file_keys($file);
 }
