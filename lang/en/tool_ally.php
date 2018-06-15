@@ -62,5 +62,6 @@ $string['privacy:metadata:files:timemodified'] = 'The time when the field was la
 $string['pushfileserror'] = 'Ally file updates error.';
 $string['pushfileserror:explanation'] = 'Errors associated with file updates push to Ally services.';
 $string['pushfileserror:skip'] = 'Skipping live file(s) push due to communication problems. Live file push will be restored when file updates task is successful. Please, review your configuration.';
+$string['cachedef_request'] = 'Ally filter request cache';
 $string['pushfilessummary'] = 'Ally file updates summary.';
 $string['pushfilessummary:explanation'] = 'Summary of file updates sent to Ally.';
