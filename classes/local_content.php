@@ -231,7 +231,7 @@ class local_content {
     public static function to_crud($componentcontent, $eventname) {
         return [
             'entity_id'    => $componentcontent->entity_id(),
-            'context_id'   => $componentcontent->get_courseid(),
+            'context_id'   => (string) $componentcontent->get_courseid(),
             'event_name'   => $eventname,
             'event_time'   => local::iso_8601($componentcontent->timemodified),
             'content_hash' => $componentcontent->contenthash
