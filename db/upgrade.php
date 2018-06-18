@@ -128,6 +128,7 @@ function xmldb_tool_ally_upgrade($oldversion) {
         $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('eventtime', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('eventname', XMLDB_TYPE_CHAR, '32', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('content', XMLDB_TYPE_TEXT, null, null, XMLDB_NOTNULL, null, null);
 
         // Adding keys to table tool_ally_content_queue.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
