@@ -70,7 +70,7 @@ class base_push_updates_error extends base {
      * @return string
      */
     public static function get_name() {
-        return new \lang_string(self::ERRORKEY, self::PLUGIN);
+        return get_string(self::ERRORKEY, self::PLUGIN);
     }
 
     /**
@@ -84,7 +84,7 @@ class base_push_updates_error extends base {
      * @return string
      */
     public static function get_explanation() {
-        return new \lang_string(self::ERRORKEY.':explanation', self::PLUGIN);
+        return get_string(self::ERRORKEY.':explanation', self::PLUGIN);
     }
 
     /**

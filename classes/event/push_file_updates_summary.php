@@ -61,7 +61,7 @@ class push_file_updates_summary extends base {
      * @return string
      */
     public static function get_name() {
-        return new \lang_string('pushfilessummary', self::PLUGIN);
+        return get_string('pushfilessummary', self::PLUGIN);
     }
 
     /**
@@ -76,7 +76,7 @@ class push_file_updates_summary extends base {
      * @return string
      */
     public static function get_explanation() {
-        return new \lang_string('pushfilessummary:explanation', self::PLUGIN);
+        return get_string('pushfilessummary:explanation', self::PLUGIN);
     }
 
     /**
