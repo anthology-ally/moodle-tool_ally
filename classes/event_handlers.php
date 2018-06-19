@@ -44,7 +44,7 @@ use mod_forum\event\post_updated;
 use mod_hsuforum\event\discussion_created as hsu_discussion_created;
 use mod_hsuforum\event\discussion_updated as hsu_discussion_updated;
 use mod_hsuforum\event\discussion_deleted as hsu_discussion_deleted;
-use mod_hsuforum\event\post_updated as hsu_post_created;
+use mod_hsuforum\event\post_updated as hsu_post_updated;
 
 use tool_ally\models\component_content;
 
@@ -270,7 +270,7 @@ class event_handlers {
      * the corersponding post.
      * @param post_updated $event
      */
-    public static function forum_post_updated(post_updated $event, $forumtype = 'forum') {
+    public static function forum_post_updated(base $event, $forumtype = 'forum') {
         $module = $forumtype;
         $component = local_content::component_instance($module);
         $userid = $event->userid;
