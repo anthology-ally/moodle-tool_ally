@@ -31,6 +31,7 @@ use tool_ally\models\component_content;
 use tool_ally\push_config;
 use tool_ally\event_handlers;
 use tool_ally\push_content_updates;
+use moodle_exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -151,11 +152,27 @@ class content_updates_task extends scheduled_task {
             $queuerow = $queue->current();
             $queue->next();
 
-            $ids[]     = $queuerow->id;
+            try {
+                $content = local_content::get_html_content(
+                    $queuerow->componentid, $queuerow->component, $queuerow->comptable, $queuerow->compfield,
+                    $queuerow->courseid);
+            } catch (moodle_exception $e) {
+                // Content likely to be deleted.
+                $queuerow->attempts++;
+                $msg = 'Failed to get content for component '.$queuerow->component.' table '.
+                        $queuerow->comptable.' field '.$queuerow->compfield.' with id '.$queuerow->componentid.
+                        ' attempt number '.$queuerow->attempts;
+                mtrace($msg);
+                if ($queuerow->attempts > 10) {
+                    // Tried 10 times to process this, let's call it a day and delete the record.
+                    $DB->delete_records('tool_ally_content_queue', ['id' => $queuerow->id]);
+                    continue;
+                }
+                $DB->update_record('tool_ally_content_queue', $queuerow);
+                continue;
+            }
 
-            $content = local_content::get_html_content(
-                $queuerow->componentid, $queuerow->component, $queuerow->comptable, $queuerow->compfield,
-                $queuerow->courseid);
+            $ids[]     = $queuerow->id;
 
             $payload[] = $content;
 
