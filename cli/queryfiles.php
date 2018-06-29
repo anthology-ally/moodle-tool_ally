@@ -119,6 +119,8 @@ while ($files->valid()) {
         'mimetype'     => $file->get_mimetype(),
         'contenthash'  => $file->get_contenthash(),
         'timemodified' => local::iso_8601($file->get_timemodified()),
+        'component'    => $file->get_component(),
+        'filearea'     => $file->get_filearea(),
     ];
     cli_write(json_encode($response));
 
