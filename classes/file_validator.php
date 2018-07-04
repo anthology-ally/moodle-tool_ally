@@ -40,40 +40,64 @@ class file_validator {
      */
     const WHITELIST = [
         // Resources.
-        'mod_book~chapter',
-        'mod_book~intro',
-        'mod_folder~content',
-        'mod_folder~intro',
-        'mod_label~intro',
-        'mod_page~content',
-        'mod_page~intro',
-        'mod_resource~content',
-        'mod_resource~intro',
-        // Activities.
-        'mod_assign~intro',
-        'mod_assign~introattachment',
-        'mod_forum~intro', // Note students can create files in discussion topics / replies. This is the best we can do.
-        'mod_hsuforum~intro',
-        'mod_glossary~intro', // We can't do glossary entries as students can add these.
-        'mod_lesson~intro',
-        'mod_lesson~page_contents',
-        'mod_lesson~page_responses',
-        'mod_lesson~page_answers',
-        'mod_quiz~intro',
-        // Whitelist other.
         'block_html~content',
+        'calendar~event_description',
         'course~overviewfiles',
         'course~section',
         'course~summary',
-        'question~questiontext',
-        'question~generalfeedback',
+        'group~description',
+        'mod_assign~intro',
+        'mod_assign~introattachment',
+        'mod_book~chapter',
+        'mod_book~intro',
+        'mod_chat~intro',
+        'mod_choice~intro',
+        'mod_data~content',
+        'mod_feedback~intro',
+        'mod_folder~content',
+        'mod_folder~intro',
+        'mod_forum~attachment',
+        'mod_forum~intro',
+        'mod_forum~post',
+        'mod_glossary~attachment',
+        'mod_glossary~entry',
+        'mod_glossary~intro',
+        'mod_hsuforum~attachment',
+        'mod_hsuforum~comments',
+        'mod_hsuforum~intro',
+        'mod_hsuforum~post',
+        'mod_imscp~content',
+        'mod_kalvidres~intro',
+        'mod_label~intro',
+        'mod_lesson~intro',
+        'mod_lesson~mediafile',
+        'mod_lesson~page_answers',
+        'mod_lesson~page_contents',
+        'mod_lesson~page_responses',
+        'mod_lightboxgallery~gallery_images',
+        'mod_page~content',
+        'mod_page~intro',
+        'mod_questionnaire~info',
+        'mod_questionnaire~intro',
+        'mod_questionnaire~question',
+        'mod_quiz~intro',
+        'mod_resource~intro',
+        'mod_resource~content',
+        'mod_scorm~content',
+        'mod_scorm~intro',
+        'mod_turnitintooltwo~intro',
+        'mod_url~intro',
         'question~answer',
         'question~answerfeedback',
         'question~correctfeedback',
+        'question~questiontext',
+        'question~generalfeedback',
+        'question~hint',
         'question~incorrectfeedback',
         'question~partiallycorrectfeedback',
         'qtype_ddmatch~subanswer',
-        'qtype_ddmatch~subquestion'
+        'qtype_ddmatch~subquestion',
+        'qtype_match~subquestion',
     ];
 
     /**
@@ -109,18 +133,12 @@ class file_validator {
         // Is it whitelisted?
         $whitelisted = $this->check_component_area_teacher_whitelist($file->get_component(), $file->get_filearea());
 
-        if (!$whitelisted) {
-            // Component + area are not whitelisted so check if user is an editing teacher / manager / admin / etc.
-            $userid = $file->get_userid();
-            $validuser = empty($userid) || array_key_exists($userid, $this->userids) ||
-                $this->assignments->has($userid, $context);
-            if (!$validuser) {
-                return false;
-            }
-        }
+        // Check if user is an editing teacher / manager / admin / etc.
+        $userid = $file->get_userid();
+        $validuser = empty($userid) || array_key_exists($userid, $this->userids) ||
+            $this->assignments->has($userid, $context);
 
-        // Only files that belong to a course are supported by Ally.
-        return $context->get_course_context(false) instanceof \context_course;
+        return $whitelisted && $validuser && $context->get_course_context(false) instanceof \context_course;
     }
 
     /**

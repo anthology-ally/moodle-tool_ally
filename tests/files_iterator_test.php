@@ -223,14 +223,14 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
             $fcount++;
             $this->assertStoredFileEquals($file, $filetocheck);
         }
-        $this->assertEquals(1, $fcount);
+        $this->assertEquals(0, $fcount);
     }
 
     /**
-     * Make sure a file created within a course but not in a whitelisted module is accessible when created by
+     * Make sure a file created within a course of a whitelisted module is accessible when created by
      * someone with a teacher role but not when a student.
      */
-    public function test_without_white_listing() {
+    public function test_role_validation() {
 
         global $DB;
 
@@ -249,8 +249,8 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $fs = get_file_storage();
         $filerecord = array(
             'contextid' => context_course::instance($course1->id)->id,
-            'component' => 'mod_notwhitelisted',
-            'filearea' => 'content',
+            'component' => 'mod_assign',
+            'filearea' => 'intro',
             'itemid' => 0,
             'filepath' => '/',
             'filename' => 'test.txt',
@@ -274,8 +274,8 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $fs = get_file_storage();
         $filerecord = array(
             'contextid' => context_course::instance($course1->id)->id,
-            'component' => 'mod_notwhitelisted',
-            'filearea' => 'content',
+            'component' => 'mod_assign',
+            'filearea' => 'intro',
             'itemid' => 0,
             'filepath' => '/',
             'filename' => 'test2.txt',
@@ -299,8 +299,8 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $fs = get_file_storage();
         $filerecord = array(
             'contextid' => context_course::instance($course2->id)->id,
-            'component' => 'mod_notwhitelisted',
-            'filearea' => 'content',
+            'component' => 'mod_assign',
+            'filearea' => 'intro',
             'itemid' => 0,
             'filepath' => '/',
             'filename' => 'test3.txt',
@@ -343,8 +343,8 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         for ($i = 0; $i < $filecount; $i++) {
             $filerecord = array(
                 'contextid' => context_course::instance($course->id)->id,
-                'component' => 'mod_notwhitelisted',
-                'filearea' => 'content',
+                'component' => 'mod_assign',
+                'filearea' => 'intro',
                 'itemid' => 0,
                 'filepath' => '/',
                 'filename' => "test_file_$i.txt",
