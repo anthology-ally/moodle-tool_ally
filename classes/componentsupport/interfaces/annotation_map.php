@@ -31,6 +31,8 @@ interface annotation_map {
      * @param int $courseid
      *
      * @return array
+     *
+     * @throws \moodle_exception
      */
     public function get_annotation_maps($courseid);
 }

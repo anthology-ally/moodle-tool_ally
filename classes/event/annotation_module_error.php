@@ -27,12 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Class push_content_updates_error.
+ * Class annotation_module_error.
  *
  * @package    tool_ally
  * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class push_content_updates_error extends base_error {
-    const ERRORKEY = 'pushcontenterror';
+class annotation_module_error extends base_error {
+    const ERRORKEY = 'annotationmoderror';
 }

@@ -36,14 +36,14 @@ defined('MOODLE_INTERNAL') || die();
 // should be removed and the code refactored.
 
 /**
- * Class base_push_file_updates_error.
+ * Class base_error.
  *
  * @package    tool_ally
  * @author     David Castro <david.castro@blackboard.com>
  * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class base_push_updates_error extends base {
+class base_error extends base {
 
     /**
      * @var string PLUGIN
@@ -70,7 +70,7 @@ class base_push_updates_error extends base {
      * @return string
      */
     public static function get_name() {
-        return get_string(self::ERRORKEY, self::PLUGIN);
+        return get_string(static::ERRORKEY, self::PLUGIN);
     }
 
     /**
@@ -84,7 +84,7 @@ class base_push_updates_error extends base {
      * @return string
      */
     public static function get_explanation() {
-        return get_string(self::ERRORKEY.':explanation', self::PLUGIN);
+        return get_string(static::ERRORKEY.':explanation', self::PLUGIN);
     }
 
     /**
