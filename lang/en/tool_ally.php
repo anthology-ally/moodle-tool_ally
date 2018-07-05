@@ -73,3 +73,5 @@ $string['pushfileserror:skip'] = 'Skipping live file(s) push due to communicatio
 $string['cachedef_request'] = 'Ally filter request cache';
 $string['pushfilessummary'] = 'Ally file updates summary.';
 $string['pushfilessummary:explanation'] = 'Summary of file updates sent to Ally.';
+$string['annotationmoderror'] = 'Ally module content annotation failed.';
+$string['annotationmoderror:explanation'] = 'Module was not correctly identified.';

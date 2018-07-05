@@ -124,7 +124,15 @@ class local_content {
             $instance = self::component_instance($component);
             // We are now working with a component instance located in admin/tool/ally/classes/componentsupport.
             if ($instance instanceof annotation_map) {
-                $maps = array_merge($maps, [$component => $instance->get_annotation_maps($courseid)]);
+                try {
+                    $maps = array_merge($maps, [$component => $instance->get_annotation_maps($courseid)]);
+                } catch (\moodle_exception $ex) {
+                    // Component not identified correctly.
+                    $msg = $ex->getMessage();
+                    $msg .= '<br> Component: '.$component;
+                    $msg .= '<br> Course ID: '.$courseid;
+                    \tool_ally\event\annotation_module_error::create_from_msg($msg)->trigger();
+                }
             }
         }
         return $maps;
@@ -205,15 +213,24 @@ class local_content {
     }
 
     /**
-     * @param context $context
+     * @param \context $context
      * @return string
      */
     public static function get_annotation($context) {
         if ($context->contextlevel === CONTEXT_MODULE) {
-            list($course, $cm) = get_course_and_cm_from_cmid($context->instanceid);
-            $component = self::component_instance($cm->modname);
-            if ($component && method_exists($component, 'get_annotation')) {
-                return $component->get_annotation($cm->instance);
+            try {
+                list($course, $cm) = get_course_and_cm_from_cmid($context->instanceid);
+                $component = self::component_instance($cm->modname);
+                if ($component && method_exists($component, 'get_annotation')) {
+                    return $component->get_annotation($cm->instance);
+                }
+            } catch (\moodle_exception $ex) {
+                // Component not identified correctly.
+                $msg = $ex->getMessage();
+                $msg .= '<br> Context: '.$context->path;
+                $msg .= '<br> Instance ID: '.$context->instanceid;
+                \tool_ally\event\annotation_module_error::create_from_msg($msg)->trigger();
+                return '';
             }
         }
         return '';
