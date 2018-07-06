@@ -321,6 +321,36 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
         // Assert pushtrace contains discussion post.
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
         post_updated::create($params);
+    }
 
+    public function test_forum_single_discussion_created() {
+        global $USER, $DB;
+
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+
+        // Create forum.
+        $forum = $this->getDataGenerator()->create_module('forum',
+            ['course' => $course->id, 'introformat' => FORMAT_HTML]);
+        $introentityid = 'forum:forum:intro:'.$forum->id;
+
+        // Add a discussion.
+        $record = new stdClass();
+        $record->forum = $forum->id;
+        $record->userid = $USER->id;
+        $record->course = $forum->course;
+        $discussion = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($record);
+
+        // Get discussion post.
+        $post = $DB->get_record('forum_posts', ['discussion' => $discussion->id]);
+        $postentityid = 'forum:forum_posts:message:'.$post->id;
+
+        list ($course, $cm) = get_course_and_cm_from_cmid($forum->cmid);
+        course_module_created::create_from_cm($cm)->trigger();
+
+        // Both entities should be traced.
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $introentityid);
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $postentityid);
     }
 }

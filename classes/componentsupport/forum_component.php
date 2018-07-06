@@ -28,6 +28,7 @@ defined ('MOODLE_INTERNAL') || die();
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\local_file;
 use tool_ally\models\component;
+use tool_ally\models\component_content;
 use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 
@@ -215,18 +216,35 @@ SQL;
 
         $main = $this->get_html_content($id, $this->type, 'intro');
         $discussions = '{'.$this->type.'_discussions}';
-        $posts = '{'.$this->type.'_posts}';
+        $poststable = '{'.$this->type.'_posts}';
         $sql = <<<SQL
-            SELECT fp.*
+            SELECT fp.*,fd.course AS courseid
               FROM $discussions fd
-              JOIN $posts fp
+              JOIN $poststable fp
                ON fp.discussion = fd.id
                AND fp.parent = 0
                AND fp.messageformat = ?
             WHERE fd.forum = ?
 SQL;
         $params = [FORMAT_HTML, $id];
-        $posts = $DB->get_records_sql($sql, $params);
+        $stdposts = $DB->get_records_sql($sql, $params);
+        $posts = array_map(function ($stdpost) {
+            $table = $this->type.'_posts';
+            $field = 'message';
+            $url = $this->make_url($stdpost->id, $table, $field, $stdpost->courseid);
+            return new component_content(
+                $stdpost->id,
+                $this->get_component_name(),
+                $table,
+                $field,
+                $stdpost->courseid,
+                $stdpost->modified,
+                $stdpost->messageformat,
+                $stdpost->message,
+                $stdpost->subject,
+                $url
+            );
+        }, $stdposts);
         return array_merge([$main], $posts);
     }
 

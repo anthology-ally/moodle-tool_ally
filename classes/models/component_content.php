@@ -26,7 +26,7 @@ namespace tool_ally\models;
 
 defined ('MOODLE_INTERNAL') || die();
 
-class component_content extends component{
+class component_content extends component {
     /**
      * @var string
      */
