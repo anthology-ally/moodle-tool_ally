@@ -111,7 +111,14 @@ $functions = [
         'description'  => 'Get specific component instance content',
         'type'         => 'read',
         'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses'
-    ]
+    ],
+    'tool_ally_get_course_user_count' => [
+        'classname'    => 'tool_ally\\webservice\\course_user_count',
+        'methodname'   => 'service',
+        'description'  => 'Gets the amount of students and instructors per course',
+        'type'         => 'read',
+        'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses'
+    ],
 ];
 
 $services = [
@@ -130,7 +137,8 @@ $services = [
             'tool_ally_get_courses',
             'tool_ally_list_content',
             'tool_ally_get_content',
-            'tool_ally_replace_content'
+            'tool_ally_replace_content',
+            'tool_ally_get_course_user_count',
         ],
         'enabled'         => 0,
         'restrictedusers' => 0,
