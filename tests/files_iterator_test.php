@@ -429,4 +429,93 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         // Should be getting $fcount === 2 because student files are now also included.
         $this->assertEquals(2, $fcount);
     }
+
+    /**
+     * Test comparing curent and previous validators.
+     */
+    public function test_all_valid_files() {
+        $this->resetAfterTest();
+
+        $now = time();
+
+        $dg = $this->getDataGenerator();
+        $course1 = $dg->create_course();
+        $course2 = $dg->create_course();
+        $user = $this->getDataGenerator()->create_user();
+        $dg->enrol_user($user->id, $course1->id, 'editingteacher');
+        $dg->enrol_user($user->id, $course2->id, 'student');
+        $this->setUser($user);
+
+        // Create a file with a not whitelisted module.
+        $fs = get_file_storage();
+        $filerecord = array(
+            'contextid' => context_course::instance($course1->id)->id,
+            'component' => 'mod_notwhitelisted',
+            'filearea' => 'content',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'test.txt',
+            'userid' => $user->id,
+            'modified' => $now
+        );
+        $teststring = 'moodletest';
+        $testfile1 = $fs->create_file_from_string($filerecord, $teststring);
+
+        // Old iterator should take in account this file.
+        $files = local_file::iterator();
+        $files->set_retrievevalid_files(false);
+        $files->since($now - DAYSECS);
+        $fcount = 0;
+        foreach ($files as $filetocheck) {
+            $fcount++;
+            $this->assertStoredFileEquals($testfile1, $filetocheck);
+        }
+        $this->assertEquals(1, $fcount);
+
+        // New iterator should not have take in account this file.
+        $files = local_file::iterator();
+        $files->since($now - DAYSECS);
+        $fcount = 0;
+        foreach ($files as $filetocheck) {
+            $fcount++;
+            $this->assertStoredFileEquals($testfile1, $filetocheck);
+        }
+        $this->assertEquals(0, $fcount);
+
+        // Add another file in course where user is teacher but with a whitelisted module.
+        $fs = get_file_storage();
+        $filerecord = array(
+            'contextid' => context_course::instance($course1->id)->id,
+            'component' => 'mod_assign',
+            'filearea' => 'intro',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'test2.txt',
+            'userid' => $user->id,
+            'modified' => $now
+        );
+        $teststring = 'moodletest2';
+        $testfile2 = $fs->create_file_from_string($filerecord, $teststring);
+
+        // Total amount of files should not change on the old validator because new file is included by the new validator.
+        $files = local_file::iterator();
+        $files->set_retrievevalid_files(false);
+        $files->since($now - DAYSECS);
+        $fcount = 0;
+        foreach ($files as $filetocheck) {
+            $fcount++;
+            $this->assertStoredFileEquals($testfile1, $filetocheck);
+        }
+        $this->assertEquals(1, $fcount);
+
+        $files = local_file::iterator();
+        $files->since($now - WEEKSECS);
+        $fcount = 0;
+        $testfiles = [$testfile1, $testfile2];
+        foreach ($files as $filetocheck) {
+            $fcount++;
+            $this->assertTrue(in_array($filetocheck, $testfiles));
+        }
+        $this->assertEquals(1, $fcount);
+    }
 }

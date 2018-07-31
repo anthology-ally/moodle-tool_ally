@@ -55,6 +55,56 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
     }
 
     /**
+     * Given an assign activity, return an associated file in a whitelisted filearea.
+     *
+     * @param stdClass $module
+     * @return stored_file
+     * @throws coding_exception
+     */
+    protected function create_whitelisted_assign_file($module) {
+        return $this->create_assign_file($module, 'intro');
+
+    }
+
+    /**
+     * Given an assign activity, return an associated file in not whitelisted filearea.
+     *
+     * @param stdClass $module
+     * @return stored_file
+     * @throws coding_exception
+     */
+    protected function create_notwhitelisted_assign_file($module) {
+        return $this->create_assign_file($module, 'notwhitelisted');
+    }
+
+    /**
+     * Creates a file for a given mod_assign and filearea.
+     *
+     * @param stdClass $module
+     * @param string $filearea
+     * @return stored_file
+     * @throws coding_exception
+     */
+    private function create_assign_file($module, $filearea) {
+        $context = context_module::instance($module->cmid);
+
+        $fs = get_file_storage();
+
+        // Prepare file record object.
+        $fileinfo = array(
+            'contextid' => $context->id,
+            'component' => 'mod_assign',
+            'filearea' => $filearea,
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'myfile.txt');
+
+        // Create file containing text 'hello world'.
+        return $fs->create_file_from_string($fileinfo, 'hello world');
+
+    }
+
+    /**
      * Assert that two stored files are the same.
      *
      * @param stored_file $expected

@@ -119,6 +119,20 @@ $functions = [
         'type'         => 'read',
         'capabilities' => 'moodle/course:view, moodle/course:viewhiddencourses'
     ],
+    'tool_ally_get_invalid_files' => [
+        'classname'    => 'tool_ally\\webservice\\invalid_files',
+        'methodname'   => 'service',
+        'description'  => 'Get all invalid files at platform',
+        'type'         => 'read',
+        'capabilities' => 'moodle/course:view, moodle/course:viewhiddenactivities, moodle/course:viewhiddencourses',
+    ],
+    'tool_ally_get_course_invalid_files' => [
+        'classname'    => 'tool_ally\\webservice\\course_invalid_files',
+        'methodname'   => 'service',
+        'description'  => 'Get Ally invalid files in a specific course',
+        'type'         => 'read',
+        'capabilities' => 'moodle/course:view, moodle/course:viewhiddenactivities, moodle/course:viewhiddencourses',
+    ],
 ];
 
 $services = [
@@ -139,6 +153,8 @@ $services = [
             'tool_ally_get_content',
             'tool_ally_replace_content',
             'tool_ally_get_course_user_count',
+            'tool_ally_get_invalid_files',
+            'tool_ally_get_course_invalid_files',
         ],
         'enabled'         => 0,
         'restrictedusers' => 0,

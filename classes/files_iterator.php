@@ -46,6 +46,11 @@ class files_iterator implements \Iterator {
     private $validator;
 
     /**
+     * @var boolean
+     */
+    private $retrievevalid = true;
+
+    /**
      * @var \file_storage
      */
     private $storage;
@@ -145,8 +150,11 @@ class files_iterator implements \Iterator {
             $context = $this->extract_context($row);
             $file    = $this->storage->get_file_instance($row);
 
-            if (!empty($this->validfilter) && !$this->validator->validate_stored_file($file, $context)) {
-                continue;
+            if (!empty($this->validfilter)) {
+                $filevalidation = $this->validator->validate_stored_file($file, $context);
+                if (($this->retrievevalid && !$filevalidation) || (!$this->retrievevalid && $filevalidation)) {
+                    continue;
+                }
             }
 
             $this->current = $file;
@@ -321,6 +329,18 @@ class files_iterator implements \Iterator {
      */
     public function with_valid_filter($validfilter) {
         $this->validfilter = $validfilter;
+
+        return $this;
+    }
+
+    /**
+     * Set which kind of files return after validation.
+     *
+     * @param boolean $retrievevalid
+     * @return self
+     */
+    public function set_retrievevalid_files($retrievevalid) {
+        $this->retrievevalid = $retrievevalid;
 
         return $this;
     }
