@@ -80,7 +80,7 @@ class course_invalid_files extends \external_api {
         foreach ($params['ids'] as $id) {
             $context = \context_course::instance($id);
             $files = local_file::iterator();
-            $files->set_retrievevalid_files(false);
+            $files->with_retrieve_valid_files(false);
             $files->in_context($context);
 
             foreach ($files as $file) {

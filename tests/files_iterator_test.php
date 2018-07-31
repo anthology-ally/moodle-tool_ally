@@ -463,7 +463,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
 
         // Old iterator should take in account this file.
         $files = local_file::iterator();
-        $files->set_retrievevalid_files(false);
+        $files->with_retrieve_valid_files(false);
         $files->since($now - DAYSECS);
         $fcount = 0;
         foreach ($files as $filetocheck) {
@@ -499,7 +499,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
 
         // Total amount of files should not change on the old validator because new file is included by the new validator.
         $files = local_file::iterator();
-        $files->set_retrievevalid_files(false);
+        $files->with_retrieve_valid_files(false);
         $files->since($now - DAYSECS);
         $fcount = 0;
         foreach ($files as $filetocheck) {

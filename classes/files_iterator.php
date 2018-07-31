@@ -339,7 +339,7 @@ class files_iterator implements \Iterator {
      * @param boolean $retrievevalid
      * @return self
      */
-    public function set_retrievevalid_files($retrievevalid) {
+    public function with_retrieve_valid_files($retrievevalid) {
         $this->retrievevalid = $retrievevalid;
 
         return $this;

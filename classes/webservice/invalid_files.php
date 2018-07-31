@@ -71,7 +71,7 @@ class invalid_files extends \external_api {
         $return = array();
 
         $files = local_file::iterator();
-        $files->set_retrievevalid_files(false);
+        $files->with_retrieve_valid_files(false);
 
         foreach ($files as $file) {
             $return[] = [
