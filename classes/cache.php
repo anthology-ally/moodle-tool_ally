@@ -115,17 +115,6 @@ class cache {
     }
 
     /**
-     * Purges cache.
-     * @return bool
-     */
-    public function refresh() {
-        if (local::duringtesting()) {
-            return false;
-        }
-        return $this->muc->purge();
-    }
-
-    /**
      * Deletes file keys associated with file.
      * @param \stored_file $file
      * @return bool true if succesful, false otherwise
