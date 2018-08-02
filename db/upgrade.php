@@ -146,7 +146,7 @@ function xmldb_tool_ally_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017120822, 'tool', 'ally');
     }
 
-    if ($oldversion < 2017120824) {
+    if ($oldversion < 2018080200) {
 
         // Define field attempts to be added to tool_ally_content_queue.
         $table = new xmldb_table('tool_ally_content_queue');
@@ -164,12 +164,6 @@ function xmldb_tool_ally_upgrade($oldversion) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-
-        // Ally savepoint reached.
-        upgrade_plugin_savepoint(true, 2017120824, 'tool', 'ally');
-    }
-
-    if ($oldversion < 2017120827) {
 
         // Rename field field on table tool_ally_deleted_content to compfield.
         $table = new xmldb_table('tool_ally_deleted_content');
@@ -198,7 +192,7 @@ function xmldb_tool_ally_upgrade($oldversion) {
         $dbman->rename_field($table, $field, 'comprowid');
 
         // Ally savepoint reached.
-        upgrade_plugin_savepoint(true, 2017120827, 'tool', 'ally');
+        upgrade_plugin_savepoint(true, 2018080200, 'tool', 'ally');
     }
 
     return true;

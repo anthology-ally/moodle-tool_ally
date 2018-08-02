@@ -117,7 +117,7 @@ class local {
         $runningbehattest = defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING;
         return ($runningphpunittest || $runningbehattest);
     }
-    
+
     /**
      * Strip mod_ from component string if necessary.
      * @param $component

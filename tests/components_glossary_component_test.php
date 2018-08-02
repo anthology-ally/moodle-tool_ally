@@ -17,10 +17,10 @@
 /**
  * Testcase class for the tool_ally\componentsupport\glossary_component class.
  *
- * @package    tool_ally
- * @author     Guy Thomas
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Guy Thomas
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use tool_ally\local_content;
@@ -32,13 +32,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Testcase class for the tool_ally\componentsupport\glossary_component class.
  *
- * @package    tool_ally
- * @author     Guy Thomas
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Guy Thomas
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_components_glossary_component_testcase extends advanced_testcase {
-
     use component_assertions;
 
     /**
@@ -97,7 +96,8 @@ class tool_ally_components_glossary_component_testcase extends advanced_testcase
         $this->coursecontext = context_course::instance($this->course->id);
         $gen->enrol_user($this->student->id, $this->course->id, 'student');
         $gen->enrol_user($this->teacher->id, $this->course->id, 'editingteacher');
-        $this->glossary= $gen->create_module('glossary', ['course' => $this->course->id, 'introformat' => FORMAT_HTML]);
+        $this->glossary = $gen->create_module('glossary', ['course' => $this->course->id, 'introformat' => FORMAT_HTML]);
+        $glossarygenerator = self::getDataGenerator()->get_plugin_generator('mod_glossary');
 
         // Add an entry by teacher - should show up in results.
         $this->setUser($this->teacher);
@@ -106,21 +106,18 @@ class tool_ally_components_glossary_component_testcase extends advanced_testcase
         $record->glossary = $this->glossary->id;
         $record->userid = $this->teacher->id;
         $record->definitionformat = FORMAT_HTML;
-        $this->teacherentry = self::getDataGenerator()->get_plugin_generator('mod_glossary')
-            ->create_content($this->glossary, $record);
+        $this->teacherentry = $glossarygenerator->create_content($this->glossary, $record);
 
-        // Add an entry by student - should NOT show up in results
+        // Add an entry by student - should NOT show up in results.
         $this->setUser($this->student);
         $record = new stdClass();
         $record->course = $this->course->id;
         $record->glossary = $this->glossary->id;
         $record->userid = $this->student->id;
         $record->definitionformat = FORMAT_HTML;
-        $this->studententry = self::getDataGenerator()->get_plugin_generator('mod_glossary')
-            ->create_content($this->glossary, $record);
+        $this->studententry = $glossarygenerator->create_content($this->glossary, $record);
 
         $this->component = local_content::component_instance('glossary');
-
     }
 
     public function test_get_approved_author_ids_for_context() {
@@ -144,7 +141,6 @@ class tool_ally_components_glossary_component_testcase extends advanced_testcase
 
 
     public function test_get_entry_html_content_items() {
-
         $contentitems = phpunit_util::call_internal_method(
             $this->component, 'get_entry_html_content_items', [
                 $this->course->id, $this->glossary->id

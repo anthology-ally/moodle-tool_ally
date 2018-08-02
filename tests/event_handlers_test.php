@@ -377,7 +377,7 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
 
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $glossaryentityid);
 
-        // Add an entry
+        // Add an entry.
         $record = new stdClass();
         $record->course = $course->id;
         $record->glossary = $glossary->id;

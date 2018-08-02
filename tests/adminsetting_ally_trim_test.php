@@ -20,8 +20,8 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * @package tool_admin
- * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2017 Blackboard Inc.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_adminsetting_ally_trim_testcase extends advanced_testcase {

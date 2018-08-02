@@ -17,10 +17,10 @@
 /**
  * Ally report view script.
  *
- * @package    report_allylti
- * @author     Sam Chaffee
- * @copyright  Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   report_allylti
+ * @author    Sam Chaffee
+ * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use tool_ally\lti\launch_config;

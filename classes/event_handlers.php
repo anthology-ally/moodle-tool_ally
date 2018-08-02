@@ -17,7 +17,7 @@
 /**
  * File processor for Ally.
  * @package   tool_ally
- * @copyright Copyright (c) 2018 Blackboard Inc.
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_ally;
@@ -45,7 +45,6 @@ use mod_hsuforum\event\discussion_created as hsu_discussion_created;
 use mod_hsuforum\event\discussion_updated as hsu_discussion_updated;
 use mod_hsuforum\event\discussion_deleted as hsu_discussion_deleted;
 use mod_hsuforum\event\post_updated as hsu_post_updated;
-use mod_hsuforum\event\post_updated as hsu_post_created;
 
 use mod_glossary\event\entry_created;
 use mod_glossary\event\entry_updated;
@@ -60,7 +59,7 @@ defined('MOODLE_INTERNAL') || die();
  * Can be used to process individual or groups of files.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2018 Blackboard Inc.
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -331,7 +330,7 @@ class event_handlers {
      * @throws \coding_exception
      * @throws \moodle_exception
      */
-    private static function module_item_crud(base $event, $eventname, $contentfield) {;
+    private static function module_item_crud(base $event, $eventname, $contentfield) {
         $module = local::clean_component_string($event->component);
         $component = local_content::component_instance($module);
         $userid = $event->userid;
@@ -343,7 +342,7 @@ class event_handlers {
         $id = $event->objectid;
         $table = $event->objecttable;
 
-        if ($eventname ===  self::API_DELETED) {
+        if ($eventname === self::API_DELETED) {
             $content = local_content::get_html_content_deleted($id, $module, $table, $contentfield, $event->courseid);
         } else {
             $content = local_content::get_html_content($id, $module, $table, $contentfield, $event->courseid);

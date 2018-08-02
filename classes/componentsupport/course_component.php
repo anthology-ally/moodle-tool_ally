@@ -16,7 +16,7 @@
 
 /**
  * Html content support for courses.
- * @copyright Copyright (c) 2018 Blackboard Inc.
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +31,7 @@ use moodle_url;
 
 /**
  * Html content support for courses.
- * @copyright Copyright (c) 2018 Blackboard Inc.
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_component extends component_base implements iface_html_content {

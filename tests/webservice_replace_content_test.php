@@ -117,7 +117,6 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
     public function test_service_glossary() {
         global $USER, $DB;
 
-
         $glossary = $this->module_replace_test('glossary', 'glossary');
         $courseid = $glossary->course;
 

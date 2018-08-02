@@ -17,7 +17,7 @@
 /**
  * Content processor for Ally.
  * @package   tool_ally
- * @copyright Copyright (c) 2018 Blackboard Inc.
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_ally;
@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
  * Can be used to process individual or groups of content.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2018 Blackboard Inc.
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class content_processor {
@@ -128,11 +128,12 @@ class content_processor {
         if (!array($content)) {
             $content = [$content];
         }
+        $dataobjects = [];
         foreach ($content as $contentitem) {
             if (empty($contentitem->content)) {
-                return;
+                continue;
             }
-            $contentrow = (object) [
+            $dataobjects[] = (object) [
                 'comprowid' => $contentitem->id,
                 'component' => $contentitem->component,
                 'comptable' => $contentitem->table,
@@ -142,8 +143,8 @@ class content_processor {
                 'eventname' => $eventname,
                 'content' => $contentitem->content
             ];
-            $DB->insert_record('tool_ally_content_queue', $contentrow);
         }
+        $DB->insert_records('tool_ally_content_queue', $dataobjects);
     }
 
     /**

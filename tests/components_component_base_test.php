@@ -17,10 +17,10 @@
 /**
  * Testcase class for the tool_ally\componentsupport\component_base class.
  *
- * @package    tool_ally
- * @author     Guy Thomas
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Guy Thomas
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use tool_ally\local_content;
@@ -32,13 +32,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Testcase class for the tool_ally\componentsupport\component_base class.
  *
- * @package    tool_ally
- * @author     Guy Thomas
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Guy Thomas
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_components_component_base_testcase extends advanced_testcase {
-
     use component_assertions;
 
     /**

@@ -17,10 +17,10 @@
 /**
  * Ally report LTI launch script.
  *
- * @package    tool_ally
- * @author     Sam Chaffee / Guy Thomas
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Sam Chaffee / Guy Thomas
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use tool_ally\lti\launch_config;

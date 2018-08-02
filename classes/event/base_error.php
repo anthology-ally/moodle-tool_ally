@@ -17,31 +17,22 @@
 /**
  * Error event logging for updates push.
  *
- * @package    tool_ally
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_ally\event;
 use core\event\base;
 defined('MOODLE_INTERNAL') || die();
 
-// Note to code reviewer - In my opinion (guy), we shouldn't be using events to log errors in the standard log store.
-// Event's are supposed to reflect actions taken by users - e.g. course created, assignment graded, etc.
-// They are not supposed to be used for API logging.
-// If you take a look at the collaborate module you'll notice that it uses a PSR logger for API call logging.
-// I think this is the correct approach as it is separate and distinct from user events.
-// However, since the log store was already being used to record API push failures for files, I thought I'd do the same
-// for content updates. It's up to you if you want to use a PSR logger for API failures, in which case these events
-// should be removed and the code refactored.
-
 /**
  * Class base_error.
  *
- * @package    tool_ally
- * @author     David Castro <david.castro@blackboard.com>
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    David Castro <david.castro@blackboard.com>
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class base_error extends base {
 
@@ -70,7 +61,13 @@ class base_error extends base {
      * @return string
      */
     public static function get_name() {
-        return get_string(static::ERRORKEY, self::PLUGIN);
+        static $name = null;
+
+        if (empty($name)) {
+            $name = get_string(static::ERRORKEY, self::PLUGIN);
+        }
+
+        return $name;
     }
 
     /**
@@ -84,7 +81,13 @@ class base_error extends base {
      * @return string
      */
     public static function get_explanation() {
-        return get_string(static::ERRORKEY.':explanation', self::PLUGIN);
+        static $explanation = null;
+
+        if (empty($explanation)) {
+            $explanation = get_string(static::ERRORKEY.':explanation', self::PLUGIN);
+        }
+
+        return $explanation;
     }
 
     /**

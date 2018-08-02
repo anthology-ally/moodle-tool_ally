@@ -17,10 +17,10 @@
 /**
  * Ally course retrieval webservice class.
  *
- * @package    tool_ally
- * @author     Sam Chaffee
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Sam Chaffee
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_ally\webservice;
@@ -32,9 +32,9 @@ require_once(__DIR__.'/../../../../../lib/externallib.php');
 /**
  * Ally course retrieval webservice class.
  *
- * @package    tool_ally
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class courses extends \external_api {
 

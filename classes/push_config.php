@@ -133,11 +133,9 @@ class push_config {
             }
         }
         if (CLI_SCRIPT) {
-            $this->timeout = isset($config->push_timeout_cli) ?
-                $config->push_timeout_cli : self::TASKTIMEOUT;
+            $this->timeout = isset($config->push_timeout_cli) ? $config->push_timeout_cli : self::TASKTIMEOUT;
         } else {
-            $this->timeout = isset($config->push_timeout) ?
-                $config->push_timeout : self::LIVETIMEOUT;
+            $this->timeout = isset($config->push_timeout) ? $config->push_timeout : self::LIVETIMEOUT;
         }
         if (isset($config->push_connect_timeout)) {
             $this->connecttimeout = (int) $config->push_connect_timeout;

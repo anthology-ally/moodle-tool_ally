@@ -16,14 +16,12 @@
 
 /**
  * Interface for supporting html content.
- * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2018 Blackboard Inc.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_ally\componentsupport\traits;
-
-use cm_info;
 
 use tool_ally\local_content;
 use tool_ally\models\component;
@@ -32,7 +30,6 @@ use tool_ally\models\component_content;
 defined ('MOODLE_INTERNAL') || die();
 
 trait html_content {
-
 
     /**
      * Standard method for getting course html content items.
@@ -164,7 +161,7 @@ trait html_content {
         return true;
     }
 
-    protected function get_intro_html_content_items(int $courseid): array {
+    protected function get_intro_html_content_items(int $courseid) : array {
         global $DB;
 
         if (!$this->module_installed()) {

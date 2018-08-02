@@ -17,10 +17,10 @@
 /**
  * Testcase class for the tool_ally\components\hsuforum_component class.
  *
- * @package    tool_ally
- * @author     Guy Thomas
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Guy Thomas
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use tool_ally\local_content;
@@ -34,10 +34,10 @@ require_once('components_forum_component_test.php');
 /**
  * Testcase class for the tool_ally\components\hsuforum_component class.
  *
- * @package    tool_ally
- * @author     Guy Thomas
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Guy Thomas
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_components_hsuforum_component_testcase extends tool_ally_components_forum_component_testcase {
 

@@ -17,10 +17,10 @@
 /**
  * File updates web service class definition.
  *
- * @package    tool_ally
- * @author     Sam Chaffee
- * @copyright  Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Sam Chaffee
+ * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_ally\webservice;
 
@@ -34,9 +34,9 @@ require_once(__DIR__.'/../../../../../lib/externallib.php');
 /**
  * File updates web service class definition.
  *
- * @package    tool_ally
- * @copyright  Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class file_updates extends \external_api {
 

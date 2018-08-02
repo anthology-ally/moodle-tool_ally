@@ -17,9 +17,9 @@
 /**
  * Error event logging for file updates push.
  *
- * @package    tool_ally
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_ally\event;
@@ -29,10 +29,10 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class push_file_updates_error.
  *
- * @package    tool_ally
- * @author     David Castro <david.castro@blackboard.com>
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    David Castro <david.castro@blackboard.com>
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class push_file_updates_error extends base_push_updates_error {
     const ERRORKEY = 'pushfileserror';

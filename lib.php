@@ -16,8 +16,8 @@
 
 /**
  * Library for core hooks.
- * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2017 Blackboard Inc.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -82,14 +82,23 @@ function tool_ally_after_file_updated($filerecord) {
 /**
  * Callback for pre-module deletion.
  * @param stdClass $cm (cm record from course_modules table)
+ * @throws \moodle_exception Probably the cm_info could not be generated.
  */
 function tool_ally_pre_course_module_delete(stdClass $cm) {
-    /** @var cm_info $cm */
-    list ($course, $cm) = get_course_and_cm_from_cmid($cm->id);
-    $component = local_content::component_instance($cm->modname);
-    if (!$component || !$component instanceof content_sub_tables) {
-        return;
+    try {
+        list ($course, $cm) = get_course_and_cm_from_cmid($cm->id, null, $cm->course);
+        $component = local_content::component_instance($cm->modname);
+        if (!$component || !$component instanceof content_sub_tables) {
+            return;
+        }
+        // Queue for deletion, all records related to the main record for this course module.
+        $component->queue_delete_sub_tables($cm);
+    } catch (\moodle_exception $mex) {
+        // Probably caught when disabled or erratic modules are in tests.
+        if (!\tool_ally\local::duringtesting()) {
+            // Something is wrong with this module.
+            mtrace($mex->getMessage());
+            throw $mex;
+        }
     }
-    // Queue for deletion, all records related to the main record for this course module.
-    $component->queue_delete_sub_tables($cm);
 }

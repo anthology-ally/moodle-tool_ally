@@ -91,7 +91,6 @@ class content_updates_task extends scheduled_task {
         // Set push content timestamp - even if we've had failures we can still do this as for content
         // we don't use the push content timestamp to limit the rows.
         $this->set_push_content_timestamp(time());
-
     }
 
     /**

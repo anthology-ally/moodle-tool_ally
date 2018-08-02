@@ -17,10 +17,10 @@
 /**
  * Logging for file updates push.
  *
- * @package    tool_ally
- * @author     David Castro <david.castro@blackboard.com>
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    David Castro <david.castro@blackboard.com>
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_ally\event;
@@ -34,10 +34,10 @@ defined('MOODLE_INTERNAL') || die();
  * Logging for file updates push.
  *
  * @class      push_file_updates_summary
- * @package    tool_ally
- * @author     David Castro <david.castro@blackboard.com>
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    David Castro <david.castro@blackboard.com>
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class push_file_updates_summary extends base {
 

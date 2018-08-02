@@ -32,7 +32,7 @@ return [
             'component'    => 'label',
             'comptable'    => 'label',
             'timedeleted'  => 1482186997,
-            'comprowid'   => '1000',
+            'comprowid'    => '1000',
         ],
         [
             'id'           => '2',
@@ -40,7 +40,7 @@ return [
             'component'    => 'label',
             'comptable'    => 'label',
             'timedeleted'  => 1482186997,
-            'comprowid'   => '1001',
+            'comprowid'    => '1001',
         ],
         [
             'id'           => '3',
@@ -48,7 +48,7 @@ return [
             'component'    => 'label',
             'comptable'    => 'label',
             'timedeleted'  => 1482186997,
-            'comprowid'   => '1002',
+            'comprowid'    => '1002',
         ],
         [
             'id'           => '4',
@@ -56,7 +56,7 @@ return [
             'component'    => 'label',
             'comptable'    => 'label',
             'timedeleted'  => 1482186997,
-            'comprowid'   => '1003',
+            'comprowid'    => '1003',
         ],
         [
             'id'           => '5',
@@ -64,7 +64,7 @@ return [
             'component'    => 'label',
             'comptable'    => 'label',
             'timedeleted'  => 1482186997,
-            'comprowid'   => '1004'
+            'comprowid'    => '1004'
         ]
     ],
 ];

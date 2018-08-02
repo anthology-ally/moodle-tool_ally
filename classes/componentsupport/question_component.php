@@ -17,8 +17,8 @@
 /**
  * Html file replacement support for core questions
  * @package tool_ally
- * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2017 Blackboard Inc.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,8 +33,8 @@ require_once($CFG->dirroot.'/question/engine/bank.php');
 /**
  * Html file replacement support for core questions
  * @package tool_ally
- * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2017 Blackboard Inc.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class question_component extends file_component_base {

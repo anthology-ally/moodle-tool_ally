@@ -17,8 +17,8 @@
 /**
  * File processor for Ally.
  * @package   tool_ally
- * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2017 Blackboard Inc.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_ally;
@@ -32,8 +32,8 @@ defined('MOODLE_INTERNAL') || die();
  * Can be used to process individual or groups of files.
  *
  * @package   tool_ally
- * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2017 Blackboard Inc.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class file_processor {

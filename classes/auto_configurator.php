@@ -17,10 +17,10 @@
 /**
  * Class responsible for executing auto configuration for ally settings and web services.
  *
- * @package    tool_ally
- * @author     Sam Chaffee
- * @copyright  Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Sam Chaffee
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_ally;
@@ -32,9 +32,9 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Class responsible for executing auto configuration for ally settings and web services.
  *
- * @package    tool_ally
- * @copyright  Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class auto_configurator {
 

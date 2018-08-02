@@ -17,10 +17,10 @@
 /**
  * CLI script for configuring the Ally integration.
  *
- * @package    tool_ally
- * @author     Sam Chaffee
- * @copyright  Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Sam Chaffee
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 define('CLI_SCRIPT', true);

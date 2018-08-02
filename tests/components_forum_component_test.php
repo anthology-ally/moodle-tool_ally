@@ -17,10 +17,10 @@
 /**
  * Testcase class for the tool_ally\components\forum_component class.
  *
- * @package    tool_ally
- * @author     Guy Thomas
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Guy Thomas
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use tool_ally\local_content;
@@ -32,13 +32,12 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Testcase class for the tool_ally\components\forum_component class.
  *
- * @package    tool_ally
- * @author     Guy Thomas
- * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   tool_ally
+ * @author    Guy Thomas
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_components_forum_component_testcase extends advanced_testcase {
-
     use component_assertions;
 
     /**
@@ -110,20 +109,19 @@ class tool_ally_components_forum_component_testcase extends advanced_testcase {
         $record->course = $this->course->id;
         $record->forum = $this->forum->id;
         $record->userid = $this->teacher->id;
-        $this->teacherdiscussion =
-                self::getDataGenerator()->get_plugin_generator('mod_'.$this->forumtype)->create_discussion($record);
+        $this->teacherdiscussion = self::getDataGenerator()->get_plugin_generator(
+            'mod_'.$this->forumtype)->create_discussion($record);
 
-        // Add a discussion / post by student - should NOT show up in results
+        // Add a discussion / post by student - should NOT show up in results.
         $this->setUser($this->student);
         $record = new stdClass();
         $record->course = $this->course->id;
         $record->forum = $this->forum->id;
         $record->userid = $this->student->id;
-        $this->studentdiscussion =
-                self::getDataGenerator()->get_plugin_generator('mod_'.$this->forumtype)->create_discussion($record);
+        $this->studentdiscussion = self::getDataGenerator()->get_plugin_generator(
+            'mod_'.$this->forumtype)->create_discussion($record);
 
         $this->component = local_content::component_instance($this->forumtype);
-
     }
 
     private function assert_content_items_contain_discussion_post(array $items, $discussionid) {
@@ -143,7 +141,6 @@ class tool_ally_components_forum_component_testcase extends advanced_testcase {
     }
 
     public function test_get_discussion_html_content_items() {
-
         $contentitems = phpunit_util::call_internal_method(
             $this->component, 'get_discussion_html_content_items', [
                 $this->course->id, $this->forum->id

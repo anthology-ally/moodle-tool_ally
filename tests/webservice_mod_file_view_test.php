@@ -16,9 +16,9 @@
 
 /**
  * Test for file module completion web service.
- * @author    Guy Thomas <gthomas@moodlerooms.com>
+ * @author    Guy Thomas <citricity@gmail.com>
  * @package   tool_ally
- * @copyright Copyright (c) 2017 Blackboard Inc.
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

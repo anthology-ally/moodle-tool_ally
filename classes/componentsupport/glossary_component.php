@@ -17,8 +17,8 @@
 /**
  * Html file replacement support for glossary.
  * @package tool_ally
- * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2017 Blackboard Inc.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,8 +38,8 @@ use tool_ally\models\component;
 /**
  * Html file replacement support for glossary.
  * @package tool_ally
- * @author    Guy Thomas <gthomas@moodlerooms.com>
- * @copyright Copyright (c) 2017 Blackboard Inc.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class glossary_component extends file_component_base implements
@@ -122,7 +122,7 @@ class glossary_component extends file_component_base implements
             SELECT ge.*
               FROM {glossary} g
               JOIN {glossary_entries} ge
-                ON ge.glossaryid = g.id    
+                ON ge.glossaryid = g.id
              WHERE g.course = ? AND ge.definitionformat = ?
                AND ge.userid $userinsql
                $idfilter
@@ -182,7 +182,6 @@ SQL;
         $main = $this->get_html_content($id, 'glossary', 'intro');
         $entries = $this->get_entry_html_content_items($course->id, $id);
         return array_merge([$main], $entries);
-
     }
 
     /**
