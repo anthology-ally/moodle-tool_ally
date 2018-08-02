@@ -15,24 +15,34 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Error event logging for content updates push.
+ * Testcase class for the tool_ally\components\hsuforum_component class.
  *
  * @package    tool_ally
+ * @author     Guy Thomas
  * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace tool_ally\event;
+use tool_ally\local_content;
+use tool_ally\componentsupport\forum_component;
+use tool_ally\testing\traits\component_assertions;
+
 defined('MOODLE_INTERNAL') || die();
 
+require_once('components_forum_component_test.php');
 
 /**
- * Class push_content_updates_error.
+ * Testcase class for the tool_ally\components\hsuforum_component class.
  *
  * @package    tool_ally
+ * @author     Guy Thomas
  * @copyright  Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class push_content_updates_error extends base_push_updates_error {
-    const ERRORKEY = 'pushcontenterror';
+class tool_ally_components_hsuforum_component_testcase extends tool_ally_components_forum_component_testcase {
+
+    /**
+     * @var string
+     */
+    private $forumtype = 'hsuforum';
 }

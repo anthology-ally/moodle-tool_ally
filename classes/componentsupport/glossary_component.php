@@ -26,7 +26,14 @@ namespace tool_ally\componentsupport;
 
 defined ('MOODLE_INTERNAL') || die();
 
+use cm_info;
+
+use tool_ally\componentsupport\interfaces\annotation_map;
+use tool_ally\componentsupport\interfaces\content_sub_tables;
+use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
+use tool_ally\componentsupport\traits\html_content;
 use tool_ally\local_file;
+use tool_ally\models\component;
 
 /**
  * Html file replacement support for glossary.
@@ -35,7 +42,15 @@ use tool_ally\local_file;
  * @copyright Copyright (c) 2017 Blackboard Inc.
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class glossary_component extends file_component_base {
+class glossary_component extends file_component_base implements
+        iface_html_content, annotation_map, content_sub_tables {
+
+    use html_content;
+
+    protected $tablefields = [
+        'glossary' => ['intro'],
+        'glossary_entries' => ['definition']
+    ];
 
     public static function component_type() {
         return self::TYPE_MOD;
@@ -58,5 +73,166 @@ class glossary_component extends file_component_base {
 
         local_file::update_filenames_in_html($repfield, $table, ' id = ? ',
             [$idfield => $itemid], $this->oldfilename, $file->get_filename());
+    }
+
+    public function resolve_course_id($id, $table, $field) {
+        global $DB;
+
+        if ($table === 'glossary') {
+            $label = $DB->get_record('glossary', ['id' => $id]);
+            return $label->course;
+        }
+
+        throw new \coding_exception('Invalid table used to recover course id '.$table);
+    }
+
+    /**
+     * @param int $courseid
+     * @param null $glossaryid
+     * @return component[]
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    private function get_entry_html_content_items($courseid, $glossaryid = null) {
+        global $DB;
+
+        if (!$this->module_installed()) {
+            return [];
+        }
+
+        $array = [];
+
+        // We are going to limit entry content to that where user is admin or teacher, etc at course level.
+        // Faster than doing it per module instance.
+        $userids = $this->get_approved_author_ids_for_context(\context_course::instance($courseid));
+
+        list($userinsql, $userparams) = $DB->get_in_or_equal($userids);
+
+        $params = [$courseid, FORMAT_HTML];
+
+        $params = array_merge($params, $userparams);
+
+        $idfilter = '';
+        if ($glossaryid) {
+            $idfilter = ' AND g.id = ?';
+            $params[] = $glossaryid;
+        }
+
+        $sql = <<<SQL
+            SELECT ge.*
+              FROM {glossary} g
+              JOIN {glossary_entries} ge
+                ON ge.glossaryid = g.id    
+             WHERE g.course = ? AND ge.definitionformat = ?
+               AND ge.userid $userinsql
+               $idfilter
+SQL;
+
+        $rs = $DB->get_recordset_sql($sql, $params);
+        foreach ($rs as $row) {
+            $array[] = new component(
+                $row->id, 'glossary', 'glossary_entries', 'definition', $courseid, $row->timemodified,
+                $row->definitionformat, $row->concept);
+        }
+        $rs->close();
+
+        return $array;
+    }
+
+    /**
+     * @param $courseid
+     * @return component[];
+     */
+    public function get_course_html_content_items($courseid) {
+        if (!$this->module_installed()) {
+            return [];
+        }
+
+        $introarray = $this->get_intro_html_content_items($courseid);
+        $discussionarray = $this->get_entry_html_content_items($courseid);
+
+        return array_merge($introarray, $discussionarray);
+
+        return $array;
+    }
+
+    /**
+     * Get the html content for a specific content item.
+     * @param int $id
+     * @param string $table
+     * @param string $field
+     * @param null|int $courseid
+     * @return component_content
+     */
+    public function get_html_content($id, $table, $field, $courseid = null) {
+        if ($table === 'glossary') {
+            return $this->std_get_html_content($id, $table, $field, $courseid);
+        } else if ($table === 'glossary_entries') {
+            return $this->std_get_html_content($id, $table, $field, $courseid, 'concept');
+        }
+    }
+
+    public function get_all_html_content($id) {
+        if (!$this->module_installed()) {
+            return;
+        }
+
+        list ($course, $cm) = get_course_and_cm_from_instance($id, 'glossary');
+
+        $main = $this->get_html_content($id, 'glossary', 'intro');
+        $entries = $this->get_entry_html_content_items($course->id, $id);
+        return array_merge([$main], $entries);
+
+    }
+
+    /**
+     * Replaces the html content for a specific content item.
+     * @param int $id
+     * @param string $table
+     * @param string $field
+     * @param string $content
+     * @return string
+     */
+    public function replace_html_content($id, $table, $field, $content) {
+        return $this->std_replace_html_content($id, $table, $field, $content);
+    }
+
+    public function get_annotation_maps($courseid) {
+        global $PAGE;
+
+        if (!$this->module_installed()) {
+            return [];
+        }
+
+        if ($PAGE->pagetype === 'mod-glossary-view') {
+            $cmid = optional_param('id', null, PARAM_INT);
+            list($course, $cm) = get_course_and_cm_from_cmid($cmid);
+            $glossaryid = $cm->instance;
+            if (!$glossaryid) {
+                return [];
+            }
+            $contentitems = $this->get_entry_html_content_items($courseid, $glossaryid);
+            $contentitems = array_merge($contentitems, $this->get_intro_html_content_items($courseid));
+        } else {
+            $contentitems = $this->get_intro_html_content_items($courseid);
+        }
+
+        $entries = [];
+        $intros = [];
+        foreach ($contentitems as $contentitem) {
+            if ($contentitem->table === 'glossary_entries') {
+                $entries[$contentitem->id] = $contentitem->entity_id();
+            } else if ($contentitem->table === 'glossary') {
+                list($course, $cm) = get_course_and_cm_from_instance($contentitem->id, 'glossary');
+                $intros[$cm->id] = $contentitem->entity_id();
+            }
+        }
+
+        return ['entries' => $entries, 'intros' => $intros];
+    }
+
+    public function queue_delete_sub_tables(cm_info $cm) {
+        $entries = $this->get_entry_html_content_items($cm->course, $cm->instance);
+        $this->bulk_queue_delete_content($entries);
     }
 }

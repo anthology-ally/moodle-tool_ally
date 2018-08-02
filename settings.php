@@ -69,5 +69,11 @@ if ($hassiteconfig) {
             "$CFG->wwwroot/admin/tool/ally/lti/view.php", 'tool/ally:clientconfig'));
     }
 
+    $settings->add(new ally_config_link('tool_ally/allyclientconfig', new lang_string('allyclientconfig', 'tool_ally'),
+        new moodle_url('/admin/tool/ally/lti/view.php')));
+
     $ADMIN->add('tools', $settings);
 }
+
+
+

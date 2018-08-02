@@ -23,6 +23,9 @@
 
 namespace tool_ally\componentsupport\traits;
 
+use cm_info;
+
+use tool_ally\local_content;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
 
@@ -161,6 +164,30 @@ trait html_content {
         return true;
     }
 
+    protected function get_intro_html_content_items(int $courseid): array {
+        global $DB;
+
+        if (!$this->module_installed()) {
+            return [];
+        }
+
+        $array = [];
+
+        $compname = $this->get_component_name();
+
+        $select = "course = ? AND introformat = ? AND intro !=''";
+        $rs = $DB->get_recordset_select($compname, $select, [$courseid, FORMAT_HTML]);
+        foreach ($rs as $row) {
+            $array[] = new component(
+                $row->id, $compname, $compname, 'intro', $courseid, $row->timemodified,
+                $row->introformat, $row->name);
+        }
+        $rs->close();
+
+        return $array;
+    }
+
+
     /**
      * @param string $module
      * @param int $id
@@ -170,6 +197,22 @@ trait html_content {
     protected function make_module_instance_url($module, $id) {
         list($course, $cm) = get_course_and_cm_from_instance($id, $module);
         return new \moodle_url('/course/view.php?id=' . $course->id . '#module-' . $cm->id) . '';
+    }
+
+    /**
+     * @param component[] $contents
+     */
+    protected function bulk_queue_delete_content(array $contents) {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+
+        foreach ($contents as $content) {
+            local_content::queue_delete($content->courseid,
+                $content->id, $content->component, $content->table, $content->field);
+        }
+
+        $transaction->allow_commit();
     }
 
     public function get_annotation($id) {

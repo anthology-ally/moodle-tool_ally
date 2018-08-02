@@ -25,7 +25,9 @@ defined('MOODLE_INTERNAL') || die();
 
 use tool_ally\file_processor,
     tool_ally\local_file,
-    tool_ally\cache;
+    tool_ally\cache,
+    tool_ally\local_content,
+    tool_ally\componentsupport\interfaces\content_sub_tables;
 
 /**
  * Callback for after file deleted.
@@ -75,4 +77,19 @@ function tool_ally_after_file_updated($filerecord) {
     file_processor::push_file_update($file);
 
     cache::instance()->invalidate_file_keys($file);
+}
+
+/**
+ * Callback for pre-module deletion.
+ * @param stdClass $cm (cm record from course_modules table)
+ */
+function tool_ally_pre_course_module_delete(stdClass $cm) {
+    /** @var cm_info $cm */
+    list ($course, $cm) = get_course_and_cm_from_cmid($cm->id);
+    $component = local_content::component_instance($cm->modname);
+    if (!$component || !$component instanceof content_sub_tables) {
+        return;
+    }
+    // Queue for deletion, all records related to the main record for this course module.
+    $component->queue_delete_sub_tables($cm);
 }

@@ -81,6 +81,9 @@ class component {
      * @param string $title
      */
     public function __construct($id, $component, $table, $field, $courseid, $timemodified, $contentformat, $title = null) {
+        if (empty($timemodified)) {
+            $timemodified = time();
+        }
         $timemodified = (int) $timemodified;
         $courseid = $courseid ? (int) $courseid : $courseid;
         $this->id = (int) $id;

@@ -117,6 +117,18 @@ class local {
         $runningbehattest = defined('BEHAT_SITE_RUNNING') && BEHAT_SITE_RUNNING;
         return ($runningphpunittest || $runningbehattest);
     }
+    
+    /**
+     * Strip mod_ from component string if necessary.
+     * @param $component
+     * @return bool|string
+     */
+    public static function clean_component_string($component) {
+        if (strpos($component, 'mod_') === 0) {
+            $component = substr($component, strlen('mod_'));
+        }
+        return $component;
+    }
 
     /**
      * Get component class with namespace.
@@ -124,9 +136,7 @@ class local {
      * @return string
      */
     public static function get_component_class($component) {
-        if (strpos($component, 'mod_') === 0) {
-            $component = substr($component, strlen('mod_'));
-        }
+        $component = self::clean_component_string($component);
         $componentclassname = $component . '_component';
         $componentclassname = 'tool_ally\\componentsupport\\'.$componentclassname;
         return $componentclassname;

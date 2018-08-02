@@ -92,5 +92,17 @@ $observers = [
     [
         'eventname' => \mod_hsuforum\event\post_updated::class,
         'callback' => '\tool_ally\event_handlers::hsuforum_post_updated'
-    ]
+    ],
+    [
+        'eventname' => \mod_glossary\event\entry_created::class,
+        'callback'  => '\tool_ally\event_handlers::glossary_entry_created'
+    ],
+    [
+        'eventname' => \mod_glossary\event\entry_updated::class,
+        'callback'  => '\tool_ally\event_handlers::glossary_entry_updated'
+    ],
+    [
+        'eventname' => \mod_glossary\event\entry_deleted::class,
+        'callback'  => '\tool_ally\event_handlers::glossary_entry_deleted'
+    ],
 ];

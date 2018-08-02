@@ -95,6 +95,7 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
         $modintro = '<p>My original intro content</p>';
         $mod = $this->getDataGenerator()->create_module($modname,
             ['course' => $course->id, $field => $modintro]);
+        $generatedmod = $mod;
         $modintroreplaced = $modintro.'</p>REPLACED</p>';
         $result = replace_content::service(
             $mod->id, $modname, $table, $field, $modintroreplaced
@@ -102,7 +103,7 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
         $this->assertTrue($result['success']);
         $mod = $DB->get_record($table, ['id' => $mod->id]);
         $this->assertEquals($modintroreplaced, $mod->intro);
-        return $mod;
+        return $generatedmod; // Sometimes the generated mod has more data than the db row - e.g. cmid.
     }
 
     public function test_service_label() {
@@ -111,6 +112,29 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
 
     public function test_service_assign() {
         $this->module_replace_test('assign', 'assign');
+    }
+
+    public function test_service_glossary() {
+        global $USER, $DB;
+
+
+        $glossary = $this->module_replace_test('glossary', 'glossary');
+        $courseid = $glossary->course;
+
+        $this->setAdminUser();
+        $record = new stdClass();
+        $record->course = $courseid;
+        $record->glossary = $glossary->id;
+        $record->userid = $USER->id;
+        $entry = self::getDataGenerator()->get_plugin_generator('mod_glossary')->create_content($glossary, $record);
+        $definitionreplaced = '<p>Content replaced!</p>';
+        $result = replace_content::service(
+            $entry->id, 'glossary', 'glossary_entries', 'definition', $definitionreplaced
+        );
+        $this->assertTrue($result['success']);
+
+        $entry = $DB->get_record('glossary_entries', ['id' => $entry->id]);
+        $this->assertEquals($definitionreplaced, $entry->definition);
     }
 
     public function test_service_forum() {

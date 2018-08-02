@@ -41,6 +41,9 @@ class tool_ally_privacy_provider_testcase extends provider_testcase {
      * Test for provider::get_metadata().
      */
     public function test_get_metadata() {
+        if (!method_exists(collection::class, 'add_external_location_link')) {
+            $this->markTestSkipped('This version of moodle does not fully support privacy');
+        }
         $collection     = provider::get_metadata(new collection('tool_ally'));
         $itemcollection = $collection->get_collection();
         $this->assertCount(1, $itemcollection);
