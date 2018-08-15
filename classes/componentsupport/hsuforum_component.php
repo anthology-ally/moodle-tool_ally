@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Html file replacement support for Moodlerooms forum module.
+ * Html file replacement support for Open Forum module.
  * @author    Guy Thomas <citricity@gmail.com>
  * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -28,7 +28,7 @@ defined ('MOODLE_INTERNAL') || die();
 use tool_ally\local_file;
 
 /**
- * Html file replacement support for Moodlerooms forum module.
+ * Html file replacement support for Open Forum module.
  * @author    Guy Thomas <citricity@gmail.com>
  * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
