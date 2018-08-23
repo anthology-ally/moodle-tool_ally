@@ -51,6 +51,7 @@ use mod_glossary\event\entry_updated;
 use mod_glossary\event\entry_deleted;
 
 use tool_ally\models\component_content;
+use tool_ally\componentsupport\course_component;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -74,7 +75,7 @@ class event_handlers {
      */
     public static function course_created(course_created $event) {
         $courseid = $event->courseid;
-        $contents = local_content::get_all_html_content($courseid, 'course');
+        $contents = local_content::get_html_content($courseid, 'course', 'course', 'summary', $courseid);
         content_processor::push_content_update($contents, self::API_CREATED);
     }
 
@@ -83,7 +84,7 @@ class event_handlers {
      */
     public static function course_updated(course_updated $event) {
         $courseid = $event->courseid;
-        $contents = local_content::get_all_html_content($courseid, 'course');
+        $contents = local_content::get_html_content($courseid, 'course', 'course', 'summary', $courseid);
         content_processor::push_content_update($contents, self::API_UPDATED);
     }
 
@@ -101,23 +102,17 @@ class event_handlers {
      * @throws \dml_exception
      */
     private static function course_section_crud(base $event, $apieventname) {
-        global $DB;
-
         $sectionid = $event->objectid;
         $courseid = $event->courseid;
-        $content = '';
 
-        if (!$event instanceof course_section_deleted) {
-            $section = $DB->get_record('course_sections', ['id' => $sectionid]);
-            $content = $section->summary;
-        } else {
+        if ($event instanceof course_section_deleted) {
             local_content::queue_delete($courseid, $sectionid, 'course', 'course_sections', 'summary');
             return;
         }
 
-        $content = new component_content(
-                $sectionid, 'course', 'course_sections', 'summary', $courseid, $event->timecreated,
-                $section->summaryformat, $content);
+        $coursecomp = new course_component();
+        $content = $coursecomp->get_html_content($sectionid, 'course_sections', 'summary', $courseid);
+
         content_processor::push_content_update([$content], $apieventname);
     }
 

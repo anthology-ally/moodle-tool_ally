@@ -106,6 +106,31 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
         return;
     }
 
+    private function assert_pushtrace_not_contains_entity_regex($regex) {
+        $eventtypes = content_processor::get_push_traces();
+        if (!$eventtypes) {
+            return;
+        }
+
+        foreach ($eventtypes as $pushtraces) {
+            foreach ($pushtraces as $pushtrace) {
+                foreach ($pushtrace as $row) {
+                    if (preg_match($regex, $row['entity_id']) === 1) {
+                        $rowstr = var_export($row, true);
+                        $msg = <<<MSG
+Push trace contains an entity id which matches regular expression $regex
+
+$rowstr
+MSG;
+
+                        $this->fail($msg);
+                    }
+                }
+            }
+        }
+        return;
+    }
+
     /**
      * Test pushes on course creation.
      */
@@ -133,13 +158,6 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
 
         $entityid = 'course:course:summary:'.$course->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $entityid);
-
-        // Get sections for course and make sure push trace contains entity ids.
-        $sections = $DB->get_records('course_sections', ['course' => $course->id]);
-        foreach ($sections as $section) {
-            $entityid = 'course:course_sections:summary:'.$section->id;
-            $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $entityid);
-        }
     }
 
     public function test_course_updated() {
@@ -149,6 +167,8 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
         $course->fullname = 'Modified';
         $course->summary = 'Summary modified';
         $course->summaryformat = FORMAT_HTML;
+        content_processor::clear_push_traces();
+
         $DB->update_record('course', $course);
 
         course_updated::create([
@@ -158,8 +178,10 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
         ])->trigger();
 
         $entityid = 'course:course:summary:'.$course->id;
-
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
+
+        // Ensure section information is not included:
+        $this->assert_pushtrace_not_contains_entity_regex('/course:course_sections:summary:/');
     }
 
     public function test_course_section_created() {
