@@ -26,8 +26,9 @@ defined ('MOODLE_INTERNAL') || die();
 
 use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\traits\embedded_file_map;
-use tool_ally\models\component;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
+use tool_ally\logging\logger;
+use tool_ally\models\component;
 use moodle_url;
 
 require_once($CFG->dirroot.'/course/lib.php');
@@ -130,11 +131,14 @@ class course_component extends component_base implements iface_html_content {
                     // Override original section name.
                     $record->name = $sectionname;
                 } catch (\Exception $ex) {
-                    // Somehow the section is course-less ot the course format could not be retrieved.
+                    // Somehow the section is course-less or the course format could not be retrieved.
                     // The section name remains unchanged.
-                    $msg = $ex->getMessage();
-                    $msg .= '<br> Course ID: '.$record->course;
-                    \tool_ally\event\annotation_module_error::create_from_msg($msg)->trigger();
+                    $msg = '<br> Course ID: '.$record->course;
+
+                    logger::get()->info('logger:failedtogetcoursesectionname', [
+                        'content' => $msg,
+                        '_exception' => $ex
+                    ]);
                 }
             };
         }
