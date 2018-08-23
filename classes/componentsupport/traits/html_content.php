@@ -69,11 +69,12 @@ trait html_content {
      * @param null|int $courseid
      * @param string $titlefield
      * @param string $modifiedfield
+     * @param callable $recordlambda - lambda to run on record once recovered.
      * @return component_content | null;
      * @throws \coding_exception
      */
     protected function std_get_html_content($id, $table, $field, $courseid = null, $titlefield = 'name',
-                                            $modifiedfield = 'timemodified') {
+                                            $modifiedfield = 'timemodified', $recordlambda = null) {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -85,6 +86,9 @@ trait html_content {
         $this->validate_component_table_field($table, $field);
 
         $record = $DB->get_record($table, ['id' => $id]);
+        if ($recordlambda) {
+            $recordlambda($record);
+        }
         if (!$record) {
             $ident = 'component='.$component.'&table='.$table.'&field='.$field.'&id='.$id;
             throw new \moodle_exception('error:invalidcomponentident', 'tool_ally', null, $ident);

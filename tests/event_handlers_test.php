@@ -43,6 +43,7 @@ use \mod_glossary\event\entry_deleted;
 use tool_ally\content_processor;
 use tool_ally\event_handlers;
 use tool_ally\task\content_updates_task;
+use tool_ally\local_content;
 /**
  * Tests for event handlers.
  *
@@ -182,21 +183,55 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();
-        $sections = $DB->get_records('course_sections', ['course' => $course->id]);
-        $section = reset($sections);
+        $section0 = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 0]);
+        $section0->summaryformat = FORMAT_HTML;
+        $section1 = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 1]);
+        $section1->summaryformat = FORMAT_HTML;
 
-        $section->summaryformat = FORMAT_HTML;
+        content_processor::clear_push_traces();
         course_section_updated::create([
-            'objectid' => $section->id,
+            'objectid' => $section0->id,
             'courseid' => $course->id,
             'context' => context_course::instance($course->id),
             'other' => array(
-                'sectionnum' => $section->section
+                'sectionnum' => $section0->section
             )
         ])->trigger();
 
-        $entityid = 'course:course_sections:summary:'.$section->id;
-        $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
+        $entityid0 = 'course:course_sections:summary:'.$section0->id;
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid0);
+
+        // Make sure section 1 isn't in push trace as we haven't updated it.
+        $entityid1 = 'course:course_sections:summary:'.$section1->id;
+        $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_UPDATED, $entityid1);
+
+        // Get content for section 0 and check it contains default section name 'General' as title for intro section
+        $content = local_content::get_html_content_by_entity_id($entityid0);
+        $this->assertEquals('General', $content->title);
+
+        // Get content for section 1 and check it contains default section name 'Topic 1' as title for section 1.
+        $content = local_content::get_html_content_by_entity_id($entityid1);
+        $this->assertEquals('Topic 1', $content->title);
+
+        // Update section1's title.
+        $section1->name = 'Altered section name';
+        $DB->update_record('course_sections', $section1);
+        content_processor::clear_push_traces();
+        course_section_updated::create([
+            'objectid' => $section1->id,
+            'courseid' => $course->id,
+            'context' => context_course::instance($course->id),
+            'other' => array(
+                'sectionnum' => $section1->section
+            )
+        ])->trigger();
+
+        // Ensure section 1 is now in push trace.
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid1);
+
+        // Get content for section 1 and check it contains custom section name as title for section 1.
+        $content = local_content::get_html_content_by_entity_id($entityid1);
+        $this->assertEquals($section1->name, $content->title);
     }
 
     public function test_module_created() {
