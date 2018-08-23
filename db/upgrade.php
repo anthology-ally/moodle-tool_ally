@@ -206,5 +206,37 @@ function xmldb_tool_ally_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018080810, 'tool', 'ally');
     }
 
+    if ($oldversion < 2018080812) {
+
+        // Define table tool_ally_log to be created.
+        $table = new xmldb_table('tool_ally_log');
+
+        // Adding fields to table tool_ally_log.
+        $table->add_field('id',          XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('time',        XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('level',       XMLDB_TYPE_CHAR, '12', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('code',        XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('message',     XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('explanation', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('data',        XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('exception',   XMLDB_TYPE_TEXT, null, null, null, null, null);
+
+        // Adding keys to table tool_ally_log.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Adding indexes to table tool_ally_log.
+        $table->add_index('level', XMLDB_INDEX_NOTUNIQUE, array('level'));
+        $table->add_index('code', XMLDB_INDEX_NOTUNIQUE, array('code'));
+
+        // Conditionally launch create table for tool_ally_log.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        $courses->close();
+
+        // Ally savepoint reached.
+        upgrade_plugin_savepoint(true, 2018080812, 'tool', 'ally');
+    }
+
     return true;
 }

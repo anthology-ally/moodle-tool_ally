@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 use tool_ally\componentsupport\component_base;
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\html_content;
+use tool_ally\logging\logger;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
 
@@ -130,10 +131,12 @@ class local_content {
                     $maps = array_merge($maps, [$component => $instance->get_annotation_maps($courseid)]);
                 } catch (\moodle_exception $ex) {
                     // Component not identified correctly.
-                    $msg = $ex->getMessage();
-                    $msg .= '<br> Component: '.$component;
-                    $msg .= '<br> Course ID: '.$courseid;
-                    \tool_ally\event\annotation_module_error::create_from_msg($msg)->trigger();
+                    $msg = 'Component: '.$component.', Course ID: '.$courseid;
+                    logger::get()->info('logger:annotationmoderror', [
+                        'content' => $msg,
+                        '_explanation' => 'logger:annotationmoderror_exp',
+                        '_exception' => $ex
+                    ]);
                 }
             }
         }
@@ -288,10 +291,12 @@ class local_content {
                 }
             } catch (\moodle_exception $ex) {
                 // Component not identified correctly.
-                $msg = $ex->getMessage();
-                $msg .= '<br> Context: '.$context->path;
-                $msg .= '<br> Instance ID: '.$context->instanceid;
-                \tool_ally\event\annotation_module_error::create_from_msg($msg)->trigger();
+                $msg = 'Context: '.$context->path.', Instance ID: '.$context->instanceid;
+                logger::get()->info('logger:annotationmoderror', [
+                    'content' => $msg,
+                    '_explanation' => 'logger:annotationmoderror_exp',
+                    '_exception' => $ex
+                ]);
                 return '';
             }
         }

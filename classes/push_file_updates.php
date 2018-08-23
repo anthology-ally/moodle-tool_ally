@@ -24,9 +24,9 @@
 
 namespace tool_ally;
 
-use tool_ally\event\push_file_updates_error;
-
 defined('MOODLE_INTERNAL') || die();
+
+use tool_ally\logging\logger;
 
 global $CFG;
 
@@ -41,12 +41,23 @@ require_once($CFG->libdir.'/filelib.php');
  */
 class push_file_updates extends push_updates{
 
-    public function handle_send_error(\Exception $e) {
+    public function handle_send_error(array $context, \Exception $e) {
+        $climode = get_config('tool_ally', 'push_cli_only');
         // Too many errors, ensure it only runs on cli.
         set_config('push_cli_only', 1, 'tool_ally');
-        // Log exception after max attempts.
-        push_file_updates_error::create_from_exception($e)->trigger();
-        // Log live push skip due to errors and switch to cli only.
-        push_file_updates_error::create_from_msg(get_string('pushfileserror:skip', 'tool_ally'))->trigger();
+
+        if ($climode) {
+            $msg = 'logger:pushfileliveskip';
+        } else {
+            $msg = 'logger:pushfileserror';
+        }
+
+        $context['_explanation'] = $msg.'_exp';
+        $context['_exception'] = $e;
+        logger::get()->error($msg, $context);
+    }
+
+    public function on_send_success(array $context) {
+        logger::get()->info('logger:pushfilesuccess', $context);
     }
 }
