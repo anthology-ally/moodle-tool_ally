@@ -205,7 +205,7 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
         $entityid1 = 'course:course_sections:summary:'.$section1->id;
         $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_UPDATED, $entityid1);
 
-        // Get content for section 0 and check it contains default section name 'General' as title for intro section
+        // Get content for section 0 and check it contains default section name 'General' as title for intro section.
         $content = local_content::get_html_content_by_entity_id($entityid0);
         $this->assertEquals('General', $content->title);
 
