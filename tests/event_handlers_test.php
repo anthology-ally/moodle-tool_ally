@@ -180,7 +180,7 @@ MSG;
         $entityid = 'course:course:summary:'.$course->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
 
-        // Ensure section information is not included:
+        // Ensure section information is not included.
         $this->assert_pushtrace_not_contains_entity_regex('/course:course_sections:summary:/');
     }
 
