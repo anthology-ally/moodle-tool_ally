@@ -26,6 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
+use tool_ally\local;
+
 require_once($CFG->dirroot.'/webservice/tests/helpers.php');
 
 /**
@@ -58,11 +60,12 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      * Given an assign activity, return an associated file in a whitelisted filearea.
      *
      * @param stdClass $module
+     * @param string $name
      * @return stored_file
      * @throws coding_exception
      */
-    protected function create_whitelisted_assign_file($module) {
-        return $this->create_assign_file($module, 'intro');
+    protected function create_whitelisted_assign_file($module, $name = '') {
+        return $this->create_assign_file($module, 'intro', $name);
 
     }
 
@@ -70,11 +73,12 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      * Given an assign activity, return an associated file in not whitelisted filearea.
      *
      * @param stdClass $module
+     * @param string $name
      * @return stored_file
      * @throws coding_exception
      */
-    protected function create_notwhitelisted_assign_file($module) {
-        return $this->create_assign_file($module, 'notwhitelisted');
+    protected function create_notwhitelisted_assign_file($module, $name = '') {
+        return $this->create_assign_file($module, 'notwhitelisted', $name);
     }
 
     /**
@@ -82,10 +86,11 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      *
      * @param stdClass $module
      * @param string $filearea
+     * @param string $name
      * @return stored_file
      * @throws coding_exception
      */
-    private function create_assign_file($module, $filearea) {
+    private function create_assign_file($module, $filearea, $name = '') {
         $context = context_module::instance($module->cmid);
 
         $fs = get_file_storage();
@@ -97,7 +102,7 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
             'filearea' => $filearea,
             'itemid' => 0,
             'filepath' => '/',
-            'filename' => 'myfile.txt');
+            'filename' => empty($name) ? 'myfile.txt' : $name);
 
         // Create file containing text 'hello world'.
         return $fs->create_file_from_string($fileinfo, 'hello world');
@@ -112,5 +117,20 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      */
     public function assertStoredFileEquals(stored_file $expected, stored_file $actual) { // @codingStandardsIgnoreLine
         $this->assertEquals($expected->get_pathnamehash(), $actual->get_pathnamehash(), 'Stored files should be the same');
+    }
+
+    /**
+     * Verifies if a file and an array of attributes gotten via webservice match.
+     * @param stdClass $course
+     * @param stored_file $expectedfile
+     * @param array $servicefile
+     */
+    protected function match_files($course, $expectedfile, $servicefile) {
+        $this->assertEquals($expectedfile->get_pathnamehash(), $servicefile['id']);
+        $this->assertEquals($course->id, $servicefile['courseid']);
+        $this->assertEquals($expectedfile->get_filename(), $servicefile['name']);
+        $this->assertEquals($expectedfile->get_mimetype(), $servicefile['mimetype']);
+        $this->assertEquals($expectedfile->get_contenthash(), $servicefile['contenthash']);
+        $this->assertEquals($expectedfile->get_timemodified(), local::iso_8601_to_timestamp($servicefile['timemodified']));
     }
 }

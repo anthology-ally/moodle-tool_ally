@@ -22,7 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use tool_ally\local;
 use tool_ally\webservice\files;
 
 defined('MOODLE_INTERNAL') || die();
@@ -46,20 +45,38 @@ class tool_ally_webservice_files_testcase extends tool_ally_abstract_testcase {
         $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
 
         $course       = $this->getDataGenerator()->create_course();
-        $resource     = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
-        $expectedfile = $this->get_resource_file($resource);
+        $resource1    = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
+        $resource2    = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
+        $resource3    = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
+        $expfile1     = $this->get_resource_file($resource1);
+        $expfile2     = $this->get_resource_file($resource2);
+        $expfile3     = $this->get_resource_file($resource3);
 
-        $files = files::service();
+        // First page with 2 files per page.
+        $page = 0;
+        $perpage = 2;
+
+        $files = files::service($page, $perpage);
+        $files = external_api::clean_returnvalue(files::service_returns(), $files);
+
+        $this->assertCount(2, $files);
+        $file = reset($files);
+
+        $this->match_files($course, $expfile1, $file);
+
+        $file = next($files);
+
+        $this->match_files($course, $expfile2, $file);
+
+        // Second page with 2 files per page.
+        $page = 1;
+
+        $files = files::service($page, $perpage);
         $files = external_api::clean_returnvalue(files::service_returns(), $files);
 
         $this->assertCount(1, $files);
         $file = reset($files);
 
-        $this->assertEquals($expectedfile->get_pathnamehash(), $file['id']);
-        $this->assertEquals($course->id, $file['courseid']);
-        $this->assertEquals($expectedfile->get_filename(), $file['name']);
-        $this->assertEquals($expectedfile->get_mimetype(), $file['mimetype']);
-        $this->assertEquals($expectedfile->get_contenthash(), $file['contenthash']);
-        $this->assertEquals($expectedfile->get_timemodified(), local::iso_8601_to_timestamp($file['timemodified']));
+        $this->match_files($course, $expfile3, $file);
     }
 }
