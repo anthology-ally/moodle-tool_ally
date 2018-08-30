@@ -96,9 +96,17 @@ class course_component extends component_base implements iface_html_content {
                 if ($record->name !== null) {
                     return; // Don't bother modifying $record - we have a name already!
                 }
-                $sectionname = get_section_name($record->course, $record);
-                // Override original section name.
-                $record->name = $sectionname;
+                try {
+                    $sectionname = get_section_name($record->course, $record);
+                    // Override original section name.
+                    $record->name = $sectionname;
+                } catch (\Exception $ex) {
+                    // Somehow the section is course-less ot the course format could not be retrieved.
+                    // The section name remains unchanged.
+                    $msg = $ex->getMessage();
+                    $msg .= '<br> Course ID: '.$record->course;
+                    \tool_ally\event\annotation_module_error::create_from_msg($msg)->trigger();
+                }
             };
         }
         return $this->std_get_html_content($id, $table, $field, $courseid, $titlefield, 'timemodified', $recordlambda);
