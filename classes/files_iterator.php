@@ -113,6 +113,34 @@ class files_iterator implements \Iterator {
     private $sort = '';
 
     /**
+     * Start page to use when rewinding.
+     *
+     * @var int
+     */
+    private $countstartpage = 0;
+
+    /**
+     * Count of all files, used when skipping results.
+     *
+     * @var int
+     */
+    private $allresultscount = 0;
+
+    /**
+     * Stops iterating when a result count has been reached.
+     *
+     * @var int
+     */
+    private $stopatcount = 0;
+
+    /**
+     * Counts the number of rows set in iterator value.
+     *
+     * @var int
+     */
+    private $resultcount = 0;
+
+    /**
      * @param file_validator $validator
      * @param \file_storage|null $storage
      */
@@ -140,6 +168,11 @@ class files_iterator implements \Iterator {
     }
 
     public function next() {
+        if ($this->reached_count_limit()) {
+            $this->current = null;
+            return;
+        }
+
         while (($row = current($this->records)) !== false) {
             if (next($this->records) === false) {
                 if (count($this->records) !== 0 && count($this->records) === $this->pagesize) {
@@ -157,7 +190,16 @@ class files_iterator implements \Iterator {
                 }
             }
 
+            // Skip files when using result count paging until reaching expected page.
+            if ($this->countstartpage > 0 && $this->stopatcount > 0) {
+                $this->allresultscount++;
+                if ($this->allresultscount <= ($this->countstartpage * $this->stopatcount)) {
+                    continue;
+                }
+            }
+
             $this->current = $file;
+            $this->resultcount++;
             return;
         }
         $this->current = null;
@@ -177,6 +219,7 @@ class files_iterator implements \Iterator {
 
     public function rewind() {
         $this->page = 0;
+        $this->resultcount = 0;
         $this->next_page();
         // Must populate current.
         $this->next();
@@ -343,5 +386,40 @@ class files_iterator implements \Iterator {
         $this->retrievevalid = $retrievevalid;
 
         return $this;
+    }
+
+    /**
+     * Enables or disables the ability of the iterator to continue after reaching a result count.
+     *
+     * @param int $stopatcount
+     * @return $this
+     */
+    public function with_stop_at_count($stopatcount) {
+        $this->stopatcount = $stopatcount;
+
+        return $this;
+    }
+
+    /**
+     * Sets a start page, so when rewinding the iterator it'll start from there.
+     *
+     * @param int $countstartpage
+     * @return $this
+     */
+    public function with_count_start_page($countstartpage) {
+        $this->countstartpage = $countstartpage;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    private function reached_count_limit() {
+        if ($this->stopatcount === 0) {
+            return false;
+        } else {
+            return $this->resultcount >= $this->stopatcount;
+        }
     }
 }

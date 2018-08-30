@@ -43,7 +43,10 @@ class files extends \external_api {
      * @return \external_function_parameters
      */
     public static function service_parameters() {
-        return new \external_function_parameters([]);
+        return new \external_function_parameters([
+            'page'    => new \external_value(PARAM_INT, 'page number (0 based)', VALUE_DEFAULT, 0),
+            'perpage' => new \external_value(PARAM_INT, 'items per page', VALUE_DEFAULT, 100),
+        ]);
     }
 
     /**
@@ -63,18 +66,29 @@ class files extends \external_api {
     }
 
     /**
+     * @param int $page
+     * @param int $perpage
      * @return array
+     * @throws \dml_exception
+     * @throws \invalid_parameter_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
      */
-    public static function service() {
+    public static function service($page, $perpage) {
         self::validate_context(\context_system::instance());
         require_capability('moodle/course:view', \context_system::instance());
         require_capability('moodle/course:viewhiddencourses', \context_system::instance());
 
+        $params = self::validate_parameters(self::service_parameters(), ['page' => $page, 'perpage' => $perpage]);
+
         // We are betting that most courses have files, so better to preload than to fetch one at a time.
         local::preload_course_contexts();
 
+        $files = local_file::iterator()->with_stop_at_count($params['perpage']);
+        $files->with_count_start_page($params['page']);
+
         $return = array();
-        foreach (local_file::iterator() as $file) {
+        foreach ($files as $file) {
             $return[] = [
                 'id'           => $file->get_pathnamehash(),
                 'courseid'     => local_file::courseid($file),
