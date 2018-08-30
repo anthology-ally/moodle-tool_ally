@@ -161,7 +161,7 @@ trait html_content {
         return true;
     }
 
-    protected function get_intro_html_content_items(int $courseid) : array {
+    protected function get_field_html_content_items($courseid, $field) : array {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -172,16 +172,28 @@ trait html_content {
 
         $compname = $this->get_component_name();
 
-        $select = "course = ? AND introformat = ? AND intro !=''";
+        $formatfld = $field.'format';
+
+        $select = "course = ? AND $formatfld = ? AND $field !=''";
         $rs = $DB->get_recordset_select($compname, $select, [$courseid, FORMAT_HTML]);
         foreach ($rs as $row) {
             $array[] = new component(
-                $row->id, $compname, $compname, 'intro', $courseid, $row->timemodified,
-                $row->introformat, $row->name);
+                $row->id, $compname, $compname, $field, $courseid, $row->timemodified,
+                $row->$formatfld, $row->name);
         }
         $rs->close();
 
         return $array;
+    }
+
+    /**
+     * Get introduction html content items.
+     * @param int $courseid
+     * @return array
+     * @throws \dml_exception
+     */
+    protected function get_intro_html_content_items($courseid) {
+        return $this->get_field_html_content_items($courseid, 'intro');
     }
 
 
