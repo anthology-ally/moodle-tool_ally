@@ -24,7 +24,13 @@
 
 namespace tool_ally;
 
+use tool_ally\componentsupport\component_base;
+
 defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->dirroot . '/webservice/lib.php');
+
+use webservice;
 
 /**
  * Local library.
@@ -143,6 +149,22 @@ class local {
     }
 
     /**
+     * Get a component instance.
+     *
+     * @param string $component
+     * @return null|component_base
+     */
+    public static function get_component_instance($component) {
+        $class = self::get_component_class($component);
+        $instance = null;
+        if (class_exists($class)) {
+            /** @var component_base $instance */
+            $instance = new $class();
+        }
+        return $instance;
+    }
+
+    /**
      * Get type of component support for specific component.
      *
      * @param string $component
@@ -182,5 +204,15 @@ class local {
                 ";
 
         return $DB->count_records_sql($sql, $capjoin->params);
+    }
+
+    /**
+     * Get ally web user.
+     * @return bool|\stdClass
+     * @throws \dml_exception
+     */
+    public static function get_ally_web_user() {
+        global $DB;
+        return $DB->get_record('user', ['username' => 'ally_webuser']);
     }
 }

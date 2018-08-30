@@ -105,4 +105,16 @@ $observers = [
         'eventname' => \mod_glossary\event\entry_deleted::class,
         'callback'  => '\tool_ally\event_handlers::glossary_entry_deleted'
     ],
+    [
+        'eventname' => \mod_book\event\chapter_created::class,
+        'callback'  => '\tool_ally\event_handlers::book_chapter_created'
+    ],
+    [
+        'eventname' => \mod_book\event\chapter_updated::class,
+        'callback'  => '\tool_ally\event_handlers::book_chapter_updated'
+    ],
+    [
+        'eventname' => \mod_book\event\chapter_deleted::class,
+        'callback'  => '\tool_ally\event_handlers::book_chapter_deleted'
+    ]
 ];

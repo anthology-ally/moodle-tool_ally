@@ -39,7 +39,6 @@ class file_validator {
      * Ally whitelisted components.
      */
     const WHITELIST = [
-        // Resources.
         'block_html~content',
         'calendar~event_description',
         'course~overviewfiles',
@@ -86,18 +85,7 @@ class file_validator {
         'mod_scorm~content',
         'mod_scorm~intro',
         'mod_turnitintooltwo~intro',
-        'mod_url~intro',
-        'question~answer',
-        'question~answerfeedback',
-        'question~correctfeedback',
-        'question~questiontext',
-        'question~generalfeedback',
-        'question~hint',
-        'question~incorrectfeedback',
-        'question~partiallycorrectfeedback',
-        'qtype_ddmatch~subanswer',
-        'qtype_ddmatch~subquestion',
-        'qtype_match~subquestion',
+        'mod_url~intro'
     ];
 
     /**

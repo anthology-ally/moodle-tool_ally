@@ -25,6 +25,7 @@
 namespace tool_ally\webservice;
 
 use tool_ally\file_url_resolver;
+use tool_ally\file_validator;
 use tool_ally\local;
 use tool_ally\local_file;
 
@@ -81,6 +82,14 @@ class file extends \external_api {
         }
 
         $context = \context::instance_by_id($file->get_contextid());
+
+        $component = $file->get_component();
+        $filearea = $file->get_filearea();
+        $wlkey = $component.'~'.$filearea;
+
+        if (!in_array($wlkey, file_validator::WHITELIST)) {
+            throw new \moodle_exception('filenotfound', 'error');
+        }
 
         self::validate_context($context);
         require_capability('moodle/course:view', $context);

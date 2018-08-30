@@ -110,16 +110,30 @@ class version_information {
             ];
         }
 
+        // Check installed.
+        $installed = core_component::get_component_directory($component) !== null;
+
         // Get plugin version.
-        $pluginman = core_plugin_manager::instance();
-        $plug = $pluginman->get_plugin_info($component);
-        if (!$plug) {
-            return false;
+        if ($installed) {
+            $pluginman = core_plugin_manager::instance();
+            try {
+                $plug = $pluginman->get_plugin_info($component);
+            } catch (\Exception $e) {
+                $plug = false;
+            }
+            if (!$plug) {
+                $installed = false;
+            }
         }
+
         $plugin = new \stdClass();
-        $plugin->version = $plug->versiondb;
-        $plugin->requires = $plug->versionrequires;
-        $plugin->release = $plug->release;
+        $plugin->installed = $installed;
+
+        if ($plugin && $installed) {
+            $plugin->version = $plug->versiondb;
+            $plugin->requires = $plug->versionrequires;
+            $plugin->release = $plug->release;
+        }
 
         return $plugin;
     }

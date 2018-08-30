@@ -27,6 +27,7 @@ namespace tool_ally\componentsupport;
 defined ('MOODLE_INTERNAL') || die();
 
 use tool_ally\local_file;
+use tool_ally\models\pluginfileurlprops;
 
 require_once($CFG->dirroot.'/question/engine/bank.php');
 
@@ -43,6 +44,11 @@ class question_component extends file_component_base {
         return self::TYPE_CORE;
     }
 
+    /**
+     * Return the properties for a specific pluginfileurl.
+     * @param string $pluginfileurl
+     * @return bool | pluginfileurlprops
+     */
     public static function fileurlproperties($pluginfileurl) {
         $regex = '/(?:.*)pluginfile\.php(?:\?file=|)(?:\/|%2F)(\d*?)(?:\/|%2F)(.*)$/';
         $matches = [];
@@ -74,13 +80,7 @@ class question_component extends file_component_base {
         $itemid = array_shift($arr);
         $filename = array_shift($arr);
 
-        return [
-            $contextid,
-            $component,
-            $filearea,
-            $itemid,
-            $filename
-        ];
+        return new pluginfileurlprops($contextid, $component, $filearea, $itemid, $filename);
     }
 
     /**

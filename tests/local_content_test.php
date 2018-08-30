@@ -108,7 +108,7 @@ class tool_ally_local_content_testcase extends tool_ally_abstract_testcase {
             $course->id,
             $section->timemodified,
             $section->summaryformat,
-            'General' // Default section name for section 0 where no section name set.
+            'Topic 0' // Default section name for section 0 where no section name set.
         );
 
         $labelintro = '<p>My original intro content</p>';

@@ -30,8 +30,8 @@ use cm_info;
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\content_sub_tables;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
+use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\componentsupport\traits\html_content;
-use tool_ally\local_content;
 use tool_ally\local_file;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
@@ -48,6 +48,7 @@ class forum_component extends file_component_base implements
         iface_html_content, annotation_map, content_sub_tables {
 
     use html_content;
+    use embedded_file_map;
 
     protected $type = 'forum';
 
@@ -252,6 +253,27 @@ SQL;
         }
 
         throw new \coding_exception('Invalid table used to recover course id '.$table);
+    }
+
+    public function resolve_module_instance_id($table, $id) {
+        global $DB;
+
+        if (!$this->module_installed()) {
+            return -1;
+        }
+        if ($table === 'forum_posts') {
+            $params = [$id];
+            $sql = <<<SQL
+            SELECT f.id
+              FROM {forum_posts} fp
+         LEFT JOIN {forum_discussions} fd ON fp.discussion = fd.id
+         LEFT JOIN {forum} f ON f.id = fd.forum
+             WHERE f.id = ?
+SQL;
+            return $DB->get_field_sql($sql, $params);
+
+        }
+        return parent::resolve_module_instance_id($table, $id);
     }
 
     /**

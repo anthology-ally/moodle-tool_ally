@@ -67,15 +67,6 @@ abstract class file_component_base extends component_base {
     }
 
     /**
-     * Return the properties for a specific pluginfileurl.
-     * @param string $pluginfileurl
-     * @return bool | array
-     */
-    public static function fileurlproperties($pluginfileurl) {
-        return false;
-    }
-
-    /**
      * @param string $oldfilename
      * @param \stored_file $file
      * @return void

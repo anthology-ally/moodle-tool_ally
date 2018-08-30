@@ -23,6 +23,8 @@
 
 namespace tool_ally;
 
+use tool_ally\local;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . "/../../../../webservice/lib.php");
@@ -64,7 +66,7 @@ class auto_config {
 
         $webuserpwd = strval(new password());
 
-        $user = $DB->get_record('user', ['username' => 'ally_webuser']);
+        $user = local::get_ally_web_user();
         if ($user) {
             $user->password = $webuserpwd;
             $user->policyagreed = 1;

@@ -26,11 +26,14 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
+use Horde\Socket\Client\Exception;
 use tool_ally\componentsupport\component_base;
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\html_content;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
+
+use DOMDocument;
 
 /**
  * Rich content library.
@@ -169,19 +172,49 @@ class local_content {
     }
 
     /**
+     * Builds a DOMDocument from html string.
+     * @param string $html
+     * @return DOMDocument
+     */
+    public static function build_dom_doc($html) {
+        $doc = new \DOMDocument();
+        libxml_use_internal_errors(true); // Required for HTML5.
+        $doc->loadHTML('<?xml encoding="utf-8" ?>' . $html);
+        libxml_clear_errors(); // Required for HTML5.
+        return $doc;
+    }
+
+    protected static function apply_embedded_file_map(component_content $content) {
+
+        $component = local::get_component_instance($content->component);
+        if (method_exists($component, 'apply_embedded_file_map')) {
+            $content = $component->apply_embedded_file_map($content);
+        }
+
+        return $content;
+    }
+
+    /**
      * @param int $id
      * @param string $component
      * @param string $table
      * @param string $field
      * @param int $courseid
+     * @param bool $includeembeddedfiles
      * @return bool|component_content
      */
-    public static function get_html_content($id, $component, $table, $field, $courseid = null) {
+    public static function get_html_content($id, $component, $table, $field,
+                                            $courseid = null, $includeembeddedfiles = false) {
         $component = self::component_instance($component);
         if (empty($component)) {
             return false;
         }
-        return $component->get_html_content($id, $table, $field, $courseid);
+        /** @var component_content $content */
+        $content = $component->get_html_content($id, $table, $field, $courseid);
+        if ($includeembeddedfiles) {
+            $content = self::apply_embedded_file_map($content);
+        }
+        return $content;
     }
 
     /**
@@ -207,7 +240,7 @@ class local_content {
      * @param string $component
      * @return bool|component_content[]
      */
-    public static function get_all_html_content($id, $component) {
+    public static function get_all_html_content($id, $component, $includeembeddedfiles = false) {
         $component = self::component_instance($component);
         if (empty($component)) {
             return false;
@@ -215,7 +248,13 @@ class local_content {
         if (!$component instanceof html_content) {
             return false;
         }
-        return $component->get_all_html_content($id);
+        $contents = $component->get_all_html_content($id);
+        if ($includeembeddedfiles) {
+            foreach ($contents as &$content) {
+                $content = self::apply_embedded_file_map($content);
+            }
+        }
+        return $contents;
     }
 
     /**

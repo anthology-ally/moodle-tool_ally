@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Interface for supporting html content.
+ * Trait for supporting html content.
  * @author    Guy Thomas <citricity@gmail.com>
  * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,6 +26,8 @@ namespace tool_ally\componentsupport\traits;
 use tool_ally\local_content;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
+
+use stdClass;
 
 defined ('MOODLE_INTERNAL') || die();
 
@@ -70,11 +72,13 @@ trait html_content {
      * @param string $titlefield
      * @param string $modifiedfield
      * @param callable $recordlambda - lambda to run on record once recovered.
+     * @param stdClass|null $record
      * @return component_content | null;
      * @throws \coding_exception
      */
     protected function std_get_html_content($id, $table, $field, $courseid = null, $titlefield = 'name',
-                                            $modifiedfield = 'timemodified', $recordlambda = null) {
+                                            $modifiedfield = 'timemodified', $recordlambda = null,
+                                            stdClass $record = null) {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -85,14 +89,25 @@ trait html_content {
 
         $this->validate_component_table_field($table, $field);
 
-        $record = $DB->get_record($table, ['id' => $id]);
+        if ($record === null) {
+            $record = $DB->get_record($table, ['id' => $id]);
+        }
         if ($recordlambda) {
             $recordlambda($record);
+            if ($courseid === null) {
+                if (!empty($record->course)) {
+                    $courseid = $record->course;
+                } else if (!empty($record->courseid)) {
+                    $courseid = $record->courseid;
+                }
+            }
         }
+
         if (!$record) {
             $ident = 'component='.$component.'&table='.$table.'&field='.$field.'&id='.$id;
             throw new \moodle_exception('error:invalidcomponentident', 'tool_ally', null, $ident);
         }
+
         $timemodified = $record->$modifiedfield;
         $content = $record->$field;
         $formatfield = $field.'format';
@@ -105,6 +120,7 @@ trait html_content {
 
         $contentmodel = new component_content($id, $component, $table, $field, $courseid, $timemodified, $contentformat,
             $content, $title, $url);
+
         return $contentmodel;
     }
 
@@ -165,7 +181,21 @@ trait html_content {
         return true;
     }
 
-    protected function get_intro_html_content_items(int $courseid) : array {
+    /**
+     * @param int $courseid
+     * @param string $contentfield
+     * @param null|string $table
+     * @param null|string $selectfield
+     * @param null|string $selectval
+     * @param null|string $titlefield
+     * @param null| \callable $compmetacallback
+     * @return component[]
+     * @throws \dml_exception
+     */
+    protected function get_selected_html_content_items($courseid, $contentfield,
+                                                       $table = null, $selectfield = null,
+                                                       $selectval = null, $titlefield = null,
+                                                       $compmetacallback = null) {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -175,17 +205,38 @@ trait html_content {
         $array = [];
 
         $compname = $this->get_component_name();
+        $table = $table === null ? $compname : $table;
+        $selectfield = $selectfield === null ? 'course' : $selectfield;
+        $selectval = $selectval === null ? $courseid : $selectval;
+        $titlefield = $titlefield === null ? 'name' : $titlefield;
 
-        $select = "course = ? AND introformat = ? AND intro !=''";
-        $rs = $DB->get_recordset_select($compname, $select, [$courseid, FORMAT_HTML]);
+        $formatfld = $contentfield.'format';
+
+        $select = "$selectfield = ? AND $formatfld = ? AND $contentfield !=''";
+        $params = [$selectval, FORMAT_HTML];
+        $rs = $DB->get_recordset_select($table, $select, $params);
         foreach ($rs as $row) {
-            $array[] = new component(
-                $row->id, $compname, $compname, 'intro', $courseid, $row->timemodified,
-                $row->introformat, $row->name);
+            $comp = new component(
+                $row->id, $compname, $table, $contentfield, $courseid, $row->timemodified,
+                $row->$formatfld, $row->$titlefield);
+            if (is_callable($compmetacallback)) {
+                $comp->meta = $compmetacallback($row);
+            }
+            $array[] = $comp;
         }
         $rs->close();
 
         return $array;
+    }
+
+    /**
+     * Get introduction html content items.
+     * @param int $courseid
+     * @return array
+     * @throws \dml_exception
+     */
+    protected function get_intro_html_content_items($courseid) {
+        return $this->get_selected_html_content_items($courseid, 'intro');
     }
 
 

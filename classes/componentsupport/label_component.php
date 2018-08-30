@@ -25,8 +25,8 @@ namespace tool_ally\componentsupport;
 defined ('MOODLE_INTERNAL') || die();
 
 use tool_ally\componentsupport\traits\html_content;
+use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
-use tool_ally\models\component;
 
 /**
  * Html content support for labels.
@@ -36,6 +36,7 @@ use tool_ally\models\component;
 class label_component extends component_base implements iface_html_content {
 
     use html_content;
+    use embedded_file_map;
 
     protected $tablefields = [
         'label' => ['intro']
