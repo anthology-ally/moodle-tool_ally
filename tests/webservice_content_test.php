@@ -97,7 +97,8 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
             null,
             $section->timemodified,
             $section->summaryformat,
-            $section0summary
+            $section0summary,
+            'General' // Default section name for section 0 where no section name set.
         );
         $this->assertEquals($expected, $content);
     }

@@ -29,6 +29,8 @@ use tool_ally\models\component;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use moodle_url;
 
+require_once($CFG->dirroot.'/course/lib.php');
+
 /**
  * Html content support for courses.
  * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
@@ -55,7 +57,7 @@ class course_component extends component_base implements iface_html_content {
     public function get_course_section_summary_rows($courseid) {
         global $DB;
 
-        $select = "course = ? AND summaryformat = ? AND summary !=''";
+        $select = "course = ? AND summaryformat = ? AND summary !='' ORDER BY section";
         return $DB->get_recordset_select('course_sections', $select, [$courseid, FORMAT_HTML]);
     }
 
@@ -76,9 +78,10 @@ class course_component extends component_base implements iface_html_content {
         // Add course sections.
         $rs = $this->get_course_section_summary_rows($courseid);
         foreach ($rs as $row) {
+            $sectionname = get_section_name($courseid, $row);
             $array[] = new component(
                     $row->id, 'course', 'course_sections', 'summary', $courseid, $row->timemodified,
-                    $row->summaryformat, $row->name);
+                    $row->summaryformat, $sectionname);
         }
         $rs->close();
 
@@ -87,7 +90,18 @@ class course_component extends component_base implements iface_html_content {
 
     public function get_html_content($id, $table, $field, $courseid = null) {
         $titlefield = $table === 'course' ? 'fullname' : 'name';
-        return $this->std_get_html_content($id, $table, $field, $courseid, $titlefield);
+        $recordlambda = null;
+        if ($table === 'course_sections') {
+            $recordlambda = function($record) {
+                if ($record->name !== null) {
+                    return; // Don't bother modifying $record - we have a name already!
+                }
+                $sectionname = get_section_name($record->course, $record);
+                // Override original section name.
+                $record->name = $sectionname;
+            };
+        }
+        return $this->std_get_html_content($id, $table, $field, $courseid, $titlefield, 'timemodified', $recordlambda);
     }
 
     /**

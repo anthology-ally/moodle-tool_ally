@@ -43,9 +43,10 @@ class content_processor {
     /**
      * Get push trace for PHP unit testing.
      * @param null|string $eventname
+     * @param string $regex
      * @return bool|mixed
      */
-    public static function get_push_traces($eventname = null) {
+    public static function get_push_traces($eventname = null, $regex = null) {
         if ($eventname === null) {
             return self::$pushtrace;
         }
@@ -53,7 +54,16 @@ class content_processor {
             throw new \coding_exception('This is only supposed to be used for PHP Unit testing!');
         }
         if (isset(self::$pushtrace[$eventname])) {
-            return self::$pushtrace[$eventname];
+            if ($regex === null) {
+                return self::$pushtrace[$eventname];
+            } else {
+                foreach (self::$pushtrace[$eventname] as &$pushtrace) {
+                    $pushtrace = array_filter($pushtrace, function($row) use($regex) {
+                        return preg_match($regex, $row['entity_id']) === 1;
+                    });
+                }
+                return $pushtrace;
+            }
         }
         return false;
     }

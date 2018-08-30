@@ -150,6 +150,25 @@ class local_content {
     }
 
     /**
+     * Get html content by an entityid.
+     * @param string $entityid
+     * @return bool|component_content
+     * @throws \coding_exception
+     */
+    public static function get_html_content_by_entity_id($entityid) {
+        $parts = explode(':', $entityid);
+        if (count($parts) < 4) {
+            throw new \coding_exception('Entitiy id does not have enough parts - '.$entityid);
+        }
+
+        $args = [$parts[3], $parts[0], $parts[1], $parts[2]];
+        if (isset($parts[4])) {
+            $args[] = $parts[4];
+        }
+        return call_user_func_array(['self', 'get_html_content'], $args);
+    }
+
+    /**
      * @param int $id
      * @param string $component
      * @param string $table
