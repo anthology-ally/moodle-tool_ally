@@ -21,7 +21,9 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_ally\local;
 use tool_ally\local_file;
+use tool_ally\webservice\wspluginfile;
 
 // Define as an AJAX_SCRIPT so exceptions are converted into JSON.
 define('AJAX_SCRIPT', true);
@@ -30,27 +32,16 @@ define('AJAX_SCRIPT', true);
 define('NO_MOODLE_COOKIES', true);
 
 require(__DIR__ . '/../../../config.php');
-require_once($CFG->libdir . '/filelib.php');
-require_once($CFG->dirroot . '/webservice/lib.php');
-
-$token = required_param('token', PARAM_ALPHANUM);
-
-$webservicelib = new webservice();
-$authenticationinfo = $webservicelib->authenticate_user($token);
-
-// Ensure that the service allows file downloads.
-$enabledfiledownload = (int) ($authenticationinfo['service']->downloadfiles);
-if (empty($enabledfiledownload)) {
-    throw new webservice_access_exception('Web service file downloading must be enabled in external service settings');
-}
 
 $pathnamehash = required_param('pathnamehash', PARAM_ALPHANUM);
+$token = optional_param('token', null, PARAM_ALPHANUM);
+$signature = optional_param('signature', null, PARAM_ALPHANUM);
+$iat = optional_param('iat', null, PARAM_INT);
 
-$fs = get_file_storage();
-$file = $fs->get_file_by_hash($pathnamehash);
-if (!$file) {
-    throw new moodle_exception('filenotfound', 'error');
-}
+$wspluginfile = new wspluginfile();
+
+$file = $wspluginfile->get_file($pathnamehash, $token, $signature, $iat);
+
 $coursecontext = local_file::course_context($file);
 $cm = local_file::resolve_cm_from_file($file);
 $cm = $cm ?: false;

@@ -25,6 +25,7 @@ namespace tool_ally\componentsupport;
 defined ('MOODLE_INTERNAL') || die();
 
 use tool_ally\componentsupport\traits\html_content;
+use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\models\component;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use moodle_url;
@@ -39,6 +40,7 @@ require_once($CFG->dirroot.'/course/lib.php');
 class course_component extends component_base implements iface_html_content {
 
     use html_content;
+    use embedded_file_map;
 
     protected $tablefields = [
         'course' => ['summary'],
@@ -61,6 +63,32 @@ class course_component extends component_base implements iface_html_content {
         return $DB->get_recordset_select('course_sections', $select, [$courseid, FORMAT_HTML]);
     }
 
+    /**
+     * Taken from format/lib.php
+     *
+     * Returns the display name of the given section that the course prefers.
+     *
+     * @param int $course
+     * @param int|stdClass $section Section object from database or just field course_sections.section
+     * @return Display name that the course format prefers, e.g. "Topic 2"
+     */
+    public function get_section_name($course, $section) {
+        $course = get_course($course);
+
+        if (is_object($section)) {
+            $sectionnum = $section->section;
+        } else {
+            $sectionnum = $section;
+        }
+
+        if (get_string_manager()->string_exists('sectionname', 'format_' . $course->format)) {
+            return get_string('sectionname', 'format_' . $course->format) . ' ' . $sectionnum;
+        }
+
+        // Return best guess if section name could not be created from format language file.
+        return get_string('section', 'tool_ally', $sectionnum);
+    }
+
     public function get_course_html_content_items($courseid) {
         global $DB;
 
@@ -78,7 +106,7 @@ class course_component extends component_base implements iface_html_content {
         // Add course sections.
         $rs = $this->get_course_section_summary_rows($courseid);
         foreach ($rs as $row) {
-            $sectionname = get_section_name($courseid, $row);
+            $sectionname = $this->get_section_name($courseid, $row);
             $array[] = new component(
                     $row->id, 'course', 'course_sections', 'summary', $courseid, $row->timemodified,
                     $row->summaryformat, $sectionname);
@@ -97,7 +125,7 @@ class course_component extends component_base implements iface_html_content {
                     return; // Don't bother modifying $record - we have a name already!
                 }
                 try {
-                    $sectionname = get_section_name($record->course, $record);
+                    $sectionname = $this->get_section_name($record->course, $record);
                     // Override original section name.
                     $record->name = $sectionname;
                 } catch (\Exception $ex) {
@@ -109,7 +137,8 @@ class course_component extends component_base implements iface_html_content {
                 }
             };
         }
-        return $this->std_get_html_content($id, $table, $field, $courseid, $titlefield, 'timemodified', $recordlambda);
+        $content = $this->std_get_html_content($id, $table, $field, $courseid, $titlefield, 'timemodified', $recordlambda);
+        return $content;
     }
 
     /**
@@ -202,5 +231,34 @@ class course_component extends component_base implements iface_html_content {
         }
 
         throw new \coding_exception('Invalid table used to recover course id '.$table);
+    }
+
+    /**
+     * Get a file item id for a specific table / field / id.
+     *
+     * @param string $table
+     * @param string $field
+     * @param int $id
+     * @return int
+     */
+    public function get_file_item($table, $field, $id) {
+        if ($table === 'course_sections') {
+            return $id;
+        }
+        return 0;
+    }
+
+    /**
+     * Get a file area for a specific table / field.
+     *
+     * @param $table
+     * @param $field
+     * @return mixed
+     */
+    public function get_file_area($table, $field) {
+        if ($table === 'course_sections') {
+            return 'section';
+        }
+        return parent::get_file_area($table, $field);
     }
 }

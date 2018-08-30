@@ -68,47 +68,6 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $datagen->enrol_user($this->teacher->id, $this->course->id, 'editingteacher');
     }
 
-    /**
-     * Create and return draft file.
-     * @return array
-     * @throws coding_exception
-     * @throws moodle_exception
-     */
-    private function create_draft_file($filename = 'red dot.png') {
-        global $USER;
-        $usercontext = context_user::instance($USER->id);
-        $filecontent = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38"
-            . "GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
-        $draftfile = core_files_external::upload($usercontext->id, 'user', 'draft', 0, '/', $filename, $filecontent, null, null);
-        $draftfile['filecontent'] = $filecontent;
-        return $draftfile;
-    }
-
-    /**
-     * Create test file.
-     * @param int $contextid
-     * @param string $component
-     * @param string $filearea
-     * @return stored_file
-     * @throws file_exception
-     * @throws stored_file_creation_exception
-     */
-    private function create_test_file($contextid, $component, $filearea, $itemid = 0, $filename = 'gd logo.png') {
-        global $CFG;
-        $filepath = $CFG->libdir.'/tests/fixtures/gd-logo.png';
-        $filerecord = array(
-            'contextid' => $contextid,
-            'component' => $component,
-            'filearea'  => $filearea,
-            'itemid'    => $itemid,
-            'filepath'  => '/',
-            'filename'  => $filename,
-        );
-        $fs = \get_file_storage();
-        $file = $fs->create_file_from_pathname($filerecord, $filepath);
-        return $file;
-    }
-
     private function std_img_html() {
         return '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
     }

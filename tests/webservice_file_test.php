@@ -181,4 +181,26 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
         $this->assertRegExp('/.*admin\/tool\/ally\/wspluginfile\.php\?pathnamehash=/', $file['downloadurl']);
         $this->assertEquals($CFG->wwwroot.'/mod/forum/view.php?id='.$forum->cmid, $file['location']);
     }
+
+    public function test_unwhitelisted_file_component() {
+
+        $this->resetAfterTest();
+
+        $filename = 'somefile.txt';
+        $filecontents = 'contents of file';
+
+        $filerecord = array(
+            'contextid' => context_system::instance()->id,
+            'component' => 'mod_somefakemodule',
+            'filearea'  => 'intro',
+            'itemid'    => 0,
+            'filepath'  => '/',
+            'filename'  => $filename,
+        );
+        $fs = get_file_storage();
+        $file = $fs->create_file_from_string($filerecord, $filecontents);
+
+        $this->expectExceptionMessage(get_string('filenotfound', 'error'));
+        file::service($file->get_pathnamehash());
+    }
 }

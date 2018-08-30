@@ -15,8 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Html content support for assignments.
- * @author Guy Thomas
+ * Support for course content
  * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,23 +24,23 @@ namespace tool_ally\componentsupport;
 
 defined ('MOODLE_INTERNAL') || die();
 
-use tool_ally\componentsupport\traits\embedded_file_map;
-use tool_ally\componentsupport\traits\html_content;
+use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
-use tool_ally\models\component;
+use tool_ally\componentsupport\traits\html_content;
+use tool_ally\componentsupport\traits\embedded_file_map;
 
 /**
- * Html content support for assignments.
+ * Html content support for pages.
  * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assign_component extends component_base implements iface_html_content {
+class page_component extends component_base implements iface_html_content, annotation_map {
 
     use html_content;
     use embedded_file_map;
 
     protected $tablefields = [
-        'assign' => ['intro']
+        'page' => ['intro', 'content']
     ];
 
     public static function component_type() {
@@ -55,33 +54,54 @@ class assign_component extends component_base implements iface_html_content {
     public function get_html_content($id, $table, $field, $courseid = null) {
         global $DB;
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
-        if ($table === 'assign') {
-            $content->title = $DB->get_field('assign', 'name', ['id' => $id]);
+        if ($table === 'page') {
+            $content->title = $DB->get_field('page', 'name', ['id' => $id]);
         }
         return ($content);
     }
 
     public function get_all_html_content($id) {
-        return [$this->get_html_content($id, 'assign', 'intro')];
+        return [
+            $this->get_html_content($id, 'page', 'intro'),
+            $this->get_html_content($id, 'page', 'content')
+        ];
     }
 
     public function replace_html_content($id, $table, $field, $content) {
         return $this->std_replace_html_content($id, $table, $field, $content);
     }
 
-    public function get_annotation($id) {
-        return $this->get_component_name().':'.$this->get_component_name().':intro:'.$id;
-    }
-
     public function resolve_course_id($id, $table, $field) {
         global $DB;
 
-        if ($table === 'assign') {
-            $label = $DB->get_record('assign', ['id' => $id]);
-            return $label->course;
+        if ($table === 'page') {
+            $course = $DB->get_field('page', 'course', ['id' => $id]);
+            return $course;
         }
 
         throw new \coding_exception('Invalid table used to recover course id '.$table);
+    }
+
+    public function get_annotation_maps($courseid) {
+        if (!$this->module_installed()) {
+            return [];
+        }
+
+        $intros = [];
+        $introcis = $this->get_intro_html_content_items($courseid);
+        foreach ($introcis as $introci) {
+            list($course, $cm) = get_course_and_cm_from_instance($introci->id, 'page');
+            $intros[$cm->id] = $introci->entity_id();
+        }
+
+        $content = [];
+        $contentcis = $this->get_selected_html_content_items($courseid, 'content');
+        foreach ($contentcis as $contentci) {
+            list($course, $cm) = get_course_and_cm_from_instance($contentci->id, 'page');
+            $content[$cm->id] = $contentci->entity_id();
+        }
+
+        return ['intros' => $intros, 'content' => $content];
     }
 
     /**
@@ -97,5 +117,4 @@ class assign_component extends component_base implements iface_html_content {
         }
         return $this->make_module_instance_url($table, $id);
     }
-
 }

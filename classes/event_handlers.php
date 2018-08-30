@@ -50,6 +50,10 @@ use mod_glossary\event\entry_created;
 use mod_glossary\event\entry_updated;
 use mod_glossary\event\entry_deleted;
 
+use mod_book\event\chapter_created;
+use mod_book\event\chapter_updated;
+use mod_book\event\chapter_deleted;
+
 use tool_ally\models\component_content;
 use tool_ally\componentsupport\course_component;
 
@@ -110,8 +114,7 @@ class event_handlers {
             return;
         }
 
-        $coursecomp = new course_component();
-        $content = $coursecomp->get_html_content($sectionid, 'course_sections', 'summary', $courseid);
+        $content = local_content::get_html_content($sectionid, 'course', 'course_sections', 'summary', $courseid);
 
         content_processor::push_content_update([$content], $apieventname);
     }
@@ -180,7 +183,15 @@ class event_handlers {
             return;
         }
 
-        local_content::queue_delete($event->courseid, $id, $module, $module, 'intro');
+        $component = local::get_component_instance($module);
+        $fields = $component->get_table_fields($module);
+        if (empty($fields)) {
+            $fields = ['intro'];
+        }
+
+        foreach ($fields as $field) {
+            local_content::queue_delete($event->courseid, $id, $module, $module, $field);
+        }
     }
 
     /**
@@ -349,6 +360,7 @@ class event_handlers {
             ];
             throw new \moodle_exception('error:componentcontentnotfound', 'tool_ally', '', $a);
         }
+
         content_processor::push_content_update([$content], $eventname);
     }
 
@@ -377,6 +389,33 @@ class event_handlers {
      */
     public static function glossary_entry_deleted(entry_deleted $event) {
         self::module_item_crud($event, self::API_DELETED, 'definition');
+    }
+
+    /**
+     * @param chapter_created $event
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public static function book_chapter_created(chapter_created $event) {
+        self::module_item_crud($event, self::API_CREATED, 'content');
+    }
+
+    /**
+     * @param chapter_updated $event
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public static function book_chapter_updated(chapter_updated $event) {
+        self::module_item_crud($event, self::API_UPDATED, 'content');
+    }
+
+    /**
+     * @param chapter_deleted $event
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public static function book_chapter_deleted(chapter_deleted $event) {
+        self::module_item_crud($event, self::API_DELETED, 'content');
     }
 
 }

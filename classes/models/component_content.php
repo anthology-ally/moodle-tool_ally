@@ -43,6 +43,11 @@ class component_content extends component {
     public $contenturl;
 
     /**
+     * @var array - array of image file content hashes
+     */
+    public $embeddedfiles;
+
+    /**
      * Component with content constructor.
      * @param int $id
      * @param string $component
@@ -61,5 +66,6 @@ class component_content extends component {
         $this->content = $content;
         $this->contenthash = sha1($this->content);
         $this->contenturl = $url;
+        $this->embeddedfiles = [];
     }
 }
