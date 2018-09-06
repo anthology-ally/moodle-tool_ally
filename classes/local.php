@@ -26,6 +26,10 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/webservice/lib.php');
+
+use webservice;
+
 /**
  * Local library.
  *
@@ -182,5 +186,15 @@ class local {
                 ";
 
         return $DB->count_records_sql($sql, $capjoin->params);
+    }
+
+    /**
+     * Get ally web user.
+     * @return bool|\stdClass
+     * @throws \dml_exception
+     */
+    public static function get_ally_web_user() {
+        global $DB;
+        return $DB->get_record('user', ['username' => 'ally_webuser']);
     }
 }
