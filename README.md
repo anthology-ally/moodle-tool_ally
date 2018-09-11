@@ -9,7 +9,7 @@ level of accessibility for files throughtout the course.
 
 You can download the admin tool plugin from:
 
-https://github.com/moodlerooms/moodle-tool_ally
+https://github.com/blackboard-open-source/moodle-tool_ally
 
 This plugin should be located and named as:
  [yourmoodledir]/admin/tool/ally
@@ -41,7 +41,7 @@ should download and install:
 
 The Ally filter can be downloaded from:
 
-https://github.com/moodlerooms/moodle-filter_ally
+https://github.com/blackboard-open-source/moodle-filter_ally
 
 The filter should be located and named as:
  [yourmoodledir]/filter/ally
@@ -50,7 +50,7 @@ The filter should be located and named as:
 
 The Ally accessibility report can be downloaded from:
  
-https://github.com/moodlerooms/moodle-report_allylti
+https://github.com/blackboard-open-source/moodle-report_allylti
  
 The report should be located and named as:
  [yourmoodledir]/report/allylti
