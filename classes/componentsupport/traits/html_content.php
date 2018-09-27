@@ -165,7 +165,21 @@ trait html_content {
         return true;
     }
 
-    protected function get_field_html_content_items($courseid, $field) : array {
+    /**
+     * @param int $courseid
+     * @param string $contentfield
+     * @param null|string $table
+     * @param null|string $selectfield
+     * @param null|string $selectval
+     * @param null|string $titlefield
+     * @param null| \callable $compmetacallback
+     * @return component[]
+     * @throws \dml_exception
+     */
+    protected function get_selected_html_content_items($courseid, $contentfield,
+                                                       $table = null, $selectfield = null,
+                                                       $selectval = null, $titlefield = null,
+                                                       $compmetacallback = null) {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -175,15 +189,23 @@ trait html_content {
         $array = [];
 
         $compname = $this->get_component_name();
+        $table = $table === null ? $compname : $table;
+        $selectfield = $selectfield === null ? 'course' : $selectfield;
+        $selectval = $selectval === null ? $courseid : $selectval;
+        $titlefield = $titlefield === null ? 'name' : $titlefield;
 
-        $formatfld = $field.'format';
+        $formatfld = $contentfield.'format';
 
-        $select = "course = ? AND $formatfld = ? AND $field !=''";
-        $rs = $DB->get_recordset_select($compname, $select, [$courseid, FORMAT_HTML]);
+        $select = "$selectfield = ? AND $formatfld = ? AND $contentfield !=''";
+        $rs = $DB->get_recordset_select($table, $select, [$selectval, FORMAT_HTML]);
         foreach ($rs as $row) {
-            $array[] = new component(
-                $row->id, $compname, $compname, $field, $courseid, $row->timemodified,
-                $row->$formatfld, $row->name);
+            $comp = new component(
+                $row->id, $compname, $table, $contentfield, $courseid, $row->timemodified,
+                $row->$formatfld, $row->$titlefield);
+            if (is_callable($compmetacallback)) {
+                $comp->meta = $compmetacallback($row);
+            }
+            $array[] = $comp;
         }
         $rs->close();
 
@@ -197,7 +219,7 @@ trait html_content {
      * @throws \dml_exception
      */
     protected function get_intro_html_content_items($courseid) {
-        return $this->get_field_html_content_items($courseid, 'intro');
+        return $this->get_selected_html_content_items($courseid, 'intro');
     }
 
 

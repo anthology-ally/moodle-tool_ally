@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Support for course content
+ * Html content support for book module.
  * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,18 +28,22 @@ use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use tool_ally\componentsupport\traits\html_content;
 use tool_ally\models\component;
+use tool_ally\models\component_content;
+
+use moodle_url;
 
 /**
- * Html content support for pages.
+ * Html content support for book module.
  * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class page_component extends component_base implements iface_html_content, annotation_map {
+class book_component extends component_base implements iface_html_content, annotation_map {
 
     use html_content;
 
     protected $tablefields = [
-        'page' => ['intro', 'content']
+        'book' => ['intro'],
+        'book_chapters' => ['content']
     ];
 
     public static function component_type() {
@@ -53,17 +57,47 @@ class page_component extends component_base implements iface_html_content, annot
     public function get_html_content($id, $table, $field, $courseid = null) {
         global $DB;
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
-        if ($table === 'page') {
-            $content->title = $DB->get_field('page', 'name', ['id' => $id]);
+        if ($table === 'book') {
+            $content->title = $DB->get_field('book', 'name', ['id' => $id]);
+        }
+        if ($table === 'book_chapters') {
+            $content->title = $DB->get_field('book_chapters', 'title', ['id' => $id]);
         }
         return ($content);
     }
 
+    /**
+     * @param int $bookid
+     * @return component_content[]
+     * @throws \dml_exception
+     */
+    private function get_chapter_html_content($bookid) {
+        global $DB;
+
+        $content = [];
+
+        if (!$this->module_installed()) {
+            return null;
+        }
+
+        list ($course, $cm) = get_course_and_cm_from_instance($bookid, 'book');
+
+        $chapters = $DB->get_records('book_chapters', ['bookid' => $bookid]);
+        foreach ($chapters as $chapter) {
+            $url = new \moodle_url('/mod/book/view.php', ['id' => $cm->id, 'chapterid' => $chapter->id]);
+            $contentmodel = new component_content($chapter->id, 'book', 'book_chapters',
+                'content', $course->id,
+                $chapter->timemodified, 'contentformat',
+                $chapter->content, $chapter->title, $url);
+            $content[]= $contentmodel;
+        }
+
+        return $content;
+    }
+
     public function get_all_html_content($id) {
-        return [
-            $this->get_html_content($id, 'page', 'intro'),
-            $this->get_html_content($id, 'page', 'content')
-        ];
+        return array_merge([$this->get_html_content($id, 'book', 'intro')],
+            $this->get_chapter_html_content($id));
     }
 
     public function replace_html_content($id, $table, $field, $content) {
@@ -73,8 +107,8 @@ class page_component extends component_base implements iface_html_content, annot
     public function resolve_course_id($id, $table, $field) {
         global $DB;
 
-        if ($table === 'page') {
-            $course = $DB->get_field('page', 'course', ['id' => $id]);
+        if ($table === 'book') {
+            $course = $DB->get_field('book', 'course', ['id' => $id]);
             return $course;
         }
 
@@ -82,26 +116,34 @@ class page_component extends component_base implements iface_html_content, annot
     }
 
     public function get_annotation_maps($courseid) {
+        global $PAGE;
+
         if (!$this->module_installed()) {
             return [];
         }
 
         $intros = [];
+        $content = [];
         $introcis = $this->get_intro_html_content_items($courseid);
         foreach ($introcis as $introci) {
-            list($course, $cm) = get_course_and_cm_from_instance($introci->id, 'page');
+            list($course, $cm) = get_course_and_cm_from_instance($introci->id, 'book');
             $intros[$cm->id] = $introci->entity_id();
+
+            if ($PAGE->pagetype !== 'mod-book-view') {
+                continue; // No point building annotations for pages that don't use them!
+            }
+
+            $bookid = $cm->instance;
+            $contentcis = $this->get_selected_html_content_items($courseid, 'content',
+                    'book_chapters', 'bookid', $bookid, 'title');
+            foreach ($contentcis as $contentci) {
+                $content[$contentci->id] = $contentci->entity_id();
+            }
         }
 
-        $content = [];
-        $contentcis = $this->get_selected_html_content_items($courseid, 'content');
-        foreach ($contentcis as $contentci) {
-            list($course, $cm) = get_course_and_cm_from_instance($contentci->id, 'page');
-            $content[$cm->id] = $contentci->entity_id();
-        }
-
-        return ['intros' => $intros, 'content' => $content];
+        return ['intros' => $intros, 'chapters' => $content];
     }
+
 
     /**
      * Attempt to make url for content.
@@ -109,11 +151,20 @@ class page_component extends component_base implements iface_html_content, annot
      * @param string $table
      * @param string $field
      * @param int $courseid
+     * @return null|string;
      */
     public function make_url($id, $table, $field = null, $courseid = null) {
+        global $DB;
+
         if (!isset($this->tablefields[$table])) {
             return null;
         }
-        return $this->make_module_instance_url($table, $id);
+        if ($table === 'book') {
+            return $this->make_module_instance_url($table, $id);
+        } else if ($table === 'book_chapters') {
+            $bookid = $DB->get_field('book_chapters', 'bookid', ['id' => $id]);
+            return new moodle_url('/mod/book/view.php', ['id' => $bookid, 'chapterid' => $id]).'';
+        }
+        return null;
     }
 }

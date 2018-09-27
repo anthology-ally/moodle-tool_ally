@@ -25,6 +25,7 @@
 namespace tool_ally\models;
 
 use tool_ally\local_content;
+use stdClass;
 
 defined ('MOODLE_INTERNAL') || die();
 
@@ -70,6 +71,11 @@ class component {
     public $title;
 
     /**
+     * @var stdClass
+     */
+    public $meta;
+
+    /**
      * Component constructor.
      * @param int $id
      * @param string $component
@@ -94,6 +100,7 @@ class component {
         $this->timemodified = $timemodified;
         $this->contentformat = (string) $contentformat;
         $this->title = $title;
+        $this->meta = new stdClass;
     }
 
     /**

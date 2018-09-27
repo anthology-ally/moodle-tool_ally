@@ -40,6 +40,10 @@ use \mod_glossary\event\entry_created;
 use \mod_glossary\event\entry_updated;
 use \mod_glossary\event\entry_deleted;
 
+use \mod_book\event\chapter_created;
+use \mod_book\event\chapter_updated;
+use \mod_book\event\chapter_deleted;
+
 use tool_ally\content_processor;
 use tool_ally\event_handlers;
 use tool_ally\task\content_updates_task;
@@ -83,7 +87,7 @@ class tool_ally_event_handlers_testcase extends advanced_testcase {
                 }
             }
         }
-        $this->fail('Push trace does not contain an entity id of '.$entityid);
+        $this->fail('Push trace does not contain an entity id of '.$entityid."\n\n".var_export($pushtraces, true));
         return;
     }
 
@@ -485,5 +489,78 @@ MSG;
 
         // After running the task it has pushed the deletion event.
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_DELETED, $glossaryentityid);
+    }
+
+    public function test_book_events() {
+        global $USER;
+
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+
+        $book = $this->getDataGenerator()->create_module('book',
+            ['course' => $course->id, 'introformat' => FORMAT_HTML]);
+        $bookentityid = 'book:book:intro:'.$book->id;
+        list ($course, $cm) = get_course_and_cm_from_cmid($book->cmid);
+        course_module_created::create_from_cm($cm)->trigger();
+
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $bookentityid);
+
+        // Add a chapter.
+        $record = new stdClass();
+        $record->course = $course->id;
+        $record->bookid = $book->id;
+        $record->userid = $USER->id;
+        $record->content = 'Test chapter content';
+        $record->contentformat = FORMAT_HTML;
+
+        $bookgenerator = self::getDataGenerator()->get_plugin_generator('mod_book');
+
+        $chapter = $bookgenerator->create_chapter($record);
+
+
+        $params = array(
+            'context' => $cm->context,
+            'objectid' => $chapter->id,
+            'other' => array(
+                'bookid' => $book->id
+            )
+        );
+        $event = chapter_created::create($params);
+        $event->add_record_snapshot('book_chapters', $chapter);
+        $event->trigger();
+
+        $entityid = 'book:book_chapters:content:'.$chapter->id;
+
+        // Assert pushtrace contains chapter.
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $entityid);
+
+        // Modify chapter.
+        $chapter->content .= 'modified !!!';
+        $params = array(
+            'context' => $cm->context,
+            'objectid' => $chapter->id,
+            'other' => array(
+                'bookid' => $book->id
+            )
+        );
+        $event = chapter_updated::create($params);
+        $event->add_record_snapshot('book_chapters', $chapter);
+        $event->trigger();
+
+        // Assert pushtrace contains updated chapter.
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
+
+        course_delete_module($book->cmid);
+
+        // Note, there shouldn't be any deletion events at this point because deletes need the task to be dealt with.
+        $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_DELETED, $bookentityid);
+
+        $cdt = new content_updates_task();
+        $cdt->execute();
+        $cdt->execute(); // We have to execute again because first time just sets exec window.
+
+        // After running the task it has pushed the deletion event.
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_DELETED, $bookentityid);
     }
 }
