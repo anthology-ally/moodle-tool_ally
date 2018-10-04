@@ -55,7 +55,7 @@ use tool_ally\local_content;
  * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_event_handlers_testcase extends advanced_testcase {
+class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
 
     public function setUp() {
         $this->resetAfterTest();
@@ -133,6 +133,25 @@ MSG;
                 }
             }
         }
+        return;
+    }
+
+    private function assert_pushtrace_entity_contains_embeddedfileinfo($eventname, $entityid, $filename) {
+        $pushtraces = content_processor::get_push_traces($eventname);
+        $this->assertNotEmpty($pushtraces);
+        if (!$pushtraces) {
+            $this->fail('Push trace does not contain an entity id of '.$entityid);
+        }
+        foreach ($pushtraces as $pushtrace) {
+            foreach ($pushtrace as $row) {
+                if ($row['entity_id'] === $entityid) {
+                    if (!empty($row['embedded_files']) && isset($row['embedded_files'][$filename])) {
+                        return;
+                    }
+                }
+            }
+        }
+        $this->fail('Push trace does not contain an entity id of '.$entityid);
         return;
     }
 
@@ -279,16 +298,29 @@ MSG;
     }
 
     public function test_module_updated() {
+        global $DB;
+
         $course = $this->getDataGenerator()->create_course();
 
         $label = $this->getDataGenerator()->create_module('label',
             ['course' => $course->id, 'introformat' => FORMAT_HTML]);
+        $context = context_module::instance($label->cmid);
+
         $entityid = 'label:label:intro:'.$label->id;
         list ($course, $cm) = get_course_and_cm_from_cmid($label->cmid);
-        $label->intro = 'Updated intro';
+
+        context_module::instance($label->cmid);
+
+        $filename = 'testimage.png';
+        $this->create_test_file($context->id, 'mod_label', 'intro', 0, $filename);
+
+        $label->intro = 'Updated intro with img <img src="@@PLUGINFILE@@/'.rawurlencode($filename).'" alt="test alt" />';
+        $DB->update_record('label', $label);
+
         course_module_updated::create_from_cm($cm)->trigger();
 
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
+        $this->assert_pushtrace_entity_contains_embeddedfileinfo(event_handlers::API_UPDATED, $entityid, $filename);
     }
 
     public function test_module_deleted() {

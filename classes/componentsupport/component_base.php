@@ -109,4 +109,48 @@ abstract class component_base {
         return in_array($userid, $this->get_approved_author_ids_for_context($context));
     }
 
+    /**
+     * Get a file area for a specific table / field.
+     *
+     * Override this in your component if you need something more complicated.
+     *
+     * @param $table
+     * @param $field
+     * @return mixed
+     */
+    public function get_file_area($table, $field) {
+        // The default is simply to return the field, if it's part of the tablefields array.
+        if (isset($this->tablefields[$table]) && in_array($field, $this->tablefields[$table])) {
+            return $field;
+        }
+    }
+
+    /**
+     * Get a file item id for a specific table / field / id.
+     *
+     * Override this in your component if you need something more complicated.
+     *
+     * @param string $table
+     * @param string $field
+     * @param int $id
+     * @return int
+     */
+    public function get_file_item($table, $field, $id) {
+        return 0;
+    }
+
+    /**
+     * Get a file item path for a specific table / field / id.
+     *
+     * Override this in your component if you need something more complicated.
+     *
+     * @param string $table
+     * @param string $field
+     * @param int $id
+     * @return int
+     */
+    public function get_file_path($table, $field, $id) {
+        return '/';
+    }
+
 }

@@ -29,6 +29,9 @@ defined('MOODLE_INTERNAL') || die();
 use tool_ally\componentsupport\component_base;
 use tool_ally\componentsupport\file_component_base;
 use tool_ally\componentsupport\interfaces\file_replacement;
+use tool_ally\models\pluginfileurlprops;
+
+use moodle_url;
 
 /**
  * File library.
@@ -298,16 +301,69 @@ class local_file {
      * Get plugin file url properties for a specific component.
      * @param string $component
      * @param string $pluginfileurl
-     * @return bool | array
+     * @return pluginfileurlprops
      */
-    public static function get_component_support_fileurlproperties($component, $pluginfileurl) {
+    public static function get_fileurlproperties($pluginfileurl) {
+
+        // First, make sure this pluginfile.php is for the current site.
+        // We're not interested in URLs pointing to other sites!
+        $baseurl = new moodle_url('/pluginfile.php');
+        $fileurl = new moodle_url($pluginfileurl);
+        if (!$fileurl->compare($baseurl, URL_MATCH_BASE)) {
+            return;
+        }
+
+        $regex = '/(?:.*)pluginfile\.php(?:\?file=|)(?:\/|%2F)(\d*?)(?:\/|%2F)(.*)$/';
+        $matches = [];
+        $matched = preg_match($regex, $pluginfileurl, $matches);
+        if (!$matched) {
+            return;
+        }
+        $contextid = $matches[1];
+        if (strpos($matches[2], '%2F') !== false) {
+            $del = '%2F';
+        } else {
+            $del = '/';
+        }
+        $arr = explode($del, $matches[2]);
+        $component = urldecode(array_shift($arr));
+
+        // Do we have a specific function in the component for handling file url props?
+        // If so then lets return that.
         $componentclassname = local::get_component_class($component);
         if (class_exists($componentclassname)) {
             if (method_exists($componentclassname, 'fileurlproperties')) {
                 return $componentclassname::fileurlproperties($pluginfileurl);
             }
         }
-        return false;
+
+        if (count($arr) === 2) {
+            $filearea = array_shift($arr);
+            $itemid = 0;
+            $filename = array_shift($arr);
+        } else if (count($arr) === 3) {
+            $filearea = array_shift($arr);
+            $itemid = array_shift($arr);
+            $filename = array_shift($arr);
+        } else {
+            $filearea = array_shift($arr);
+            $itemid = array_shift($arr);
+            $filename = implode($arr, '/');
+        }
+
+        return new pluginfileurlprops($contextid, $component, $filearea, $itemid, $filename);
+    }
+
+    /**
+     * Get file from pluginfileurlprops
+     * @param pluginfileurlprops $props
+     * @return bool|\stored_file
+     */
+    public static function get_file_fromprops(pluginfileurlprops $props) {
+        $fs = new \file_storage();
+        $file = $fs->get_file($props->contextid, $props->component, $props->filearea, $props->itemid, $props->filename);
+        return $file;
+
     }
 
     /**
@@ -368,14 +424,10 @@ class local_file {
         }
 
         // Process any other tables related to this component.
-        $componentclassname = local::get_component_class($component);
-        if (class_exists($componentclassname)) {
-            /** @var component_base $instance */
-            $instance = new $componentclassname();
-            if ($instance instanceof file_component_base) {
-                $instance->setup_file_and_validate($oldfilename, $file);
-                $instance->replace_file_links();
-            }
+        $instance = local::get_component_instance($component);
+        if ($instance instanceof file_component_base) {
+            $instance->setup_file_and_validate($oldfilename, $file);
+            $instance->replace_file_links();
         }
     }
 

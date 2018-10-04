@@ -24,6 +24,8 @@
 
 namespace tool_ally;
 
+use tool_ally\componentsupport\component_base;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -140,6 +142,22 @@ class local {
         $componentclassname = $component . '_component';
         $componentclassname = 'tool_ally\\componentsupport\\'.$componentclassname;
         return $componentclassname;
+    }
+
+    /**
+     * Get a component instance.
+     *
+     * @param string $component
+     * @return null|component_base
+     */
+    public static function get_component_instance($component) {
+        $class = self::get_component_class($component);
+        $instance = null;
+        if (class_exists($class)) {
+            /** @var component_base $instance */
+            $instance = new $class();
+        }
+        return $instance;
     }
 
     /**

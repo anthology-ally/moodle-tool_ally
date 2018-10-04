@@ -26,11 +26,14 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
+use Horde\Socket\Client\Exception;
 use tool_ally\componentsupport\component_base;
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\html_content;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
+
+use DOMDocument;
 
 /**
  * Rich content library.
@@ -169,6 +172,84 @@ class local_content {
     }
 
     /**
+     * Builds a DOMDocument from html string.
+     * @param string $html
+     * @return DOMDocument
+     */
+    public static function build_dom_doc($html) {
+        $doc = new \DOMDocument();
+        libxml_use_internal_errors(true); // Required for HTML5.
+        $doc->loadHTML('<?xml encoding="utf-8" ?>' . $html);
+        libxml_clear_errors(); // Required for HTML5.
+        return $doc;
+    }
+
+    protected static function apply_embeded_file_map(component_content $content) {
+        global $DB;
+
+        $html = $content->content;
+        $doc = self::build_dom_doc($html);
+        $results = $doc->getElementsByTagName('img');
+        $infobyhash = [];
+        $fs = new \file_storage();
+        $component = local::get_component_instance($content->component);
+
+        foreach ($results as $result) {
+            if (!is_object($result->attributes) || !is_object($result->attributes->getNamedItem('src'))) {
+                continue;
+            }
+            $src = $result->attributes->getNamedItem('src')->nodeValue;
+            $alt = $result->attributes->getNamedItem('alt')->nodeValue;
+
+            $componenttype = local::get_component_support_type($content->component);
+            if ($componenttype === component_base::TYPE_MOD) {
+                /** @var \cm_info $cm */
+                list($course, $cm) = get_course_and_cm_from_instance($content->id, $content->component);
+                $context = $cm->context;
+                $compstr = 'mod_'.$content->component;
+            } else {
+                if (!$content->courseid) {
+                  return;
+                }
+                $context = context_course($content->courseid);
+                $compstr = $content->component;
+            }
+
+            $file = null;
+            if (strpos($src, 'pluginfile.php') !== false) {
+                $props = local_file::get_fileurlproperties($src);
+
+                $context = context::instance_by_id($props->contextid, IGNORE_MISSING);
+                if (!$context) {
+                    // The context couldn't be found (perhaps this is a copy/pasted url pointing at old deleted content).
+                    // Move on.
+                    continue;
+                }
+
+                $file = local_file::get_file_fromprops($props);
+            } else if (strpos($src, '@@PLUGINFILE@@') !== false) {
+                $filename = str_replace('@@PLUGINFILE@@', '', $src);
+                if (strpos($filename, '/') === 0) {
+                    $filename = substr($filename, 1);
+                }
+                $filearea = $component->get_file_area($content->table, $content->field);
+                if (!$filearea) {
+                    throw new \coding_exception('Failed to get filearea for component_content '.
+                            var_export($content, true));
+                }
+                $fileitem = $component->get_file_item($content->table, $content->field, $content->id);
+                $filepath = $component->get_file_path($content->table, $content->field, $content->id);
+                $file = $fs->get_file($context->id, $compstr, $filearea, $fileitem, $filepath, $filename);
+            }
+
+            if ($file) {
+                $content->embeddedfiles[$file->get_filename()] = $file->get_pathnamehash();
+            }
+        }
+        return $content;
+    }
+
+    /**
      * @param int $id
      * @param string $component
      * @param string $table
@@ -181,7 +262,10 @@ class local_content {
         if (empty($component)) {
             return false;
         }
-        return $component->get_html_content($id, $table, $field, $courseid);
+        /** @var component_content $content */
+        $content = $component->get_html_content($id, $table, $field, $courseid);
+        $content = self::apply_embeded_file_map($content);
+        return $content;
     }
 
     /**
@@ -215,7 +299,11 @@ class local_content {
         if (!$component instanceof html_content) {
             return false;
         }
-        return $component->get_all_html_content($id);
+        $contents = $component->get_all_html_content($id);
+        foreach ($contents as &$content) {
+            $content = self::apply_embeded_file_map($content);
+        }
+        return $contents;
     }
 
     /**
@@ -270,7 +358,8 @@ class local_content {
             'context_id'   => (string) $componentcontent->get_courseid(),
             'event_name'   => $eventname,
             'event_time'   => local::iso_8601($componentcontent->timemodified),
-            'content_hash' => $componentcontent->contenthash
+            'content_hash' => $componentcontent->contenthash,
+            'embedded_files'   => $componentcontent->embeddedfiles
         ];
     }
 
