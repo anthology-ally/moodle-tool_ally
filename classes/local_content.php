@@ -185,12 +185,11 @@ class local_content {
     }
 
     protected static function apply_embeded_file_map(component_content $content) {
-        global $DB;
 
         $html = $content->content;
         $doc = self::build_dom_doc($html);
         $results = $doc->getElementsByTagName('img');
-        $infobyhash = [];
+
         $fs = new \file_storage();
         $component = local::get_component_instance($content->component);
 
@@ -199,7 +198,6 @@ class local_content {
                 continue;
             }
             $src = $result->attributes->getNamedItem('src')->nodeValue;
-            $alt = $result->attributes->getNamedItem('alt')->nodeValue;
 
             $componenttype = local::get_component_support_type($content->component);
             if ($componenttype === component_base::TYPE_MOD) {
@@ -209,9 +207,9 @@ class local_content {
                 $compstr = 'mod_'.$content->component;
             } else {
                 if (!$content->courseid) {
-                  return;
+                  return $content;
                 }
-                $context = context_course($content->courseid);
+                $context = \context_course::instance($content->courseid);
                 $compstr = $content->component;
             }
 

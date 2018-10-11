@@ -109,7 +109,8 @@ class course_component extends component_base implements iface_html_content {
                 }
             };
         }
-        return $this->std_get_html_content($id, $table, $field, $courseid, $titlefield, 'timemodified', $recordlambda);
+        $content = $this->std_get_html_content($id, $table, $field, $courseid, $titlefield, 'timemodified', $recordlambda);
+        return $content;
     }
 
     /**
@@ -202,5 +203,34 @@ class course_component extends component_base implements iface_html_content {
         }
 
         throw new \coding_exception('Invalid table used to recover course id '.$table);
+    }
+
+    /**
+     * Get a file item id for a specific table / field / id.
+     *
+     * @param string $table
+     * @param string $field
+     * @param int $id
+     * @return int
+     */
+    public function get_file_item($table, $field, $id) {
+        if ($table === 'course_sections') {
+            return $id;
+        }
+        return 0;
+    }
+
+    /**
+     * Get a file area for a specific table / field.
+     *
+     * @param $table
+     * @param $field
+     * @return mixed
+     */
+    public function get_file_area($table, $field) {
+        if ($table === 'course_sections') {
+            return 'section';
+        }
+        return parent::get_file_area($table, $field);
     }
 }

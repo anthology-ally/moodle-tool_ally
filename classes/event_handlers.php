@@ -114,8 +114,7 @@ class event_handlers {
             return;
         }
 
-        $coursecomp = new course_component();
-        $content = $coursecomp->get_html_content($sectionid, 'course_sections', 'summary', $courseid);
+        $content = local_content::get_html_content($sectionid, 'course', 'course_sections', 'summary', $courseid);
 
         content_processor::push_content_update([$content], $apieventname);
     }

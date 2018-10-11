@@ -140,7 +140,7 @@ MSG;
         $pushtraces = content_processor::get_push_traces($eventname);
         $this->assertNotEmpty($pushtraces);
         if (!$pushtraces) {
-            $this->fail('Push trace does not contain an entity id of '.$entityid);
+            $this->fail('Push trace is empty');
         }
         foreach ($pushtraces as $pushtrace) {
             foreach ($pushtrace as $row) {
@@ -258,9 +258,15 @@ MSG;
         $content = local_content::get_html_content_by_entity_id($entityid1);
         $this->assertEquals('Topic 1', $content->title);
 
-        // Update section1's title.
+        // Update section1's title and content.
         $section1->name = 'Altered section name';
+
+        $context = context_course::instance($course->id);
+        $filename = 'testimage.png';
+        $this->create_test_file($context->id, 'course', 'section', $section1->id, $filename);
+        $section1->summary = 'Updated summary with img <img src="@@PLUGINFILE@@/'.rawurlencode($filename).'" alt="test alt" />';
         $DB->update_record('course_sections', $section1);
+
         content_processor::clear_push_traces();
         course_section_updated::create([
             'objectid' => $section1->id,
@@ -273,6 +279,9 @@ MSG;
 
         // Ensure section 1 is now in push trace.
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid1);
+
+        // Ensure embedded file info is in push trace.
+        $this->assert_pushtrace_entity_contains_embeddedfileinfo(event_handlers::API_UPDATED, $entityid1, $filename);
 
         // Get content for section 1 and check it contains custom section name as title for section 1.
         $content = local_content::get_html_content_by_entity_id($entityid1);
@@ -306,7 +315,6 @@ MSG;
             ['course' => $course->id, 'introformat' => FORMAT_HTML]);
         $context = context_module::instance($label->cmid);
 
-        $entityid = 'label:label:intro:'.$label->id;
         list ($course, $cm) = get_course_and_cm_from_cmid($label->cmid);
 
         context_module::instance($label->cmid);
@@ -319,6 +327,7 @@ MSG;
 
         course_module_updated::create_from_cm($cm)->trigger();
 
+        $entityid = 'label:label:intro:'.$label->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
         $this->assert_pushtrace_entity_contains_embeddedfileinfo(event_handlers::API_UPDATED, $entityid, $filename);
     }

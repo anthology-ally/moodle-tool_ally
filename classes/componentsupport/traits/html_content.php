@@ -88,11 +88,20 @@ trait html_content {
         $record = $DB->get_record($table, ['id' => $id]);
         if ($recordlambda) {
             $recordlambda($record);
+            if ($courseid === null) {
+                if (!empty($record->course)) {
+                    $courseid = $record->course;
+                } else if (!empty($record->courseid)) {
+                    $courseid = $record->courseid;
+                }
+            }
         }
+
         if (!$record) {
             $ident = 'component='.$component.'&table='.$table.'&field='.$field.'&id='.$id;
             throw new \moodle_exception('error:invalidcomponentident', 'tool_ally', null, $ident);
         }
+
         $timemodified = $record->$modifiedfield;
         $content = $record->$field;
         $formatfield = $field.'format';
@@ -105,6 +114,7 @@ trait html_content {
 
         $contentmodel = new component_content($id, $component, $table, $field, $courseid, $timemodified, $contentformat,
             $content, $title, $url);
+
         return $contentmodel;
     }
 
