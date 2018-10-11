@@ -76,9 +76,8 @@ class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
      */
     private function assert_pushtrace_contains_entity_id($eventname, $entityid) {
         $pushtraces = content_processor::get_push_traces($eventname);
-        $this->assertNotEmpty($pushtraces);
         if (!$pushtraces) {
-            $this->fail('Push trace does not contain an entity id of '.$entityid);
+            $this->fail('Push trace is empty for event '.$eventname);
         }
         foreach ($pushtraces as $pushtrace) {
             foreach ($pushtrace as $row) {
@@ -88,6 +87,7 @@ class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
             }
         }
         $this->fail('Push trace does not contain an entity id of '.$entityid."\n\n".var_export($pushtraces, true));
+
         return;
     }
 
@@ -151,7 +151,7 @@ MSG;
                 }
             }
         }
-        $this->fail('Push trace does not contain an entity id of '.$entityid);
+        $this->fail('Push trace does not contain embedded files for entity id of '.$entityid);
         return;
     }
 
@@ -288,68 +288,68 @@ MSG;
         $this->assertEquals($section1->name, $content->title);
     }
 
-    public function test_module_created() {
+    private function assert_module_created_pushtraces($modname, $modtable, $modfield) {
         $course = $this->getDataGenerator()->create_course();
         // Assert that label with non FORMAT_HTML intro does not push.
-        $label = $this->getDataGenerator()->create_module('label', ['course' => $course->id]);
-        $entityid = 'label:label:intro:'.$label->id;
-        list ($course, $cm) = get_course_and_cm_from_cmid($label->cmid);
+        $mod = $this->getDataGenerator()->create_module($modname, ['course' => $course->id]);
+        $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
+        list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
         course_module_created::create_from_cm($cm)->trigger();
         $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_CREATED, $entityid);
 
         // Assert that label with FORMAT_HTML intro pushes.
-        $label = $this->getDataGenerator()->create_module('label',
-                ['course' => $course->id, 'introformat' => FORMAT_HTML]);
-        $entityid = 'label:label:intro:'.$label->id;
-        list ($course, $cm) = get_course_and_cm_from_cmid($label->cmid);
+        $mod = $this->getDataGenerator()->create_module($modname,
+            ['course' => $course->id, 'introformat' => FORMAT_HTML]);
+        $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
+        list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
         course_module_created::create_from_cm($cm)->trigger();
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $entityid);
     }
 
-    public function test_module_updated() {
+    private function assert_module_updated_pushtraces($modname, $modtable, $modfield, $filearea) {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();
 
-        $label = $this->getDataGenerator()->create_module('label',
+        $mod = $this->getDataGenerator()->create_module($modname,
             ['course' => $course->id, 'introformat' => FORMAT_HTML]);
-        $context = context_module::instance($label->cmid);
+        $context = context_module::instance($mod->cmid);
 
-        list ($course, $cm) = get_course_and_cm_from_cmid($label->cmid);
+        list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
 
-        context_module::instance($label->cmid);
+        context_module::instance($mod->cmid);
 
         $filename = 'testimage.png';
-        $this->create_test_file($context->id, 'mod_label', 'intro', 0, $filename);
+        $this->create_test_file($context->id, 'mod_'.$modname, $filearea, 0, $filename);
 
-        $label->intro = 'Updated intro with img <img src="@@PLUGINFILE@@/'.rawurlencode($filename).'" alt="test alt" />';
-        $DB->update_record('label', $label);
+        $mod->intro = 'Updated '.$modfield.' with img <img src="@@PLUGINFILE@@/'.rawurlencode($filename).'" alt="test alt" />';
+        $DB->update_record($modtable, $mod);
 
         course_module_updated::create_from_cm($cm)->trigger();
 
-        $entityid = 'label:label:intro:'.$label->id;
+        $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
         $this->assert_pushtrace_entity_contains_embeddedfileinfo(event_handlers::API_UPDATED, $entityid, $filename);
     }
 
-    public function test_module_deleted() {
+    private function assert_module_deleted_pushtraces($modname, $modtable, $modfield) {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();
-        $label = $this->getDataGenerator()->create_module('label',
+        $mod = $this->getDataGenerator()->create_module($modname,
             ['course' => $course->id, 'introformat' => FORMAT_HTML]);
-        $entityid = 'label:label:intro:'.$label->id;
-        list ($course, $cm) = get_course_and_cm_from_cmid($label->cmid);
+        $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
+        list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
         course_delete_module($cm->id);
 
         // Push should not have happened - it needs cron task to make it happen.
         $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_DELETED, $entityid);
 
         $delfilter = [
-            'component' => 'label',
-            'comptable' => 'label',
+            'component' => $modname,
+            'comptable' => $modtable,
             'courseid' => (int) $course->id,
-            'comprowid' => (int) $label->id
+            'comprowid' => (int) $mod->id
         ];
 
         $row = $DB->get_record('tool_ally_deleted_content', $delfilter);
@@ -370,7 +370,30 @@ MSG;
         $this->assertEmpty($row);
 
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_DELETED, $entityid);
+    }
 
+    public function test_label_created() {
+        $this->assert_module_created_pushtraces('label', 'label', 'intro');
+    }
+
+    public function test_label_updated() {
+        $this->assert_module_updated_pushtraces('label', 'label', 'intro', 'intro');
+    }
+
+    public function test_label_deleted() {
+        $this->assert_module_deleted_pushtraces('label', 'label', 'intro');
+    }
+
+    public function test_page_created() {
+        $this->assert_module_created_pushtraces('page', 'page', 'intro');
+    }
+
+    public function test_page_updated() {
+        $this->assert_module_updated_pushtraces('page', 'page', 'intro', 'intro');
+    }
+
+    public function test_page_deleted() {
+        $this->assert_module_deleted_pushtraces('page', 'page', 'intro');
     }
 
     public function test_forum_discussion_created() {
