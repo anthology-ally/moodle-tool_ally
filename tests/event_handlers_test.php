@@ -151,7 +151,7 @@ MSG;
                 }
             }
         }
-        $this->fail('Push trace does not contain embedded files for entity id of '.$entityid);
+        $this->fail('Push trace does not contain embedded files for entity id of '.$entityid."\n\n".var_export($pushtraces, true));
         return;
     }
 
@@ -288,7 +288,16 @@ MSG;
         $this->assertEquals($section1->name, $content->title);
     }
 
-    private function assert_module_created_pushtraces($modname, $modtable, $modfield) {
+
+    /**
+     * @param string $modname
+     * @param string $modtable
+     * @param string $modfield
+     * @return stdClass
+     * @throws coding_exception
+     * @throws moodle_exception
+     */
+    private function check_module_created_pushtraces($modname, $modtable, $modfield) {
         $course = $this->getDataGenerator()->create_course();
         // Assert that label with non FORMAT_HTML intro does not push.
         $mod = $this->getDataGenerator()->create_module($modname, ['course' => $course->id]);
@@ -299,20 +308,34 @@ MSG;
 
         // Assert that label with FORMAT_HTML intro pushes.
         $mod = $this->getDataGenerator()->create_module($modname,
-            ['course' => $course->id, 'introformat' => FORMAT_HTML]);
+            ['course' => $course->id, $modfield.'format' => FORMAT_HTML]);
         $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
         list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
         course_module_created::create_from_cm($cm)->trigger();
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $entityid);
+
+        return $mod;
     }
 
-    private function assert_module_updated_pushtraces($modname, $modtable, $modfield, $filearea) {
+    /**
+     * @param string $modname
+     * @param string $modtable
+     * @param string $modfield
+     * @param string $filearea
+     * @return stdClass
+     * @throws coding_exception
+     * @throws dml_exception
+     * @throws file_exception
+     * @throws moodle_exception
+     * @throws stored_file_creation_exception
+     */
+    private function check_module_updated_pushtraces($modname, $modtable, $modfield, $filearea) {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();
 
         $mod = $this->getDataGenerator()->create_module($modname,
-            ['course' => $course->id, 'introformat' => FORMAT_HTML]);
+            ['course' => $course->id, $modfield.'format' => FORMAT_HTML]);
         $context = context_module::instance($mod->cmid);
 
         list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
@@ -322,7 +345,9 @@ MSG;
         $filename = 'testimage.png';
         $this->create_test_file($context->id, 'mod_'.$modname, $filearea, 0, $filename);
 
-        $mod->intro = 'Updated '.$modfield.' with img <img src="@@PLUGINFILE@@/'.rawurlencode($filename).'" alt="test alt" />';
+        $mod->$modfield = 'Updated '.$modfield.' with img <img src="@@PLUGINFILE@@/'.
+                rawurlencode($filename).'" alt="test alt" />';
+
         $DB->update_record($modtable, $mod);
 
         course_module_updated::create_from_cm($cm)->trigger();
@@ -330,14 +355,16 @@ MSG;
         $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
         $this->assert_pushtrace_entity_contains_embeddedfileinfo(event_handlers::API_UPDATED, $entityid, $filename);
+
+        return $mod;
     }
 
-    private function assert_module_deleted_pushtraces($modname, $modtable, $modfield) {
+    private function check_module_deleted_pushtraces($modname, $modtable, $modfield) {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();
         $mod = $this->getDataGenerator()->create_module($modname,
-            ['course' => $course->id, 'introformat' => FORMAT_HTML]);
+            ['course' => $course->id, $modfield.'format' => FORMAT_HTML, $modfield => 'Some content']);
         $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
         list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
         course_delete_module($cm->id);
@@ -349,7 +376,8 @@ MSG;
             'component' => $modname,
             'comptable' => $modtable,
             'courseid' => (int) $course->id,
-            'comprowid' => (int) $mod->id
+            'comprowid' => (int) $mod->id,
+            'compfield' => $modfield
         ];
 
         $row = $DB->get_record('tool_ally_deleted_content', $delfilter);
@@ -372,28 +400,100 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_DELETED, $entityid);
     }
 
+    public function test_book_created() {
+        $this->check_module_created_pushtraces('book', 'book', 'intro');
+    }
+
+    public function test_book_updated() {
+        global $DB;
+
+        $this->setAdminUser();
+
+        $mod = $this->check_module_updated_pushtraces('book', 'book', 'intro', 'intro');
+        $context = context_module::instance($mod->cmid);
+        $bookgenerator = self::getDataGenerator()->get_plugin_generator('mod_book');
+
+        // Test pushing / embedded files with chapters.
+        $data = [
+            'bookid' => $mod->id,
+            'title' => 'Test chapter',
+            'content' => 'Test content',
+            'contentformat' => FORMAT_HTML
+        ];
+
+        $chapter = $bookgenerator->create_chapter($data);
+        $entityid = 'book:book_chapters:content:'.$chapter->id;
+
+        $params = array(
+            'context' => $context,
+            'objectid' => $chapter->id,
+            'other' => array(
+                'bookid' => $mod->id
+            )
+        );
+        $event = chapter_created::create($params);
+        $event->add_record_snapshot('book_chapters', $chapter);
+        $event->trigger();
+
+        $chapter = $DB->get_record('book_chapters', ['id' => $chapter->id]);
+        $context = context_module::instance($mod->cmid);
+        $filename = 'testimage.png';
+        $this->create_test_file($context->id, 'mod_book', 'chapter', $chapter->id, $filename);
+        // Assert pushtrace contains chapter.
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $entityid);
+
+        // Modify chapter.
+        $chapter->content = 'Updated chapter '.$chapter->id.' with img <img src="@@PLUGINFILE@@/'.
+            rawurlencode($filename).'" alt="test alt" />';
+        $DB->update_record('book_chapters', $chapter);
+        $params = array(
+            'context' => $context,
+            'objectid' => $chapter->id,
+            'other' => array(
+                'bookid' => $mod->id
+            )
+        );
+        $event = chapter_updated::create($params);
+        $event->add_record_snapshot('book_chapters', $chapter);
+        $event->trigger();
+
+        // Assert pushtrace contains updated chapter.
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
+
+    }
+
+    public function test_book_deleted() {
+        $this->check_module_deleted_pushtraces('book', 'book', 'intro');
+    }
+
     public function test_label_created() {
-        $this->assert_module_created_pushtraces('label', 'label', 'intro');
+        $this->check_module_created_pushtraces('label', 'label', 'intro');
     }
 
     public function test_label_updated() {
-        $this->assert_module_updated_pushtraces('label', 'label', 'intro', 'intro');
+        $this->check_module_updated_pushtraces('label', 'label', 'intro', 'intro');
     }
 
     public function test_label_deleted() {
-        $this->assert_module_deleted_pushtraces('label', 'label', 'intro');
+        $this->check_module_deleted_pushtraces('label', 'label', 'intro');
     }
 
     public function test_page_created() {
-        $this->assert_module_created_pushtraces('page', 'page', 'intro');
+        $this->check_module_created_pushtraces('page', 'page', 'intro');
+        $this->check_module_created_pushtraces('page', 'page', 'content');
     }
 
     public function test_page_updated() {
-        $this->assert_module_updated_pushtraces('page', 'page', 'intro', 'intro');
+        $this->check_module_updated_pushtraces('page', 'page', 'intro', 'intro');
+        $this->check_module_updated_pushtraces('page', 'page', 'content', 'content');
     }
 
-    public function test_page_deleted() {
-        $this->assert_module_deleted_pushtraces('page', 'page', 'intro');
+    public function test_page_deleted_intro() {
+        $this->check_module_deleted_pushtraces('page', 'page', 'intro');
+    }
+
+    public function test_page_deleted_content() {
+        $this->check_module_deleted_pushtraces('page', 'page', 'content');
     }
 
     public function test_forum_discussion_created() {
@@ -553,78 +653,5 @@ MSG;
 
         // After running the task it has pushed the deletion event.
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_DELETED, $glossaryentityid);
-    }
-
-    public function test_book_events() {
-        global $USER;
-
-        $this->setAdminUser();
-
-        $course = $this->getDataGenerator()->create_course();
-
-        $book = $this->getDataGenerator()->create_module('book',
-            ['course' => $course->id, 'introformat' => FORMAT_HTML]);
-        $bookentityid = 'book:book:intro:'.$book->id;
-        list ($course, $cm) = get_course_and_cm_from_cmid($book->cmid);
-        course_module_created::create_from_cm($cm)->trigger();
-
-        $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $bookentityid);
-
-        // Add a chapter.
-        $record = new stdClass();
-        $record->course = $course->id;
-        $record->bookid = $book->id;
-        $record->userid = $USER->id;
-        $record->content = 'Test chapter content';
-        $record->contentformat = FORMAT_HTML;
-
-        $bookgenerator = self::getDataGenerator()->get_plugin_generator('mod_book');
-
-        $chapter = $bookgenerator->create_chapter($record);
-
-
-        $params = array(
-            'context' => $cm->context,
-            'objectid' => $chapter->id,
-            'other' => array(
-                'bookid' => $book->id
-            )
-        );
-        $event = chapter_created::create($params);
-        $event->add_record_snapshot('book_chapters', $chapter);
-        $event->trigger();
-
-        $entityid = 'book:book_chapters:content:'.$chapter->id;
-
-        // Assert pushtrace contains chapter.
-        $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $entityid);
-
-        // Modify chapter.
-        $chapter->content .= 'modified !!!';
-        $params = array(
-            'context' => $cm->context,
-            'objectid' => $chapter->id,
-            'other' => array(
-                'bookid' => $book->id
-            )
-        );
-        $event = chapter_updated::create($params);
-        $event->add_record_snapshot('book_chapters', $chapter);
-        $event->trigger();
-
-        // Assert pushtrace contains updated chapter.
-        $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
-
-        course_delete_module($book->cmid);
-
-        // Note, there shouldn't be any deletion events at this point because deletes need the task to be dealt with.
-        $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_DELETED, $bookentityid);
-
-        $cdt = new content_updates_task();
-        $cdt->execute();
-        $cdt->execute(); // We have to execute again because first time just sets exec window.
-
-        // After running the task it has pushed the deletion event.
-        $this->assert_pushtrace_contains_entity_id(event_handlers::API_DELETED, $bookentityid);
     }
 }

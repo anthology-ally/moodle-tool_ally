@@ -201,9 +201,16 @@ class local_content {
 
             $componenttype = local::get_component_support_type($content->component);
             if ($componenttype === component_base::TYPE_MOD) {
-                /** @var \cm_info $cm */
-                list($course, $cm) = get_course_and_cm_from_instance($content->id, $content->component);
+                if ($content->table === $content->component) {
+                    /** @var \cm_info $cm */
+                    list($course, $cm) = get_course_and_cm_from_instance($content->id, $content->component);
+                } else {
+                    // Sub table detected - e.g. forum discussion, book chapter, etc...
+                    $moduleinstanceid = $component->resolve_module_instance_id($content->table, $content->id);
+                    list($course, $cm) = get_course_and_cm_from_instance($moduleinstanceid, $content->component);
+                }
                 $context = $cm->context;
+
                 $compstr = 'mod_'.$content->component;
             } else {
                 if (!$content->courseid) {

@@ -183,7 +183,15 @@ class event_handlers {
             return;
         }
 
-        local_content::queue_delete($event->courseid, $id, $module, $module, 'intro');
+        $component = local::get_component_instance($module);
+        $fields = $component->get_table_fields($module);
+        if (empty($fields)) {
+            $fields = ['intro'];
+        }
+
+        foreach ($fields as $field) {
+            local_content::queue_delete($event->courseid, $id, $module, $module, $field);
+        }
     }
 
     /**

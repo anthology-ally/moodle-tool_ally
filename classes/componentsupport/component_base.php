@@ -59,6 +59,19 @@ abstract class component_base {
     }
 
     /**
+     * Get fields for a specific table.
+     *
+     * @param string $table
+     * @return array|mixed
+     */
+    public function get_table_fields($table) {
+        if (isset($this->tablefields[$table])) {
+            return $this->tablefields[$table];
+        }
+        return [];
+    }
+
+    /**
      * @param string $table
      * @param string $field
      * @throws \coding_exception
@@ -153,4 +166,47 @@ abstract class component_base {
         return '/';
     }
 
+    /**
+     * Attempt to resolve a module instance id from a specific table + id.
+     * You may need to override this method in a component for tables that do not easily link back to the module's
+     * main table (e.g. table 2 levels down from main module table).
+     *
+     * @param $table
+     * @param $id
+     * @return mixed
+     * @throws \dml_exception
+     */
+    public function resolve_module_instance_id($table, $id) {
+        global $DB;
+
+        $component = $this->get_component_name();
+
+        if ($this->component_type() !== self::TYPE_MOD) {
+            $msg = <<<MSG
+Attempt to get a module instance for a component that is not a module ($component)
+MSG;
+
+            throw new \coding_exception($msg);
+        }
+
+        if ($table === $component) {
+            return $id;
+        } else {
+            $record = $DB->get_record($table, ['id' => $id]);
+            if (!empty($record->{$component.'id'})) {
+                $instanceid = $record->{$component.'id'};
+            } else if (!empty($record->$component)) {
+                $instanceid = $record->$component;
+            } else {
+                $method = __METHOD__;
+                $msg = <<<MSG
+Unable to resolve component from subtable "$table" with id $id. A developer needs to override the method "$method" in the
+component $component so that it can cope with the table "$table".
+MSG;
+                throw coding_exception($msg);
+            }
+            $componentrecord = $DB->get_record($component, ['id' => $instanceid]);
+            return $componentrecord->id;
+        }
+    }
 }
