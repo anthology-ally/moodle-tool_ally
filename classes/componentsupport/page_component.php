@@ -27,7 +27,7 @@ defined ('MOODLE_INTERNAL') || die();
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use tool_ally\componentsupport\traits\html_content;
-use tool_ally\models\component;
+use tool_ally\componentsupport\traits\embedded_file_map;
 
 /**
  * Html content support for pages.
@@ -37,6 +37,7 @@ use tool_ally\models\component;
 class page_component extends component_base implements iface_html_content, annotation_map {
 
     use html_content;
+    use embedded_file_map;
 
     protected $tablefields = [
         'page' => ['intro', 'content']

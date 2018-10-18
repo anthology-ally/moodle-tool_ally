@@ -102,38 +102,37 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
         );
         $this->assertTrue($result['success']);
         $mod = $DB->get_record($table, ['id' => $mod->id]);
-        $this->assertEquals($modintroreplaced, $mod->intro);
+        $this->assertEquals($modintroreplaced, $mod->$field);
         return $generatedmod; // Sometimes the generated mod has more data than the db row - e.g. cmid.
-    }
-
-    public function test_service_label() {
-        $this->module_replace_test('label', 'label');
     }
 
     public function test_service_assign() {
         $this->module_replace_test('assign', 'assign');
     }
 
-    public function test_service_glossary() {
-        global $USER, $DB;
+    public function test_service_book() {
+        global $DB;
 
-        $glossary = $this->module_replace_test('glossary', 'glossary');
-        $courseid = $glossary->course;
-
+        $book = $this->module_replace_test('book', 'book');
         $this->setAdminUser();
-        $record = new stdClass();
-        $record->course = $courseid;
-        $record->glossary = $glossary->id;
-        $record->userid = $USER->id;
-        $entry = self::getDataGenerator()->get_plugin_generator('mod_glossary')->create_content($glossary, $record);
-        $definitionreplaced = '<p>Content replaced!</p>';
+        $bookgenerator = self::getDataGenerator()->get_plugin_generator('mod_book');
+
+        $data = [
+            'bookid' => $book->id,
+            'title' => 'Test chapter',
+            'content' => 'Test content',
+            'contentformat' => FORMAT_HTML
+        ];
+
+        $chapter = $bookgenerator->create_chapter($data);
+        $contentreplaced = '<p>Content replaced!</p>';
         $result = replace_content::service(
-            $entry->id, 'glossary', 'glossary_entries', 'definition', $definitionreplaced
+            $chapter->id, 'book', 'book_chapters', 'content', $contentreplaced
         );
         $this->assertTrue($result['success']);
 
-        $entry = $DB->get_record('glossary_entries', ['id' => $entry->id]);
-        $this->assertEquals($definitionreplaced, $entry->definition);
+        $chapter = $DB->get_record('book_chapters', ['id' => $chapter->id]);
+        $this->assertEquals($contentreplaced, $chapter->content);
     }
 
     public function test_service_forum() {
@@ -168,5 +167,59 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
 
         $post = $DB->get_record('forum_posts', ['id' => $post->id]);
         $this->assertEquals($postmessagereplaced, $post->message);
+    }
+
+    public function test_service_glossary() {
+        global $USER, $DB;
+
+        $glossary = $this->module_replace_test('glossary', 'glossary');
+        $courseid = $glossary->course;
+
+        $this->setAdminUser();
+        $record = new stdClass();
+        $record->course = $courseid;
+        $record->glossary = $glossary->id;
+        $record->userid = $USER->id;
+        $entry = self::getDataGenerator()->get_plugin_generator('mod_glossary')->create_content($glossary, $record);
+        $definitionreplaced = '<p>Content replaced!</p>';
+        $result = replace_content::service(
+            $entry->id, 'glossary', 'glossary_entries', 'definition', $definitionreplaced
+        );
+        $this->assertTrue($result['success']);
+
+        $entry = $DB->get_record('glossary_entries', ['id' => $entry->id]);
+        $this->assertEquals($definitionreplaced, $entry->definition);
+    }
+
+    public function test_service_label() {
+        $this->module_replace_test('label', 'label');
+    }
+
+    public function test_service_lesson() {
+        global $CFG, $DB;
+
+        require_once $CFG->dirroot.'/mod/lesson/locallib.php';
+
+        $lesson = $this->module_replace_test('lesson', 'lesson');
+
+        $this->setAdminUser();
+        $lessongenerator = self::getDataGenerator()->get_plugin_generator('mod_lesson');
+
+        $lessonobj = new lesson($lesson);
+
+        $page = $lessongenerator->create_question_truefalse($lessonobj);
+        $contentreplaced = '<p>Content replaced!</p>';
+        $result = replace_content::service(
+            $page->id, 'lesson', 'lesson_pages', 'contents', $contentreplaced
+        );
+        $this->assertTrue($result['success']);
+
+        $page = $DB->get_record('lesson_pages', ['id' => $page->id]);
+        $this->assertEquals($contentreplaced, $page->contents);
+    }
+
+    public function test_service_page() {
+        $this->module_replace_test('page', 'page');
+        $this->module_replace_test('page', 'page', 'content');
     }
 }

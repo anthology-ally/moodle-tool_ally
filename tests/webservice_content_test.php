@@ -100,6 +100,7 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
             $section0summary,
             'General' // Default section name for section 0 where no section name set.
         );
+        $content->courseid = null;
         $this->assertEquals($expected, $content);
     }
 
@@ -123,7 +124,7 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
         // Test getting mod content.
         $modintro = '<p>My original intro content</p>';
         $mod = $this->getDataGenerator()->create_module($modname,
-            ['course' => $course->id, 'intro' => $modintro]);
+            ['course' => $course->id, $field => $modintro]);
         $content = content::service($mod->id, $modname, $table, $field);
         $content->contenturl = null; // We don't want to compare this.
         $expected = new component_content(
@@ -205,5 +206,44 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
         if (file_exists($CFG->dirroot.'/mod/hsuforum')) {
             $this->test_service_forum_content('hsuforum');
         }
+    }
+
+    public function test_service_page_content() {
+        $this->main_module_content_test('page', 'page');
+        $this->main_module_content_test('page', 'page', 'content');
+    }
+
+    public function test_service_lesson_content() {
+        global $DB;
+
+        $lesson = $this->main_module_content_test('lesson', 'lesson');
+        $this->setAdminUser();
+        $lessongenerator = self::getDataGenerator()->get_plugin_generator('mod_lesson');
+
+        $lessonobj = new lesson($lesson);
+
+        $pagecontents = 'Some text';
+        $pagetitle = 'Test title';
+        $page = $lessongenerator->create_question_truefalse($lessonobj);
+        $page->contents = $pagecontents;
+        $page->contentsformat = FORMAT_HTML;
+        $page->title = $pagetitle;
+
+        $DB->update_record('lesson_pages', $page);
+
+        $content = content::service($page->id, 'lesson','lesson_pages', 'contents');
+        $content->contenturl = null; // We don't want to compare this.
+        $expected = new component_content(
+            $content->id,
+            'lesson',
+            'lesson_pages',
+            'contents',
+            null,
+            $page->timemodified,
+            $page->contentsformat,
+            $pagecontents,
+            $pagetitle
+        );
+        $this->assertEquals($expected, $content);
     }
 }

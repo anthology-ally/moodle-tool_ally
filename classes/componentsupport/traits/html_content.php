@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Interface for supporting html content.
+ * Trait for supporting html content.
  * @author    Guy Thomas <citricity@gmail.com>
  * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -26,6 +26,8 @@ namespace tool_ally\componentsupport\traits;
 use tool_ally\local_content;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
+
+use stdClass;
 
 defined ('MOODLE_INTERNAL') || die();
 
@@ -70,11 +72,13 @@ trait html_content {
      * @param string $titlefield
      * @param string $modifiedfield
      * @param callable $recordlambda - lambda to run on record once recovered.
+     * @param stdClass|null $record
      * @return component_content | null;
      * @throws \coding_exception
      */
     protected function std_get_html_content($id, $table, $field, $courseid = null, $titlefield = 'name',
-                                            $modifiedfield = 'timemodified', $recordlambda = null) {
+                                            $modifiedfield = 'timemodified', $recordlambda = null,
+                                            stdClass $record = null) {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -85,7 +89,9 @@ trait html_content {
 
         $this->validate_component_table_field($table, $field);
 
-        $record = $DB->get_record($table, ['id' => $id]);
+        if ($record === null) {
+            $record = $DB->get_record($table, ['id' => $id]);
+        }
         if ($recordlambda) {
             $recordlambda($record);
             if ($courseid === null) {

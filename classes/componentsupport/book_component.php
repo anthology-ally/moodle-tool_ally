@@ -27,7 +27,7 @@ defined ('MOODLE_INTERNAL') || die();
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use tool_ally\componentsupport\traits\html_content;
-use tool_ally\models\component;
+use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\models\component_content;
 
 use moodle_url;
@@ -40,6 +40,7 @@ use moodle_url;
 class book_component extends component_base implements iface_html_content, annotation_map {
 
     use html_content;
+    use embedded_file_map;
 
     protected $tablefields = [
         'book' => ['intro'],

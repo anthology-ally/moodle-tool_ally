@@ -68,6 +68,21 @@ class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
         content_processor::get_config(true);
     }
 
+    private function check_pushtrace_contains_entity_id($eventname, $entityid) {
+        $pushtraces = content_processor::get_push_traces($eventname);
+        if (!$pushtraces) {
+            return false;
+        }
+        foreach ($pushtraces as $pushtrace) {
+            foreach ($pushtrace as $row) {
+                if ($row['entity_id'] === $entityid) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * @param string $eventname
      * @param string $entityid
@@ -76,19 +91,10 @@ class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
      */
     private function assert_pushtrace_contains_entity_id($eventname, $entityid) {
         $pushtraces = content_processor::get_push_traces($eventname);
-        if (!$pushtraces) {
-            $this->fail('Push trace is empty for event '.$eventname);
-        }
-        foreach ($pushtraces as $pushtrace) {
-            foreach ($pushtrace as $row) {
-                if ($row['entity_id'] === $entityid) {
-                    return;
-                }
-            }
-        }
-        $this->fail('Push trace does not contain an entity id of '.$entityid."\n\n".var_export($pushtraces, true));
-
-        return;
+        $contains = $this->check_pushtrace_contains_entity_id($eventname, $entityid);
+        $msg = 'Push trace does not contain an entity id of '.$entityid."\n\n".
+                var_export($pushtraces, true);
+        $this->assertTrue($contains, $msg);
     }
 
     /**
@@ -98,17 +104,10 @@ class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
      */
     private function assert_pushtrace_not_contains_entity_id($eventname, $entityid) {
         $pushtraces = content_processor::get_push_traces($eventname);
-        if (!$pushtraces) {
-            return;
-        }
-        foreach ($pushtraces as $pushtrace) {
-            foreach ($pushtrace as $row) {
-                if ($row['entity_id'] === $entityid) {
-                    $this->fail('Push trace contains an entity id of '.$entityid);
-                }
-            }
-        }
-        return;
+        $contains = $this->check_pushtrace_contains_entity_id($eventname, $entityid);
+        $msg = 'Push trace does not contains an entity id of '.$entityid."\n\n".
+            var_export($pushtraces, true);
+        $this->assertFalse($contains, $msg);
     }
 
     private function assert_pushtrace_not_contains_entity_regex($regex) {
@@ -298,6 +297,8 @@ MSG;
      * @throws moodle_exception
      */
     private function check_module_created_pushtraces($modname, $modtable, $modfield) {
+        $this->setAdminUser();
+
         $course = $this->getDataGenerator()->create_course();
         // Assert that label with non FORMAT_HTML intro does not push.
         $mod = $this->getDataGenerator()->create_module($modname, ['course' => $course->id]);
@@ -306,7 +307,7 @@ MSG;
         course_module_created::create_from_cm($cm)->trigger();
         $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_CREATED, $entityid);
 
-        // Assert that label with FORMAT_HTML intro pushes.
+        // Assert that module with FORMAT_HTML intro pushes.
         $mod = $this->getDataGenerator()->create_module($modname,
             ['course' => $course->id, $modfield.'format' => FORMAT_HTML]);
         $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
@@ -331,6 +332,8 @@ MSG;
      */
     private function check_module_updated_pushtraces($modname, $modtable, $modfield, $filearea) {
         global $DB;
+
+        $this->setAdminUser();
 
         $course = $this->getDataGenerator()->create_course();
 
@@ -361,6 +364,8 @@ MSG;
 
     private function check_module_deleted_pushtraces($modname, $modtable, $modfield) {
         global $DB;
+
+        $this->setAdminUser();
 
         $course = $this->getDataGenerator()->create_course();
         $mod = $this->getDataGenerator()->create_module($modname,
@@ -398,6 +403,18 @@ MSG;
         $this->assertEmpty($row);
 
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_DELETED, $entityid);
+    }
+
+    public function test_assign_created() {
+        $this->check_module_created_pushtraces('assign', 'assign', 'intro');
+    }
+
+    public function test_assign_updated() {
+        $this->check_module_updated_pushtraces('assign', 'assign', 'intro', 'intro');
+    }
+
+    public function test_assign_deleted() {
+        $this->check_module_deleted_pushtraces('assign', 'assign', 'intro');
     }
 
     public function test_book_created() {
@@ -466,6 +483,63 @@ MSG;
         $this->check_module_deleted_pushtraces('book', 'book', 'intro');
     }
 
+    public function test_forum_created() {
+        $this->check_module_created_pushtraces('forum', 'forum', 'intro');
+    }
+
+    public function test_forum_updated() {
+        global $USER, $DB;
+
+        $forum = $this->check_module_updated_pushtraces('forum', 'forum', 'intro', 'intro');
+
+        $this->setAdminUser();
+        $record = new stdClass();
+        $record->course = $forum->course;
+        $record->forum = $forum->id;
+        $record->userid = $USER->id;
+        $discussion = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($record);
+
+        $posttitle = 'My post title';
+        $postmessage = '<p>My post message</p>';
+        $record = new stdClass();
+        $record->discussion = $discussion->id;
+        $record->userid = $USER->id;
+        $record->subject = $posttitle;
+        $record->message = $postmessage;
+        $record->messageformat = FORMAT_HTML;
+        $post = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_post($record);
+
+        $context = context_module::instance($forum->cmid);
+        $filename = 'testimage.png';
+        $this->create_test_file($context->id, 'forum', 'post', $post->id, $filename);
+
+        $post->message = 'Updated message with img <img src="@@PLUGINFILE@@/'.
+                rawurlencode($filename).'" alt="test alt" />';
+
+        $DB->update_record('forum_posts', $post);
+
+        $params = array(
+            'context' => $context,
+            'objectid' => $post->id,
+            'other' => array(
+                'discussionid' => $discussion->id,
+                'forumid' => $forum->id,
+                'forumtype' => $forum->type,
+            )
+        );
+        $event = \mod_forum\event\post_updated::create($params);
+        $event->add_record_snapshot('forum_discussions', $discussion);
+        $event->trigger();
+
+        $postentityid = 'forum:forum_posts:message:'.$post->id;
+        //$this->assert_pushtrace_entity_contains_embeddedfileinfo(event_handlers::API_UPDATED, $postentityid, $filename);
+
+    }
+
+    public function test_forum_deleted() {
+        $this->check_module_deleted_pushtraces('forum', 'forum', 'intro');
+    }
+
     public function test_label_created() {
         $this->check_module_created_pushtraces('label', 'label', 'intro');
     }
@@ -476,6 +550,18 @@ MSG;
 
     public function test_label_deleted() {
         $this->check_module_deleted_pushtraces('label', 'label', 'intro');
+    }
+
+    public function test_lesson_created() {
+        $this->check_module_created_pushtraces('lesson', 'lesson', 'intro');
+    }
+
+    public function test_lesson_updated() {
+        $this->check_module_updated_pushtraces('lesson', 'lesson', 'intro', 'intro');
+    }
+
+    public function test_lesson_deleted() {
+        $this->check_module_deleted_pushtraces('lesson', 'lesson', 'intro');
     }
 
     public function test_page_created() {
