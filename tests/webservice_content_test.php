@@ -115,6 +115,8 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
      * @throws restricted_context_exception
      */
     private function main_module_content_test($modname, $table, $field = 'intro', $titlefield = 'name') {
+        global $DB;
+
         $this->resetAfterTest();
 
         $this->setAdminUser();
@@ -125,20 +127,45 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
         $modintro = '<p>My original intro content</p>';
         $mod = $this->getDataGenerator()->create_module($modname,
             ['course' => $course->id, $field => $modintro]);
+
+        $context = context_module::instance($mod->cmid);
+        $filename = 'test image.png';
+        $filearea = $field;
+        $file = $this->create_test_file($context->id, 'mod_'.$modname, $filearea, 0, $filename);
+        $modinst = $DB->get_record($table, ['id' => $mod->id]);
+        $modintro =  $modinst->$field.' Modified with image file <img src="@@PLUGINFILE@@/'.
+            rawurlencode($filename).'" alt="test alt" />';
+        $modinst->$field = $modintro;
+
+        $DB->update_record($table, $modinst);
+
+        if ($modname === 'label') {
+            $expectedtitle = 'My original intro content'.chr(10).'Modified with image file';
+        } else {
+            $expectedtitle = $modinst->$titlefield;
+        }
+
         $content = content::service($mod->id, $modname, $table, $field);
         $content->contenturl = null; // We don't want to compare this.
         $expected = new component_content(
-            $mod->id,
+            $modinst->id,
             $modname,
             $table,
             $field,
             null,
-            $mod->timemodified,
-            $mod->introformat,
+            $modinst->timemodified,
+            $modinst->introformat,
             $modintro,
-            $mod->$titlefield
+            $expectedtitle
         );
+        $expected->embeddedfiles = [
+            [
+                'filename' => rawurlencode($file->get_filename()),
+                'pathnamehash' => $file->get_pathnamehash()
+            ]
+        ];
         $this->assertEquals($expected, $content);
+
         return $mod;
     }
 

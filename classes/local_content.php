@@ -200,16 +200,20 @@ class local_content {
      * @param string $table
      * @param string $field
      * @param int $courseid
+     * @param bool $includeembeddedfiles
      * @return bool|component_content
      */
-    public static function get_html_content($id, $component, $table, $field, $courseid = null) {
+    public static function get_html_content($id, $component, $table, $field,
+                                            $courseid = null, $includeembeddedfiles = false) {
         $component = self::component_instance($component);
         if (empty($component)) {
             return false;
         }
         /** @var component_content $content */
         $content = $component->get_html_content($id, $table, $field, $courseid);
-        $content = self::apply_embedded_file_map($content);
+        if ($includeembeddedfiles) {
+            $content = self::apply_embedded_file_map($content);
+        }
         return $content;
     }
 
@@ -236,7 +240,7 @@ class local_content {
      * @param string $component
      * @return bool|component_content[]
      */
-    public static function get_all_html_content($id, $component) {
+    public static function get_all_html_content($id, $component, $includeembeddedfiles = false) {
         $component = self::component_instance($component);
         if (empty($component)) {
             return false;
@@ -245,8 +249,10 @@ class local_content {
             return false;
         }
         $contents = $component->get_all_html_content($id);
-        foreach ($contents as &$content) {
-            $content = self::apply_embedded_file_map($content);
+        if ($includeembeddedfiles) {
+            foreach ($contents as &$content) {
+                $content = self::apply_embedded_file_map($content);
+            }
         }
         return $contents;
     }
@@ -303,8 +309,7 @@ class local_content {
             'context_id'   => (string) $componentcontent->get_courseid(),
             'event_name'   => $eventname,
             'event_time'   => local::iso_8601($componentcontent->timemodified),
-            'content_hash' => $componentcontent->contenthash,
-            'embedded_files'   => $componentcontent->embeddedfiles
+            'content_hash' => $componentcontent->contenthash
         ];
     }
 

@@ -135,25 +135,6 @@ MSG;
         return;
     }
 
-    private function assert_pushtrace_entity_contains_embeddedfileinfo($eventname, $entityid, $filename) {
-        $pushtraces = content_processor::get_push_traces($eventname);
-        $this->assertNotEmpty($pushtraces);
-        if (!$pushtraces) {
-            $this->fail('Push trace is empty');
-        }
-        foreach ($pushtraces as $pushtrace) {
-            foreach ($pushtrace as $row) {
-                if ($row['entity_id'] === $entityid) {
-                    if (!empty($row['embedded_files']) && isset($row['embedded_files'][$filename])) {
-                        return;
-                    }
-                }
-            }
-        }
-        $this->fail('Push trace does not contain embedded files for entity id of '.$entityid."\n\n".var_export($pushtraces, true));
-        return;
-    }
-
     /**
      * Test pushes on course creation.
      */
@@ -260,10 +241,7 @@ MSG;
         // Update section1's title and content.
         $section1->name = 'Altered section name';
 
-        $context = context_course::instance($course->id);
-        $filename = 'testimage.png';
-        $this->create_test_file($context->id, 'course', 'section', $section1->id, $filename);
-        $section1->summary = 'Updated summary with img <img src="@@PLUGINFILE@@/'.rawurlencode($filename).'" alt="test alt" />';
+        $section1->summary = 'Updated summary with some text';
         $DB->update_record('course_sections', $section1);
 
         content_processor::clear_push_traces();
@@ -278,9 +256,6 @@ MSG;
 
         // Ensure section 1 is now in push trace.
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid1);
-
-        // Ensure embedded file info is in push trace.
-        $this->assert_pushtrace_entity_contains_embeddedfileinfo(event_handlers::API_UPDATED, $entityid1, $filename);
 
         // Get content for section 1 and check it contains custom section name as title for section 1.
         $content = local_content::get_html_content_by_entity_id($entityid1);
@@ -339,17 +314,9 @@ MSG;
 
         $mod = $this->getDataGenerator()->create_module($modname,
             ['course' => $course->id, $modfield.'format' => FORMAT_HTML]);
-        $context = context_module::instance($mod->cmid);
-
         list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
 
-        context_module::instance($mod->cmid);
-
-        $filename = 'testimage.png';
-        $this->create_test_file($context->id, 'mod_'.$modname, $filearea, 0, $filename);
-
-        $mod->$modfield = 'Updated '.$modfield.' with img <img src="@@PLUGINFILE@@/'.
-                rawurlencode($filename).'" alt="test alt" />';
+        $mod->$modfield = 'Updated '.$modfield.' with some text';
 
         $DB->update_record($modtable, $mod);
 
@@ -357,7 +324,6 @@ MSG;
 
         $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
-        $this->assert_pushtrace_entity_contains_embeddedfileinfo(event_handlers::API_UPDATED, $entityid, $filename);
 
         return $mod;
     }
@@ -430,7 +396,6 @@ MSG;
         $context = context_module::instance($mod->cmid);
         $bookgenerator = self::getDataGenerator()->get_plugin_generator('mod_book');
 
-        // Test pushing / embedded files with chapters.
         $data = [
             'bookid' => $mod->id,
             'title' => 'Test chapter',
@@ -454,14 +419,11 @@ MSG;
 
         $chapter = $DB->get_record('book_chapters', ['id' => $chapter->id]);
         $context = context_module::instance($mod->cmid);
-        $filename = 'testimage.png';
-        $this->create_test_file($context->id, 'mod_book', 'chapter', $chapter->id, $filename);
-        // Assert pushtrace contains chapter.
+
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $entityid);
 
         // Modify chapter.
-        $chapter->content = 'Updated chapter '.$chapter->id.' with img <img src="@@PLUGINFILE@@/'.
-            rawurlencode($filename).'" alt="test alt" />';
+        $chapter->content = 'Updated chapter '.$chapter->id.' with some text';
         $DB->update_record('book_chapters', $chapter);
         $params = array(
             'context' => $context,
@@ -488,52 +450,7 @@ MSG;
     }
 
     public function test_forum_updated() {
-        global $USER, $DB;
-
-        $forum = $this->check_module_updated_pushtraces('forum', 'forum', 'intro', 'intro');
-
-        $this->setAdminUser();
-        $record = new stdClass();
-        $record->course = $forum->course;
-        $record->forum = $forum->id;
-        $record->userid = $USER->id;
-        $discussion = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_discussion($record);
-
-        $posttitle = 'My post title';
-        $postmessage = '<p>My post message</p>';
-        $record = new stdClass();
-        $record->discussion = $discussion->id;
-        $record->userid = $USER->id;
-        $record->subject = $posttitle;
-        $record->message = $postmessage;
-        $record->messageformat = FORMAT_HTML;
-        $post = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_post($record);
-
-        $context = context_module::instance($forum->cmid);
-        $filename = 'testimage.png';
-        $this->create_test_file($context->id, 'forum', 'post', $post->id, $filename);
-
-        $post->message = 'Updated message with img <img src="@@PLUGINFILE@@/'.
-                rawurlencode($filename).'" alt="test alt" />';
-
-        $DB->update_record('forum_posts', $post);
-
-        $params = array(
-            'context' => $context,
-            'objectid' => $post->id,
-            'other' => array(
-                'discussionid' => $discussion->id,
-                'forumid' => $forum->id,
-                'forumtype' => $forum->type,
-            )
-        );
-        $event = \mod_forum\event\post_updated::create($params);
-        $event->add_record_snapshot('forum_discussions', $discussion);
-        $event->trigger();
-
-        $postentityid = 'forum:forum_posts:message:'.$post->id;
-        //$this->assert_pushtrace_entity_contains_embeddedfileinfo(event_handlers::API_UPDATED, $postentityid, $filename);
-
+        $this->check_module_updated_pushtraces('forum', 'forum', 'intro', 'intro');
     }
 
     public function test_forum_deleted() {

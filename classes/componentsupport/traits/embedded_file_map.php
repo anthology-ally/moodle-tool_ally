@@ -110,6 +110,7 @@ trait embedded_file_map {
                 $file = local_file::get_file_fromprops($props);
             } else if (strpos($src, '@@PLUGINFILE@@') !== false) {
                 $filename = str_replace('@@PLUGINFILE@@', '', $src);
+                $filename = urldecode($filename);
                 if (strpos($filename, '/') === 0) {
                     $filename = substr($filename, 1);
                 }
@@ -124,7 +125,10 @@ trait embedded_file_map {
             }
 
             if ($file) {
-                $content->embeddedfiles[$file->get_filename()] = $file->get_pathnamehash();
+                $content->embeddedfiles[] = [
+                    'filename' => rawurlencode($file->get_filename()),
+                    'pathnamehash' => $file->get_pathnamehash()
+                ];
             }
         }
         return $content;
