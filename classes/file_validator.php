@@ -85,10 +85,7 @@ class file_validator {
         'mod_scorm~content',
         'mod_scorm~intro',
         'mod_turnitintooltwo~intro',
-        'mod_url~intro',
-        'qtype_ddmatch~subanswer',
-        'qtype_ddmatch~subquestion',
-        'qtype_match~subquestion',
+        'mod_url~intro'
     ];
 
     /**
