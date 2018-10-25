@@ -54,25 +54,29 @@ class version_info extends \external_api {
     public static function service_returns() {
         return new \external_single_structure([
             'tool_ally' => new \external_single_structure([
-                'version'  => new \external_value(PARAM_FLOAT, 'Ally admin tool version'),
-                'requires' => new \external_value(PARAM_FLOAT, 'Ally admin tool requires Moodle version'),
-                'release'  => new \external_value(PARAM_TEXT, 'Ally admin tool release'),
+                'version'    => new \external_value(PARAM_FLOAT, 'Ally admin tool version'),
+                'requires'   => new \external_value(PARAM_FLOAT, 'Ally admin tool requires Moodle version'),
+                'release'    => new \external_value(PARAM_TEXT,  'Ally admin tool release'),
+                'installed'  => new \external_value(PARAM_BOOL,  'Ally admin tool installed', VALUE_REQUIRED)
             ]),
-            'filter_ally'  => new \external_single_structure([
-                'version'  => new \external_value(PARAM_FLOAT, 'Ally filter version'),
-                'requires' => new \external_value(PARAM_FLOAT, 'Ally filter requires Moodle version'),
-                'release'  => new \external_value(PARAM_TEXT, 'Ally filter release'),
-                'active'   => new \external_value(PARAM_BOOL, 'Ally filter active at system level')
+            'filter_ally' => new \external_single_structure([
+                'version'    => new \external_value(PARAM_FLOAT, 'Ally filter version', VALUE_OPTIONAL),
+                'requires'   => new \external_value(PARAM_FLOAT, 'Ally filter requires Moodle version', VALUE_OPTIONAL),
+                'release'    => new \external_value(PARAM_TEXT,  'Ally filter release', VALUE_OPTIONAL),
+                'active'     => new \external_value(PARAM_BOOL,  'Ally filter active at system level', VALUE_OPTIONAL),
+                'installed'  => new \external_value(PARAM_BOOL,  'Ally filter installed', VALUE_REQUIRED)
             ]),
             'report_allylti' => new \external_single_structure([
-                'version'    => new \external_value(PARAM_FLOAT, 'Ally LTI report version'),
-                'requires'   => new \external_value(PARAM_FLOAT, 'Ally LTI report requires Moodle version'),
-                'release'    => new \external_value(PARAM_TEXT, 'Ally LTI report release'),
+                'version'    => new \external_value(PARAM_FLOAT, 'Ally LTI report version', VALUE_OPTIONAL),
+                'requires'   => new \external_value(PARAM_FLOAT, 'Ally LTI report requires Moodle version',
+                        VALUE_OPTIONAL),
+                'release'    => new \external_value(PARAM_TEXT,  'Ally LTI report release', VALUE_OPTIONAL),
+                'installed'  => new \external_value(PARAM_BOOL,  'Ally LTI report installed', VALUE_REQUIRED)
             ]),
             'moodle' => new \external_single_structure([
-                'version' => new \external_value(PARAM_FLOAT, 'Moodle version'),
-                'release' => new \external_value(PARAM_TEXT, 'Moodle release'),
-                'branch'  => new \external_value(PARAM_FLOAT, 'Moodle branch')
+                'version'    => new \external_value(PARAM_FLOAT, 'Moodle version'),
+                'release'    => new \external_value(PARAM_TEXT,  'Moodle release'),
+                'branch'     => new \external_value(PARAM_FLOAT, 'Moodle branch')
             ])
         ]);
     }
