@@ -198,7 +198,7 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
     public function test_service_lesson() {
         global $CFG, $DB;
 
-        require_once $CFG->dirroot.'/mod/lesson/locallib.php';
+        require_once($CFG->dirroot.'/mod/lesson/locallib.php');
 
         $lesson = $this->module_replace_test('lesson', 'lesson');
 

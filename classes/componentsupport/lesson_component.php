@@ -87,7 +87,7 @@ class lesson_component extends file_component_base implements iface_html_content
 
     public function get_course_html_content_items($courseid) {
         return $this->std_get_course_html_content_items($courseid);
-        // TODO - lesson pages
+        // TODO - lesson pages.
     }
 
     public function replace_file_links() {

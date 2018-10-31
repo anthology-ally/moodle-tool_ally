@@ -90,7 +90,7 @@ class book_component extends component_base implements iface_html_content, annot
                 'content', $course->id,
                 $chapter->timemodified, 'contentformat',
                 $chapter->content, $chapter->title, $url);
-            $content[]= $contentmodel;
+            $content[] = $contentmodel;
         }
 
         return $content;

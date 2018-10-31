@@ -26,7 +26,6 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
-use Horde\Socket\Client\Exception;
 use tool_ally\componentsupport\component_base;
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\html_content;

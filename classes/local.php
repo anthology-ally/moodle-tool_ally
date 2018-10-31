@@ -30,8 +30,6 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/webservice/lib.php');
 
-use webservice;
-
 /**
  * Local library.
  *

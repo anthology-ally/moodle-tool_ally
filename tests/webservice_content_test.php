@@ -133,7 +133,7 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
         $filearea = $field;
         $file = $this->create_test_file($context->id, 'mod_'.$modname, $filearea, 0, $filename);
         $modinst = $DB->get_record($table, ['id' => $mod->id]);
-        $modintro =  $modinst->$field.' Modified with image file <img src="@@PLUGINFILE@@/'.
+        $modintro = $modinst->$field.' Modified with image file <img src="@@PLUGINFILE@@/'.
             rawurlencode($filename).'" alt="test alt" />';
         $modinst->$field = $modintro;
 
@@ -258,7 +258,7 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
 
         $DB->update_record('lesson_pages', $page);
 
-        $content = content::service($page->id, 'lesson','lesson_pages', 'contents');
+        $content = content::service($page->id, 'lesson', 'lesson_pages', 'contents');
         $content->contenturl = null; // We don't want to compare this.
         $expected = new component_content(
             $content->id,
