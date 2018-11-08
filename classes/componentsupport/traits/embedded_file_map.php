@@ -26,30 +26,19 @@ namespace tool_ally\componentsupport\traits;
 use tool_ally\componentsupport\component_base;
 use tool_ally\local;
 use tool_ally\local_file;
+use tool_ally\local_content;
 use tool_ally\models\component_content;
 
 use coding_exception;
 use context;
 use context_course;
-use DOMDocument;
 use file_storage;
 
 defined ('MOODLE_INTERNAL') || die();
 
-trait embedded_file_map {
+require_once($CFG->dirroot.'/lib/filestorage/file_storage.php');
 
-    /**
-     * Builds a DOMDocument from html string.
-     * @param string $html
-     * @return DOMDocument
-     */
-    private function build_dom_doc($html) {
-        $doc = new DOMDocument();
-        libxml_use_internal_errors(true); // Required for HTML5.
-        $doc->loadHTML('<?xml encoding="utf-8" ?>' . $html);
-        libxml_clear_errors(); // Required for HTML5.
-        return $doc;
-    }
+trait embedded_file_map {
 
     /**
      * General purpose function for applying embedded file map to component content.
@@ -63,7 +52,10 @@ trait embedded_file_map {
     public function apply_embedded_file_map(component_content $content) {
 
         $html = $content->content;
-        $doc = $this->build_dom_doc($html);
+        $doc = local_content::build_dom_doc($html);
+        if (!$doc) {
+            return $content;
+        }
         $results = $doc->getElementsByTagName('img');
 
         $fs = new file_storage();
