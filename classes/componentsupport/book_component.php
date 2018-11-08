@@ -211,4 +211,18 @@ SQL;
         }
         return null;
     }
+
+    public function get_file_area($table, $field) {
+        if ($table === 'book_chapters' && $field === 'content') {
+            return 'chapter';
+        }
+        return parent::get_file_area($table, $field);
+    }
+
+    public function get_file_item($table, $field, $id) {
+        if ($table === 'book_chapters' && $field === 'content') {
+            return $id;
+        }
+        return parent::get_file_item($table, $field, $id);
+    }
 }
