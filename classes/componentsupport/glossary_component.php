@@ -241,7 +241,7 @@ SQL;
         if ($table === 'glossary_entries' && $field === 'definition') {
             return 'entry';
         }
-        parent::get_file_area($table, $field);
+        return parent::get_file_area($table, $field);
     }
 
     public function get_file_item($table, $field, $id) {
