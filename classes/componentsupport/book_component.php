@@ -28,6 +28,7 @@ use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\traits\embedded_file_map;
+use tool_ally\models\component;
 use tool_ally\models\component_content;
 
 use moodle_url;
@@ -52,7 +53,49 @@ class book_component extends component_base implements iface_html_content, annot
     }
 
     public function get_course_html_content_items($courseid) {
-        return $this->std_get_course_html_content_items($courseid);
+        global $DB;
+
+        $array = [];
+        if (!$this->module_installed()) {
+            return $array;
+        }
+
+        $sql = <<<SQL
+               SELECT b.id AS bookid,
+                      b.timemodified AS booktimemodified,
+                      b.introformat AS bookintroformat,
+                      b.name AS bookname,
+                      bc.id as chapterid,
+                      bc.timemodified AS chaptertimemodified,
+                      bc.contentformat AS chaptercontentformat,
+                      bc.title AS chaptertitle
+                 FROM {book} b
+            LEFT JOIN {book_chapters} bc on bc.bookid = b.id AND bc.contentformat = ?
+                WHERE b.introformat = ? AND b.course = ?
+             ORDER BY b.id ASC
+SQL;
+
+        $rs = $DB->get_recordset_sql($sql, [FORMAT_HTML, FORMAT_HTML, $courseid]);
+
+        $prevbookid = null;
+        foreach ($rs as $row) {
+            // Add an entry for the book if it's not already been added.
+            if ($row->bookid !== $prevbookid) {
+                $prevbookid = $row->bookid;
+                $array[] = new component(
+                    $row->bookid, 'book', 'book', 'intro', $courseid, $row->booktimemodified,
+                    $row->bookintroformat, $row->bookname);
+            }
+            // Add an entry for the book chapter if it's populated.
+            if (!empty($row->chaptertimemodified)) {
+                $array[] = new component(
+                    $row->chapterid, 'book', 'book_chapters', 'content', $courseid, $row->chaptertimemodified,
+                    $row->chaptercontentformat, $row->chaptertitle);
+            }
+        }
+        $rs->close();
+
+        return $array;
     }
 
     public function get_html_content($id, $table, $field, $courseid = null) {
