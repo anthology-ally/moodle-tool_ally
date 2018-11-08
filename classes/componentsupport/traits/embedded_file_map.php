@@ -89,9 +89,9 @@ trait embedded_file_map {
             }
 
             $file = null;
+
             if (strpos($src, 'pluginfile.php') !== false) {
                 $props = local_file::get_fileurlproperties($src);
-
                 $context = context::instance_by_id($props->contextid, IGNORE_MISSING);
                 if (!$context) {
                     // The context couldn't be found (perhaps this is a copy/pasted url pointing at old deleted content).
