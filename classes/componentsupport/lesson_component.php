@@ -31,6 +31,8 @@ use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use tool_ally\local_file;
+use tool_ally\models\component;
+use tool_ally\webservice\content;
 
 /**
  * Class lesson_component.
@@ -47,47 +49,156 @@ class lesson_component extends file_component_base implements iface_html_content
 
     protected $tablefields = [
         'lesson'       => ['intro'],
-        'lesson_pages' => ['contents']
+        'lesson_pages' => ['contents'],
+        'lesson_answers' => ['answer', 'response']
     ];
 
     public static function component_type() {
         return self::TYPE_MOD;
     }
 
-    public function get_annotation_maps($courseid) {
-        global $PAGE;
+    private function get_content_by_identifier($courseid) {
+        global $DB;
 
+        $array = [];
         if (!$this->module_installed()) {
-            return [];
+            return $array;
         }
 
-        $intros = [];
-        $content = [];
-        $introcis = $this->get_intro_html_content_items($courseid);
+        $params = [
+            FORMAT_HTML, $courseid,
+            FORMAT_HTML, FORMAT_HTML, $courseid,
+            FORMAT_HTML, FORMAT_HTML, $courseid,
+            FORMAT_HTML, FORMAT_HTML, $courseid
+        ];
 
-        foreach ($introcis as $introci) {
-            list($course, $cm) = get_course_and_cm_from_instance($introci->id, 'lesson');
-            $intros[$cm->id] = $introci->entity_id();
+        $sql = <<<SQL
+               (SELECT 
+                       concat('0~', id) AS id,
+                       timemodified,
+                       0 as timecreated,
+                       introformat AS format,
+                       `name` as title,
+                       `name` as primarytitle
+                  FROM {lesson}
+                 WHERE introformat = ? AND course = ?)
+                
+                 UNION
+                
+               (SELECT 
+                       concat('lesson_pages~', lp.id) AS id,
+                       lp.timemodified,
+                       lp.timecreated,
+                       lp.contentsformat AS format,
+                       lp.title,
+                       l.name as primarytitle
+                  FROM {lesson} l
+                  JOIN {lesson_pages} lp on lp.lessonid = l.id AND lp.contentsformat = ?
+                   AND lp.contents IS NOT NULL AND lp.contents !=''
+                 WHERE l.introformat = ? AND l.course = ?)
+                
+                 UNION
+                
+               (SELECT 
+                       concat('lesson_answers~', la.id) AS id,
+                       la.timemodified,
+                       la.timecreated,
+                       la.answerformat AS format,
+                       '[answernotitle]' AS title,
+                       l.name as primarytitle
+                  FROM {lesson} l
+                  JOIN {lesson_answers} la on la.lessonid = l.id AND la.answerformat = ?
+                   AND la.answer IS NOT NULL AND la.answer != ''
+                 WHERE l.introformat = ? AND l.course = ?)
+                
+                 UNION
+                
+               (SELECT 
+                       concat('lesson_answers_response~', la.id) AS id,
+                       la.timemodified,
+                       la.timecreated,
+                       la.responseformat AS format,
+                       '[answernotitle]' AS title,
+                       l.name as primarytitle
+                  FROM {lesson} l
+                  JOIN {lesson_answers} la on la.lessonid = l.id AND la.responseformat = ?
+                   AND la.response IS NOT NULL AND la.response != ''
+                 WHERE l.introformat = ? AND l.course = ?)
+                
+              ORDER BY id ASC
+SQL;
 
-            if ($PAGE->pagetype !== 'mod-lesson-view') {
-                continue; // No point building annotations for pages that don't use them!
+        $rs = $DB->get_recordset_sql($sql, $params);
+
+        foreach ($rs as $row) {
+
+            $tmparr = explode('~', $row->id);
+            $ident = $tmparr[0];
+            $id = $tmparr[1];
+            $title = $row->title;
+
+            if ($ident === '0') {
+                $ident = 'intros'; // Here 0 is for sorting purposes.
+                $table = 'lesson';
+                $field = 'intro';
+            } else if ($ident === 'lesson_pages') {
+                $table = 'lesson_pages';
+                $field = 'contents';
+            } else if ($ident === 'lesson_answers') {
+                $table = 'lesson_answers';
+                $field = 'answer';
+                $title = get_string('lessonanswertitle', 'tool_ally', $row->primarytitle);
+            } else if ($ident === 'lesson_answers_response') {
+                $table = 'lesson_answers';
+                $field = 'response';
+                $title = get_string('lessonresponsetitle', 'tool_ally', $row->primarytitle);
             }
 
-            $lessonid = $cm->instance;
-            $contentcis = $this->get_selected_html_content_items($courseid, 'contents',
-                'lesson_pages', 'lessonid', $lessonid, 'title');
+            if (empty($row->timemodified)) {
+                $row->timemodified = $row->timecreated;
+            }
 
-            foreach ($contentcis as $contentci) {
-                $content[$contentci->id] = $contentci->entity_id();
+            if (!isset($array[$ident])) {
+                $array[$ident] = [];
+            }
+
+            $array[$ident][$id] = new component(
+                $id, 'lesson', $table, $field, $courseid, $row->timemodified,
+                $row->format, $title);
+
+        }
+        $rs->close();
+        return $array;
+    }
+
+    public function get_annotation_maps($courseid) {
+        $retarray = [];
+
+        $array = $this->get_content_by_identifier($courseid);
+        foreach ($array as $ident => $values) {
+            foreach ($values as $id => $content) {
+                if ($ident === 'intros') {
+                    list($course, $cm) = get_course_and_cm_from_instance($content->id, 'lesson');
+                    $retarray[$ident][$cm->id] = $content->entity_id();
+                } else {
+                    $retarray[$ident][$id] = $content->entity_id();
+                }
             }
         }
 
-        return ['intros' => $intros, 'pages' => $content];
+        return $retarray;
     }
 
     public function get_course_html_content_items($courseid) {
-        return $this->std_get_course_html_content_items($courseid);
-        // TODO - lesson pages.
+
+        $retarray = [];
+
+        $array = $this->get_content_by_identifier($courseid);
+        foreach ($array as $key => $values) {
+            $retarray = array_merge($retarray, $values);
+        }
+
+        return $retarray;
     }
 
     public function replace_file_links() {
@@ -103,11 +214,67 @@ class lesson_component extends file_component_base implements iface_html_content
     }
 
     public function get_html_content($id, $table, $field, $courseid = null) {
+        global $DB;
+
+        $row = null;
+        $lambda = null;
+
         $titlefld = 'name';
         if ($table === 'lesson_pages') {
             $titlefld = 'title';
         }
-        return $this->std_get_html_content($id, $table, $field, $courseid, $titlefld);
+        if ($table === 'lesson_answers') {
+            $titlefld = 'lambdatitle';
+
+            if ($field === 'answer') {
+                $params = [
+                    FORMAT_HTML,
+                    $id
+                ];
+
+                $sql = <<<SQL
+                SELECT 
+                       la.id,
+                       la.timemodified,
+                       la.timecreated,
+                       la.answerformat,
+                       la.answer,
+                       l.name as primarytitle
+                  FROM {lesson} l
+                  JOIN {lesson_answers} la on la.lessonid = l.id AND la.answerformat = ?
+                   AND la.answer IS NOT NULL AND la.answer != ''
+                 WHERE la.id = ?
+SQL;
+                $row = $DB->get_record_sql($sql, $params);
+                $lambda = function ($row) {
+                    $row->lambdatitle = get_string('lessonanswertitle', 'tool_ally', $row->primarytitle);
+                };
+            } else if ($field === 'response') {
+                $params = [
+                    FORMAT_HTML,
+                    $id
+                ];
+
+                $sql = <<<SQL
+                SELECT 
+                       la.id,
+                       la.timemodified,
+                       la.timecreated,
+                       la.responseformat,
+                       la.response,
+                       l.name as primarytitle
+                  FROM {lesson} l
+                  JOIN {lesson_answers} la on la.lessonid = l.id AND la.responseformat = ?
+                   AND la.response IS NOT NULL AND la.response != ''
+                 WHERE la.id = ?
+SQL;
+                $row = $DB->get_record_sql($sql, $params);
+                $lambda = function ($row) {
+                    $row->lambdatitle = get_string('lessonresponsetitle', 'tool_ally', $row->primarytitle);
+                };
+            }
+        }
+        return $this->std_get_html_content($id, $table, $field, $courseid, $titlefld, 'timemodified', $lambda, $row);
     }
 
     private function get_lesson_pages($lessonid) {
@@ -145,6 +312,20 @@ SQL;
 
             return $DB->get_field_sql($sql, $params);
         }
+    }
+
+    public function get_file_area($table, $field) {
+        if ($table === 'lesson_pages' && $field === 'contents') {
+            return 'page_contents';
+        }
+        return parent::get_file_area($table, $field);
+    }
+
+    public function get_file_item($table, $field, $id) {
+        if ($table === 'lesson_pages' && $field === 'contents') {
+            return $id;
+        }
+        return parent::get_file_item($table, $field, $id);
     }
 
 }

@@ -31,6 +31,7 @@ use cm_info;
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\content_sub_tables;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
+use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\componentsupport\traits\html_content;
 use tool_ally\local_file;
 use tool_ally\models\component;
@@ -46,6 +47,7 @@ class glossary_component extends file_component_base implements
         iface_html_content, annotation_map, content_sub_tables {
 
     use html_content;
+    use embedded_file_map;
 
     protected $tablefields = [
         'glossary' => ['intro'],
@@ -233,5 +235,19 @@ SQL;
     public function queue_delete_sub_tables(cm_info $cm) {
         $entries = $this->get_entry_html_content_items($cm->course, $cm->instance);
         $this->bulk_queue_delete_content($entries);
+    }
+
+    public function get_file_area($table, $field) {
+        if ($table === 'glossary_entries' && $field === 'definition') {
+            return 'entry';
+        }
+        return parent::get_file_area($table, $field);
+    }
+
+    public function get_file_item($table, $field, $id) {
+        if ($table === 'glossary_entries' && $field === 'definition') {
+            return $id;
+        }
+        return parent::get_file_item($table, $field, $id);
     }
 }

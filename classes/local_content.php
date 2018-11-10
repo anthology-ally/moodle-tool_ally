@@ -173,12 +173,17 @@ class local_content {
     /**
      * Builds a DOMDocument from html string.
      * @param string $html
-     * @return DOMDocument
+     * @return bool | DOMDocument
      */
     public static function build_dom_doc($html) {
-        $doc = new \DOMDocument();
+        if (empty($html)) {
+            return false;
+        }
+        $doc = new DOMDocument();
         libxml_use_internal_errors(true); // Required for HTML5.
-        $doc->loadHTML('<?xml encoding="utf-8" ?>' . $html);
+        if (!$doc->loadHTML('<?xml encoding="utf-8" ?>' . $html)) {
+            return false;
+        };
         libxml_clear_errors(); // Required for HTML5.
         return $doc;
     }
@@ -210,7 +215,7 @@ class local_content {
         }
         /** @var component_content $content */
         $content = $component->get_html_content($id, $table, $field, $courseid);
-        if ($includeembeddedfiles) {
+        if ($includeembeddedfiles && !empty($content)) {
             $content = self::apply_embedded_file_map($content);
         }
         return $content;

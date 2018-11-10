@@ -54,6 +54,10 @@ use mod_book\event\chapter_created;
 use mod_book\event\chapter_updated;
 use mod_book\event\chapter_deleted;
 
+use mod_lesson\event\page_created;
+use mod_lesson\event\page_updated;
+use mod_lesson\event\page_deleted;
+
 use tool_ally\models\component_content;
 use tool_ally\componentsupport\course_component;
 
@@ -333,10 +337,11 @@ class event_handlers {
      * @param base $event
      * @param string $eventname
      * @param string $contentfield
+     * @param null|string $table
      * @throws \coding_exception
      * @throws \moodle_exception
      */
-    private static function module_item_crud(base $event, $eventname, $contentfield) {
+    private static function module_item_crud(base $event, $eventname, $contentfield, $table = null, $id = null) {
         $module = local::clean_component_string($event->component);
         $component = local_content::component_instance($module);
         $userid = $event->userid;
@@ -345,8 +350,12 @@ class event_handlers {
             return;
         }
 
-        $id = $event->objectid;
-        $table = $event->objecttable;
+        if ($table === null) {
+            $table = $event->objecttable;
+        }
+        if ($id === null) {
+            $id = $event->objectid;
+        }
 
         if ($eventname === self::API_DELETED) {
             $content = local_content::get_html_content_deleted($id, $module, $table, $contentfield, $event->courseid);
@@ -418,4 +427,49 @@ class event_handlers {
         self::module_item_crud($event, self::API_DELETED, 'content');
     }
 
+    private static function lesson_page_crud(base $event, $eventname) {
+        global $DB;
+
+        self::module_item_crud($event, $eventname, 'contents');
+        // Get answers for page
+        $rs = $DB->get_records('lesson_answers', ['pageid' => $event->objectid]);
+
+        foreach ($rs as $row) {
+            if (!empty($row->answer) && ($row->answerformat === FORMAT_HTML)) {
+                self::module_item_crud($event, $eventname, 'answer', 'lesson_answers', $row->id);
+            }
+            if (!empty($row->response) && ($row->responseformat === FORMAT_HTML)) {
+                self::module_item_crud($event, $eventname, 'response', 'lesson_answers', $row->id);
+            }
+        }
+    }
+
+    /**
+     * @param page_created $event
+     * @throws \coding_exception
+     * @throws \moodle_exception
+     */
+    public static function lesson_page_created(page_created $event) {
+        self::lesson_page_crud($event, self::API_CREATED);
+    }
+
+    /**
+     * @param page_updated $event
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function lesson_page_updated(page_updated $event) {
+        self::lesson_page_crud($event, self::API_UPDATED);
+    }
+
+    /**
+     * @param page_updated $event
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
+    public static function lesson_page_deleted(page_updated $event) {
+        self::lesson_page_crud($event, self::API_DELETED);
+    }
 }
