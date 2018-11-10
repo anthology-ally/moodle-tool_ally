@@ -25,6 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__.'/abstract_testcase.php');
+require_once($CFG->dirroot.'/mod/lesson/locallib.php');
+require_once($CFG->dirroot.'/mod/lesson/pagetypes/multichoice.php');
 
 use core\event\course_created;
 use core\event\course_updated;
@@ -39,6 +41,8 @@ use \mod_forum\event\post_updated;
 use \mod_glossary\event\entry_created;
 use \mod_glossary\event\entry_updated;
 use \mod_glossary\event\entry_deleted;
+
+use \mod_lesson\event\page_updated;
 
 use \mod_book\event\chapter_created;
 use \mod_book\event\chapter_updated;
@@ -470,11 +474,53 @@ MSG;
     }
 
     public function test_lesson_created() {
-        $this->check_module_created_pushtraces('lesson', 'lesson', 'intro');
+        global $DB;
+
+        $dg = $this->getDataGenerator();
+
+        $lesson = $this->check_module_created_pushtraces('lesson', 'lesson', 'intro');
+
+        $pdg = $dg->get_plugin_generator('mod_lesson');
+
+        // Test that question page results in push to ally.
+        $questionpage = $pdg->create_question_multichoice($lesson);
+        $entityid = 'lesson:lesson_pages:contents:'.$questionpage->id;
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $entityid);
+
+        $answers = $DB->get_records('lesson_answers', ['pageid' => $questionpage->id]);
+        $this->assertNotEmpty($answers);
+
+        foreach ($answers as $answer) {
+            $entityid = 'lesson:lesson_answers:answer:'.$answer->id;
+            $this->assert_pushtrace_contains_entity_id(event_handlers::API_CREATED, $entityid);
+        }
     }
 
     public function test_lesson_updated() {
-        $this->check_module_updated_pushtraces('lesson', 'lesson', 'intro', 'intro');
+        global $DB;
+
+        $dg = $this->getDataGenerator();
+
+        $lesson = $this->check_module_updated_pushtraces('lesson', 'lesson', 'intro', 'intro');
+        $context = context_module::instance($lesson->cmid);
+        $lesson = new lesson($lesson);
+
+        $pdg = $dg->get_plugin_generator('mod_lesson');
+
+        $questionpage = $pdg->create_question_multichoice($lesson);
+        $questionpage->pageid = $questionpage->id;
+        $questionpage->contents_editor = ['text' => 'some text', 'format' => FORMAT_HTML];
+        $mcpage = lesson_page_type_multichoice::create($questionpage, $lesson, $context, 0);
+        $mcpage->id = $questionpage->id;
+        $mcpage->update($questionpage, $context);
+
+        $answers = $DB->get_records('lesson_answers', ['pageid' => $questionpage->pageid]);
+        $this->assertNotEmpty($answers);
+
+        foreach ($answers as $answer) {
+            $entityid = 'lesson:lesson_answers:answer:'.$answer->id;
+            $this->assert_pushtrace_contains_entity_id(event_handlers::API_UPDATED, $entityid);
+        }
     }
 
     public function test_lesson_deleted() {

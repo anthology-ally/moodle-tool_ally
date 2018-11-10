@@ -116,5 +116,17 @@ $observers = [
     [
         'eventname' => \mod_book\event\chapter_deleted::class,
         'callback'  => '\tool_ally\event_handlers::book_chapter_deleted'
+    ],
+    [
+        'eventname' => \mod_lesson\event\page_created::class,
+        'callback'  => '\tool_ally\event_handlers::lesson_page_created'
+    ],
+    [
+        'eventname' => \mod_lesson\event\page_updated::class,
+        'callback'  => '\tool_ally\event_handlers::lesson_page_updated'
+    ],
+    [
+        'eventname' => \mod_lesson\event\page_deleted::class,
+        'callback'  => '\tool_ally\event_handlers::lesson_page_deleted'
     ]
 ];
