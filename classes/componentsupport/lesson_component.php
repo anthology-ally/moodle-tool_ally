@@ -73,8 +73,7 @@ class lesson_component extends file_component_base implements iface_html_content
         ];
 
         $sql = <<<SQL
-               (SELECT 
-                       concat('0~', id) AS id,
+               (SELECT concat('0~', id) AS id,
                        timemodified,
                        0 as timecreated,
                        introformat AS format,
@@ -82,11 +81,10 @@ class lesson_component extends file_component_base implements iface_html_content
                        `name` as primarytitle
                   FROM {lesson}
                  WHERE introformat = ? AND course = ?)
-                
+
                  UNION
-                
-               (SELECT 
-                       concat('lesson_pages~', lp.id) AS id,
+
+               (SELECT concat('lesson_pages~', lp.id) AS id,
                        lp.timemodified,
                        lp.timecreated,
                        lp.contentsformat AS format,
@@ -96,11 +94,10 @@ class lesson_component extends file_component_base implements iface_html_content
                   JOIN {lesson_pages} lp on lp.lessonid = l.id AND lp.contentsformat = ?
                    AND lp.contents IS NOT NULL AND lp.contents !=''
                  WHERE l.introformat = ? AND l.course = ?)
-                
+
                  UNION
-                
-               (SELECT 
-                       concat('lesson_answers~', la.id) AS id,
+
+               (SELECT concat('lesson_answers~', la.id) AS id,
                        la.timemodified,
                        la.timecreated,
                        la.answerformat AS format,
@@ -110,11 +107,10 @@ class lesson_component extends file_component_base implements iface_html_content
                   JOIN {lesson_answers} la on la.lessonid = l.id AND la.answerformat = ?
                    AND la.answer IS NOT NULL AND la.answer != ''
                  WHERE l.introformat = ? AND l.course = ?)
-                
+
                  UNION
-                
-               (SELECT 
-                       concat('lesson_answers_response~', la.id) AS id,
+
+               (SELECT concat('lesson_answers_response~', la.id) AS id,
                        la.timemodified,
                        la.timecreated,
                        la.responseformat AS format,
@@ -124,7 +120,7 @@ class lesson_component extends file_component_base implements iface_html_content
                   JOIN {lesson_answers} la on la.lessonid = l.id AND la.responseformat = ?
                    AND la.response IS NOT NULL AND la.response != ''
                  WHERE l.introformat = ? AND l.course = ?)
-                
+
               ORDER BY id ASC
 SQL;
 
@@ -233,8 +229,7 @@ SQL;
                 ];
 
                 $sql = <<<SQL
-                SELECT 
-                       la.id,
+                SELECT la.id,
                        la.timemodified,
                        la.timecreated,
                        la.answerformat,
@@ -256,8 +251,7 @@ SQL;
                 ];
 
                 $sql = <<<SQL
-                SELECT 
-                       la.id,
+                SELECT la.id,
                        la.timemodified,
                        la.timecreated,
                        la.responseformat,

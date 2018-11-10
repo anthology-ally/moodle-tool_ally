@@ -338,6 +338,7 @@ class event_handlers {
      * @param string $eventname
      * @param string $contentfield
      * @param null|string $table
+     * @param null|int $id
      * @throws \coding_exception
      * @throws \moodle_exception
      */
@@ -431,7 +432,7 @@ class event_handlers {
         global $DB;
 
         self::module_item_crud($event, $eventname, 'contents');
-        // Get answers for page
+        // Get answers for page.
         $rs = $DB->get_records('lesson_answers', ['pageid' => $event->objectid]);
 
         foreach ($rs as $row) {

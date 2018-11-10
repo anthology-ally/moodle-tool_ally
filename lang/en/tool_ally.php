@@ -76,5 +76,5 @@ $string['pushfilessummary:explanation'] = 'Summary of file updates sent to Ally.
 $string['annotationmoderror'] = 'Ally module content annotation failed.';
 $string['annotationmoderror:explanation'] = 'Module was not correctly identified.';
 $string['section'] = 'Section {$a}';
-$string['lessonanswertitle'] ='Answer for lesson "{$a}"';
-$string['lessonresponsetitle'] ='Response for lesson "{$a}"';
+$string['lessonanswertitle'] = 'Answer for lesson "{$a}"';
+$string['lessonresponsetitle'] = 'Response for lesson "{$a}"';
