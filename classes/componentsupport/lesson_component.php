@@ -34,6 +34,8 @@ use tool_ally\local_file;
 use tool_ally\models\component;
 use tool_ally\webservice\content;
 
+use moodle_url;
+
 /**
  * Class lesson_component.
  * Html file replacement support for core lessons.
@@ -57,7 +59,14 @@ class lesson_component extends file_component_base implements iface_html_content
         return self::TYPE_MOD;
     }
 
-    private function get_content_by_identifier($courseid) {
+    /**
+     * Get all course content and hash it by identifier.
+     * @param int $courseid
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    private function content_by_identifier($courseid) {
         global $DB;
 
         $array = [];
@@ -170,7 +179,7 @@ SQL;
     public function get_annotation_maps($courseid) {
         $retarray = [];
 
-        $array = $this->get_content_by_identifier($courseid);
+        $array = $this->content_by_identifier($courseid);
         foreach ($array as $ident => $values) {
             foreach ($values as $id => $content) {
                 if ($ident === 'intros') {
@@ -189,7 +198,7 @@ SQL;
 
         $retarray = [];
 
-        $array = $this->get_content_by_identifier($courseid);
+        $array = $this->content_by_identifier($courseid);
         foreach ($array as $key => $values) {
             $retarray = array_merge($retarray, $values);
         }
@@ -320,6 +329,30 @@ SQL;
             return $id;
         }
         return parent::get_file_item($table, $field, $id);
+    }
+
+    /**
+     * Attempt to make url for content.
+     * @param int $id
+     * @param string $table
+     * @param string $field
+     * @param int $courseid
+     * @return null|string;
+     */
+    public function make_url($id, $table, $field = null, $courseid = null) {
+        global $DB;
+
+        if (!isset($this->tablefields[$table])) {
+            return null;
+        }
+        if ($table === 'lesson') {
+            return $this->make_module_instance_url($table, $id);
+        } else if ($table === 'lesson_pages') {
+            $lessonid = $DB->get_field('lesson_pages', 'lessonid', ['id' => $id]);
+            list ($course, $cm) = get_course_and_cm_from_instance($lessonid, 'lesson');
+            return new moodle_url('/mod/lesson/view.php', ['id' => $cm->id, 'pageid' => $id]).'';
+        }
+        return null;
     }
 
 }
