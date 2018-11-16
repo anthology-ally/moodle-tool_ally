@@ -27,8 +27,6 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once(__DIR__.'/abstract_testcase.php');
-require_once($CFG->dirroot.'/mod/lesson/locallib.php');
-require_once($CFG->dirroot.'/mod/lesson/pagetypes/multichoice.php');
 
 use core\event\course_created;
 use core\event\course_updated;
@@ -64,7 +62,12 @@ use tool_ally\local_content;
 class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
 
     public function setUp() {
+        global $CFG;
+
         $this->resetAfterTest();
+
+        require_once($CFG->dirroot.'/mod/lesson/locallib.php');
+        require_once($CFG->dirroot.'/mod/lesson/pagetypes/multichoice.php');
 
         set_config('pushurl', 'url', 'tool_ally');
         set_config('key', 'key', 'tool_ally');

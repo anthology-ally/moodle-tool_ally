@@ -207,7 +207,8 @@ SQL;
             return $this->make_module_instance_url($table, $id);
         } else if ($table === 'book_chapters') {
             $bookid = $DB->get_field('book_chapters', 'bookid', ['id' => $id]);
-            return new moodle_url('/mod/book/view.php', ['id' => $bookid, 'chapterid' => $id]).'';
+            list ($course, $cm) = get_course_and_cm_from_instance($bookid, 'book');
+            return new moodle_url('/mod/book/view.php', ['id' => $cm->id, 'chapterid' => $id]).'';
         }
         return null;
     }
