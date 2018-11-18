@@ -349,8 +349,13 @@ SQL;
             return $this->make_module_instance_url($table, $id);
         } else if ($table === 'lesson_pages') {
             $lessonid = $DB->get_field('lesson_pages', 'lessonid', ['id' => $id]);
-            list ($course, $cm) = get_course_and_cm_from_instance($lessonid, 'lesson');
-            return new moodle_url('/mod/lesson/view.php', ['id' => $cm->id, 'pageid' => $id]).'';
+            try {
+                list ($course, $cm) = get_course_and_cm_from_instance($lessonid, 'lesson');
+                return new moodle_url('/mod/lesson/view.php', ['id' => $cm->id, 'pageid' => $id]).'';
+            } catch (\moodle_exception $ex) {
+                return null;
+            }
+
         }
         return null;
     }
