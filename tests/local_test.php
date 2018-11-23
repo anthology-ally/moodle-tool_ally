@@ -23,6 +23,7 @@
  */
 
 use tool_ally\local;
+use tool_ally\auto_config;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -66,5 +67,23 @@ class tool_ally_local_testcase extends advanced_testcase {
             $this->assertContains($admin->id, $userids);
             $this->assertArrayHasKey($admin->id, $userids);
         }
+    }
+
+    public function test_get_ws_token_invalid_config() {
+        // Test failure without ally_webuser / valid configuration.
+        $expectedmsg = 'Access control exception (Ally web user (ally_webuser) does not exist.';
+        $expectedmsg .= ' Has auto configure been run?)';
+        $this->expectExceptionMessage($expectedmsg);
+        local::get_ws_token();
+    }
+
+    public function test_get_ws_token() {
+        $this->resetAfterTest();
+        // Test token generated successfully when configured.
+        $ac = new auto_config();
+        $ac->configure();
+        $token = local::get_ws_token();
+        $this->assertnotEmpty($token);
+        $this->assertNotEmpty($token->token);
     }
 }

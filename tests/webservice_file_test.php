@@ -24,6 +24,7 @@
 
 use tool_ally\webservice\file;
 use tool_ally\local;
+use tool_ally\auto_config;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,6 +38,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
+
     /**
      * Test the web service when used to get a resource file.
      */
@@ -44,6 +46,11 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
         global $CFG;
 
         $this->resetAfterTest();
+
+        // Test method successful when configured.
+        $ac = new auto_config();
+        $ac->configure();
+
         $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
 
@@ -76,6 +83,11 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
         global $CFG;
 
         $this->resetAfterTest();
+
+        // Test method successful when configured.
+        $ac = new auto_config();
+        $ac->configure();
+
         $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
 
@@ -138,6 +150,11 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
         global $CFG;
 
         $this->resetAfterTest();
+
+        // Test method successful when configured.
+        $ac = new auto_config();
+        $ac->configure();
+
         $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
 
@@ -185,6 +202,10 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
     public function test_unwhitelisted_file_component() {
 
         $this->resetAfterTest();
+
+        // Test method successful when configured.
+        $ac = new auto_config();
+        $ac->configure();
 
         $filename = 'somefile.txt';
         $filecontents = 'contents of file';
