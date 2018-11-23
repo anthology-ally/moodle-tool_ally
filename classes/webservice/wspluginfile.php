@@ -19,6 +19,7 @@ namespace tool_ally\webservice;
 defined('MOODLE_INTERNAL') || die;
 
 use tool_ally\local;
+use tool_ally\local_file;
 
 use moodle_exception;
 use webservice;
@@ -50,31 +51,16 @@ class wspluginfile {
         if ($iat < time() - HOURSECS) {
             throw new \webservice_access_exception('The signature issued has expired');
         }
-        $allyuser = local::get_ally_web_user();
-        if (!$allyuser) {
-            $msg = 'Ally web user (ally_webuser) does not exist. Has auto configure been run?';
-            throw new \webservice_access_exception($msg);
-        }
-        $webservicelib = new webservice();
-        $tokens = $webservicelib->get_user_ws_tokens($allyuser->id);
-        if (empty($tokens)) {
-            $msg = 'There are no web service tokens attributed to ally_webuser. Has auto configure been run?';
-            throw new \webservice_access_exception($msg);
-        }
-        if (count($tokens) > 1) {
-            $msg = 'There are multiple web service tokens attributed to ally_webuser. There should only be one token.';
-            throw new \webservice_access_exception($msg);
-        }
-        $wstoken = reset($tokens);
-        $token = $wstoken->token;
+        $tokenobj = local::get_ws_token();
 
-        $calcsig = hash('sha256', $token.':'.$iat.':'.$pathnamehash);
+        $calcsig = local_file::generate_wspluginfile_signature($pathnamehash, $iat)->signature;
         if (strtolower($signature) !== strtolower($calcsig)) {
             $msg = 'Signature is invalid.';
             throw new \webservice_access_exception($msg);
         }
 
-        $authenticationinfo = $webservicelib->authenticate_user($token);
+        $webservicelib = new webservice();
+        $authenticationinfo = $webservicelib->authenticate_user($tokenobj->token);
         return ($authenticationinfo);
     }
 

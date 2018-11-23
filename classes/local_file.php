@@ -163,6 +163,27 @@ class local_file {
     }
 
     /**
+     * Generate webservice pluginfile signature.
+     * @param string $pathnamehash
+     * @param null|int $iat - if null will create new iat from current time.
+     * @return stdClass
+     * @throws \webservice_access_exception
+     */
+    public static function generate_wspluginfile_signature($pathnamehash, $iat = null) {
+        $iat = $iat === null ? time() : $iat;
+        $tokenobj = local::get_ws_token();
+        if (!$tokenobj) {
+            throw new \coding_exception('Failed to get Ally web service token object');
+        }
+        $token = $tokenobj->token;
+        return (object) [
+            'pathnamehash' => $pathnamehash,
+            'iat' => $iat,
+            'signature' => hash('sha256', $token.':'.$iat.':'.$pathnamehash)
+        ];
+    }
+
+    /**
      * Webservice plugin file URL from stored file.
      *
      * @param \stored_file $file
@@ -171,8 +192,15 @@ class local_file {
     public static function webservice_url(\stored_file $file) {
         global $CFG;
 
+        $signature = self::generate_wspluginfile_signature($file->get_pathnamehash());
+
         return new \moodle_url($CFG->wwwroot.'/admin/tool/ally/wspluginfile.php',
-                ['pathnamehash' => $file->get_pathnamehash()]);
+                [
+                    'pathnamehash' => $signature->pathnamehash,
+                    'signature' => $signature->signature,
+                    'iat' => $signature->iat
+                ]
+        );
     }
 
     /**

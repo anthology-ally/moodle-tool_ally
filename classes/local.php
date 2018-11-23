@@ -213,4 +213,31 @@ class local {
         global $DB;
         return $DB->get_record('user', ['username' => 'ally_webuser']);
     }
+
+    /**
+     * Get a web service token record.
+     *
+     * @return stdClass
+     * @throws \dml_exception
+     * @throws \webservice_access_exception
+     */
+    public static function get_ws_token() {
+        $allyuser = self::get_ally_web_user();
+        if (!$allyuser) {
+            $msg = 'Ally web user (ally_webuser) does not exist. Has auto configure been run?';
+            throw new \webservice_access_exception($msg);
+        }
+        $webservicelib = new \webservice();
+        $tokens = $webservicelib->get_user_ws_tokens($allyuser->id);
+        if (empty($tokens)) {
+            $msg = 'There are no web service tokens attributed to ally_webuser. Has auto configure been run?';
+            throw new \webservice_access_exception($msg);
+        }
+        if (count($tokens) > 1) {
+            $msg = 'There are multiple web service tokens attributed to ally_webuser. There should only be one token.';
+            throw new \webservice_access_exception($msg);
+        }
+        $wstoken = reset($tokens);
+        return $wstoken;
+    }
 }
