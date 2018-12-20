@@ -26,8 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['adminurl'] = 'Launch URL';
 $string['adminurldesc'] = 'The LTI launch URL used to access the Accessibility report.';
-$string['allyclientconfig'] = 'Ally client config';
-$string['ally:clientconfig'] = 'Access and update client config';
+$string['allyclientconfig'] = 'Ally configuration';
+$string['ally:clientconfig'] = 'Access and update client configuration';
 $string['clientid'] = 'Client id';
 $string['clientiddesc'] = 'The Ally client id';
 $string['contentauthors'] = 'Content authors';
