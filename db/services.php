@@ -139,6 +139,7 @@ $services = [
     'Ally integration services' => [
         'functions'       => [
             'core_course_get_courses',
+            'core_course_get_categories',
             'core_enrol_get_enrolled_users',
             'tool_ally_get_files',
             'tool_ally_get_course_files',

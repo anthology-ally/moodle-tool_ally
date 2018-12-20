@@ -39,6 +39,7 @@ $string['curlnohttpcode'] = 'Unable to verify HTTP status code';
 $string['error:invalidcomponentident'] = 'Invalid component identifier {$a}';
 $string['error:pluginfilequestiononly'] = 'Only question components are supported for this url';
 $string['error:componentcontentnotfound'] = 'Content not found for component {$a->component} with id {$a->id}';
+$string['error:wstokenmissing'] = 'Web service token is missing. Maybe an admin user needs to run auto configuration?';
 $string['filecoursenotfound'] = 'The passed in file does not belong to any course';
 $string['fileupdatestask'] = 'Push file updates to Ally';
 $string['key'] = 'Key';
