@@ -81,7 +81,8 @@ class course_component extends component_base implements iface_html_content {
             $sectionnum = $section;
         }
 
-        if (get_string_manager()->string_exists('sectionname', 'format_' . $course->format)) {
+        if (!empty($course->format)
+            && get_string_manager()->string_exists('sectionname', 'format_' . $course->format)) {
             return get_string('sectionname', 'format_' . $course->format) . ' ' . $sectionnum;
         }
 
