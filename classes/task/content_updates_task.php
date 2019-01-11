@@ -196,6 +196,9 @@ class content_updates_task extends scheduled_task {
                     $queuerow->comprowid, $queuerow->component, $queuerow->comptable, $queuerow->compfield,
                     $queuerow->courseid);
             } catch (moodle_exception $e) {
+                $content = null;
+            }
+            if ($content === null) {
                 if ($deleted === []) {
                     // There were too many deletion records to dump into an array so we need to get individual deletion
                     // records to check for deletion. This isn't great for performance but we should only need this when

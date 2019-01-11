@@ -37,6 +37,47 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase {
+
+    public function test_invalid_component() {
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+        $this->expectExceptionMessage('Invalid component identifier');
+        content::service(1, 'aninvalidcomponent', 'anytable', 'anyfield');
+    }
+
+    public function test_invalid_table() {
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+
+        $this->expectExceptionMessage('Invalid component identifier');
+        content::service($course->id, 'course', 'invalidtable', 'summary');
+    }
+
+    public function test_invalid_field() {
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+
+        $this->expectExceptionMessage('Invalid component identifier');
+        content::service($course->id, 'course', 'course', 'invalidfield');
+    }
+
+    public function test_invalid_id() {
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+
+        $invalidid = 999999;
+        $this->expectExceptionMessage('Content not found');
+        content::service($invalidid, 'course', 'course', 'summary');
+    }
+
     /**
      * Test the web service when used to get a single course summary content item.
      */

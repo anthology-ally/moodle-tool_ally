@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 use tool_ally\componentsupport\component_base;
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\html_content;
+use tool_ally\exceptions\component_validation_exception;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
 
@@ -211,7 +212,7 @@ class local_content {
                                             $courseid = null, $includeembeddedfiles = false) {
         $component = self::component_instance($component);
         if (empty($component)) {
-            return false;
+            throw new component_validation_exception('Component '.$component.' does not exist');
         }
         /** @var component_content $content */
         $content = $component->get_html_content($id, $table, $field, $courseid);
@@ -219,6 +220,18 @@ class local_content {
             $content = self::apply_embedded_file_map($content);
         }
         return $content;
+    }
+
+    /**
+     * Create url param identifier for component, table field and id
+     * @param string $component
+     * @param string $table
+     * @param string $field
+     * @param string $id
+     * @return string
+     */
+    public static function urlident($component, $table, $field, $id) {
+        return 'component='.$component.'&table='.$table.'&field='.$field.'&id='.$id;
     }
 
     /**

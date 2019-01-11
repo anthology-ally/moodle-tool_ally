@@ -92,6 +92,9 @@ trait html_content {
         if ($record === null) {
             $record = $DB->get_record($table, ['id' => $id]);
         }
+        if (!$record) {
+            return null;
+        }
         if ($recordlambda) {
             $recordlambda($record);
             if ($courseid === null) {
@@ -101,11 +104,6 @@ trait html_content {
                     $courseid = $record->courseid;
                 }
             }
-        }
-
-        if (!$record) {
-            $ident = 'component='.$component.'&table='.$table.'&field='.$field.'&id='.$id;
-            throw new \moodle_exception('error:invalidcomponentident', 'tool_ally', null, $ident);
         }
 
         $timemodified = $record->$modifiedfield;
