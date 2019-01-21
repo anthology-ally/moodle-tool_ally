@@ -116,17 +116,37 @@ class file_validator {
      * @throws \coding_exception
      */
     public function validate_stored_file(\stored_file $file, \context $context = null) {
+        // Can a course context be gotten?
         $context = $context ?: \context::instance_by_id($file->get_contextid());
+        $coursectx = $context->get_course_context(false);
+        $allok = $coursectx instanceof \context_course;
+        if (!$allok) {
+            return false;
+        }
 
         // Is it whitelisted?
-        $whitelisted = $this->check_component_area_teacher_whitelist($file->get_component(), $file->get_filearea());
+        $component = $file->get_component();
+        $area = $file->get_filearea();
+        $allok = $this->check_component_area_teacher_whitelist($component, $area);
+        if (!$allok) {
+            return false;
+        }
+
+        // Check if section has not been deleted.
+        if ($component === 'course' && $area === 'section') {
+            $allok = $this->check_file_in_active_section($file, $context);
+
+            if (!$allok) {
+                return false;
+            }
+        }
 
         // Check if user is an editing teacher / manager / admin / etc.
         $userid = $file->get_userid();
-        $validuser = empty($userid) || array_key_exists($userid, $this->userids) ||
+        $allok = empty($userid) || array_key_exists($userid, $this->userids) ||
             $this->assignments->has($userid, $context);
 
-        return $whitelisted && $validuser && $context->get_course_context(false) instanceof \context_course;
+        return $allok;
     }
 
     /**
@@ -138,5 +158,24 @@ class file_validator {
     private function check_component_area_teacher_whitelist($component, $filearea) {
         $key = $component.'~'.$filearea;
         return in_array($key, self::WHITELIST);
+    }
+
+    /**
+     * @param \stored_file $file
+     * @param \context_course $coursectx
+     * @return bool
+     * @throws \moodle_exception
+     */
+    private function check_file_in_active_section($file, $coursectx) {
+        $found = false;
+        $modinfo = get_fast_modinfo($coursectx->instanceid);
+        $sections = $modinfo->get_section_info_all();
+        foreach ($sections as $section) {
+            if ($section->id == $file->get_itemid()) {
+                $found = true;
+                break;
+            }
+        }
+        return $found;
     }
 }
