@@ -115,6 +115,7 @@ class event_handlers {
 
         if ($event instanceof course_section_deleted) {
             local_content::queue_delete($courseid, $sectionid, 'course', 'course_sections', 'summary');
+            local_file::queue_deleted_section_files($event->courseid);
             return;
         }
 
