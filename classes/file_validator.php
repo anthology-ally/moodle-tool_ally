@@ -112,10 +112,11 @@ class file_validator {
      * Validates if the file should be pushed to Ally.
      * @param \stored_file $file
      * @param \context|null $context
+     * @param bool $checksection
      * @return bool
      * @throws \coding_exception
      */
-    public function validate_stored_file(\stored_file $file, \context $context = null) {
+    public function validate_stored_file(\stored_file $file, \context $context = null, $checksection = true) {
         // Can a course context be gotten?
         $context = $context ?: \context::instance_by_id($file->get_contextid());
         $coursectx = $context->get_course_context(false);
@@ -133,7 +134,7 @@ class file_validator {
         }
 
         // Check if section has not been deleted.
-        if ($component === 'course' && $area === 'section') {
+        if ($checksection && $component === 'course' && $area === 'section') {
             $allok = $this->check_file_in_active_section($file, $context);
 
             if (!$allok) {
@@ -166,10 +167,10 @@ class file_validator {
      * @return bool
      * @throws \moodle_exception
      */
-    private function check_file_in_active_section($file, $coursectx) {
+    public function check_file_in_active_section($file, $coursectx = null) {
         $found = false;
-        $modinfo = get_fast_modinfo($coursectx->instanceid);
-        $sections = $modinfo->get_section_info_all();
+        $courseid = $coursectx instanceof \context_course ? $coursectx->instanceid : local_file::courseid($file);
+        $sections = $this->get_sections($courseid);
         foreach ($sections as $section) {
             if ($section->id == $file->get_itemid()) {
                 $found = true;
@@ -177,5 +178,21 @@ class file_validator {
             }
         }
         return $found;
+    }
+
+    /**
+     * @param $courseid
+     * @return array|\section_info[]
+     * @throws \moodle_exception
+     */
+    private function get_sections($courseid) {
+        global $CFG, $DB;
+        if (!empty($CFG->upgraderunning)) {
+            $sections = $DB->get_records('course_sections', ['course' => $courseid]);
+        } else {
+            $modinfo = get_fast_modinfo($courseid);
+            $sections = $modinfo->get_section_info_all();
+        }
+        return $sections;
     }
 }
