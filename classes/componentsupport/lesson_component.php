@@ -84,10 +84,10 @@ class lesson_component extends file_component_base implements iface_html_content
         $sql = <<<SQL
                (SELECT concat('0~', id) AS id,
                        timemodified,
-                       0 as timecreated,
+                       0 AS timecreated,
                        introformat AS format,
-                       `name` as title,
-                       `name` as primarytitle
+                       name AS title,
+                       name AS primarytitle
                   FROM {lesson}
                  WHERE introformat = ? AND course = ?)
 
@@ -98,9 +98,9 @@ class lesson_component extends file_component_base implements iface_html_content
                        lp.timecreated,
                        lp.contentsformat AS format,
                        lp.title,
-                       l.name as primarytitle
+                       l.name AS primarytitle
                   FROM {lesson} l
-                  JOIN {lesson_pages} lp on lp.lessonid = l.id AND lp.contentsformat = ?
+                  JOIN {lesson_pages} lp ON lp.lessonid = l.id AND lp.contentsformat = ?
                    AND lp.contents IS NOT NULL AND lp.contents !=''
                  WHERE l.introformat = ? AND l.course = ?)
 
@@ -111,9 +111,9 @@ class lesson_component extends file_component_base implements iface_html_content
                        la.timecreated,
                        la.answerformat AS format,
                        '[answernotitle]' AS title,
-                       l.name as primarytitle
+                       l.name AS primarytitle
                   FROM {lesson} l
-                  JOIN {lesson_answers} la on la.lessonid = l.id AND la.answerformat = ?
+                  JOIN {lesson_answers} la ON la.lessonid = l.id AND la.answerformat = ?
                    AND la.answer IS NOT NULL AND la.answer != ''
                  WHERE l.introformat = ? AND l.course = ?)
 
@@ -124,9 +124,9 @@ class lesson_component extends file_component_base implements iface_html_content
                        la.timecreated,
                        la.responseformat AS format,
                        '[answernotitle]' AS title,
-                       l.name as primarytitle
+                       l.name AS primarytitle
                   FROM {lesson} l
-                  JOIN {lesson_answers} la on la.lessonid = l.id AND la.responseformat = ?
+                  JOIN {lesson_answers} la ON la.lessonid = l.id AND la.responseformat = ?
                    AND la.response IS NOT NULL AND la.response != ''
                  WHERE l.introformat = ? AND l.course = ?)
 
