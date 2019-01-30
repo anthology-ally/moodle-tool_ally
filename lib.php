@@ -34,25 +34,14 @@ use tool_ally\file_processor,
  * @param stdClass $filerecord
  */
 function tool_ally_after_file_deleted($filerecord) {
-    global $DB;
-
     $fs = get_file_storage();
     $file = $fs->get_file_instance($filerecord);
 
-    $courseid = local_file::courseid($file, IGNORE_MISSING);
     if (!local_file::file_validator()->validate_stored_file($file)) {
         return; // Ally does not support files outside of a course.
     }
 
-    $DB->insert_record_raw('tool_ally_deleted_files', [
-        'courseid'     => $courseid,
-        'pathnamehash' => $file->get_pathnamehash(),
-        'contenthash'  => $file->get_contenthash(),
-        'mimetype'     => $file->get_mimetype(),
-        'timedeleted'  => time(),
-    ], false);
-
-    cache::instance()->invalidate_file_keys($file);
+    local_file::queue_file_for_deletion($file);
 }
 
 /**

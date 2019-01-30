@@ -67,4 +67,50 @@ class tool_ally_lib_testcase extends tool_ally_abstract_testcase {
         $this->assertEquals($file->get_mimetype(), $delete->mimetype);
         $this->assertGreaterThanOrEqual($time, $delete->timedeleted);
     }
+
+    /**
+     * Test section deletion callback.
+     */
+    public function test_tool_ally_after_section_deleted() {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $course = $this->getDataGenerator()->create_course();
+
+        // Add file to a soon to be deleted section.
+        $section = $this->getDataGenerator()->create_course_section(
+            ['section' => 1, 'course' => $course->id]);
+        $coursectx = \context_course::instance($course->id);
+        $filename = 'shouldbeanimage.jpg';
+        $filecontents = 'image contents (not really)';
+        // Add a fake inline image to the post.
+        $filerecordinline = array(
+            'contextid' => $coursectx->id,
+            'component' => 'course',
+            'filearea'  => 'section',
+            'itemid'    => $section->id,
+            'filepath'  => '/',
+            'filename'  => $filename,
+        );
+        $fs = get_file_storage();
+        // This file should not appear in the service returned files if section is deleted.
+        $file = $fs->create_file_from_string($filerecordinline, $filecontents);
+        $time = time();
+
+        course_delete_section($course->id, 1, true);
+
+        $deletes = $DB->get_records('tool_ally_deleted_files');
+
+        $this->assertCount(1, $deletes);
+
+        $delete = current($deletes);
+
+        $this->assertEquals($course->id, $delete->courseid);
+        $this->assertEquals($file->get_pathnamehash(), $delete->pathnamehash);
+        $this->assertEquals($file->get_contenthash(), $delete->contenthash);
+        $this->assertEquals($file->get_mimetype(), $delete->mimetype);
+        $this->assertGreaterThanOrEqual($time, $delete->timedeleted);
+    }
 }

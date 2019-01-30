@@ -195,5 +195,16 @@ function xmldb_tool_ally_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018080200, 'tool', 'ally');
     }
 
+    if ($oldversion < 2018080810) {
+        $courses = $DB->get_recordset('course', null, 'id', 'id');
+        foreach ($courses as $course) {
+            \tool_ally\local_file::queue_deleted_section_files($course->id);
+        }
+        $courses->close();
+
+        // Ally savepoint reached.
+        upgrade_plugin_savepoint(true, 2018080810, 'tool', 'ally');
+    }
+
     return true;
 }
