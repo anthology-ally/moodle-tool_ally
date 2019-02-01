@@ -8,3 +8,11 @@
 #page-admin-tool-ally-lti-view iframe#contentframe {
     padding: 1em;
 }
+
+#dt-allylog th {
+    white-space: nowrap;
+}
+
+#dt-allylog div[name="HeaderSettings"] {
+    display: none;
+}

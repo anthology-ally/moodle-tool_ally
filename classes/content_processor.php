@@ -22,6 +22,7 @@
  */
 namespace tool_ally;
 
+use tool_ally\logging\logger;
 use tool_ally\models\component_content;
 
 defined('MOODLE_INTERNAL') || die();
@@ -166,6 +167,11 @@ class content_processor {
     public static function push_content_update($content, $eventname) {
         $config = self::get_config();
         if (!$config->is_valid() || $config->is_cli_only()) {
+            logger::get()->info('logger:addingconenttoqueue', [
+                'configvalid' => $config->is_valid(),
+                'configclionly' => $config->is_cli_only(),
+                'content' => $content
+            ]);
             self::add_to_content_queue($content, $eventname);
             return false;
         }

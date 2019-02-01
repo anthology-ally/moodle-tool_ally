@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_ally\logging\constants;
+
 // We have to include this so that it's available before an upgrade completes and registers the classes for autoloading.
 require_once($CFG->dirroot.'/admin/tool/ally/classes/adminsetting/ally_config_link.php');
 require_once($CFG->dirroot.'/admin/tool/ally/classes/adminsetting/ally_configpasswordunmask.php');
@@ -62,11 +64,22 @@ if ($hassiteconfig) {
     $settings->add(new ally_config_link('tool_ally/allyclientconfig', new lang_string('allyclientconfig', 'tool_ally'),
         new moodle_url('/admin/tool/ally/lti/view.php')));
 
+    $choices = [
+        constants::RANGE_NONE => get_string('loglevel:none', 'tool_ally'),
+        constants::RANGE_LIGHT => get_string('loglevel:light', 'tool_ally'),
+        constants::RANGE_MEDIUM => get_string('loglevel:medium', 'tool_ally'),
+        constants::RANGE_ALL => get_string('loglevel:all', 'tool_ally')
+    ];
+    $settings->add(new admin_setting_configselect('tool_ally/logrange', new lang_string('logrange', 'tool_ally'),
+        null, constants::RANGE_ALL, $choices));
+
     $config     = get_config('tool_ally');
     $configured = !empty($config) && !empty($config->adminurl) && !empty($config->key) && !empty($config->secret);
     if ($configured) {
         $ADMIN->add('tools', new admin_externalpage('allyclientconfig', get_string('allyclientconfig', 'tool_ally'),
             "$CFG->wwwroot/admin/tool/ally/lti/view.php", 'tool/ally:clientconfig'));
+        $ADMIN->add('tools', new admin_externalpage('allylogs', get_string('logs', 'tool_ally'),
+            "$CFG->wwwroot/admin/tool/ally/logs.php", 'tool/ally:viewlogs'));
     }
 
     $ADMIN->add('tools', $settings);
