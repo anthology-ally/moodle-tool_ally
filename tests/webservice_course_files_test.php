@@ -49,32 +49,6 @@ class tool_ally_webservice_course_files_testcase extends tool_ally_abstract_test
         $resource     = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
         $expectedfile = $this->get_resource_file($resource);
 
-        // Add file to a soon to be deleted section.
-        $section      = $this->getDataGenerator()->create_course_section(
-            ['section' => 1, 'course' => $course->id]);
-        $coursectx    = \context_course::instance($course->id);
-        $filename     = 'shouldbeanimage.jpg';
-        $filecontents = 'image contents (not really)';
-        // Add a fake inline image to the post.
-        $filerecordinline = array(
-            'contextid' => $coursectx->id,
-            'component' => 'course',
-            'filearea'  => 'section',
-            'itemid'    => $section->id,
-            'filepath'  => '/',
-            'filename'  => $filename,
-        );
-        $fs = get_file_storage();
-        // This file should not appear in the service returned files if section is deleted.
-        $fs->create_file_from_string($filerecordinline, $filecontents);
-
-        $files = course_files::service([$course->id]);
-        $files = external_api::clean_returnvalue(course_files::service_returns(), $files);
-        $this->assertCount(2, $files);
-
-        // The time has come to delete the section.
-        course_delete_section($course->id, 1, true);
-
         // This should be ignored.
         $course2 = $this->getDataGenerator()->create_course();
         $this->getDataGenerator()->create_module('resource', ['course' => $course2->id]);
