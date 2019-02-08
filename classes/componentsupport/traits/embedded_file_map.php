@@ -31,6 +31,7 @@ use tool_ally\models\component_content;
 
 use coding_exception;
 use context;
+use context_block;
 use context_course;
 use file_storage;
 
@@ -80,6 +81,9 @@ trait embedded_file_map {
                 $context = $cm->context;
 
                 $compstr = 'mod_'.$content->component;
+            } else if ($componenttype === component_base::TYPE_BLOCK) {
+                $context = context_block::instance($content->id);
+                $compstr = $content->component;
             } else {
                 if (!$content->courseid) {
                     return $content;
