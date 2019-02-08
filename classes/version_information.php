@@ -69,6 +69,7 @@ class version_information {
         $this->filterally = $this->get_component_version('filter_ally');
         $this->filterally->active = $this->check_filter_active();
         $this->reportally = $this->get_component_version('report_allylti');
+        $this->system = $this->get_system_info();
     }
 
     /**
@@ -140,5 +141,36 @@ class version_information {
 
     protected function check_filter_active() {
         return !empty(filter_get_global_states()['ally']);
+    }
+
+    private function get_db_version() {
+        global $CFG, $DB;
+
+        if (stripos($CFG->dbtype, 'mysql') !== false ||
+            stripos($CFG->dbtype, 'pgsql') !== false
+        ) {
+            $row = (array) $DB->get_record_sql('SELECT version();');
+            if (isset($row['version'])) {
+                return $row['version'];
+            } else if (isset($row['version()'])) {
+                return $row['version()'];
+            }
+        }
+
+        return 'unknown';
+    }
+
+    private function get_system_info() {
+        global $CFG;
+
+        // It would be so nice if Moodle used PDO for DB connections :-(
+        // https://stackoverflow.com/a/32197593/6756121.
+        return (object) [
+            'os' => php_uname(),
+            'phposbuild' => PHP_OS,
+            'phpversion' => phpversion(),
+            'dbtype' => $CFG->dbtype,
+            'dbversion' => $this->get_db_version()
+        ];
     }
 }
