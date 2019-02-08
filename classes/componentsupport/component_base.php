@@ -42,6 +42,8 @@ abstract class component_base {
 
     const TYPE_MOD = 'mod';
 
+    const TYPE_BLOCK = 'block';
+
     protected $tablefields = [];
 
     /**
@@ -92,7 +94,12 @@ abstract class component_base {
     protected function get_component_name() {
         $reflect = new \ReflectionClass($this);
         $class = $reflect->getShortName();
-        return explode('_', $class)[0];
+        $matches = [];
+        if (!preg_match('/(.*)_component/', $class, $matches) || count($matches) < 2) {
+            throw new \coding_exception('Invalid component class '.$class);
+        }
+
+        return $matches[1];
     }
 
     /**
@@ -203,7 +210,7 @@ MSG;
 Unable to resolve component from subtable "$table" with id $id. A developer needs to override the method "$method" in the
 component $component so that it can cope with the table "$table".
 MSG;
-                throw coding_exception($msg);
+                throw new \coding_exception($msg);
             }
             $componentrecord = $DB->get_record($component, ['id' => $instanceid]);
             return $componentrecord->id;
