@@ -26,6 +26,8 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_ally\logging\logger;
+
 global $CFG;
 
 require_once($CFG->libdir.'/filelib.php');
@@ -47,7 +49,9 @@ abstract class push_updates {
         $this->config = $config ?: new push_config();
     }
 
-    abstract public function handle_send_error(\Exception $e);
+    abstract public function handle_send_error(array $context, \Exception $e);
+
+    abstract protected function on_send_success(array $context);
 
     /**
      * Post the updates to the endpoint.
@@ -67,13 +71,15 @@ abstract class push_updates {
 
         $senderrors = false;
 
+        $curlconfig = [
+            'CURLOPT_SSL_VERIFYPEER' => 1,
+            'CURLOPT_SSL_VERIFYHOST' => 2,
+            'CURLOPT_TIMEOUT'        => $this->config->get_timeout(),
+            'CURLOPT_CONNECTTIMEOUT' => $this->config->get_connect_timeout(),
+        ];
+
         try {
-            $curl->post($this->config->get_url(), $content, [
-                'CURLOPT_SSL_VERIFYPEER' => 1,
-                'CURLOPT_SSL_VERIFYHOST' => 2,
-                'CURLOPT_TIMEOUT'        => $this->config->get_timeout(),
-                'CURLOPT_CONNECTTIMEOUT' => $this->config->get_connect_timeout(),
-            ]);
+            $curl->post($this->config->get_url(), $content, $curlconfig);
             $this->verify_error($curl);
             $this->verify_http_code($curl);
         } catch (\Exception $e) {
@@ -87,6 +93,14 @@ abstract class push_updates {
         }
 
         $success = !$senderrors;
+
+        if ($success) {
+            $this->on_send_success([
+                'url' => $this->config->get_url(),
+                'curlconfig' => $curlconfig,
+                'payload' => $payload
+            ]);
+        }
 
         return $success;
     }

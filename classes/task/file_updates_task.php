@@ -28,7 +28,6 @@ use core\task\scheduled_task;
 use tool_ally\local_file;
 use tool_ally\push_config;
 use tool_ally\push_file_updates;
-use tool_ally\event\push_file_updates_summary;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -123,9 +122,6 @@ class file_updates_task extends scheduled_task {
                         $this->set_push_timestamp($timetosave);
                         return false;
                     }
-                    if (!empty($CFG->tool_ally_log_file_updates)) {
-                        push_file_updates_summary::create_from_payload($payload)->trigger();
-                    }
 
                     if ($this->clionly) {
                         // Successful send, enable live push updates.
@@ -179,10 +175,6 @@ class file_updates_task extends scheduled_task {
                     $this->clionly = true;
                     // Give up at this point.
                     return false;
-                }
-
-                if (!empty($CFG->tool_ally_log_file_updates)) {
-                    push_file_updates_summary::create_from_payload($payload, true)->trigger();
                 }
 
                 if ($this->clionly) {

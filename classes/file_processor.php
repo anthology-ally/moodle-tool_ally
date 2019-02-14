@@ -23,7 +23,6 @@
  */
 namespace tool_ally;
 
-use tool_ally\event\push_file_updates_summary;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -46,7 +45,6 @@ class file_processor {
      * @return bool Successfully pushed file.
      */
     private static function push_update(push_file_updates $updates, \stored_file $file) {
-        global $CFG;
         // Ignore draft files and files in the recycle bin.
         $filearea = $file->get_filearea();
         if ($filearea === 'draft' || $filearea === 'recyclebin_course') {
@@ -54,9 +52,6 @@ class file_processor {
         }
         $payload = [local_file::to_crud($file)];
         $updates->send($payload);
-        if (!empty($CFG->tool_ally_log_file_updates)) {
-            push_file_updates_summary::create_from_payload($payload)->trigger();
-        }
         return true;
     }
 
