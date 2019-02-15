@@ -109,6 +109,11 @@ trait html_content {
         }
 
         $timemodified = $record->$modifiedfield;
+        if ($modifiedfield === 'timemodified' && empty($timemodified)) {
+            if (!empty($record->timecreated)) {
+                $timemodified = $record->timecreated;
+            }
+        }
         $content = $record->$field;
         $formatfield = $field.'format';
         $contentformat = $record->$formatfield;
