@@ -26,7 +26,7 @@ use Exception;
  * Define database logging class.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.moodlerooms.com)
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class loggerdb extends loggerbase {
@@ -56,12 +56,12 @@ class loggerdb extends loggerbase {
             $exception = $context['_exception'];
             unset($context['_exception']);
             if ($exception instanceof Exception) {
-                /** @var Exception $exception */
                 $exmsg = $exception->getMessage();
                 $excode = $exception->getCode();
                 $exfile = $exception->getFile();
                 $exline = $exception->getLine();
                 $extrace = $exception->getTraceAsString();
+                /** @var Exception $exception */
                 $exception = 'Message: '.$exmsg."\n\n";
                 $exception .= 'Code: '.$excode."\n\n";
                 $exception .= 'File: '.$exfile."\n\n";

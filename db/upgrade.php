@@ -232,7 +232,6 @@ function xmldb_tool_ally_upgrade($oldversion) {
         if (!$dbman->table_exists($table)) {
             $dbman->create_table($table);
         }
-        $courses->close();
 
         // Ally savepoint reached.
         upgrade_plugin_savepoint(true, 2018080812, 'tool', 'ally');

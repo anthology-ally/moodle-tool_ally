@@ -19,7 +19,7 @@ defined('MOODLE_INTERNAL') || die();
  * Define logging constants.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.moodlerooms.com)
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class constants {

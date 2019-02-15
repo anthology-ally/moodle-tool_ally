@@ -28,6 +28,7 @@ $string['adminurl'] = 'Launch URL';
 $string['adminurldesc'] = 'The LTI launch URL used to access the Accessibility report.';
 $string['allyclientconfig'] = 'Ally configuration';
 $string['ally:clientconfig'] = 'Access and update client configuration';
+$string['ally:viewlogs'] = 'Ally logs viewer';
 $string['clientid'] = 'Client id';
 $string['clientiddesc'] = 'The Ally client id';
 $string['code'] = 'Code';
