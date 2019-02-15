@@ -28,11 +28,4 @@
         <license>MIT</license>
         <licenseversion></licenseversion>
     </library>
-    <library>
-        <location>vendor</location>
-        <name>Composer dependencies</name>
-        <version></version>
-        <license>Apache/MIT/BSD-3-Clause</license>
-        <licenseversion></licenseversion>
-    </library>
 </libraries>
