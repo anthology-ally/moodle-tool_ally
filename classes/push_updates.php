@@ -49,7 +49,7 @@ abstract class push_updates {
         $this->config = $config ?: new push_config();
     }
 
-    abstract public function handle_send_error(array $context, \Exception $e);
+    abstract public function handle_send_error(\Exception $e);
 
     abstract protected function on_send_success(array $context);
 

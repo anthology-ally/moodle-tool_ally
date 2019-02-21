@@ -41,7 +41,7 @@ require_once($CFG->libdir.'/filelib.php');
  */
 class push_content_updates extends push_updates{
 
-    public function handle_send_error(array $context, \Exception $e) {
+    public function handle_send_error(\Exception $e) {
         $climode = get_config('tool_ally', 'push_cli_only');
         // Too many errors, ensure it only runs on cli.
         set_config('push_cli_only', 1, 'tool_ally');
