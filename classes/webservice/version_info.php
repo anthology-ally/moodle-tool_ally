@@ -77,6 +77,13 @@ class version_info extends \external_api {
                 'version'    => new \external_value(PARAM_FLOAT, 'Moodle version'),
                 'release'    => new \external_value(PARAM_TEXT,  'Moodle release'),
                 'branch'     => new \external_value(PARAM_FLOAT, 'Moodle branch')
+            ]),
+            'system' => new \external_single_structure([
+                'os' => new \external_value(PARAM_TEXT,  'Server operating system info'),
+                'phposbuild' => new \external_value(PARAM_TEXT,  'PHP operating system build info'),
+                'phpversion' => new \external_value(PARAM_TEXT, 'PHP version'),
+                'dbtype' => new \external_value(PARAM_TEXT, 'Databse type'),
+                'dbversion' => new \external_value(PARAM_TEXT, 'Databse version')
             ])
         ]);
     }
@@ -92,7 +99,8 @@ class version_info extends \external_api {
             'tool_ally'       => $versioninfo->toolally,
             'filter_ally'     => $versioninfo->filterally,
             'report_allylti'  => $versioninfo->reportally,
-            'moodle'          => $versioninfo->core
+            'moodle'          => $versioninfo->core,
+            'system'          => $versioninfo->system
         ];
     }
 }
