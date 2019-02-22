@@ -273,4 +273,35 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
         );
         $this->assertEquals($expected, $content);
     }
+
+    public function test_service_block_html_content() {
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course();
+        $context = context_course::instance($course->id);
+
+        /** @var tool_ally_generator $blockgen */
+        $blockgen = $gen->get_plugin_generator('tool_ally');
+        $blocktitle = 'Some block';
+        $blockcontents = 'Some content';
+        $block = $blockgen->add_block($context, $blocktitle, $blockcontents);
+
+        $content = content::service($block->id, 'block_html', 'block_instances', 'configdata');
+        $content->contenturl = null; // We don't want to compare this.
+        $expected = new component_content(
+            $content->id,
+            'block_html',
+            'block_instances',
+            'configdata',
+            null,
+            $block->timemodified,
+            FORMAT_HTML,
+            $blockcontents,
+            $blocktitle
+        );
+        $this->assertEquals($expected, $content);
+    }
 }
