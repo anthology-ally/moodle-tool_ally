@@ -428,6 +428,13 @@ class event_handlers {
         self::module_item_crud($event, self::API_DELETED, 'content');
     }
 
+    /**
+     * @param base $event
+     * @param $eventname
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     */
     private static function lesson_page_crud(base $event, $eventname) {
         global $DB;
 
@@ -448,6 +455,7 @@ class event_handlers {
     /**
      * @param page_created $event
      * @throws \coding_exception
+     * @throws \dml_exception
      * @throws \moodle_exception
      */
     public static function lesson_page_created(page_created $event) {
@@ -465,12 +473,12 @@ class event_handlers {
     }
 
     /**
-     * @param page_updated $event
+     * @param page_deleted $event
      * @throws \coding_exception
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public static function lesson_page_deleted(page_updated $event) {
+    public static function lesson_page_deleted(page_deleted $event) {
         self::lesson_page_crud($event, self::API_DELETED);
     }
 }
