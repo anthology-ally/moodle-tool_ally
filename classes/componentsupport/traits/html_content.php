@@ -72,13 +72,13 @@ trait html_content {
      * @param string $titlefield
      * @param string $modifiedfield
      * @param callable $recordlambda - lambda to run on record once recovered.
-     * @param stdClass|null $record
+     * @param stdClass|null|bool $record
      * @return component_content | null;
      * @throws \coding_exception
      */
     protected function std_get_html_content($id, $table, $field, $courseid = null, $titlefield = 'name',
                                             $modifiedfield = 'timemodified', $recordlambda = null,
-                                            stdClass $record = null) {
+                                            $record = null) {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -89,7 +89,7 @@ trait html_content {
 
         $this->validate_component_table_field($table, $field);
 
-        if ($record === null) {
+        if ($record === null || $record === false) {
             $record = $DB->get_record($table, ['id' => $id]);
         }
         if ($recordlambda) {
