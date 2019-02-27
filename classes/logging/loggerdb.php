@@ -42,6 +42,10 @@ class loggerdb extends loggerbase {
     public function log($level, $message, array $context = []) {
         global $DB;
 
+        if (!$DB->get_manager()->table_exists('tool_ally_log')) {
+            return;
+        }
+
         $message = trim($message);
 
         $explanation = null;

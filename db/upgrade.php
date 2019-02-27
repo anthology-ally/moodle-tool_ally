@@ -206,7 +206,7 @@ function xmldb_tool_ally_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018080810, 'tool', 'ally');
     }
 
-    if ($oldversion < 2018080812) {
+    if ($oldversion < 2018080814) {
 
         // Define table tool_ally_log to be created.
         $table = new xmldb_table('tool_ally_log');
@@ -234,7 +234,7 @@ function xmldb_tool_ally_upgrade($oldversion) {
         }
 
         // Ally savepoint reached.
-        upgrade_plugin_savepoint(true, 2018080812, 'tool', 'ally');
+        upgrade_plugin_savepoint(true, 2018080814, 'tool', 'ally');
     }
 
     return true;
