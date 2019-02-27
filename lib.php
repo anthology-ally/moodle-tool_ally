@@ -111,8 +111,8 @@ function tool_ally_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
     if ($filearea === 'vendorjs') {
         // Typically CDN fall backs would go in vendorjs.
         $path = $pluginpath.'vendorjs/'.implode('/', $args);
-        echo file_get_contents($path);
-        die;
+        send_file($path, basename($path));
+        return true;
     } else if ($filearea === 'vue') {
         // Vue components.
         $jsfile = array_pop ($args);
@@ -122,8 +122,8 @@ function tool_ally_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
         $args[] = 'dist';
         $args[] = $umdfile;
         $path = $pluginpath.'vue/'.implode('/', $args);
-        echo file_get_contents($path);
-        die;
+        send_file($path, basename($path));
+        return true;
     } else {
         die('unsupported file area');
     }
