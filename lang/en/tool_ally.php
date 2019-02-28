@@ -113,3 +113,13 @@ $string['logger:annotationmoderror_exp'] = 'Module was not correctly identified.
 $string['logger:failedtogetcoursesectionname'] = 'Failed to get course section name';
 
 $string['logger:cmidresolutionfailure'] = 'Failed to resolve course module id';
+
+$string['courseupdatestask'] = 'Push course events to ally';
+$string['logger:pushcoursesuccess'] = 'Successful push of course event(s) to ally end point';
+$string['logger:pushcourseliveskip'] = 'Live course event push failure';
+$string['logger:pushcourseerror'] = 'Live course event push failure';
+$string['logger:pushcourseliveskip_exp'] = 'Skipping live course event(s) push due to communication problems. Live course event push will be restored when course event updates task is successful. Please, review your configuration.';
+$string['logger:pushcourseserror'] = 'Unsuccessful push to ally end point';
+$string['logger:pushcourseserror_exp'] = 'Errors associated with course updates push to Ally services.';
+$string['logger:addingcourseevttoqueue'] = 'Adding course event to push queue';
+

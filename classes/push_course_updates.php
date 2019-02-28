@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Push file updates.
+ * Push course event updates.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2019 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,13 +33,13 @@ global $CFG;
 require_once($CFG->libdir.'/filelib.php');
 
 /**
- * Push file updates.
+ * Push course event updates class.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2019 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class push_content_updates extends push_updates {
+class push_course_updates extends push_updates {
 
     public function handle_send_error(\Exception $e) {
         $climode = get_config('tool_ally', 'push_cli_only');
@@ -47,9 +47,9 @@ class push_content_updates extends push_updates {
         set_config('push_cli_only', 1, 'tool_ally');
 
         if ($climode) {
-            $msg = 'logger:pushcontentliveskip';
+            $msg = 'logger:pushcourseliveskip';
         } else {
-            $msg = 'logger:pushcontenterror';
+            $msg = 'logger:pushcourseerror';
         }
 
         $context['_explanation'] = $msg.'_exp';
@@ -58,6 +58,6 @@ class push_content_updates extends push_updates {
     }
 
     public function on_send_success(array $context) {
-        logger::get()->info('logger:pushcontentsuccess', $context);
+        logger::get()->info('logger:pushcoursesuccess', $context);
     }
 }

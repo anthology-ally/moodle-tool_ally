@@ -58,9 +58,6 @@ use mod_lesson\event\page_created;
 use mod_lesson\event\page_updated;
 use mod_lesson\event\page_deleted;
 
-use tool_ally\models\component_content;
-use tool_ally\componentsupport\course_component;
-
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -74,9 +71,11 @@ defined('MOODLE_INTERNAL') || die();
 
 class event_handlers {
 
-    const API_CREATED = 'rich_content_created';
-    const API_UPDATED = 'rich_content_updated';
-    const API_DELETED = 'rich_content_deleted';
+    const API_RICH_CNT_CREATED = 'rich_content_created';
+    const API_RICH_CNT_UPDATED = 'rich_content_updated';
+    const API_RICH_CNT_DELETED = 'rich_content_deleted';
+    const API_COURSE_UPDATED = 'course_updated';
+    const API_COURSE_DELETED = 'course_deleted';
 
     /**
      * @param course_created $event
@@ -84,7 +83,11 @@ class event_handlers {
     public static function course_created(course_created $event) {
         $courseid = $event->courseid;
         $contents = local_content::get_html_content($courseid, 'course', 'course', 'summary', $courseid);
-        content_processor::push_content_update($contents, self::API_CREATED);
+        content_processor::push_content_update($contents, self::API_RICH_CNT_CREATED);
+        course_processor::push_course_event(
+            self::API_COURSE_UPDATED,
+            $event->timecreated,
+            $courseid);
     }
 
     /**
@@ -93,7 +96,11 @@ class event_handlers {
     public static function course_updated(course_updated $event) {
         $courseid = $event->courseid;
         $contents = local_content::get_html_content($courseid, 'course', 'course', 'summary', $courseid);
-        content_processor::push_content_update($contents, self::API_UPDATED);
+        content_processor::push_content_update($contents, self::API_RICH_CNT_UPDATED);
+        course_processor::push_course_event(
+            self::API_COURSE_UPDATED,
+            $event->timecreated,
+            $courseid);
     }
 
     /**
@@ -102,6 +109,10 @@ class event_handlers {
     public static function course_deleted(course_deleted $event) {
         $courseid = $event->courseid;
         local_content::queue_delete($courseid, $courseid, 'course', 'course', 'summary');
+        course_processor::push_course_event(
+            self::API_COURSE_DELETED,
+            $event->timecreated,
+            $courseid);
     }
 
     /**
@@ -128,7 +139,7 @@ class event_handlers {
      * @param course_section_created $event
      */
     public static function course_section_created(course_section_created $event) {
-        self::course_section_crud($event, self::API_CREATED);
+        self::course_section_crud($event, self::API_RICH_CNT_CREATED);
     }
 
     /**
@@ -136,7 +147,7 @@ class event_handlers {
      * @throws \dml_exception
      */
     public static function course_section_updated(course_section_updated $event) {
-        self::course_section_crud($event, self::API_UPDATED);
+        self::course_section_crud($event, self::API_RICH_CNT_UPDATED);
     }
 
     /**
@@ -144,7 +155,7 @@ class event_handlers {
      * @throws \dml_exception
      */
     public static function course_section_deleted(course_section_deleted $event) {
-        self::course_section_crud($event, self::API_DELETED);
+        self::course_section_crud($event, self::API_RICH_CNT_DELETED);
     }
 
     /**
@@ -165,14 +176,14 @@ class event_handlers {
      * @param course_module_created $event
      */
     public static function course_module_created(course_module_created $event) {
-        self::course_module_crud($event, self::API_CREATED);
+        self::course_module_crud($event, self::API_RICH_CNT_CREATED);
     }
 
     /**
      * @param course_module_updated $event
      */
     public static function course_module_updated(course_module_updated $event) {
-        self::course_module_crud($event, self::API_UPDATED);
+        self::course_module_crud($event, self::API_RICH_CNT_UPDATED);
     }
 
     /**
@@ -241,7 +252,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function forum_discussion_created(discussion_created $event, $forumtype = 'forum') {
-        self::forum_discussion_crud($event, self::API_CREATED, $forumtype);
+        self::forum_discussion_crud($event, self::API_RICH_CNT_CREATED, $forumtype);
     }
 
     /**
@@ -250,7 +261,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function forum_discussion_updated(discussion_updated $event, $forumtype = 'forum') {
-        self::forum_discussion_crud($event, self::API_UPDATED, $forumtype);
+        self::forum_discussion_crud($event, self::API_RICH_CNT_UPDATED, $forumtype);
     }
 
     /**
@@ -259,7 +270,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function forum_discussion_deleted(discussion_deleted $event, $forumtype = 'forum') {
-        self::forum_discussion_crud($event, self::API_DELETED, $forumtype);
+        self::forum_discussion_crud($event, self::API_RICH_CNT_DELETED, $forumtype);
     }
 
     /**
@@ -291,7 +302,7 @@ class event_handlers {
                 ];
                 throw new \moodle_exception('error:componentcontentnotfound', 'tool_ally', '', $a);
             }
-            content_processor::push_content_update([$content], self::API_UPDATED);
+            content_processor::push_content_update([$content], self::API_RICH_CNT_UPDATED);
         }
     }
 
@@ -301,7 +312,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function hsuforum_discussion_created(hsu_discussion_created $event) {
-        self::forum_discussion_crud($event, self::API_CREATED, 'hsuforum');
+        self::forum_discussion_crud($event, self::API_RICH_CNT_CREATED, 'hsuforum');
     }
 
     /**
@@ -310,7 +321,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function hsuforum_discussion_updated(hsu_discussion_updated $event) {
-        self::forum_discussion_crud($event, self::API_UPDATED, 'hsuforum');
+        self::forum_discussion_crud($event, self::API_RICH_CNT_UPDATED, 'hsuforum');
     }
 
     /**
@@ -319,7 +330,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function hsuforum_discussion_deleted(hsu_discussion_deleted $event) {
-        self::forum_discussion_crud($event, self::API_DELETED, 'hsuforum');
+        self::forum_discussion_crud($event, self::API_RICH_CNT_DELETED, 'hsuforum');
     }
 
     /**
@@ -359,7 +370,7 @@ class event_handlers {
             $id = $event->objectid;
         }
 
-        if ($eventname === self::API_DELETED) {
+        if ($eventname === self::API_RICH_CNT_DELETED) {
             $content = local_content::get_html_content_deleted($id, $module, $table, $contentfield, $event->courseid);
         } else {
             $content = local_content::get_html_content($id, $module, $table, $contentfield, $event->courseid);
@@ -381,7 +392,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function glossary_entry_created(entry_created $event) {
-        self::module_item_crud($event, self::API_CREATED, 'definition');
+        self::module_item_crud($event, self::API_RICH_CNT_CREATED, 'definition');
     }
 
     /**
@@ -390,7 +401,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function glossary_entry_updated(entry_updated $event) {
-        self::module_item_crud($event, self::API_UPDATED, 'definition');
+        self::module_item_crud($event, self::API_RICH_CNT_UPDATED, 'definition');
     }
 
     /**
@@ -399,7 +410,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function glossary_entry_deleted(entry_deleted $event) {
-        self::module_item_crud($event, self::API_DELETED, 'definition');
+        self::module_item_crud($event, self::API_RICH_CNT_DELETED, 'definition');
     }
 
     /**
@@ -408,7 +419,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function book_chapter_created(chapter_created $event) {
-        self::module_item_crud($event, self::API_CREATED, 'content');
+        self::module_item_crud($event, self::API_RICH_CNT_CREATED, 'content');
     }
 
     /**
@@ -417,7 +428,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function book_chapter_updated(chapter_updated $event) {
-        self::module_item_crud($event, self::API_UPDATED, 'content');
+        self::module_item_crud($event, self::API_RICH_CNT_UPDATED, 'content');
     }
 
     /**
@@ -426,7 +437,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function book_chapter_deleted(chapter_deleted $event) {
-        self::module_item_crud($event, self::API_DELETED, 'content');
+        self::module_item_crud($event, self::API_RICH_CNT_DELETED, 'content');
     }
 
     /**
@@ -460,7 +471,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function lesson_page_created(page_created $event) {
-        self::lesson_page_crud($event, self::API_CREATED);
+        self::lesson_page_crud($event, self::API_RICH_CNT_CREATED);
     }
 
     /**
@@ -470,7 +481,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function lesson_page_updated(page_updated $event) {
-        self::lesson_page_crud($event, self::API_UPDATED);
+        self::lesson_page_crud($event, self::API_RICH_CNT_UPDATED);
     }
 
     /**
@@ -480,6 +491,6 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function lesson_page_deleted(page_deleted $event) {
-        self::lesson_page_crud($event, self::API_DELETED);
+        self::lesson_page_crud($event, self::API_RICH_CNT_DELETED);
     }
 }

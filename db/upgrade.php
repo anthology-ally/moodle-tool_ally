@@ -237,5 +237,28 @@ function xmldb_tool_ally_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018080814, 'tool', 'ally');
     }
 
+    if ($oldversion < 2018080815) {
+
+        // Define table tool_ally_course_event to be created.
+        $table = new xmldb_table('tool_ally_course_event');
+
+        // Adding fields to table tool_ally_course_event.
+        $table->add_field('id',        XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name',      XMLDB_TYPE_CHAR, '15', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('time',      XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+        // Adding keys to table tool_ally_course_event.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+        // Conditionally launch create table for tool_ally_course_event.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Ally savepoint reached.
+        upgrade_plugin_savepoint(true, 2018080815, 'tool', 'ally');
+    }
+
     return true;
 }

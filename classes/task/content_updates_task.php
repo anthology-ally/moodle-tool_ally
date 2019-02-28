@@ -124,7 +124,7 @@ class content_updates_task extends scheduled_task {
 
             // Check to see if we have our batch size or if we are at the last file.
             if (count($payload) >= $config->get_batch_size() || !$deletes->valid()) {
-                $sendsuccess = content_processor::push_update($this->updates, $payload, event_handlers::API_DELETED);
+                $sendsuccess = content_processor::push_update($this->updates, $payload, event_handlers::API_RICH_CNT_DELETED);
                 if (!$sendsuccess) {
                     // Send failures occurred, might as well switch on cli only mode to avoid slowness on front end.
                     set_config('push_cli_only', 1, 'tool_ally');
