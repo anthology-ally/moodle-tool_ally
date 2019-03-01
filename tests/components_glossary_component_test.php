@@ -154,4 +154,16 @@ class tool_ally_components_glossary_component_testcase extends advanced_testcase
         $this->assert_content_items_not_contain_item($contentitems,
             $this->studententry->id, 'glossary', 'glossary_entries', 'definition');
     }
+
+    public function test_resolve_module_instance_id_from_glossary() {
+        $component = new glossary_component();
+        $instanceid = $component->resolve_module_instance_id('glossary', $this->glossary->id);
+        $this->assertEquals($this->glossary->id, $instanceid);
+    }
+
+    public function test_resolve_module_instance_id_from_entry() {
+        $component = new glossary_component();
+        $instanceid = $component->resolve_module_instance_id('glossary_entries', $this->studententry->id);
+        $this->assertEquals($this->glossary->id, $instanceid);
+    }
 }

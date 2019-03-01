@@ -291,7 +291,7 @@ SQL;
         $pages = [];
         foreach ($pagerows as $row) {
             $pages[] = $this->std_get_html_content(
-                $id, 'lesson_pages', 'contents', $lesson->courseid, 'title', 'timemodified', null, $row);
+                $row->id, 'lesson_pages', 'contents', $lesson->courseid, 'title', 'timemodified', null, $row);
         }
         return array_merge([$lesson], $pages);
     }
