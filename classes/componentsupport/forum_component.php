@@ -268,7 +268,7 @@ SQL;
               FROM {forum_posts} fp
          LEFT JOIN {forum_discussions} fd ON fp.discussion = fd.id
          LEFT JOIN {forum} f ON f.id = fd.forum
-             WHERE f.id = ?
+             WHERE fp.id = ?
 SQL;
             return $DB->get_field_sql($sql, $params);
 
