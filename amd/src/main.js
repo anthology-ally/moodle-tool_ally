@@ -67,7 +67,7 @@ define(['jquery', 'tool_ally/vue_2_5_16', 'tool_ally/vuerouter_2_5_3', 'tool_all
 
         getBootstrapVersion: function() {
             var version = 2; // Default is to assume 2.
-            if (window.$ && window.$.fn && window.$.fn.tooltip) {
+            if (window.$ && window.$.fn && window.$.fn.tooltip && window.$.fn.tooltip.Constructor) {
                 version = window.$.fn.tooltip.Constructor.VERSION;
                 if (version === undefined) {
                     version = 2; // Assume BS 2.
