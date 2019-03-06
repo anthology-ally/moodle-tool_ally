@@ -150,6 +150,7 @@ $services = [
             'core_course_get_courses',
             'core_course_get_categories',
             'core_enrol_get_enrolled_users',
+            'core_user_agree_site_policy',
             'tool_ally_get_files',
             'tool_ally_get_course_files',
             'tool_ally_get_file',
