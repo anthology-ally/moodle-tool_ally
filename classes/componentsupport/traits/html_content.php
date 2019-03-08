@@ -49,12 +49,33 @@ trait html_content {
         }
 
         $component = $this->get_component_name();
-        $select = "course = ? AND introformat = ? AND intro !=''";
-        $rs = $DB->get_recordset_select($component, $select, [$courseid, FORMAT_HTML]);
+
+        if (!empty($this->tablefields) && !empty($this->tablefields[$component])) {
+            $fields = $this->tablefields[$component];
+        } else {
+            $fields = ['intro'];
+        }
+
+        $fieldselect = [];
+        $params = [$courseid];
+        foreach ($fields as $field) {
+            $params[] = FORMAT_HTML;
+            $fieldselect[] = "({$field}format = ? AND $field != '')";
+        }
+
+        $fieldselect = implode(' OR ', $fieldselect);
+        $select = "course = ? AND ($fieldselect)";
+
+        $rs = $DB->get_recordset_select($component, $select, $params);
         foreach ($rs as $row) {
-            $array[] = new component(
-                $row->id, $component, $component, 'intro', $courseid, $row->timemodified,
-                $row->introformat, $row->name);
+            foreach ($fields as $field) {
+                $formatfield = $field.'format';
+                if (!empty($row->$field) && $row->$formatfield === FORMAT_HTML) {
+                    $array[] = new component(
+                        $row->id, $component, $component, $field, $courseid, $row->timemodified,
+                        $row->formatfield, $row->name);
+                }
+            }
         }
         $rs->close();
 
@@ -81,6 +102,9 @@ trait html_content {
                                             $record = null) {
         global $DB;
 
+        static $prevrecord = null;
+        static $prevrecordkey = null;
+
         if (!$this->module_installed()) {
             return null;
         }
@@ -89,9 +113,25 @@ trait html_content {
 
         $this->validate_component_table_field($table, $field);
 
-        if ($record === null || $record === false) {
+        // If we don't have a record, was the previous record we got the same as the one we need now?
+        // Note: This is an optimisation for where we want to build content for one record that has
+        // multiple content fields.
+        if (empty($record)) {
+            $newrecordkey = $table . '_' . $id;
+            if ($newrecordkey === $prevrecordkey && $prevrecord) {
+                $record = $prevrecord;
+            }
+        }
+
+        // Record is still null, let's get it.
+        if (empty($record)) {
             $record = $DB->get_record($table, ['id' => $id]);
         }
+
+        // Static cache the record.
+        $prevrecord = $record;
+        $prevrecordkey = $table . '_' . $id;
+
         if ($recordlambda) {
             $recordlambda($record);
             if ($courseid === null) {
