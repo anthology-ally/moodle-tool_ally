@@ -23,6 +23,7 @@
 
 namespace tool_ally\componentsupport\traits;
 
+use tool_ally\local;
 use tool_ally\local_content;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
@@ -73,7 +74,7 @@ trait html_content {
                 if (!empty($row->$field) && $row->$formatfield === FORMAT_HTML) {
                     $array[] = new component(
                         $row->id, $component, $component, $field, $courseid, $row->timemodified,
-                        $row->formatfield, $row->name);
+                        $row->$formatfield, $row->name);
                 }
             }
         }
@@ -104,6 +105,11 @@ trait html_content {
 
         static $prevrecord = null;
         static $prevrecordkey = null;
+
+        if (local::duringtesting()) {
+            $prevrecord = null;
+            $prevrecordkey = null;
+        }
 
         if (!$this->module_installed()) {
             return null;
