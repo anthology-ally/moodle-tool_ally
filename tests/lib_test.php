@@ -74,6 +74,9 @@ class tool_ally_lib_testcase extends tool_ally_abstract_testcase {
     public function test_tool_ally_after_section_deleted() {
         global $DB;
 
+        $this->markTestSkipped('Section summary files are being deleted now after integration of MDL-60972');
+        // TODO: Delete all section files deletion logic for Moodle 3.6.3. given changes made in MDL-60972.
+
         $this->resetAfterTest();
         $this->setAdminUser();
 
