@@ -27,7 +27,7 @@ require_login();
 require_capability('tool/ally:viewlogs', context_system::instance());
 
 
-$PAGE->set_url('/admin/tool/ally/log.php');
+$PAGE->set_url('/admin/tool/ally/logs.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_title(get_string('logs', 'tool_ally'));
 $PAGE->set_pagelayout('report');
