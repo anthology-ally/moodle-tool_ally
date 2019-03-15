@@ -27,6 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 use tool_ally\local;
+use tool_ally\models\component;
+use tool_ally\models\component_content;
 
 require_once($CFG->dirroot.'/webservice/tests/helpers.php');
 
@@ -173,5 +175,58 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
         $this->assertEquals($expectedfile->get_mimetype(), $servicefile['mimetype']);
         $this->assertEquals($expectedfile->get_contenthash(), $servicefile['contenthash']);
         $this->assertEquals($expectedfile->get_timemodified(), local::iso_8601_to_timestamp($servicefile['timemodified']));
+    }
+
+
+    /**
+     * Is a component model instance within an array?
+     * @param component $component
+     * @param array $contentitems
+     * @return bool
+     */
+    protected function component_is_in_array(component $component, array $contentitems) {
+        $fields = ['component', 'table', 'field', 'courseid', 'contentformat', 'title'];
+
+        foreach ($contentitems as $item) {
+            $nomatch = false;
+            foreach ($fields as $field) {
+                if ($item->$field !== $component->$field) {
+                    $nomatch = true;
+                    break;
+                }
+            }
+            if (!$nomatch) {
+                // Matched all appropriate fields.
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Is component content model within an array?
+     * @param component_content $component
+     * @param array $contentitems
+     * @return bool
+     */
+    protected function component_content_is_in_array(component_content $componentcontent, array $contentitems) {
+        $fields = ['content', 'id', 'component', 'table', 'field', 'contentformat', 'title'];
+
+        foreach ($contentitems as $item) {
+            $nomatch = false;
+            foreach ($fields as $field) {
+                if ($item->$field !== $componentcontent->$field) {
+                    $nomatch = true;
+                    break;
+                }
+            }
+            if (!$nomatch) {
+                // Matched all appropriate fields.
+                return true;
+            }
+        }
+
+        return false;
     }
 }
