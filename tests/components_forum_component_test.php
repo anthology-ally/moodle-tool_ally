@@ -151,4 +151,20 @@ class tool_ally_components_forum_component_testcase extends advanced_testcase {
         $this->assert_content_items_contain_discussion_post($contentitems, $this->teacherdiscussion->id);
         $this->assert_content_items_not_contain_discussion_post($contentitems, $this->studentdiscussion->id);
     }
+
+    public function test_resolve_module_instance_id_from_forum() {
+        $component = new forum_component();
+        $instanceid = $component->resolve_module_instance_id($this->forumtype, $this->forum->id);
+        $this->assertEquals($this->forum->id, $instanceid);
+    }
+
+    public function test_resolve_module_instance_id_from_post() {
+        global $DB;
+
+        $discussion = $this->studentdiscussion;
+        $post = $DB->get_record($this->forumtype.'_posts', ['discussion' => $discussion->id, 'parent' => 0]);
+        $component = new forum_component();
+        $instanceid = $component->resolve_module_instance_id($this->forumtype.'_posts', $post->id);
+        $this->assertEquals($this->forum->id, $instanceid);
+    }
 }
