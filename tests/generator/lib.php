@@ -104,7 +104,7 @@ class tool_ally_generator extends component_generator_base {
         global $DB;
 
         $bm = $this->get_block_manager([$region], $context);
-        $bm->add_block('html', $region, 1, true, $pagetypepattern); // Wow - doesn't return anything useful like say, erm, the block id!
+        $bm->add_block('html', $region, 1, true, $pagetypepattern); // Wow - doesn't return anything useful like say, the block id!
         $blocks = $DB->get_records('block_instances', [], 'id DESC', 'id', 0, 1);
         if (empty($blocks)) {
             throw new coding_exception('Created a block but block instances empty!');
