@@ -65,6 +65,9 @@ class file extends \external_api {
             'url'          => new \external_value(PARAM_LOCALURL, 'File URL'),
             'downloadurl'  => new \external_value(PARAM_LOCALURL, 'Web service download URL'),
             'location'     => new \external_value(PARAM_LOCALURL, 'URL to view file in context'),
+            'contextid'      => new \external_value(PARAM_INT, 'File context id'),
+            'contextlevel' => new \external_value(PARAM_INT, 'File context level'),
+            'contextpath'  => new \external_value(PARAM_TEXT, 'File context path')
         ]);
     }
 
@@ -73,6 +76,7 @@ class file extends \external_api {
      * @return array
      */
     public static function service($id) {
+        global $DB;
 
         $params = self::validate_parameters(self::service_parameters(), ['id' => $id]);
 
@@ -81,7 +85,10 @@ class file extends \external_api {
             throw new \moodle_exception('filenotfound', 'error');
         }
 
-        $context = \context::instance_by_id($file->get_contextid());
+        $filecontext = \context::instance_by_id($file->get_contextid());
+        self::validate_context($filecontext);
+        require_capability('moodle/course:view', $filecontext);
+        require_capability('moodle/course:viewhiddencourses', $filecontext);
 
         $component = $file->get_component();
         $filearea = $file->get_filearea();
@@ -91,11 +98,11 @@ class file extends \external_api {
             throw new \moodle_exception('filenotfound', 'error');
         }
 
-        self::validate_context($context);
-        require_capability('moodle/course:view', $context);
-        require_capability('moodle/course:viewhiddencourses', $context);
-
         $resolver = new file_url_resolver();
+
+        $contextpath = $DB->get_field('context', 'path', ['id' => $file->get_contextid()]);
+        // Note, null coalesce would have been nice below but we can't use that due to self hosters not on PHP 7+.
+        $contextpath = $contextpath ? $contextpath : 'Unable to find context path!';
 
         return [
             'id'           => $file->get_pathnamehash(),
@@ -108,6 +115,9 @@ class file extends \external_api {
             'url'          => local_file::url($file)->out(false),
             'downloadurl'  => local_file::webservice_url($file)->out(false),
             'location'     => $resolver->resolve_url($file)->out(false),
+            'contextid'    => $file->get_contextid(),
+            'contextlevel' => $filecontext->contextlevel,
+            'contextpath'  => $contextpath
         ];
     }
 }
