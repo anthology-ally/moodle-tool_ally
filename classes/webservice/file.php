@@ -55,19 +55,20 @@ class file extends \external_api {
      */
     public static function service_returns() {
         return new \external_single_structure([
-            'id'           => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
-            'courseid'     => new \external_value(PARAM_INT, 'Course ID of the file'),
-            'userid'       => new \external_value(PARAM_INT, 'User ID of the file owner'),
-            'name'         => new \external_value(PARAM_TEXT, 'File name'),
-            'mimetype'     => new \external_value(PARAM_RAW, 'File mime type'),
-            'contenthash'  => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
-            'timemodified' => new \external_value(PARAM_TEXT, 'Last modified time of the file'),
-            'url'          => new \external_value(PARAM_LOCALURL, 'File URL'),
-            'downloadurl'  => new \external_value(PARAM_LOCALURL, 'Web service download URL'),
-            'location'     => new \external_value(PARAM_LOCALURL, 'URL to view file in context'),
-            'contextid'      => new \external_value(PARAM_INT, 'File context id'),
-            'contextlevel' => new \external_value(PARAM_INT, 'File context level'),
-            'contextpath'  => new \external_value(PARAM_TEXT, 'File context path')
+            'id'              => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
+            'courseid'        => new \external_value(PARAM_INT, 'Course ID of the file'),
+            'userid'          => new \external_value(PARAM_INT, 'User ID of the file owner'),
+            'name'            => new \external_value(PARAM_TEXT, 'File name'),
+            'mimetype'        => new \external_value(PARAM_RAW, 'File mime type'),
+            'contenthash'     => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
+            'timemodified'    => new \external_value(PARAM_TEXT, 'Last modified time of the file'),
+            'url'             => new \external_value(PARAM_LOCALURL, 'File URL'),
+            'downloadurl'     => new \external_value(PARAM_LOCALURL, 'Web service download URL'),
+            'location'        => new \external_value(PARAM_LOCALURL, 'URL to view file in context'),
+            'contextid'       => new \external_value(PARAM_INT, 'File context id'),
+            'contextlevel'    => new \external_value(PARAM_INT, 'File context level'),
+            'contextpath'     => new \external_value(PARAM_TEXT, 'File context path'),
+            'contextcourseid' => new \external_value(PARAM_INT, 'File course context course id'),
         ]);
     }
 
@@ -105,19 +106,20 @@ class file extends \external_api {
         $contextpath = $contextpath ? $contextpath : 'Unable to find context path!';
 
         return [
-            'id'           => $file->get_pathnamehash(),
-            'courseid'     => local_file::courseid($file),
-            'userid'       => $file->get_userid(),
-            'name'         => $file->get_filename(),
-            'mimetype'     => $file->get_mimetype(),
-            'contenthash'  => $file->get_contenthash(),
-            'timemodified' => local::iso_8601($file->get_timemodified()),
-            'url'          => local_file::url($file)->out(false),
-            'downloadurl'  => local_file::webservice_url($file)->out(false),
-            'location'     => $resolver->resolve_url($file)->out(false),
-            'contextid'    => $file->get_contextid(),
-            'contextlevel' => $filecontext->contextlevel,
-            'contextpath'  => $contextpath
+            'id'              => $file->get_pathnamehash(),
+            'courseid'        => local_file::courseid($file),
+            'userid'          => $file->get_userid(),
+            'name'            => $file->get_filename(),
+            'mimetype'        => $file->get_mimetype(),
+            'contenthash'     => $file->get_contenthash(),
+            'timemodified'    => local::iso_8601($file->get_timemodified()),
+            'url'             => local_file::url($file)->out(false),
+            'downloadurl'     => local_file::webservice_url($file)->out(false),
+            'location'        => $resolver->resolve_url($file)->out(false),
+            'contextid'       => $file->get_contextid(),
+            'contextlevel'    => $filecontext->contextlevel,
+            'contextpath'     => $contextpath,
+            'contextcourseid' => $filecontext->get_course_context()->instanceid
         ];
     }
 }
