@@ -207,6 +207,9 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
         $ac = new auto_config();
         $ac->configure();
 
+        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
+
         $filename = 'somefile.txt';
         $filecontents = 'contents of file';
 

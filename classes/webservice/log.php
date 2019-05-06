@@ -15,17 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Files web service.
+ * Return log data.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_ally\webservice;
 
-use tool_ally\local;
-use tool_ally\local_file;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -163,7 +161,7 @@ class log extends \external_api {
                 $rowdata = unserialize($row->data);
                 $details->data = '<pre>'.var_export($rowdata, true).'</pre>';
             }
-            $details->exception = $row->exception;
+            $details->exception = htmlentities($row->exception);
             $details->explanation = $row->explanation;
             $row->details = $details;
             $data[] = $row;
