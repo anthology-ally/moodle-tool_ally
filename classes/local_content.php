@@ -103,7 +103,7 @@ class local_content {
 
             if (self::component_supports_html_content($component)) {
                 $type = local::get_component_support_type($component);
-                if ($type != component_base::TYPE_CORE) {
+                if ($type === component_base::TYPE_MOD) {
                     $fullcomponent = $type . '_' . $component;
                 } else {
                     $fullcomponent = $component;

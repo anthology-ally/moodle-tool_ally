@@ -222,4 +222,34 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
         $this->module_replace_test('page', 'page');
         $this->module_replace_test('page', 'page', 'content');
     }
+
+    public function test_service_block_html() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course();
+        $context = context_course::instance($course->id);
+
+        /** @var tool_ally_generator $blockgen */
+        $blockgen = $gen->get_plugin_generator('tool_ally');
+        $blocktitle = 'Some block';
+        $blockcontents = 'Some content';
+        $block = $blockgen->add_block($context, $blocktitle, $blockcontents);
+
+        $contentreplaced = '<p>Content replaced!</p>';
+
+        $result = replace_content::service(
+            $block->id, 'block_html', 'block_instances', 'configdata', $contentreplaced
+        );
+        $this->assertTrue($result['success']);
+
+        $block = $DB->get_record('block_instances', ['id' => $block->id]);
+        $config = unserialize(base64_decode($block->configdata));
+
+        $this->assertEquals($contentreplaced, $config->text);
+    }
 }
