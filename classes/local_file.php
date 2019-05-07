@@ -523,28 +523,4 @@ class local_file {
 
         cache::instance()->invalidate_file_keys($file);
     }
-
-    /**
-     * Reviews deleted sections of a course and queues orphaned files for deletion.
-     *
-     * @param int $courseid
-     * @throws \moodle_exception
-     */
-    public static function queue_deleted_section_files($courseid) {
-        global $DB;
-        $validator = self::file_validator();
-        $context = \context_course::instance($courseid);
-        $files = self::iterator();
-        $files->with_check_section(false);
-        $files->with_component('course');
-        $files->with_filearea('section');
-        $files->in_context($context);
-        $transaction = $DB->start_delegated_transaction();
-        foreach ($files as $file) {
-            if (!$validator->check_file_in_active_section($file)) {
-                self::queue_file_for_deletion($file);
-            }
-        }
-        $transaction->allow_commit();
-    }
 }

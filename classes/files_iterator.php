@@ -141,13 +141,6 @@ class files_iterator implements \Iterator {
     private $resultcount = 0;
 
     /**
-     * Flag for validating if the section in which the file is located exists.
-     *
-     * @var bool
-     */
-    private $checksection = true;
-
-    /**
      * @param file_validator $validator
      * @param \file_storage|null $storage
      */
@@ -191,7 +184,7 @@ class files_iterator implements \Iterator {
             $file    = $this->storage->get_file_instance($row);
 
             if (!empty($this->validfilter)) {
-                $filevalidation = $this->validator->validate_stored_file($file, $context, $this->checksection);
+                $filevalidation = $this->validator->validate_stored_file($file, $context);
                 if (($this->retrievevalid && !$filevalidation) || (!$this->retrievevalid && $filevalidation)) {
                     continue;
                 }
@@ -428,19 +421,5 @@ class files_iterator implements \Iterator {
         } else {
             return $this->resultcount >= $this->stopatcount;
         }
-    }
-
-
-
-    /**
-     * Set if section should be checked when scanning course files.
-     *
-     * @param boolean $checksection
-     * @return self
-     */
-    public function with_check_section($checksection) {
-        $this->checksection = $checksection;
-
-        return $this;
     }
 }
