@@ -38,7 +38,7 @@ class files_iterator implements \Iterator {
      * Number of records to fetch at a time.
      * @var int
      */
-    private $pagesize = 5000;
+    private $pagesize;
 
     /**
      * @var file_validator
@@ -145,8 +145,11 @@ class files_iterator implements \Iterator {
      * @param \file_storage|null $storage
      */
     public function __construct(file_validator $validator, \file_storage $storage = null) {
+        global $CFG;
         $this->validator = $validator;
         $this->storage   = $storage ?: get_file_storage();
+        $this->pagesize  = !empty($CFG->tool_ally_optimize_iteration_for_db) ?
+            10000 : 5000;
     }
 
     /**
@@ -178,6 +181,10 @@ class files_iterator implements \Iterator {
                 if (count($this->records) !== 0 && count($this->records) === $this->pagesize) {
                     $this->next_page();
                 }
+            }
+
+            if ($row->filename === '.') {
+                continue;
             }
 
             $context = $this->extract_context($row);
@@ -226,12 +233,15 @@ class files_iterator implements \Iterator {
     }
 
     private function next_page() {
-        global $DB;
+        global $DB, $CFG;
 
         $contextsql = \context_helper::get_preload_record_columns_sql('c');
         $params     = ['usr' => CONTEXT_USER, 'cat' => CONTEXT_COURSECAT, 'sys' => CONTEXT_SYSTEM];
-        $filtersql  = '';
+        $filtersql  = '1 = 1';
 
+        if (empty($CFG->tool_ally_optimize_iteration_for_db)) {
+            $filtersql .= ' AND f.filename <> \'.\'';
+        }
         if (!empty($this->since)) {
             $filtersql .= ' AND f.timemodified > :since';
             $params['since'] = $this->since;
@@ -265,7 +275,7 @@ class files_iterator implements \Iterator {
             SELECT f.*, $contextsql
               FROM {files} f
               JOIN {context} c ON c.id = f.contextid
-             WHERE f.filename <> '.'$filtersql
+             WHERE $filtersql
                AND c.contextlevel NOT IN(:usr, :cat, :sys) {$this->sort}
         ", $params, $this->page * $this->pagesize, $this->pagesize);
 
