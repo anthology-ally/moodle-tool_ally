@@ -59,4 +59,65 @@ class tool_ally_generator extends component_generator_base {
 
         return get_file_storage()->create_file_from_string($record + $defaults, $content);
     }
+
+    /**
+     * Stolen from /Users/guy/Development/www/moodle_test/blocks/tests/privacy_test.php
+     * Get the block manager.
+     *
+     * @param array $regions The regions.
+     * @param context $context The context.
+     * @param string $pagetype The page type.
+     * @param string $subpage The sub page.
+     * @return block_manager
+     */
+    protected function get_block_manager($regions, $context, $pagetype = 'page-type', $subpage = '') {
+        global $CFG;
+        require_once($CFG->libdir.'/blocklib.php');
+        $page = new moodle_page();
+        $page->set_context($context);
+        $page->set_pagetype($pagetype);
+        $page->set_subpage($subpage);
+        $page->set_url(new moodle_url('/'));
+
+        $blockmanager = new block_manager($page);
+        $blockmanager->add_regions($regions, false);
+        $blockmanager->set_default_region($regions[0]);
+
+        return $blockmanager;
+    }
+
+    /**
+     * Add block to specific context and return instance row.
+     * @param context $context
+     * @param $title
+     * @param $content
+     * @param string $region
+     * @param string $pagetypepattern
+     * @return stdClass
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function add_block(context $context,
+                              $title, $content,
+                              $region = 'side-pre',
+                              $pagetypepattern = 'course-view-*') {
+        global $DB;
+
+        $bm = $this->get_block_manager([$region], $context);
+        $bm->add_block('html', $region, 1, true, $pagetypepattern); // Wow - doesn't return anything useful like say, the block id!
+        $blocks = $DB->get_records('block_instances', [], 'id DESC', 'id', 0, 1);
+        if (empty($blocks)) {
+            throw new coding_exception('Created a block but block instances empty!');
+        }
+        $block = reset($blocks);
+        $blockconfig = (object) [
+            'title' => $title,
+            'format' => FORMAT_HTML,
+            'text' => $content
+        ];
+        $block->configdata = base64_encode(serialize($blockconfig));
+        $DB->update_record('block_instances', $block);
+        $block = $DB->get_record('block_instances', ['id' => $block->id]);
+        return $block;
+    }
 }
