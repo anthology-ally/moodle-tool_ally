@@ -123,3 +123,5 @@ $string['logger:pushcourseserror'] = 'Unsuccessful push to ally end point';
 $string['logger:pushcourseserror_exp'] = 'Errors associated with course updates push to Ally services.';
 $string['logger:addingcourseevttoqueue'] = 'Adding course event to push queue';
 
+$string['logger:cmiderraticpremoddelete'] = 'Course module id has problems pre-deleting it.';
+$string['logger:cmiderraticpremoddelete_exp'] = 'Module was not correctly identified, either it does not exist due to section deletion or there is other factor which triggered the deletion hook and it not being found.';

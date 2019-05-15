@@ -27,7 +27,9 @@ use tool_ally\file_processor,
     tool_ally\local_file,
     tool_ally\cache,
     tool_ally\local_content,
-    tool_ally\componentsupport\interfaces\content_sub_tables;
+    tool_ally\componentsupport\interfaces\content_sub_tables,
+    tool_ally\local,
+    tool_ally\logging\logger;
 
 /**
  * Callback for after file deleted.
@@ -84,10 +86,12 @@ function tool_ally_pre_course_module_delete(stdClass $cm) {
         $component->queue_delete_sub_tables($cm);
     } catch (\moodle_exception $mex) {
         // Probably caught when disabled or erratic modules are in tests.
-        if (!\tool_ally\local::duringtesting()) {
+        if (!local::duringtesting()) {
             // Something is wrong with this module.
-            mtrace($mex->getMessage());
-            throw $mex;
+            $msg = 'logger:cmiderraticpremoddelete';
+            $context['_explanation'] = $msg.'_exp';
+            $context['_exception'] = $mex;
+            logger::get()->error($msg, $context);
         }
     }
 }
