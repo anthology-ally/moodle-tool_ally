@@ -122,7 +122,9 @@ class auto_config {
             "moodle/user:viewdetails",
             "moodle/user:viewhiddendetails",
             "webservice/rest:use",
-            "mod/resource:view"
+            "mod/resource:view",
+            "moodle/category:viewhiddencategories",
+            "tool/ally:viewlogs"
         ];
         foreach ($caps as $cap) {
             assign_capability($cap, CAP_ALLOW, $roleid, $contextid);

@@ -249,5 +249,26 @@ function xmldb_tool_ally_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2018080815, 'tool', 'ally');
     }
 
+    if ($oldversion < 2019061200) {
+
+        $user = $DB->get_record('user', ['username' => 'ally_webuser']);
+        // If the user exists we will update its capabilites.
+        if ($user) {
+
+            $contextid = \context_system::instance()->id;
+            // The two new capabilites.
+            $caps = [
+                "moodle/category:viewhiddencategories",
+                "tool/ally:viewlogs"
+            ];
+            // We assign those new capabilities.
+            foreach ($caps as $cap) {
+                assign_capability($cap, CAP_ALLOW, $user->id, $contextid);
+            }
+        }
+        // Ally savepoint reached.
+        upgrade_plugin_savepoint(true, 2019061200, 'tool', 'ally');
+    }
+
     return true;
 }
