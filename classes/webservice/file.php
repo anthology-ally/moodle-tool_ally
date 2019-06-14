@@ -95,7 +95,7 @@ class file extends \external_api {
         $filearea = $file->get_filearea();
         $wlkey = $component.'~'.$filearea;
 
-        if (!in_array($wlkey, file_validator::WHITELIST)) {
+        if (!in_array($wlkey, file_validator::whitelist())) {
             throw new \moodle_exception('filenotfound', 'error');
         }
 

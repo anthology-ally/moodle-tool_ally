@@ -266,7 +266,7 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
             'lesson_pages',
             'contents',
             null,
-            $page->timemodified,
+            $content->timemodified,
             $page->contentsformat,
             $pagecontents,
             $pagetitle
