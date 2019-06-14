@@ -94,9 +94,9 @@ class tool_ally_components_page_component_testcase extends tool_ally_abstract_te
         $this->setAdminUser();
         $contentitems = course_content::service([$this->course->id]);
         $component = new component(0, 'page', 'page', 'intro', $this->course->id, 0, FORMAT_HTML, $this->page->name);
-        $this->assertTrue($this->component_is_in_array($component, $contentitems));
+        $this->assert_component_is_in_array($component, $contentitems);
         $component = new component(0, 'page', 'page', 'content', $this->course->id, 0, FORMAT_HTML, $this->page->name);
-        $this->assertTrue($this->component_is_in_array($component, $contentitems));
+        $this->assert_component_is_in_array($component, $contentitems);
     }
 
     public function test_get_all_html_content() {
