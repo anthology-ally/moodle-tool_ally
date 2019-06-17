@@ -235,8 +235,6 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
      */
     public function test_role_validation() {
 
-        global $DB;
-
         $this->resetAfterTest();
 
         $now = time();
@@ -322,7 +320,6 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
             $this->assertTrue(in_array($filetocheck, $testfiles));
         }
         foreach ($files as $filetocheck) {
-            $fcount++;
             $this->assertNotEquals($filetocheck, $testfile3);
         }
         $this->assertEquals(2, $fcount);
@@ -344,13 +341,11 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $files = local_file::iterator();
         $files->since($now - WEEKSECS);
         $fcount = 0;
-        $testfile4withinfiles = false;
         $testfiles = [$testfile1, $testfile2, $testfile4];
         foreach ($files as $filetocheck) {
             $fcount++;
             $this->assertTrue(in_array($filetocheck, $testfiles));
         }
-        $this->assertTrue($testfile4withinfiles);
         $this->assertEquals(3, $fcount); // Count should be 3 as file $testfile3 is whitelisted as a teacher only file.
         // Add a file in course where user is not a teacher AND the file area is not white listed as a teacher only area.
         // Make sure files iterator does NOT include it.

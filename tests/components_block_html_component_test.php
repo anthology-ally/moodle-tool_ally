@@ -102,7 +102,9 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
         $this->setAdminUser();
         $id = $this->block->context->instanceid;
         $contentitems = course_content::service([$this->course->id]);
-        $component = new component($id, 'block_html', 'block_instances', 'configdata', $this->course->id, 0, FORMAT_HTML, $this->block->title);
+        $component = new component(
+            $id, 'block_html', 'block_instances', 'configdata',
+            $this->course->id, 0, FORMAT_HTML, $this->block->title);
         $this->assert_component_is_in_array($component, $contentitems);
 
     }

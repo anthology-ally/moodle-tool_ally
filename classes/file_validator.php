@@ -150,6 +150,16 @@ class file_validator {
         // i.e. is it in a component that only teachers should have access to use.
         $component = $file->get_component();
         $area = $file->get_filearea();
+
+        // Check if section has not been deleted.
+        if ($checksection && $component === 'course' && $area === 'section') {
+            $allok = $this->check_file_in_active_section($file, $context);
+
+            if (!$allok) {
+                return false;
+            }
+        }
+
         $compteacheronly = $this->check_component_area_teacher_whitelist($component, $area);
         if ($compteacheronly) {
             // At this point we do not need to check that the user is still an editing teacher / manager / admin / etc.
@@ -160,15 +170,6 @@ class file_validator {
             // admin / etc because they might a) No longer be enrolled on the course, b) Have a different role to the
             // one they had when they created the file.
             return true;
-        }
-
-        // Check if section has not been deleted.
-        if ($checksection && $component === 'course' && $area === 'section') {
-            $allok = $this->check_file_in_active_section($file, $context);
-
-            if (!$allok) {
-                return false;
-            }
         }
 
         // Check if component area is valid AND user is an editing teacher / manager / admin / etc.
