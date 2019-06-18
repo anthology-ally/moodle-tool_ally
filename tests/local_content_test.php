@@ -140,7 +140,6 @@ class tool_ally_local_content_testcase extends tool_ally_abstract_testcase {
         $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
 
-        $this->expectException(\moodle_exception::class);
         $content = local_content::get_html_content(9999, 'course', 'course', 'summary');
         $this->assertEquals(null, $content);
 
@@ -155,7 +154,9 @@ class tool_ally_local_content_testcase extends tool_ally_abstract_testcase {
             null,
             $course->timemodified,
             $course->summaryformat,
-            $coursesummary
+            $coursesummary,
+            $course->fullname,
+            new moodle_url('/course/edit.php?id='.$course->id).''
         );
 
         $content = local_content::get_html_content($course->id, 'course', 'course', 'summary');
@@ -166,6 +167,7 @@ class tool_ally_local_content_testcase extends tool_ally_abstract_testcase {
         $this->assertTrue($result);
 
         $expectedcourse->content = $replacement;
+        $expectedcourse->contenthash = sha1($replacement);
         $content = local_content::get_html_content($course->id, 'course', 'course', 'summary');
         $this->assertEquals($expectedcourse, $content);
     }

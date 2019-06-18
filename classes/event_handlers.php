@@ -237,11 +237,8 @@ class event_handlers {
             $content = local_content::get_html_content($postid, $module, $table, 'message', $event->courseid);
         }
         if (!$content) {
-            $a = (object) [
-                'component' => $module,
-                'id' => $postid
-            ];
-            throw new \moodle_exception('error:componentcontentnotfound', 'tool_ally', '', $a);
+            $ident = local_content::urlident($module, $table, 'message', $postid);
+            throw new \moodle_exception('error:componentcontentnotfound', 'tool_ally', '', $ident);
         }
         content_processor::push_content_update([$content], $eventname);
     }
@@ -296,11 +293,8 @@ class event_handlers {
             // This is a discussion post, let's go!
             $content = local_content::get_html_content($postid, $module, $table, 'message', $event->courseid);
             if (!$content) {
-                $a = (object) [
-                    'component' => $module,
-                    'id' => $postid
-                ];
-                throw new \moodle_exception('error:componentcontentnotfound', 'tool_ally', '', $a);
+                $ident = local_content::urlident($module, $table, 'message', $postid);
+                throw new \moodle_exception('error:componentcontentnotfound', 'tool_ally', '', $ident);
             }
             content_processor::push_content_update([$content], self::API_RICH_CNT_UPDATED);
         }
@@ -376,11 +370,8 @@ class event_handlers {
             $content = local_content::get_html_content($id, $module, $table, $contentfield, $event->courseid);
         }
         if (!$content) {
-            $a = (object) [
-                'component' => $module,
-                'id' => $id
-            ];
-            throw new \moodle_exception('error:componentcontentnotfound', 'tool_ally', '', $a);
+            $ident = local_content::urlident($module, $table, $contentfield, $event->courseid);
+            throw new \moodle_exception('error:componentcontentnotfound', 'tool_ally', '', $ident);
         }
 
         content_processor::push_content_update([$content], $eventname);
