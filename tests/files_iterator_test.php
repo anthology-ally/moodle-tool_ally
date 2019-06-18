@@ -203,6 +203,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $now = time();
         $resource = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
         $file     = $this->get_resource_file($resource);
+        $this->assertEquals('content', $file->get_filearea());
         $DB->update_record('files',  (object) ['id' => $file->get_id(), 'userid' => $user->id]);
 
         $files = local_file::iterator();
@@ -223,7 +224,9 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
             $fcount++;
             $this->assertStoredFileEquals($file, $filetocheck);
         }
-        $this->assertEquals(0, $fcount);
+        // This should still be 1 because even though the user has been unenrolled, the resource "content" area is
+        // whitelisted for the resource module.
+        $this->assertEquals(1, $fcount);
     }
 
     /**
@@ -231,8 +234,6 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
      * someone with a teacher role but not when a student.
      */
     public function test_role_validation() {
-
-        global $DB;
 
         $this->resetAfterTest();
 
@@ -294,13 +295,14 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         }
         $this->assertEquals(2, $fcount);
 
-        // Add a file in course where user is not a teacher.
-        // Make sure files iterator does not include it.
+        // Add another file in course where user is teacher but this time with an file area not in CHECKROLE_WHITELIST
+        // or TEACHER_WHITELIST.
+        // In this case, even though the file was created by a teacher, it should NOT be included.
         $fs = get_file_storage();
         $filerecord = array(
-            'contextid' => context_course::instance($course2->id)->id,
+            'contextid' => context_course::instance($course1->id)->id,
             'component' => 'mod_assign',
-            'filearea' => 'intro',
+            'filearea' => 'notwhitelisted',
             'itemid' => 0,
             'filepath' => '/',
             'filename' => 'test3.txt',
@@ -312,11 +314,63 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $files = local_file::iterator();
         $files->since($now - WEEKSECS);
         $fcount = 0;
+        $testfiles = [$testfile1, $testfile2];
         foreach ($files as $filetocheck) {
             $fcount++;
-            $this->assertFalse($filetocheck->get_pathnamehash() === $testfile3->get_pathnamehash());
+            $this->assertTrue(in_array($filetocheck, $testfiles));
         }
-        $this->assertEquals(2, $fcount); // Count should be 2 as file in course2 was not created by teacher.
+        foreach ($files as $filetocheck) {
+            $this->assertNotEquals($filetocheck, $testfile3);
+        }
+        $this->assertEquals(2, $fcount);
+        // Add a file in course where user is not a teacher but the file area is white listed as a teacher only area.
+        // Make sure files iterator DOES include it.
+        $fs = get_file_storage();
+        $filerecord = array(
+            'contextid' => context_course::instance($course2->id)->id,
+            'component' => 'mod_assign',
+            'filearea' => 'intro',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'test4.txt',
+            'userid' => $user->id,
+            'modified' => $now
+        );
+        $teststring = 'moodletest3';
+        $testfile4 = $fs->create_file_from_string($filerecord, $teststring);
+        $files = local_file::iterator();
+        $files->since($now - WEEKSECS);
+        $fcount = 0;
+        $testfiles = [$testfile1, $testfile2, $testfile4];
+        foreach ($files as $filetocheck) {
+            $fcount++;
+            $this->assertTrue(in_array($filetocheck, $testfiles));
+        }
+        $this->assertEquals(3, $fcount); // Count should be 3 as file $testfile3 is whitelisted as a teacher only file.
+        // Add a file in course where user is not a teacher AND the file area is not white listed as a teacher only area.
+        // Make sure files iterator does NOT include it.
+        $fs = get_file_storage();
+        $filerecord = array(
+            'contextid' => context_course::instance($course2->id)->id,
+            'component' => 'mod_assign',
+            'filearea' => 'notwhitelisted',
+            'itemid' => 0,
+            'filepath' => '/',
+            'filename' => 'test5.txt',
+            'userid' => $user->id,
+            'modified' => $now
+        );
+        $teststring = 'moodletest5';
+        $testfile5 = $fs->create_file_from_string($filerecord, $teststring);
+        $files = local_file::iterator();
+        $files->since($now - WEEKSECS);
+        $fcount = 0;
+        foreach ($files as $filetocheck) {
+            $fcount++;
+            $this->assertFalse($filetocheck->get_pathnamehash() === $testfile5->get_pathnamehash());
+        }
+        // Count should be 3 as file $testfile4 was not created by teacher and is not whitelisted.
+        $this->assertEquals(3, $fcount);
     }
 
     /**

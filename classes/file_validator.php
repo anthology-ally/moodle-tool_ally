@@ -26,6 +26,11 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
+use stored_file;
+use context;
+use context_course;
+use coding_exception;
+
 /**
  * Validates if the file should be pushed to Ally.
  *
@@ -37,10 +42,12 @@ class file_validator {
 
     /**
      * Ally whitelisted components.
+     * NOTE: These are component areas where ONLY teachers and admins can create files.
+     * (Not taking into account role overrides, but hey - who uses those?).
      */
-    const WHITELIST = [
+    const TEACHER_WHITELIST = [
         'block_html~content',
-        'calendar~event_description',
+        'calendar~event_description', // Only teachers can create event descriptions within a course context.
         'course~overviewfiles',
         'course~section',
         'course~summary',
@@ -51,32 +58,21 @@ class file_validator {
         'mod_book~intro',
         'mod_chat~intro',
         'mod_choice~intro',
-        'mod_data~content',
         'mod_feedback~intro',
         'mod_folder~content',
         'mod_folder~intro',
-        'mod_forum~attachment',
         'mod_forum~intro',
-        'mod_forum~post',
-        'mod_glossary~attachment',
-        'mod_glossary~entry',
         'mod_glossary~intro',
-        'mod_hsuforum~attachment',
-        'mod_hsuforum~comments',
         'mod_hsuforum~intro',
-        'mod_hsuforum~post',
         'mod_imscp~content',
         'mod_kalvidres~intro',
         'mod_label~intro',
         'mod_lesson~intro',
-        'mod_lesson~mediafile',
         'mod_lesson~page_answers',
         'mod_lesson~page_contents',
         'mod_lesson~page_responses',
-        'mod_lightboxgallery~gallery_images',
         'mod_page~content',
         'mod_page~intro',
-        'mod_questionnaire~info',
         'mod_questionnaire~intro',
         'mod_questionnaire~question',
         'mod_quiz~intro',
@@ -86,6 +82,25 @@ class file_validator {
         'mod_scorm~intro',
         'mod_turnitintooltwo~intro',
         'mod_url~intro'
+    ];
+
+    /**
+     * White list of component / fileareas where both teachers AND students can create files but we still want to
+     * include the teacher files if we can prove they were authored by teachers. So basically this is a whitelist
+     * where we must ALSO check the role of the user who created the file.
+     */
+    const CHECKROLE_WHITELIST = [
+        'mod_lesson~mediafile',
+        'mod_forum~attachment',
+        'mod_forum~post',
+        'mod_hsuforum~attachment',
+        'mod_hsuforum~post',
+        'mod_hsuforum~comments',
+        'mod_glossary~entry',
+        'mod_glossary~attachment',
+        'mod_data~content',
+        'mod_lightboxgallery~gallery_images',
+        'mod_questionnaire~info'
     ];
 
     /**
@@ -109,35 +124,47 @@ class file_validator {
     }
 
     /**
-     * Validates if the file should be pushed to Ally.
-     * @param \stored_file $file
-     * @param \context|null $context
-     * @return bool
-     * @throws \coding_exception
+     * @return array
      */
-    public function validate_stored_file(\stored_file $file, \context $context = null) {
+    public static function whitelist() {
+        return array_merge(self::TEACHER_WHITELIST, self::CHECKROLE_WHITELIST);
+    }
+
+    /**
+     * Validates if the file should be pushed to Ally.
+     * @param stored_file $file
+     * @param context|null $context
+     * @return bool
+     * @throws coding_exception
+     */
+    public function validate_stored_file(stored_file $file, context $context = null) {
         // Can a course context be gotten?
-        $context = $context ?: \context::instance_by_id($file->get_contextid());
+        $context = $context ?: context::instance_by_id($file->get_contextid());
         $coursectx = $context->get_course_context(false);
-        $allok = $coursectx instanceof \context_course;
-        if (!$allok) {
+        if (!$coursectx instanceof context_course) {
+            // We couldn't get a course context for this file. We are only interested in course files so abort.
             return false;
         }
 
         // Is it whitelisted?
+        // i.e. is it in a component that only teachers should have access to use.
         $component = $file->get_component();
         $area = $file->get_filearea();
-        $allok = $this->check_component_area_teacher_whitelist($component, $area);
-        if (!$allok) {
-            return false;
+
+        $compteacheronly = $this->check_component_area_teacher_whitelist($component, $area);
+        if ($compteacheronly) {
+            // At this point we do not need to check that the user is still an editing teacher / manager / admin / etc.
+            // That is because we know that the file belongs to a context that is whitelisted as teacher only.
+            // E.g. the file was created as resource content, or a forum intro.
+            // A student would NOT have been able to create this file (not without some role shenanigans anyway).
+            // WE DO NOT bother checking if the user who created this file is still an editing teacher / manager /
+            // admin / etc because they might a) No longer be enrolled on the course, b) Have a different role to the
+            // one they had when they created the file.
+            return true;
         }
 
-        // Check if user is an editing teacher / manager / admin / etc.
-        $userid = $file->get_userid();
-        $allok = empty($userid) || array_key_exists($userid, $this->userids) ||
-            $this->assignments->has($userid, $context);
-
-        return $allok;
+        // Check if component area is valid AND user is an editing teacher / manager / admin / etc.
+        return $this->check_component_area_whitelist_and_user_type($component, $area, $file, $context);
     }
 
     /**
@@ -148,6 +175,27 @@ class file_validator {
      */
     private function check_component_area_teacher_whitelist($component, $filearea) {
         $key = $component.'~'.$filearea;
-        return in_array($key, self::WHITELIST);
+        return in_array($key, self::TEACHER_WHITELIST);
+    }
+
+    /**
+     * Check component and area to see if it's whitelisted for both teacher and student authorship.
+     * This DOES NOT mean that student files will be accepted - it means that a further check on user type
+     * is required to ensure a teacher created the file.
+     * @param string $component
+     * @param string $filearea
+     * @param stored_file $file
+     * @param context $context
+     * @return bool
+     */
+    private function check_component_area_whitelist_and_user_type($component, $filearea,
+                                                                  stored_file $file, context $context) {
+        $key = $component.'~'.$filearea;
+        if (!in_array($key, self::CHECKROLE_WHITELIST)) {
+            return false;
+        }
+        $userid = $file->get_userid();
+        return empty($userid) || array_key_exists($userid, $this->userids) ||
+            $this->assignments->has($userid, $context);
     }
 }

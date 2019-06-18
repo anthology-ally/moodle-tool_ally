@@ -184,24 +184,24 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      * @param array $contentitems
      * @return bool
      */
-    protected function component_is_in_array(component $component, array $contentitems) {
+    protected function assert_component_is_in_array(component $component, array $contentitems) {
         $fields = ['component', 'table', 'field', 'courseid', 'contentformat', 'title'];
 
+        $found = false;
         foreach ($contentitems as $item) {
-            $nomatch = false;
+            $fcount = 0;
+            $expected = count($fields);
             foreach ($fields as $field) {
-                if ($item->$field !== $component->$field) {
-                    $nomatch = true;
-                    break;
+                if ($item->$field === $component->$field) {
+                    $fcount ++;
                 }
             }
-            if (!$nomatch) {
-                // Matched all appropriate fields.
-                return true;
+            if ($found = $found || ($fcount === $expected)) {
+                break;
             }
         }
 
-        return false;
+        $this->assertTrue($found, 'Failed to find on component within content item set');
     }
 
     /**

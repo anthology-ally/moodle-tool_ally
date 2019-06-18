@@ -43,11 +43,6 @@ class tool_ally_components_book_component_testcase extends advanced_testcase {
     /**
      * @var stdClass
      */
-    private $student;
-
-    /**
-     * @var stdClass
-     */
     private $teacher;
 
     /**

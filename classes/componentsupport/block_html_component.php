@@ -125,7 +125,7 @@ class block_html_component extends component_base implements iface_html_content,
     }
 
     public function get_all_html_content($id) {
-        return $this->get_html_content($id, 'block_instances', 'configdata');
+        return [$this->get_html_content($id, 'block_instances', 'configdata')];
     }
 
     public function replace_html_content($id, $table, $field, $content) {
