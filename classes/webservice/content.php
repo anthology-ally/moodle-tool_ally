@@ -26,6 +26,8 @@ namespace tool_ally\webservice;
 
 defined('MOODLE_INTERNAL') || die();
 
+use tool_ally\exceptions\component_validation_exception;
+use tool_ally\local;
 use tool_ally\local_content;
 use tool_ally\models\component_content;
 
@@ -110,9 +112,18 @@ class content extends external_api {
         require_capability('moodle/course:view', \context_system::instance());
         require_capability('moodle/course:viewhiddencourses', \context_system::instance());
 
-        $content = local_content::get_html_content(
+        try {
+            $content = local_content::get_html_content(
                 $params['id'], $params['component'], $params['table'], $params['field'], $params['courseid'], true);
-        $content = $content ?? null;
+            $content = $content ?? null;
+            if ($content === null) {
+                $ident = local_content::urlident($component, $table, $field, $id);
+                throw new \moodle_exception('error:componentcontentnotfound', 'tool_ally', '', $ident);
+            }
+        } catch (component_validation_exception $e) {
+            $urlident = local_content::urlident($component, $table, $field, $id);
+            throw new \moodle_exception('error:invalidcomponentident', 'tool_ally', null, $urlident);
+        }
 
         return $content;
     }

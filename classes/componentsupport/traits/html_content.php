@@ -133,6 +133,9 @@ trait html_content {
         if (empty($record)) {
             $record = $DB->get_record($table, ['id' => $id]);
         }
+        if (!$record) {
+            return null;
+        }
 
         // Static cache the record.
         $prevrecord = $record;
@@ -147,11 +150,6 @@ trait html_content {
                     $courseid = $record->courseid;
                 }
             }
-        }
-
-        if (!$record) {
-            $ident = 'component='.$component.'&table='.$table.'&field='.$field.'&id='.$id;
-            throw new \moodle_exception('error:invalidcomponentident', 'tool_ally', null, $ident);
         }
 
         $timemodified = $record->$modifiedfield;

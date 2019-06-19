@@ -26,6 +26,7 @@ namespace tool_ally\componentsupport;
 use tool_ally\local;
 use tool_ally\role_assignments;
 use \context;
+use tool_ally\exceptions\component_validation_exception;
 
 defined ('MOODLE_INTERNAL') || die();
 
@@ -80,10 +81,14 @@ abstract class component_base {
      */
     protected function validate_component_table_field($table, $field) {
         if (empty($this->tablefields[$table]) || !is_array($this->tablefields)) {
-            throw new \coding_exception('Table '.$table.' is not allowed for the requested component content');
+            throw new component_validation_exception(
+                'Table '.$table.' is not allowed for the requested component content'
+            );
         }
         if (!in_array($field, $this->tablefields[$table])) {
-            throw new \coding_exception('Field '.$field.' is not allowed for the table '.$table);
+            throw new component_validation_exception(
+                'Field '.$field.' is not allowed for the table '.$table
+            );
         }
     }
 
