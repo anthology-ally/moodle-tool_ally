@@ -87,7 +87,8 @@ class lesson_component extends file_component_base implements iface_html_content
                        0 AS timecreated,
                        introformat AS format,
                        name AS title,
-                       name AS primarytitle
+                       name AS primarytitle,
+                       0 AS parentid
                   FROM {lesson}
                  WHERE introformat = ? AND course = ?)
 
@@ -98,7 +99,8 @@ class lesson_component extends file_component_base implements iface_html_content
                        lp.timecreated,
                        lp.contentsformat AS format,
                        lp.title,
-                       l.name AS primarytitle
+                       l.name AS primarytitle,
+                       l.id AS parentid
                   FROM {lesson} l
                   JOIN {lesson_pages} lp ON lp.lessonid = l.id AND lp.contentsformat = ?
                    AND lp.contents IS NOT NULL AND lp.contents !=''
@@ -111,7 +113,8 @@ class lesson_component extends file_component_base implements iface_html_content
                        la.timecreated,
                        la.answerformat AS format,
                        '[answernotitle]' AS title,
-                       l.name AS primarytitle
+                       l.name AS primarytitle,
+                       la.pageid AS parentid
                   FROM {lesson} l
                   JOIN {lesson_answers} la ON la.lessonid = l.id AND la.answerformat = ?
                    AND la.answer IS NOT NULL AND la.answer != ''
@@ -124,7 +127,8 @@ class lesson_component extends file_component_base implements iface_html_content
                        la.timecreated,
                        la.responseformat AS format,
                        '[answernotitle]' AS title,
-                       l.name AS primarytitle
+                       l.name AS primarytitle,
+                       la.pageid AS parentid
                   FROM {lesson} l
                   JOIN {lesson_answers} la ON la.lessonid = l.id AND la.responseformat = ?
                    AND la.response IS NOT NULL AND la.response != ''
@@ -171,6 +175,8 @@ SQL;
                 $id, 'lesson', $table, $field, $courseid, $row->timemodified,
                 $row->format, $title);
 
+            $array[$ident][$id]->meta->parentid = $row->parentid;
+
         }
         $rs->close();
         return $array;
@@ -181,10 +187,21 @@ SQL;
 
         $array = $this->content_by_identifier($courseid);
         foreach ($array as $ident => $values) {
+            $parentid = null;
+            $prevparentid = null;
+            $count = 0;
             foreach ($values as $id => $content) {
+                $parentid = $content->meta->parentid;
+                if ($parentid !== $prevparentid) {
+                    $count = 0;
+                }
+                $prevparentid = $parentid;
+                $count++;
                 if ($ident === 'intros') {
                     list($course, $cm) = get_course_and_cm_from_instance($content->id, 'lesson');
                     $retarray[$ident][$cm->id] = $content->entity_id();
+                } else if ($ident === 'lesson_answers' || $ident === 'lesson_answers_response') {
+                    $retarray[$ident][$content->meta->parentid.'_'.$id.'_'.$count] = $content->entity_id();
                 } else {
                     $retarray[$ident][$id] = $content->entity_id();
                 }
