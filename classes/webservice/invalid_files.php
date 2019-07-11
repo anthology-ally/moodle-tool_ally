@@ -23,7 +23,6 @@
  */
 namespace tool_ally\webservice;
 
-use tool_ally\file_validator;
 use tool_ally\local;
 use tool_ally\local_file;
 
@@ -33,7 +32,7 @@ global $CFG;
 
 require_once("$CFG->libdir/externallib.php");
 
-class invalid_files extends \external_api {
+class invalid_files extends loggable_external_api {
 
     /**
      * @return \external_function_parameters
@@ -70,7 +69,7 @@ class invalid_files extends \external_api {
      * @throws \required_capability_exception
      * @throws \restricted_context_exception
      */
-    public static function service($page, $perpage) {
+    public static function execute_service($page, $perpage) {
         self::validate_context(\context_system::instance());
         require_capability('moodle/course:view', \context_system::instance());
         require_capability('moodle/course:viewhiddencourses', \context_system::instance());

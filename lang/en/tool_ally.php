@@ -125,3 +125,6 @@ $string['logger:addingcourseevttoqueue'] = 'Adding course event to push queue';
 
 $string['logger:cmiderraticpremoddelete'] = 'Course module id has problems pre-deleting it.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'Module was not correctly identified, either it does not exist due to section deletion or there is other factor which triggered the deletion hook and it not being found.';
+
+$string['logger:servicefailure'] = 'Failed when consuming service.';
+$string['logger:servicefailure_exp'] = '<br>Class: {$a->class}<br>Params: {$a->params}';

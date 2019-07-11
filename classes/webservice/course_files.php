@@ -24,11 +24,8 @@
 
 namespace tool_ally\webservice;
 
-use tool_ally\file_validator;
-use tool_ally\files_iterator;
 use tool_ally\local;
 use tool_ally\local_file;
-use tool_ally\role_assignments;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -41,7 +38,7 @@ require_once(__DIR__.'/../../../../../lib/externallib.php');
  * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class course_files extends \external_api {
+class course_files extends loggable_external_api {
     /**
      * @return \external_function_parameters
      */
@@ -71,7 +68,7 @@ class course_files extends \external_api {
      * @param array $ids List of course IDs
      * @return array
      */
-    public static function service($ids) {
+    public static function execute_service($ids) {
 
         $params      = self::validate_parameters(self::service_parameters(), ['ids' => $ids]);
 

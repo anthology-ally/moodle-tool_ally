@@ -38,7 +38,7 @@ require_once(__DIR__.'/../../../../../lib/externallib.php');
  * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class files extends \external_api {
+class files extends loggable_external_api {
     /**
      * @return \external_function_parameters
      */
@@ -74,7 +74,7 @@ class files extends \external_api {
      * @throws \required_capability_exception
      * @throws \restricted_context_exception
      */
-    public static function service($page, $perpage) {
+    public static function execute_service($page, $perpage) {
         self::validate_context(\context_system::instance());
         require_capability('moodle/course:view', \context_system::instance());
         require_capability('moodle/course:viewhiddencourses', \context_system::instance());

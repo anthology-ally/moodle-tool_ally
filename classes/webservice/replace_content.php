@@ -39,7 +39,7 @@ require_once(__DIR__.'/../../../../../course/lib.php');
  * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class replace_content extends \external_api {
+class replace_content extends loggable_external_api {
     /**
      * @return \external_function_parameters
      */
@@ -74,7 +74,7 @@ class replace_content extends \external_api {
      * @throws \required_capability_exception
      * @throws \restricted_context_exception
      */
-    public static function service($id, $component, $table, $field, $content) {
+    public static function execute_service($id, $component, $table, $field, $content) {
         $params = self::validate_parameters(self::service_parameters(), [
             'id' => $id,
             'component' => $component,
