@@ -24,9 +24,6 @@
 
 namespace tool_ally\webservice;
 
-use tool_ally\file_url_resolver;
-use tool_ally\local;
-use tool_ally\local_file;
 use tool_ally\version_information;
 
 defined('MOODLE_INTERNAL') || die();
@@ -40,7 +37,7 @@ require_once(__DIR__.'/../../../../../lib/externallib.php');
  * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class version_info extends \external_api {
+class version_info extends loggable_external_api {
     /**
      * @return \external_function_parameters
      */
@@ -91,7 +88,7 @@ class version_info extends \external_api {
     /**
      * @return array
      */
-    public static function service() {
+    public static function execute_service() {
 
         $versioninfo = new version_information();
 

@@ -40,7 +40,7 @@ require_once(__DIR__.'/../../../../../lib/externallib.php');
  * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class file extends \external_api {
+class file extends loggable_external_api {
     /**
      * @return \external_function_parameters
      */
@@ -76,7 +76,7 @@ class file extends \external_api {
      * @param string $id The file path name hash
      * @return array
      */
-    public static function service($id) {
+    public static function execute_service($id) {
         global $DB;
 
         $params = self::validate_parameters(self::service_parameters(), ['id' => $id]);

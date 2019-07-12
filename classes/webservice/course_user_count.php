@@ -37,7 +37,7 @@ require_once(__DIR__ . '/../../../../../lib/externallib.php');
  * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class course_user_count extends \external_api {
+class course_user_count extends loggable_external_api {
     /**
      * @return \external_function_parameters
      */
@@ -62,7 +62,7 @@ class course_user_count extends \external_api {
      * @param int $id Course id.
      * @return array
      */
-    public static function service($id) {
+    public static function execute_service($id) {
         $syscontext = \context_system::instance();
         self::validate_context($syscontext);
 

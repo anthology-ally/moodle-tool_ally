@@ -38,7 +38,7 @@ require_once(__DIR__.'/../../../../../lib/externallib.php');
  * @copyright Copyright (c) 2016 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class file_updates extends \external_api {
+class file_updates extends loggable_external_api {
 
     /**
      * @return \external_function_parameters
@@ -69,7 +69,7 @@ class file_updates extends \external_api {
      * @param string $since
      * @return array
      */
-    public static function service($since) {
+    public static function execute_service($since) {
 
         $params = self::validate_parameters(self::service_parameters(), ['since' => $since]);
 

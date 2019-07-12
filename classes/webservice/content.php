@@ -27,11 +27,9 @@ namespace tool_ally\webservice;
 defined('MOODLE_INTERNAL') || die();
 
 use tool_ally\exceptions\component_validation_exception;
-use tool_ally\local;
 use tool_ally\local_content;
 use tool_ally\models\component_content;
 
-use external_api;
 use external_value;
 use external_single_structure;
 use external_multiple_structure;
@@ -46,7 +44,7 @@ require_once(__DIR__.'/../../../../../lib/externallib.php');
  * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class content extends external_api {
+class content extends loggable_external_api {
     /**
      * @return external_function_parameters
      */
@@ -99,7 +97,7 @@ class content extends external_api {
      * @throws \required_capability_exception
      * @throws \restricted_context_exception
      */
-    public static function service($id, $component, $table, $field, $courseid = null) {
+    public static function execute_service($id, $component, $table, $field, $courseid = null) {
         $params = self::validate_parameters(self::service_parameters(), [
             'id'        => $id,
             'component' => $component,

@@ -23,7 +23,6 @@
  */
 namespace tool_ally\webservice;
 
-use tool_ally\file_validator;
 use tool_ally\local;
 use tool_ally\local_file;
 
@@ -33,7 +32,7 @@ global $CFG;
 
 require_once("$CFG->libdir/externallib.php");
 
-class course_invalid_files extends \external_api {
+class course_invalid_files extends loggable_external_api {
 
     /**
      * @return \external_function_parameters
@@ -66,7 +65,7 @@ class course_invalid_files extends \external_api {
      * @param array $ids List of course IDs
      * @return array
      */
-    public static function service($ids) {
+    public static function execute_service($ids) {
         $params = self::validate_parameters(self::service_parameters(), ['ids' => $ids]);
 
         self::validate_context(\context_system::instance());
