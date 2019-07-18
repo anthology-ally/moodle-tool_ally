@@ -78,8 +78,6 @@ class file_validator {
         'mod_quiz~intro',
         'mod_resource~intro',
         'mod_resource~content',
-        'mod_scorm~content',
-        'mod_scorm~intro',
         'mod_turnitintooltwo~intro',
         'mod_url~intro'
     ];
