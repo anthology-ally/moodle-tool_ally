@@ -28,10 +28,6 @@ use tool_ally\local_file;
 
 defined('MOODLE_INTERNAL') || die();
 
-global $CFG;
-
-require_once("$CFG->libdir/externallib.php");
-
 class invalid_files extends loggable_external_api {
 
     /**

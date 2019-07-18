@@ -29,8 +29,6 @@ use tool_ally\local_file;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
-
 /**
  * File updates web service class definition.
  *

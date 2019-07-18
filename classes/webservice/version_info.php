@@ -28,8 +28,6 @@ use tool_ally\version_information;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
-
 /**
  * Get version information.
  *

@@ -28,7 +28,6 @@ defined('MOODLE_INTERNAL') || die();
 
 use tool_ally\local_content;
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
 require_once(__DIR__.'/../../../../../course/lib.php');
 
 

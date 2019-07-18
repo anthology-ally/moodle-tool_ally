@@ -27,8 +27,6 @@ namespace tool_ally\webservice;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
-
 /**
  * Ally course retrieval webservice class.
  *

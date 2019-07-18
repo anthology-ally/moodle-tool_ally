@@ -35,8 +35,6 @@ use external_single_structure;
 use external_multiple_structure;
 use external_function_parameters;
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
-
 /**
  * Get content for single rich content item.
  *
