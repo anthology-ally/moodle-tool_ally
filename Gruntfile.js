@@ -114,9 +114,6 @@ module.exports = function(grunt) {
                 "font-sizes": false,
             }
         },
-        cssbeautifier : {
-            files : ["styles.css"]
-        },
         autoprefixer: {
             options: {
                 browsers: [
@@ -184,15 +181,14 @@ module.exports = function(grunt) {
     // Load contrib tasks.
     grunt.loadNpmTasks("grunt-autoprefixer");
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-cssbeautifier');
-    grunt.loadNpmTasks('grunt-contrib-csslint');
+    grunt.loadNpmTasks('grunt-sass-lint');
     grunt.loadNpmTasks("grunt-sass");
     grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks("grunt-exec");
 
     // Register tasks.
     grunt.registerTask("default", ["watch"]);
-    grunt.registerTask("compile", ["sass:globalassign", "autoprefixer", "cssbeautifier", "decache"]);
+    grunt.registerTask("compile", ["sass:globalassign", "autoprefixer", "decache"]);
     grunt.registerTask("decache", ["exec:decache"]);
     grunt.registerTask("vue", ["exec:vue"]);
 };

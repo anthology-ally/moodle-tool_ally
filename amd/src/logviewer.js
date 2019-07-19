@@ -30,8 +30,6 @@ define(
             this.globalComponents.tdHTML = tdHTML;
             this.globalComponents.tdLogDetails = tdLogDetails;
 
-            console.log('tdLogDetails', tdLogDetails);
-
             ajax.call([{
                 methodname: 'tool_ally_get_logs',
                 args: {
