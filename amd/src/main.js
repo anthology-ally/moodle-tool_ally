@@ -27,7 +27,7 @@
 (function() {
     var pluginJSURL = function(path) {
         return M.cfg.wwwroot + "/pluginfile.php/" + M.cfg.contextid + "/tool_ally/" + path;
-    }
+    };
 
     require.config({
         enforceDefine: false,
@@ -56,7 +56,8 @@
 })();
 
 
-define(['jquery', 'tool_ally/vue_2_5_16', 'tool_ally/vuerouter_2_5_3', 'tool_ally/vuedatatable'], function($, Vue, VueRouter, VueDataTable) {
+define(['jquery', 'tool_ally/vue_2_5_16', 'tool_ally/vuerouter_2_5_3',
+    'tool_ally/vuedatatable'], function($, Vue, VueRouter, VueDataTable) {
 
     Vue.use(VueRouter);
     // Note: .default is necessary when you are using require as opposed to import (require is AMD method to load modules).
