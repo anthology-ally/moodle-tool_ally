@@ -169,6 +169,7 @@ SQL;
         $intros = [];
         $content = [];
         $introcis = $this->get_intro_html_content_items($courseid);
+        $bookids = [];
         foreach ($introcis as $introci) {
             list($course, $cm) = get_course_and_cm_from_instance($introci->id, 'book');
             $intros[$cm->id] = $introci->entity_id();
@@ -177,9 +178,12 @@ SQL;
                 continue; // No point building annotations for pages that don't use them!
             }
 
-            $bookid = $cm->instance;
+            $bookids[] = $cm->instance;
+        }
+
+        if (!empty($bookids)) {
             $contentcis = $this->get_selected_html_content_items($courseid, 'content',
-                    'book_chapters', 'bookid', $bookid, 'title');
+                    'book_chapters', 'bookid', $bookids, 'title');
             foreach ($contentcis as $contentci) {
                 $content[$contentci->id] = $contentci->entity_id();
             }

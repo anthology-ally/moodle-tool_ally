@@ -235,7 +235,7 @@ trait html_content {
      * @param string $contentfield
      * @param null|string $table
      * @param null|string $selectfield
-     * @param null|string $selectval
+     * @param null|string|array $selectval
      * @param null|string $titlefield
      * @param null| \callable $compmetacallback
      * @return component[]
@@ -258,11 +258,12 @@ trait html_content {
         $selectfield = $selectfield === null ? 'course' : $selectfield;
         $selectval = $selectval === null ? $courseid : $selectval;
         $titlefield = $titlefield === null ? 'name' : $titlefield;
+        list($selectsql, $selectparams) = $DB->get_in_or_equal($selectval);
 
         $formatfld = $contentfield.'format';
 
-        $select = "$selectfield = ? AND $formatfld = ? AND $contentfield !=''";
-        $params = [$selectval, FORMAT_HTML];
+        $select = "$selectfield $selectsql AND $formatfld = ? AND $contentfield != ''";
+        $params = array_merge($selectparams, [FORMAT_HTML]);
         $rs = $DB->get_recordset_select($table, $select, $params);
         foreach ($rs as $row) {
             $comp = new component(
