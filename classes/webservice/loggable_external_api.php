@@ -27,10 +27,13 @@ namespace tool_ally\webservice;
 defined('MOODLE_INTERNAL') || die();
 
 use external_api;
+use moodle_exception;
 use Exception;
 use tool_ally\logging\logger;
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
+global $CFG;
+
+require_once("$CFG->libdir/externallib.php");
 
 /**
  * Abstract class for logging erroneous service consumption.
@@ -46,20 +49,35 @@ abstract class loggable_external_api extends external_api {
     public static function service() {
         $params = func_get_args();
         $classname = static::class;
+
+        // Catching and releasing exception.
         try {
             return call_user_func_array([$classname, 'execute_service'], $params);
         } catch (Exception $ex) {
-            // Catching and releasing exception.
-            $logstr = 'logger:servicefailure';
-            $msg = get_string($logstr . '_exp', 'tool_ally', (object)[
-                'class' => $classname,
-                'params' => var_export($params, true)
-            ]);
-            logger::get()->error($logstr, [
-                '_explanation' => $msg,
-                '_exception' => $ex
-            ]);
+            // Moodle exceptions are within the scope of normal functioning of this plugin.
+            // There is no need to log them.
+            if (!($ex instanceof moodle_exception) || (defined('PHPUNIT_TEST') && PHPUNIT_TEST)) {
+                self::log_exception($ex, $classname, $params);
+            }
             throw $ex;
         }
+    }
+
+    /**
+     * Logs an exception in the Ally PSR log.
+     * @param Exception $ex
+     * @param string $classname
+     * @param array $params
+     */
+    private static function log_exception(Exception $ex, string $classname, array $params) {
+        $logstr = 'logger:servicefailure';
+        $msg = get_string($logstr . '_exp', 'tool_ally', (object)[
+            'class' => $classname,
+            'params' => var_export($params, true)
+        ]);
+        logger::get()->error($logstr, [
+            '_explanation' => $msg,
+            '_exception' => $ex
+        ]);
     }
 }

@@ -26,8 +26,6 @@ namespace tool_ally\webservice;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
-
 /**
  * Delete a file.
  *
@@ -57,7 +55,16 @@ class delete_file extends loggable_external_api {
 
     /**
      * @param string $id The file path name hash
+     * @param int $userid
      * @return array
+     * @throws \WebserviceInvalidParameterException
+     * @throws \WebserviceParameterException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \invalid_parameter_exception
+     * @throws \moodle_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception.
      */
     public static function execute_service($id, $userid) {
         global $DB;

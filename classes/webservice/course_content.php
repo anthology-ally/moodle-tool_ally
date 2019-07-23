@@ -29,8 +29,6 @@ defined('MOODLE_INTERNAL') || die();
 use tool_ally\local;
 use tool_ally\local_content;
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
-
 /**
  * Get list of rich content items.
  *

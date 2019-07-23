@@ -31,8 +31,6 @@ use tool_ally\local_file;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
-
 /**
  * Get information about a single file.
  *
@@ -75,6 +73,14 @@ class file extends loggable_external_api {
     /**
      * @param string $id The file path name hash
      * @return array
+     * @throws \WebserviceInvalidParameterException
+     * @throws \WebserviceParameterException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \invalid_parameter_exception
+     * @throws \moodle_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
      */
     public static function execute_service($id) {
         global $DB;

@@ -28,8 +28,6 @@ use tool_ally\local_file;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
-
 /**
  * Replace a file.
  *
@@ -60,9 +58,20 @@ class replace_file extends loggable_external_api {
     }
 
     /**
-     * @param string $id The file path name hash
-     * @param int $userid User with teacher access to file
-     * @param int $draftitemid New file uploaded to draft area
+     * @param $id
+     * @param $userid
+     * @param $draftitemid
+     * @return array
+     * @throws \WebserviceInvalidParameterException
+     * @throws \WebserviceParameterException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     * @throws \file_exception
+     * @throws \invalid_parameter_exception
+     * @throws \moodle_exception
+     * @throws \required_capability_exception
+     * @throws \restricted_context_exception
+     * @throws \stored_file_creation_exception
      */
     public static function execute_service($id, $userid, $draftitemid) {
         global $DB, $USER;

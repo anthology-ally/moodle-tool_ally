@@ -28,8 +28,6 @@ use tool_ally\local;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/../../../../../lib/externallib.php');
-
 /**
  * Gets the amount of students and instructors per course.
  *
