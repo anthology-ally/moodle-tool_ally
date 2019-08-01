@@ -161,8 +161,8 @@ class log extends \external_api {
                 $rowdata = unserialize($row->data);
                 $details->data = '<pre>'.var_export($rowdata, true).'</pre>';
             }
-            $details->exception = htmlentities($row->exception);
-            $details->explanation = $row->explanation;
+            $details->exception = !empty(trim($row->exception)) ? $row->exception : null;
+            $details->explanation = !empty(trim($row->explanation)) ? $row->explanation : null;
             $row->details = $details;
             $data[] = $row;
         }
