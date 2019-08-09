@@ -89,18 +89,18 @@ class page_component extends component_base implements iface_html_content, annot
             return [];
         }
 
-        $intros = [];
         $introcis = $this->get_intro_html_content_items($courseid);
+        $contentcis = $this->get_selected_html_content_items($courseid, 'content');
+        $mappings = $this->map_content_items_to_cmids('page', array_merge($introcis, $contentcis));
+
+        $intros = [];
         foreach ($introcis as $introci) {
-            list($course, $cm) = get_course_and_cm_from_instance($introci->id, 'page');
-            $intros[$cm->id] = $introci->entity_id();
+            $intros[$mappings[$introci->id]] = $introci->entity_id();
         }
 
         $content = [];
-        $contentcis = $this->get_selected_html_content_items($courseid, 'content');
         foreach ($contentcis as $contentci) {
-            list($course, $cm) = get_course_and_cm_from_instance($contentci->id, 'page');
-            $content[$cm->id] = $contentci->entity_id();
+            $content[$mappings[$contentci->id]] = $contentci->entity_id();
         }
 
         return ['intros' => $intros, 'content' => $content];
