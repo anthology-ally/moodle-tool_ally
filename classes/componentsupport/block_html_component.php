@@ -82,8 +82,8 @@ class block_html_component extends component_base implements iface_html_content,
                 'configdata',
                 $courseid,
                 $row->timemodified,
-                $contentobj->format,
-                $contentobj->title
+                $contentobj->format ?? '',
+                $contentobj->title ?? ''
             );
         }
 
@@ -115,9 +115,9 @@ class block_html_component extends component_base implements iface_html_content,
             'configdata',
             $courseid,
             $row->timemodified,
-            $contentobj->format,
-            $contentobj->text,
-            $contentobj->title,
+            $contentobj->format ?? '',
+            $contentobj->text ?? '',
+            $contentobj->title ?? '',
             $url
             );
 

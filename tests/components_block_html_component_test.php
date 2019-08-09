@@ -65,10 +65,8 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
      */
     private $component;
 
-    private $block;
-
     public function setUp() {
-        global $CFG, $USER;
+        global $CFG;
 
         $this->resetAfterTest();
 
@@ -78,10 +76,17 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
         $this->course = $gen->create_course();
         $this->coursecontext = context_course::instance($this->course->id);
         require_once($CFG->dirroot.'/blocks/html/tests/search_content_test.php');
+        $this->component = local_content::component_instance('block_html');
+    }
+
+    private function add_block(?array $data = null): ?block_html{
+        global $USER;
 
         $sctc = new search_content_testcase();
 
-        $this->block = phpunit_util::call_internal_method($sctc, 'create_block', ['course' => $this->course], get_class($sctc));
+        $block = phpunit_util::call_internal_method($sctc, 'create_block',
+            ['course' => $this->course], get_class($sctc));
+
         // Change block settings to add some text and a file.
         $itemid = file_get_unused_draft_itemid();
         $fs = get_file_storage();
@@ -89,30 +94,125 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
         $fs->create_file_from_string(['component' => 'user', 'filearea' => 'draft',
             'contextid' => $usercontext->id, 'itemid' => $itemid, 'filepath' => '/',
             'filename' => 'file.txt'], 'File content');
-        $data = (object)['title' => 'Block title', 'text' => ['text' => '<div>Block html</div>',
-            'itemid' => $itemid, 'format' => FORMAT_HTML]];
-        $this->block->instance_config_save($data);
-        $page = phpunit_util::call_internal_method($sctc, 'construct_page',  ['course' => $this->course], get_class($sctc));
+
+        if ($data === null) {
+            $data = [
+                'title' => 'Block title',
+                'text' => [
+                    'text' => '<div>Block html</div>',
+                    'itemid' => $itemid,
+                    'format' => FORMAT_HTML
+                ]
+            ];
+        } else if (isset($data['text']) && empty($data['text']['itemid'])) {
+            $data['text']['itemid'] = $itemid;
+        }
+        $block->instance_config_save((object) $data);
+        $page = phpunit_util::call_internal_method($sctc, 'construct_page',
+            ['course' => $this->course], get_class($sctc));
         $blocks = $page->blocks->get_blocks_for_region($page->blocks->get_default_region());
-        $this->block = end($blocks);
-        $this->component = local_content::component_instance('block_html');
+        return end($blocks);
     }
 
     public function test_list_content() {
         $this->setAdminUser();
-        $id = $this->block->context->instanceid;
+        $block = $this->add_block();
+        $id = $block->context->instanceid;
         $contentitems = course_content::service([$this->course->id]);
         $component = new component(
             $id, 'block_html', 'block_instances', 'configdata',
-            $this->course->id, 0, FORMAT_HTML, $this->block->title);
+            $this->course->id, 0, FORMAT_HTML, $block->title);
         $this->assert_component_is_in_array($component, $contentitems);
 
     }
 
     public function test_get_all_html_content_items() {
-        $contentitems = $this->component->get_all_html_content($this->block->context->instanceid);
+        $block = $this->add_block();
+        $contentitems = $this->component->get_all_html_content($block->context->instanceid);
 
         $this->assert_content_items_contain_item($contentitems,
-            $this->block->context->instanceid, 'block_html', 'block_instances', 'configdata');
+            $block->context->instanceid, 'block_html', 'block_instances', 'configdata');
+    }
+
+    public function test_get_all_html_content() {
+        $sctc = new search_content_testcase();
+
+        // Create an empty unconfigured block.
+        // Ensure this does not trigger an error and that content has empty format and text.
+        $htmlblock = phpunit_util::call_internal_method($sctc, 'create_block',
+            ['course' => $this->course], get_class($sctc));
+        $block = $htmlblock->instance;
+        $contents = $this->component->get_all_html_content($block->id);
+        $this->assertCount(1, $contents);
+        $content = reset($contents);
+        $this->assertEmpty($content->title);
+        $this->assertEmpty($content->content);
+        $this->assertEmpty($content->contentformat);
+
+        // Update the block so that it is now configured.
+        $page = $htmlblock->page;
+        $itemid = file_get_unused_draft_itemid();
+        $expectedtitle = 'Block title';
+        $expectedtext = '<div>Block html</div>';
+        $expectedformat = FORMAT_HTML;
+        $data = [
+            'title' => $expectedtitle,
+            'text' => [
+                'text' => $expectedtext,
+                'itemid' => $itemid,
+                'format' => $expectedformat
+            ]
+        ];
+
+        // Reget the block.
+        $htmlblock->instance_config_save((object) $data);
+        $blocks = $page->blocks->get_blocks_for_region($page->blocks->get_default_region());
+        $block = end($blocks)->instance;
+        $contents = $this->component->get_all_html_content($block->id);
+        $this->assertCount(1, $contents);
+        $content = reset($contents);
+        $this->assertEquals($expectedtitle, $content->title);
+        $this->assertEquals($expectedtext, $content->content);
+        $this->assertEquals($expectedformat, $content->contentformat);
+    }
+
+    public function test_get_course_html_content_items() {
+        $sctc = new search_content_testcase();
+
+        // Create an empty unconfigured block.
+        // Ensure this does not trigger an error and that content has empty format and text.
+        $htmlblock = phpunit_util::call_internal_method($sctc, 'create_block',
+            ['course' => $this->course], get_class($sctc));
+        $contents = $this->component->get_course_html_content_items($this->course->id);
+
+        $this->assertCount(1, $contents);
+        $content = reset($contents);
+        $this->assertEquals('block_html', $content->component);
+        $this->assertEmpty($content->title);
+        $this->assertEmpty($content->contentformat);
+
+        // Update the block so that it is now configured.
+        $page = $htmlblock->page;
+        $itemid = file_get_unused_draft_itemid();
+        $expectedtitle = 'Block title';
+        $expectedtext = '<div>Block html</div>';
+        $expectedformat = FORMAT_HTML;
+        $data = [
+            'title' => $expectedtitle,
+            'text' => [
+                'text' => $expectedtext,
+                'itemid' => $itemid,
+                'format' => $expectedformat
+            ]
+        ];
+
+        // Reget the block.
+        $htmlblock->instance_config_save((object) $data);
+        $contents = $this->component->get_course_html_content_items($this->course->id);
+        $this->assertCount(1, $contents);
+        $content = reset($contents);
+        $this->assertEquals('block_html', $content->component);
+        $this->assertEquals($expectedtitle, $content->title);
+        $this->assertEquals($expectedformat, $content->contentformat);
     }
 }
