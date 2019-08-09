@@ -179,6 +179,28 @@ abstract class component_base {
     }
 
     /**
+     * Take a list of content items and return an array mapping the entity IDs with course module id.
+     *
+     * The resulting array is keyed on the content item ID, with the value being the course module id.
+     *
+     * @param string $table
+     * @param array $contentitems
+     * @return array
+     */
+    protected function map_content_items_to_cmids($table, $contentitems) {
+        global $DB;
+
+        list($insql, $params) = $DB->get_in_or_equal(array_column($contentitems, 'id'), SQL_PARAMS_NAMED);
+        $params['modulename'] = $table;
+        $sql = "SELECT instance.id, cm.id AS cmid
+                FROM {{$table}} instance
+                JOIN {course_modules} cm ON cm.instance = instance.id
+                JOIN {modules} m ON m.id = cm.module AND m.name = :modulename
+                WHERE instance.id $insql";
+        return $DB->get_records_sql_menu($sql, $params);
+    }
+
+    /**
      * Attempt to resolve a module instance id from a specific table + id.
      * You may need to override this method in a component for tables that do not easily link back to the module's
      * main table (e.g. table 2 levels down from main module table).
