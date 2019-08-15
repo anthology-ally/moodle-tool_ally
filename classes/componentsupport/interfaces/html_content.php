@@ -44,7 +44,7 @@ interface html_content {
      * @param null|int $courseid
      * @return component_content
      */
-    public function get_html_content($id, $table, $field, $courseid = null);
+    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content;
 
     /**
      * Get all html content for instance ($id).

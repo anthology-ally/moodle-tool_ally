@@ -27,6 +27,7 @@ defined ('MOODLE_INTERNAL') || die();
 use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
+use tool_ally\models\component_content;
 
 /**
  * Html content support for labels.
@@ -55,7 +56,7 @@ class label_component extends component_base implements iface_html_content {
         return $this->std_get_course_html_content_items($courseid);
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) {
+    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
         $content->title = $this->get_label_title_from_content($content->content);
         return ($content);

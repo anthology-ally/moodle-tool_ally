@@ -29,6 +29,7 @@ use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use tool_ally\models\component;
+use tool_ally\models\component_content;
 
 /**
  * Html content support for assignments.
@@ -52,7 +53,7 @@ class assign_component extends component_base implements iface_html_content {
         return $this->std_get_course_html_content_items($courseid);
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) {
+    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
         global $DB;
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
         if ($table === 'assign') {
