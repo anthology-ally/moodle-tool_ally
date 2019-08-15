@@ -29,6 +29,7 @@ use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use tool_ally\logging\logger;
 use tool_ally\models\component;
+use tool_ally\models\component_content;
 use moodle_url;
 
 require_once($CFG->dirroot.'/course/lib.php');
@@ -118,7 +119,7 @@ class course_component extends component_base implements iface_html_content {
         return $array;
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) {
+    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
         $titlefield = $table === 'course' ? 'fullname' : 'name';
         $recordlambda = null;
         if ($table === 'course_sections') {

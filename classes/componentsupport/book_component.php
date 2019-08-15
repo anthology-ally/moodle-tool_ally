@@ -98,7 +98,7 @@ SQL;
         return $array;
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) {
+    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
         global $DB;
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
         if ($table === 'book') {
