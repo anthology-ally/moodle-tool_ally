@@ -184,7 +184,7 @@ SQL;
         return ['posts' => $posts, 'intros' => $forumintros];
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) {
+    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
         if (!$this->module_installed()) {
             return null;
         }

@@ -44,13 +44,13 @@ trait embedded_file_map {
     /**
      * General purpose function for applying embedded file map to component content.
      *
-     * @param component_content $content
+     * @param component_content|null $content
      * @return component_content
      * @throws \coding_exception
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function apply_embedded_file_map(component_content $content) {
+    public function apply_embedded_file_map(?component_content $content) {
 
         $html = $content->content;
         $doc = local_content::build_dom_doc($html);

@@ -35,6 +35,7 @@ use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\componentsupport\traits\html_content;
 use tool_ally\local_file;
 use tool_ally\models\component;
+use tool_ally\models\component_content;
 
 /**
  * Html file replacement support for glossary.
@@ -166,7 +167,7 @@ SQL;
      * @param null|int $courseid
      * @return component_content
      */
-    public function get_html_content($id, $table, $field, $courseid = null) {
+    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
         if ($table === 'glossary') {
             return $this->std_get_html_content($id, $table, $field, $courseid);
         } else if ($table === 'glossary_entries') {

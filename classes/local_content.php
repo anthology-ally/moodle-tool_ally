@@ -177,7 +177,7 @@ class local_content {
     /**
      * Builds a DOMDocument from html string.
      * @param string $html
-     * @return bool | DOMDocument
+     * @return bool|DOMDocument
      */
     public static function build_dom_doc($html) {
         if (empty($html)) {
@@ -192,7 +192,14 @@ class local_content {
         return $doc;
     }
 
-    protected static function apply_embedded_file_map(component_content $content) {
+    /**
+     * @param component_content|null $content
+     * @return component_content|null
+     */
+    protected static function apply_embedded_file_map(?component_content $content) {
+        if (is_null($content)) {
+            return $content;
+        }
 
         $component = local::get_component_instance($content->component);
         if (method_exists($component, 'apply_embedded_file_map')) {
@@ -209,16 +216,18 @@ class local_content {
      * @param string $field
      * @param int $courseid
      * @param bool $includeembeddedfiles
-     * @return bool|component_content
+     * @return component_content|null
+     * @throws component_validation_exception
      */
     public static function get_html_content($id, $component, $table, $field,
-                                            $courseid = null, $includeembeddedfiles = false) {
-        $component = self::component_instance($component);
-        if (empty($component)) {
+                                            $courseid = null, $includeembeddedfiles = false) : ?component_content {
+        /** @var html_content $componentinstance */
+        $componentinstance = self::component_instance($component);
+        if (empty($component) || $componentinstance === false) {
             throw new component_validation_exception('Component '.$component.' does not exist');
         }
         /** @var component_content $content */
-        $content = $component->get_html_content($id, $table, $field, $courseid);
+        $content = $componentinstance->get_html_content($id, $table, $field, $courseid);
         if ($includeembeddedfiles && !empty($content)) {
             $content = self::apply_embedded_file_map($content);
         }

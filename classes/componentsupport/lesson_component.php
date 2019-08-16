@@ -33,6 +33,7 @@ use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use tool_ally\local_file;
 use tool_ally\models\component;
 use tool_ally\webservice\content;
+use tool_ally\models\component_content;
 
 use moodle_url;
 
@@ -235,7 +236,7 @@ SQL;
         }
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) {
+    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
         global $DB;
 
         $row = null;
