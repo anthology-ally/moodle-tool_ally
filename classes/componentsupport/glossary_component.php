@@ -208,6 +208,9 @@ SQL;
 
         if ($PAGE->pagetype === 'mod-glossary-view') {
             $cmid = optional_param('id', null, PARAM_INT);
+            if (empty($cmid)) {
+                return [];
+            }
             list($course, $cm) = get_course_and_cm_from_cmid($cmid);
             $glossaryid = $cm->instance;
             if (!$glossaryid) {
