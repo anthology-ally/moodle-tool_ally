@@ -166,4 +166,20 @@ class tool_ally_components_glossary_component_testcase extends advanced_testcase
         $instanceid = $component->resolve_module_instance_id('glossary_entries', $this->studententry->id);
         $this->assertEquals($this->glossary->id, $instanceid);
     }
+
+    public function test_get_all_course_annotation_maps() {
+        global $PAGE;
+
+        $cis = $this->component->get_annotation_maps($this->course->id);
+        $this->assertEquals('glossary:glossary:intro:'.$this->glossary->id, reset($cis['intros']));
+        $this->assertEmpty($cis['entries']);
+
+        $cm = get_coursemodule_from_instance('glossary', $this->glossary->id, $this->course->id);
+        $_GET['id'] = $cm->id;
+        $PAGE->set_pagetype('mod-glossary-view');
+        $cis = $this->component->get_annotation_maps($this->course->id);
+
+        $this->assertEquals('glossary:glossary_entries:definition:'.$this->teacherentry->id, reset($cis['entries']));
+
+    }
 }
