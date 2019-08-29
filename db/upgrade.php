@@ -263,7 +263,18 @@ function xmldb_tool_ally_upgrade($oldversion) {
             ];
             // We assign those new capabilities.
             foreach ($caps as $cap) {
-                assign_capability($cap, CAP_ALLOW, $user->id, $contextid);
+                // Only assign capabilities if they exist.
+                // Most likely happens on upgrades only, not on fresh installations.
+                if (get_capability_info($cap)) {
+                    try {
+                        assign_capability($cap, CAP_ALLOW, $user->id, $contextid);
+                    } catch (moodle_exception $ex) {
+                        // Upgrade or installation must successfully end.
+                        // Just outputting the error.
+                        mtrace('Could not assign capability to Ally user.');
+                        mtrace($ex->getMessage());
+                    }
+                }
             }
         }
         // Ally savepoint reached.
