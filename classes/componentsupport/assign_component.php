@@ -56,6 +56,10 @@ class assign_component extends component_base implements iface_html_content {
     public function get_html_content($id, $table, $field, $courseid = null) {
         global $DB;
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
+        if (empty($content)) {
+            return $content;
+        }
+
         if ($table === 'assign') {
             $content->title = $DB->get_field('assign', 'name', ['id' => $id]);
         }

@@ -27,6 +27,7 @@ use tool_ally\models\component;
 use tool_ally\models\component_content;
 use tool_ally\componentsupport\label_component;
 use tool_ally\componentsupport\course_component;
+use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -190,4 +191,35 @@ class tool_ally_local_content_testcase extends tool_ally_abstract_testcase {
         $this->assertEquals($expected, $annotation);
     }
 
+    public function test_get_null_content() {
+        $this->resetAfterTest();
+        // These components may add things to the generic html component_content object or null.
+        // When it is null, it is converted to stdClass, this should be avoided.
+        $compdata = [
+            'assign' => (object) [
+                'table' => 'assign',
+                'area' => 'intro'
+            ],
+            'book' => (object) [
+                'table' => 'book',
+                'area' => 'intro'
+            ],
+            'label' => (object) [
+                'table' => 'label',
+                'area' => 'intro'
+            ],
+            'page' => (object) [
+                'table' => 'page',
+                'area' => 'intro'
+            ],
+        ];
+
+        foreach ($compdata as $compkey => $meta) {
+            /** @var iface_html_content $comp */
+            $comp = local_content::component_instance($compkey);
+            // Id -1 does not exist.
+            $content = $comp->get_html_content(-1, $meta->table, $meta->area);
+            $this->assertNull($content, 'Invalid content for ' . $compkey . ' should be null.');
+        }
+    }
 }
