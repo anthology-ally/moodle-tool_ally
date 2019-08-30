@@ -58,6 +58,9 @@ class label_component extends component_base implements iface_html_content {
 
     public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
+        if (empty($content)) {
+            return $content;
+        }
         $content->title = $this->get_label_title_from_content($content->content);
         return ($content);
     }
