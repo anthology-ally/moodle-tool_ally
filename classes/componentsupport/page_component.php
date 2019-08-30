@@ -56,6 +56,10 @@ class page_component extends component_base implements iface_html_content, annot
     public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
         global $DB;
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
+        if (empty($content)) {
+            return $content;
+        }
+
         if ($table === 'page') {
             $content->title = $DB->get_field('page', 'name', ['id' => $id]);
         }

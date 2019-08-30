@@ -101,6 +101,10 @@ SQL;
     public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
         global $DB;
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
+        if (empty($content)) {
+            return $content;
+        }
+
         if ($table === 'book') {
             $content->title = $DB->get_field('book', 'name', ['id' => $id]);
         }
