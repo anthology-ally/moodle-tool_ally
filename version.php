@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component = 'tool_ally';
-$plugin->release   = '3.6.4';
+$plugin->release   = '3.6.5';
 $plugin->version   = 2019061200;
 $plugin->requires  = 2018120300;
 $plugin->maturity  = MATURITY_STABLE;
