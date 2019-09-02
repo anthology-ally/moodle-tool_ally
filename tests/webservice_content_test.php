@@ -80,7 +80,8 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
         $coursesummary = '<p>My course summary</p>';
         $course = $this->getDataGenerator()->create_course(['summary' => $coursesummary]);
         $content = content::service($course->id, 'course', 'course', 'summary');
-        $content->contenturl = null; // We don't want to compare this.
+        $expectedurl = (new \moodle_url('/course/edit.php?id='.$course->id))
+            ->out(); // Directly converting to string, it should be the same result from the service.
         $expected = new component_content(
             $course->id,
             'course',
@@ -90,7 +91,8 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
             $course->timemodified,
             $course->summaryformat,
             $coursesummary,
-            $course->fullname
+            $course->fullname,
+            $expectedurl
         );
         $this->assertEquals($expected, $content);
     }

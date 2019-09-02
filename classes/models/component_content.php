@@ -24,6 +24,8 @@
 
 namespace tool_ally\models;
 
+use moodle_url;
+
 defined ('MOODLE_INTERNAL') || die();
 
 class component_content extends component {
@@ -65,7 +67,7 @@ class component_content extends component {
         parent::__construct($id, $component, $table, $field, $courseid, $timemodified, $contentformat, $title);
         $this->content = $content;
         $this->contenthash = sha1($this->content);
-        $this->contenturl = $url ? (string) $url : $url;
+        $this->contenturl = $url ? $url instanceof moodle_url ? $url->out() : $url : $url;
         $this->embeddedfiles = [];
     }
 }
