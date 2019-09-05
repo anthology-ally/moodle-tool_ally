@@ -137,4 +137,20 @@ class tool_ally_components_lesson_component_testcase extends advanced_testcase {
             $this->assertEquals($this->lesson->id, $instanceid);
         }
     }
+
+    public function test_get_all_course_annotation_maps() {
+        global $DB;
+
+        $cis = $this->component->get_annotation_maps($this->course->id);
+        $this->assertEquals('lesson:lesson:intro:' . $this->lesson->id, reset($cis['intros']));
+        $this->assertEquals('lesson:lesson_pages:contents:' . $this->lessonquestion->id, reset($cis['lesson_pages']));
+
+        $answers = $DB->get_records('lesson_answers', ['pageid' => $this->lessonquestion->id]);
+        $a = 0;
+        foreach ($answers as $answer) {
+            $a++;
+            $key = $this->lessonquestion->id.'_'.$answer->id.'_'.$a;
+            $this->assertEquals('lesson:lesson_answers:answer:'.$answer->id, $cis['lesson_answers'][$key]);
+        }
+    }
 }

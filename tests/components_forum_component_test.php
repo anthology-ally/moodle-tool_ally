@@ -101,7 +101,12 @@ class tool_ally_components_forum_component_testcase extends advanced_testcase {
         $this->coursecontext = context_course::instance($this->course->id);
         $gen->enrol_user($this->student->id, $this->course->id, 'student');
         $gen->enrol_user($this->teacher->id, $this->course->id, 'editingteacher');
-        $this->forum = $gen->create_module($this->forumtype, ['course' => $this->course->id]);
+        $forumdata = [
+            'course' => $this->course->id,
+            'introformat' => FORMAT_HTML,
+            'intro' => '<p>My intro for forum type '.$this->forumtype.'</p>'
+        ];
+        $this->forum = $gen->create_module($this->forumtype, $forumdata);
 
         // Add a discussion / post by teacher - should show up in results.
         $this->setUser($this->teacher);
@@ -166,5 +171,27 @@ class tool_ally_components_forum_component_testcase extends advanced_testcase {
         $component = new forum_component();
         $instanceid = $component->resolve_module_instance_id($this->forumtype.'_posts', $post->id);
         $this->assertEquals($this->forum->id, $instanceid);
+    }
+
+    public function test_get_all_course_annotation_maps() {
+        global $PAGE, $DB;
+
+        $cis = $this->component->get_annotation_maps($this->course->id);
+        $expectedannotation = $this->forumtype.':'.$this->forumtype.':intro:'.$this->forum->id;
+        $this->assertEquals($expectedannotation, reset($cis['intros']));
+        $this->assertEmpty($cis['posts']);
+
+        // Make sure teacher post shows up in annotation maps.
+        $PAGE->set_pagetype('mod-'.$this->forumtype.'-discuss');
+        $_GET['d'] = $this->teacherdiscussion->id;
+        $cis = $this->component->get_annotation_maps($this->course->id);
+        $post = $DB->get_record($this->forumtype.'_posts', ['discussion' => $this->teacherdiscussion->id, 'parent' => 0]);
+        $expectedannotation = $this->forumtype.':'.$this->forumtype.'_posts:message:'.$post->id;
+        $this->assertEquals($expectedannotation, $cis['posts'][$post->id]);
+
+        // Make sure student post does not show up in annotation maps.
+        $_GET['d'] = $this->studentdiscussion->id;
+        $cis = $this->component->get_annotation_maps($this->course->id);
+        $this->assertEmpty($cis['posts']);
     }
 }

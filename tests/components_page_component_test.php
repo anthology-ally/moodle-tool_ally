@@ -106,4 +106,16 @@ class tool_ally_components_page_component_testcase extends tool_ally_abstract_te
                 FORMAT_HTML, $this->page->intro, $this->page->name);
         $this->assertTrue($this->component_content_is_in_array($componentcontent, $items));
     }
+
+    public function test_resolve_module_instance_id() {
+        $this->setAdminUser();
+        $instanceid = $this->component->resolve_module_instance_id('page', $this->page->id);
+        $this->assertEquals($this->page->id, $instanceid);
+    }
+
+    public function test_get_all_course_annotation_maps() {
+        $cis = $this->component->get_annotation_maps($this->course->id);
+        $this->assertEquals('page:page:intro:' . $this->page->id, reset($cis['intros']));
+        $this->assertEquals('page:page:content:' . $this->page->id, reset($cis['content']));
+    }
 }

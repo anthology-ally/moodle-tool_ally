@@ -45,4 +45,6 @@ class tool_ally_components_hsuforum_component_testcase extends tool_ally_compone
      * @var string
      */
     private $forumtype = 'hsuforum';
+
+    // Note: this looks empty but it isn't - check the extends.
 }
