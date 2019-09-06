@@ -25,6 +25,7 @@
 namespace tool_ally\webservice;
 
 use tool_ally\local;
+use tool_ally\local_course;
 use tool_ally\local_file;
 
 defined('MOODLE_INTERNAL') || die();
@@ -67,7 +68,6 @@ class course_files extends loggable_external_api {
      * @return array
      */
     public static function execute_service($ids) {
-
         $params      = self::validate_parameters(self::service_parameters(), ['ids' => $ids]);
 
         self::validate_context(\context_system::instance());
@@ -79,10 +79,15 @@ class course_files extends loggable_external_api {
         $return = array();
         foreach ($params['ids'] as $id) {
             $context = \context_course::instance($id);
+            $softdeltedcontexts = local_course::course_cm_soft_delete_contextids($id);
             $files = local_file::iterator();
             $files->in_context($context);
 
             foreach ($files as $file) {
+                if (in_array($file->get_contextid(), $softdeltedcontexts)) {
+                    // The module corresponding to this file has been soft-deleted.
+                    continue;
+                }
                 $return[] = [
                     'id'           => $file->get_pathnamehash(),
                     'courseid'     => $context->instanceid,
