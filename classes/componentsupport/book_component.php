@@ -175,7 +175,7 @@ SQL;
         $introcis = $this->get_intro_html_content_items($courseid);
         $bookids = [];
         foreach ($introcis as $introci) {
-            list($course, $cm) = get_course_and_cm_from_instance($introci->id, 'book');
+            list($course, $cm) = get_course_and_cm_from_instance($introci->id, 'book', $courseid);
             $intros[$cm->id] = $introci->entity_id();
 
             if ($PAGE->pagetype !== 'mod-book-view') {
@@ -215,7 +215,8 @@ SQL;
             return $this->make_module_instance_url($table, $id);
         } else if ($table === 'book_chapters') {
             $bookid = $DB->get_field('book_chapters', 'bookid', ['id' => $id]);
-            list ($course, $cm) = get_course_and_cm_from_instance($bookid, 'book');
+            list ($course, $cm) = get_course_and_cm_from_instance($bookid, 'book', $courseid);
+            unset($course);
             return new moodle_url('/mod/book/view.php', ['id' => $cm->id, 'chapterid' => $id]).'';
         }
         return null;

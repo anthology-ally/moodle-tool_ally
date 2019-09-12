@@ -307,6 +307,7 @@ class local_content {
         if ($context->contextlevel === CONTEXT_MODULE) {
             try {
                 list($course, $cm) = get_course_and_cm_from_cmid($context->instanceid);
+                unset($course);
                 $component = self::component_instance($cm->modname);
                 if ($component && method_exists($component, 'get_annotation')) {
                     return $component->get_annotation($cm->instance);

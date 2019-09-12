@@ -176,7 +176,8 @@ SQL;
             if ($contentitem->table === $this->type . '_posts') {
                 $posts[$contentitem->id] = $contentitem->entity_id();
             } else if ($contentitem->table === $this->type) {
-                list($course, $cm) = get_course_and_cm_from_instance($contentitem->id, $this->type);
+                list($course, $cm) = get_course_and_cm_from_instance($contentitem->id, $this->type, $courseid);
+                unset($course);
                 $forumintros[$cm->id] = $contentitem->entity_id();
             }
         }
@@ -300,7 +301,8 @@ SQL;
             return null;
         }
         if ($table === $this->type) {
-            list ($course, $cm) = get_course_and_cm_from_instance($id, $this->type);
+            list ($course, $cm) = get_course_and_cm_from_instance($id, $this->type, $courseid);
+            unset($course);
             return new moodle_url('/mod/'.$this->type.'/view.php?id='.$cm->id).'';
         } else if ($table === $this->type.'_posts') {
             $discussionid = $this->get_discussion_id_from_post_id($id);
