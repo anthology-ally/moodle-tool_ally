@@ -50,4 +50,19 @@ class local_course {
             'context_id' => $event->courseid,
         ];
     }
+
+    /**
+     * Get context ids for course modules that have been soft deleted in a specific course.
+     * @param int $courseid
+     * @throws \dml_exception
+     */
+    public static function course_cm_soft_delete_contextids(int $courseid) {
+        global $DB;
+        $sql = "    SELECT cx.id
+                      FROM {course_modules} cm
+                      JOIN {context} cx ON cx.instanceid = cm.id AND cx.contextlevel = ?
+                     WHERE cm.course = ? AND cm.deletioninprogress > 0
+            ";
+        return array_keys($DB->get_records_sql($sql, [CONTEXT_MODULE, $courseid]));
+    }
 }
