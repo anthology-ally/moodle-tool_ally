@@ -10,7 +10,6 @@
     "grunt-exec": "^3.0.0",
     "grunt-load-gruntfile": "0.0.2",
     "grunt-sass": "^3.0.2",
-    "grunt-sass-lint": "^0.2.4",
     "vue": "^2.6.10",
     "vue-template-compiler": "^2.6.10"
   },

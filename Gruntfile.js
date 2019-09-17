@@ -181,7 +181,6 @@ module.exports = function(grunt) {
     // Load contrib tasks.
     grunt.loadNpmTasks("grunt-autoprefixer");
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-sass-lint');
     grunt.loadNpmTasks("grunt-sass");
     grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks("grunt-exec");
