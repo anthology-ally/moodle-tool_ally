@@ -128,3 +128,6 @@ $string['logger:cmiderraticpremoddelete_exp'] = 'Module was not correctly identi
 
 $string['logger:servicefailure'] = 'Failed when consuming service.';
 $string['logger:servicefailure_exp'] = '<br>Class: {$a->class}<br>Params: {$a->params}';
+
+$string['logger:autoconfigfailureteachercap'] = 'Failed when assigning a teacher archetype capability to the ally_webservice role.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Capability: {$a->cap}<br>Permission: {$a->permission}';

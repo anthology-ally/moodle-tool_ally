@@ -23,7 +23,7 @@
 
 namespace tool_ally;
 
-use tool_ally\local;
+use tool_ally\logging\logger;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -133,7 +133,19 @@ class auto_config {
         // Add teacher archetype caps to role.
         $caps = get_default_capabilities('teacher');
         foreach ($caps as $cap => $permission) {
-            assign_capability($cap, $permission, $roleid, $contextid);
+            try {
+                assign_capability($cap, $permission, $roleid, $contextid);
+            } catch (\moodle_exception $mex) {
+                $logstr = 'logger:autoconfigfailureteachercap';
+                $msg = get_string($logstr . '_exp', 'tool_ally', (object) [
+                    'cap' => $cap,
+                    'permission' => $permission
+                ]);
+                logger::get()->error($logstr, [
+                    '_explanation' => $msg,
+                    '_exception' => $mex
+                ]);
+            }
         }
 
         // Allow role to be allocated at system level.
