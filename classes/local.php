@@ -211,7 +211,7 @@ class local {
      */
     public static function get_ally_web_user() {
         global $DB;
-        return $DB->get_record('user', ['username' => 'ally_webuser']);
+        return $DB->get_record('user', ['username' => 'ally_webuser'], ['mnethostid' => $CFG->mnet_localhost_id]);
     }
 
     /**
