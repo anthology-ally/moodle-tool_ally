@@ -211,7 +211,8 @@ SQL;
             if (empty($cmid)) {
                 return [];
             }
-            list($course, $cm) = get_course_and_cm_from_cmid($cmid);
+            list($course, $cm) = get_course_and_cm_from_cmid($cmid, 'glossary', $courseid);
+            unset($course);
             $glossaryid = $cm->instance;
             if (!$glossaryid) {
                 return [];
@@ -228,7 +229,7 @@ SQL;
             if ($contentitem->table === 'glossary_entries') {
                 $entries[$contentitem->id] = $contentitem->entity_id();
             } else if ($contentitem->table === 'glossary') {
-                list($course, $cm) = get_course_and_cm_from_instance($contentitem->id, 'glossary');
+                list($course, $cm) = get_course_and_cm_from_instance($contentitem->id, 'glossary', $courseid);
                 $intros[$cm->id] = $contentitem->entity_id();
             }
         }

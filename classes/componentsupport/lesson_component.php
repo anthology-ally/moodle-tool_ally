@@ -199,7 +199,7 @@ SQL;
                 $prevparentid = $parentid;
                 $count++;
                 if ($ident === 'intros') {
-                    list($course, $cm) = get_course_and_cm_from_instance($content->id, 'lesson');
+                    list($course, $cm) = get_course_and_cm_from_instance($content->id, 'lesson', $courseid);
                     $retarray[$ident][$cm->id] = $content->entity_id();
                 } else if ($ident === 'lesson_answers' || $ident === 'lesson_answers_response') {
                     $retarray[$ident][$content->meta->parentid.'_'.$id.'_'.$count] = $content->entity_id();
@@ -360,6 +360,10 @@ SQL;
     public function make_url($id, $table, $field = null, $courseid = null) {
         global $DB;
 
+        if (is_null($courseid)) {
+            $courseid = 0;
+        }
+
         if (!isset($this->tablefields[$table])) {
             return null;
         }
@@ -368,7 +372,7 @@ SQL;
         } else if ($table === 'lesson_pages') {
             $lessonid = $DB->get_field('lesson_pages', 'lessonid', ['id' => $id]);
             try {
-                list ($course, $cm) = get_course_and_cm_from_instance($lessonid, 'lesson');
+                list ($course, $cm) = get_course_and_cm_from_instance($lessonid, 'lesson', $courseid);
                 return new moodle_url('/mod/lesson/view.php', ['id' => $cm->id, 'pageid' => $id]).'';
             } catch (\moodle_exception $ex) {
                 return null;
