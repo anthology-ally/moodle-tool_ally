@@ -109,6 +109,7 @@ class course_updates_task extends scheduled_task {
                 if (!$sendsuccess) {
                     // Failed to send, might as well switch on cli only mode to avoid slowness on front end.
                     set_config('push_cli_only', 1, 'tool_ally');
+                    set_config('push_cli_only_on', time(), 'tool_ally');
                     $this->clionly = true;
                     // Reset arrays for next payload.
                     $ids     = [];
@@ -119,6 +120,7 @@ class course_updates_task extends scheduled_task {
                 if ($this->clionly) {
                     // Successful send, enable live push updates.
                     set_config('push_cli_only', 0, 'tool_ally');
+                    set_config('push_cli_only_off', time(), 'tool_ally');
                     $this->clionly = false;
                 }
 

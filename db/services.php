@@ -141,6 +141,15 @@ $functions = [
         'capabilities' => 'tool/ally:viewlogs',
         'ajax'          => true,
         'loginrequired' => true
+    ],
+    'tool_ally_processors_status' => [
+        'classname'    => 'tool_ally\\webservice\\processors_status',
+        'methodname'   => 'service',
+        'description'  => 'get processor status',
+        'type'         => 'read',
+        'capabilities' => '',
+        'ajax'          => true,
+        'loginrequired' => true
     ]
 ];
 
@@ -167,7 +176,8 @@ $services = [
             'tool_ally_get_course_user_count',
             'tool_ally_get_invalid_files',
             'tool_ally_get_course_invalid_files',
-            'tool_ally_get_logs'
+            'tool_ally_get_logs',
+            'tool_ally_processors_status'
         ],
         'enabled'         => 0,
         'restrictedusers' => 0,

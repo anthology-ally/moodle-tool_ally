@@ -45,6 +45,7 @@ class push_file_updates extends push_updates{
         $climode = get_config('tool_ally', 'push_cli_only');
         // Too many errors, ensure it only runs on cli.
         set_config('push_cli_only', 1, 'tool_ally');
+        set_config('push_cli_only_on', time(), 'tool_ally');
 
         if ($climode) {
             $msg = 'logger:pushfileliveskip';
