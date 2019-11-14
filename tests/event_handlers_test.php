@@ -553,7 +553,6 @@ MSG;
 
     public function test_lesson_updated() {
         global $DB;
-        $this->markTestSkipped('Started to fail after the 3.7.1 merge');
 
         $dg = $this->getDataGenerator();
 
@@ -566,6 +565,7 @@ MSG;
         $questionpage = $pdg->create_question_multichoice($lesson);
         $questionpage->pageid = $questionpage->id;
         $questionpage->contents_editor = ['text' => 'some text', 'format' => FORMAT_HTML];
+        $questionpage->answer_editor = ['text' => 'Cats', 'format' => FORMAT_PLAIN, 'score' => 1];
         $mcpage = lesson_page_type_multichoice::create($questionpage, $lesson, $context, 0);
         $mcpage->id = $questionpage->id;
         $mcpage->update($questionpage, $context);
