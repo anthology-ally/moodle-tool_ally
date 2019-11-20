@@ -137,10 +137,15 @@ class file_validator {
      */
     public function validate_stored_file(stored_file $file, context $context = null) {
         // Can a course context be gotten?
-        $context = $context ?: context::instance_by_id($file->get_contextid());
-        $coursectx = $context->get_course_context(false);
-        if (!$coursectx instanceof context_course) {
-            // We couldn't get a course context for this file. We are only interested in course files so abort.
+        try {
+            $context = $context ?: context::instance_by_id($file->get_contextid());
+            $coursectx = $context->get_course_context(false);
+            if (!$coursectx instanceof context_course) {
+                // We couldn't get a course context for this file. We are only interested in course files so abort.
+                return false;
+            }
+        } catch (\moodle_exception $mex) {
+            // Context may not exist, hence, record might not be found on DB.
             return false;
         }
 
