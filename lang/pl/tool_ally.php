@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Błędy związane z przesyłaniem aktu
 $string['logger:addingcourseevttoqueue'] = 'Dodawanie zdarzenia kursu do kolejki przesyłania';
 $string['logger:cmiderraticpremoddelete'] = 'Przed usunięciem modułu kursu wystąpiły problemy.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'Moduł nie został poprawnie zidentyfikowany; albo nie istnieje z powodu usunięcia sekcji, albo wystąpił inny czynnik, który wyzwolił hak usunięcia, ale odnalezienie modułu było niemożliwe.';
+$string['logger:servicefailure'] = 'Niepowodzenie podczas korzystania z usługi.';
+$string['logger:servicefailure_exp'] = '<br>Klasa: {$a->class}<br>Parametry: {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'Niepowodzenie podczas przypisywania możliwości roli bazowej nauczyciela do roli ally_webservice.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Możliwość: {$a->cap}<br>Uprawnienie: {$a->permission}';
