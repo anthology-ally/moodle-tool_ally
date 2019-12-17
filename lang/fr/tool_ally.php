@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Erreurs associées à la transmission 
 $string['logger:addingcourseevttoqueue'] = 'Ajout de l\'événement de cours à la file d\'attente de transmission';
 $string['logger:cmiderraticpremoddelete'] = 'L\'identifiant du module de cours rencontre des problèmes de pré-suppression.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'Le module n\'a pas été correctement identifié. Soit il n\'existe pas en raison de la suppression de la section, soit un autre facteur a déclenché le verrou de suppression le rendant introuvable.';
+$string['logger:servicefailure'] = 'Échec d\'utilisation du service.';
+$string['logger:servicefailure_exp'] = '<br>Classe : {$a->class}<br>Paramètres : {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'Échec lors de l\'attribution d\'une fonction d\'archétype d\'enseignant au rôle ally_webservice.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Fonction : {$a->cap}<br>Permission : {$a->permission}';
