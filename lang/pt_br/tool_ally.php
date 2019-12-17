@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Erros associados ao push de atualizaç
 $string['logger:addingcourseevttoqueue'] = 'Adicionando evento do curso à fila de push';
 $string['logger:cmiderraticpremoddelete'] = 'O código do módulo do curso tem problemas pré-exclusão.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'O módulo não foi identificado corretamente. Ele não existe por causa da exclusão da seção ou há outro fator que acionou o botão de exclusão e ele não está sendo encontrado.';
+$string['logger:servicefailure'] = 'Falha ao consumir serviço.';
+$string['logger:servicefailure_exp'] = '<br>Classe: {$a->class}<br>Parâmetros: {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'Falha ao atribuir uma competência de arquétipo de professor à função ally_webservice.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Competência: {$a->cap}<br>Permissão: {$a->permission}';
