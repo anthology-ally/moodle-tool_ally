@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = '與推送至 Ally 服務的課程更�
 $string['logger:addingcourseevttoqueue'] = '正在新增課程事件至推送佇列';
 $string['logger:cmiderraticpremoddelete'] = '課程模組編號預先刪除發生問題。';
 $string['logger:cmiderraticpremoddelete_exp'] = '未正確識別模組；模組因刪除區段而不存在，或有其他因素觸發刪除而使其找不到。';
+$string['logger:servicefailure'] = '取用服務時失敗。';
+$string['logger:servicefailure_exp'] = '<br>類別：{$a->class}<br>參數：{$a->params}';
+$string['logger:autoconfigfailureteachercap'] = '指派講師 archetype 功能給 ally_webservice 角色時失敗。';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>能力：{$a->cap}<br>權限：{$a->permission}';
