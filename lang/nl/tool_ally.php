@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Fouten behorende bij pushen van cursus
 $string['logger:addingcourseevttoqueue'] = 'Cursusgebeurtenis toevoegen aan push-wachtrij';
 $string['logger:cmiderraticpremoddelete'] = 'Cursusmodule-ID heeft problemen met vooraf verwijderen.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'De module is niet juist geïdentificeerd; de module bestaat niet vanwege sectieverwijdering of er is sprake van een andere factor die de verwijderings-hook heeft geactiveerd waardoor de module niet is gevonden.';
+$string['logger:servicefailure'] = 'Mislukt tijdens het gebruik van de service.';
+$string['logger:servicefailure_exp'] = '<br>Cursus: {$a->class}<br>Parameters: {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'Mislukt bij het toewijzen van een vaardigheid docentarchetype aan de rol ally_webservice.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Vaardigheid: {$a->cap}<br>Machtiging: {$a->permission}';
