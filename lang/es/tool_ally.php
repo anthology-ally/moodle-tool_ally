@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Errores relacionados con la inserción
 $string['logger:addingcourseevttoqueue'] = 'Adición de un evento del curso a la cola de elementos que se deben insertar';
 $string['logger:cmiderraticpremoddelete'] = 'El ID del módulo del curso no puede eliminarlo.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'No se identificó el módulo correctamente. Es posible que no exista debido a la eliminación de la sección o que otro factor haya activado el enlace de eliminación y por eso no se encuentra.';
+$string['logger:servicefailure'] = 'Se produjo un error en el uso del servicio.';
+$string['logger:servicefailure_exp'] = '<br>Clase: {$a->class}<br>Parámetros: {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'Se produjo un error al asignar un permiso de arquetipo de profesor al rol ally_webservice.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Capacidad: {$a->cap}<br>Permiso: {$a->permission}';
