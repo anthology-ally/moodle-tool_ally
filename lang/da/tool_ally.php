@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Fejl knyttet til push af kursusopdater
 $string['logger:addingcourseevttoqueue'] = 'Tilføjer kursusbegivenhed til pushkøen';
 $string['logger:cmiderraticpremoddelete'] = 'Kususmodulets ID har problemer med at slette det på forhånd.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'Modulet blev ikke identificeret. Enten eksisterer det ikke på grund af sletning af en sektion, eller der er andre faktorer, der har udløst sletningen, så det ikke kan findes.';
+$string['logger:servicefailure'] = 'Fejl under brug af servicen.';
+$string['logger:servicefailure_exp'] = '<br>Klasse: {$a->class}<br>Parametre: {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'Fejl ved tildeling af en egenskab for arketypen lærer til rollen ally_webservice.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Egenskab: {$a->cap}<br>Tilladelse: {$a->permission}';
