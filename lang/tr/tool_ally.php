@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Ally hizmetlerine kurs güncelleştirm
 $string['logger:addingcourseevttoqueue'] = 'Aktarma kuyruğuna kurs olayı ekleme';
 $string['logger:cmiderraticpremoddelete'] = 'Kurs modülü kimliğinde silme öncesi sorunlar var.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'Modül doğru şekilde tanımlanmamış. Bölümün silinmesinden dolayı modül yok veya silme bağlantısını tetikleyen ve bulunamayan başka bir neden var.';
+$string['logger:servicefailure'] = 'Hizmet kullanılırken bir hata oldu.';
+$string['logger:servicefailure_exp'] = '<br>Sınıf: {$a->class}<br>Parametreler: {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'Bir öğretmen kök örnek yeteneği ally_webservice rolüne atanamadı.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Yetenek: {$a->cap}<br>İzin: {$a->permission}';
