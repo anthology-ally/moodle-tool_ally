@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Chyby související s posunem aktualiz
 $string['logger:addingcourseevttoqueue'] = 'Přidávání události kurzu do fronty pro push';
 $string['logger:cmiderraticpremoddelete'] = 'ID modulu kurzu má problémy s předběžným odstraněním.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'Modul nebyl správně identifikován. Buď neexistuje v důsledku odstranění sekce, nebo existuje jiný faktor, který aktivoval hák odstranění a nebyl nalezen.';
+$string['logger:servicefailure'] = 'Používání služby se nezdařilo.';
+$string['logger:servicefailure_exp'] = '<br>Třída: {$a->class}<br>Parametry: {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'Přiřazení pravomoci archetypu učitele k roli ally_webservice se nezdařilo.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Pravomoc: {$a->cap}<br>Oprávnění: {$a->permission}';
