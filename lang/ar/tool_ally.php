@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'دفع الأخطاء المرتبطة
 $string['logger:addingcourseevttoqueue'] = 'إضافة حدث المقرر الدراسي لقائمة انتظار الدفع';
 $string['logger:cmiderraticpremoddelete'] = 'يواجه معرف الوحدة النمطية للمقرر الدراسي مشاكل قبل حذفه.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'لم يتم تحديد الوحدة النمطية بشكل صحيح، إما أنها غير موجودة بسبب حذف القسم أو أن هناك عاملًا آخر تسبب في تشغيل حذف موضع الإضافة ولم يتم العثور عليه.';
+$string['logger:servicefailure'] = 'فشلت العملية عند استهلاك الخدمة.';
+$string['logger:servicefailure_exp'] = '<br>الفصل الدراسي: {$a->class}<br>Params: {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'فشلت العملية عند تعيين إمكانية النموذج الأولي للمدرس إلى دور خدمة ally_webservice.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>الإمكانية: {$a->cap}<br>الصلاحية: {$a->permission}';
