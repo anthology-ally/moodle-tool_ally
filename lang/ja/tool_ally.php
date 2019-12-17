@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Allyサービスへのコース更新�
 $string['logger:addingcourseevttoqueue'] = 'コースイベントをプッシュキューに追加';
 $string['logger:cmiderraticpremoddelete'] = 'コースモジュールIDに事前削除の問題があります。';
 $string['logger:cmiderraticpremoddelete_exp'] = 'モジュールが正しく識別できませんでした。セクションが削除されたために存在しないか、他の要因で削除フックがトリガされ、見つからなくなりました。';
+$string['logger:servicefailure'] = 'サービスの使用中に失敗しました。';
+$string['logger:servicefailure_exp'] = '<br>クラス : {$a->class}<br>パラメータ : {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'ally_webserviceロールに教師アーキタイプケイパビリティを割り当て中に失敗しました。';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>ケイパビリティ : {$a->cap}<br>パーミッション : {$a->permission}';
