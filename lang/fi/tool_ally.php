@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Nämä ovat Ally-palveluihin lähetett
 $string['logger:addingcourseevttoqueue'] = 'Lisätään kurssitapahtuma lähetysjonoon';
 $string['logger:cmiderraticpremoddelete'] = 'Kurssimoduulin tunnuksella on ongelmia esipoistamisen kanssa.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'Moduulia ei ole tunnistettu oikein. Joko se ei ole olemassa osion poistamisen takia tai on toinen tekijä, mikä laukaisi poistokoukun ja sitä ei löydetä.';
+$string['logger:servicefailure'] = 'Palvelun käyttäminen epäonnistui.';
+$string['logger:servicefailure_exp'] = '<br>Luokka: {$a->class}<br>Parametrit: {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'Roolin ally_webservice perustoimintojen määrittäminen opettajalle epäonnistui.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Kyky: {$a->cap}<br>Käyttöoikeus: {$a->permission}';
