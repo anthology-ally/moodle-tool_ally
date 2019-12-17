@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Gli errori associati agli aggiornament
 $string['logger:addingcourseevttoqueue'] = 'Aggiunta dell\'evento del corso per forzare la coda';
 $string['logger:cmiderraticpremoddelete'] = 'L\'ID del modulo del corso riscontra dei problemi a eliminare questo elemento.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'Il modulo non è stato identificato correttamente. Il modulo è inesistente poiché è stato eliminato oppure è presente un fattore che ha attivato l\'eliminazione e pertanto non è stato trovato.';
+$string['logger:servicefailure'] = 'Non andato a buon fine durante la fruizione del servizio.';
+$string['logger:servicefailure_exp'] = '<br>Classe {$a->class}<br>Parametri: {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'Non andato a buon fine durante l\'assegnazione a un docente di una capacità archetipo al ruolo ally_webservice.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Capacità: {$a->cap}<br>Permesso: {$a->permission}';
