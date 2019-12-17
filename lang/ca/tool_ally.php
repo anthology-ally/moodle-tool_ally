@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Els errors associats amb les actualitz
 $string['logger:addingcourseevttoqueue'] = 'S\'estan afegint esdeveniments de curs a la cua per passar';
 $string['logger:cmiderraticpremoddelete'] = 'Problemes d\'eliminació prèvia de l\'ID de mòdul del curs.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'El mòdul no s\'ha identificat correctament, o bé no existeix perquè s\'ha eliminat la secció, o bé hi ha algun altre factor que ha activat l\'eliminació i no es pot trobar.';
+$string['logger:servicefailure'] = 'S\'ha produït un error en consumir el servei.';
+$string['logger:servicefailure_exp'] = '<br>Classe: {$a->class}<br>Paràmetres: {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'S\'ha produït un error en assignar la capacitat d\'arquetipus de professor al rol ally_webservice.';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Capacitat: {$a->cap}<br>Permís: {$a->permission}';
