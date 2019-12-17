@@ -112,3 +112,7 @@ $string['logger:pushcourseserror_exp'] = 'Fehler im Zusammenhang mit dem Push vo
 $string['logger:addingcourseevttoqueue'] = 'Hinzufügen von Kursereignissen zur Push-Warteschlange';
 $string['logger:cmiderraticpremoddelete'] = 'Kursmodul-ID hat Probleme mit der zuvor erfolgten Löschung.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'Modul wurde nicht korrekt identifiziert. Entweder ist es aufgrund der Löschung eines Abschnitts nicht vorhanden oder es liegen andere Faktoren vor, die den Löschhaken ausgelöst haben, wodurch es nicht gefunden wird.';
+$string['logger:servicefailure'] = 'Beim Verarbeiten des Service fehlgeschlagen';
+$string['logger:servicefailure_exp'] = '<br>Klasse: {$a->class}<br>Parameter: {$a->params}';
+$string['logger:autoconfigfailureteachercap'] = 'Beim Zuweisen einer Trainer-Basisfähigkeit zur Rolle ally_webservice fehlgeschlagen';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Fähigkeit: {$a->cap}<br>Berechtigung: {$a->permission}';
