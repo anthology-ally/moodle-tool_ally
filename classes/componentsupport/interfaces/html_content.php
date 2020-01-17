@@ -51,7 +51,6 @@ interface html_content {
      * E.g, for a course it will give you the summary and all the section content.
      * For modules with multiple rich fields it will give you all the content for each field.
      * @param $id
-     * @param $table
      * @return component[];
      */
     public function get_all_html_content($id);
