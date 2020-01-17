@@ -55,7 +55,7 @@ class ally_config_link extends \admin_setting_heading {
      * @return string Returns an HTML string
      */
     public function output_html($data, $query='') {
-        global $OUTPUT, $CFG;
+        global $OUTPUT;
         $context = (object) [
             'href' => $this->link,
             'linktitle' => $this->visiblename

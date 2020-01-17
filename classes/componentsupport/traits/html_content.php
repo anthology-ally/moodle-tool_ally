@@ -317,6 +317,12 @@ trait html_content {
         $transaction->allow_commit();
     }
 
+    /**
+     * Stub method - must be overriden if annotation to be supported.
+     * Returns annotation 'componentname:table:field:id'.
+     * @param int $id
+     * @return string
+     */
     public function get_annotation($id) {
         return '';
     }
