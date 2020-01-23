@@ -160,24 +160,8 @@ class course_component extends component_base implements iface_html_content {
     private function get_section_number($sectionid) {
         global $DB;
 
-        static $sections = null; // Static caching for performance.
-
-        if (is_null($sections)) {
-            // With a 1000 courses this would take approx 516k to cache.
-            // With 10000 courses 4M to cache.
-            // With 100000 courses 32M to cache.
-            // So we are good to use static caching.
-            // http://sandbox.onlinephpfunctions.com/code/aaa8f0ed270c7e787caa6428c816fb82b11784d0.
-            $sections = $DB->get_records_menu('course_sections', null, '', 'id, section');
-        }
-
-        if (!isset($sections[$sectionid])) {
-            // Better not to throw an error because the web service might be requesting information for a section
-            // that has been deleted or something.
-            return null;
-        }
-
-        return $sections[$sectionid];
+        $section = $DB->get_record('course_sections', ['id' => $sectionid], 'section');
+        return $section->section;
     }
 
     /**
