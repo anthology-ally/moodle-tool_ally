@@ -767,7 +767,6 @@ MSG;
      * @throws moodle_exception
      */
     public function test_course_events() {
-        $this->markTestSkipped('Started to fail since the 3.8.1 merge');
         $course = $this->getDataGenerator()->create_course();
         course_processor::clear_push_traces();
 
@@ -803,6 +802,7 @@ MSG;
                 'idnumber' => $course->idnumber
             ]
         ]);
+        $course->relativedatesmode = 0;
         $delevent->add_record_snapshot('course', $course);
         $delevent->trigger();
         $this->assert_pushtrace_contains_context_id(event_handlers::API_COURSE_DELETED, $course->id);
