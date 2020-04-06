@@ -172,7 +172,7 @@ SQL;
 
         $intros = [];
         $content = [];
-        $introcis = $this->get_intro_html_content_items($courseid);
+        $introcis = $this->get_intro_html_content_items($courseid, false);
         $bookids = [];
         foreach ($introcis as $introci) {
             list($course, $cm) = get_course_and_cm_from_instance($introci->id, 'book', $courseid);

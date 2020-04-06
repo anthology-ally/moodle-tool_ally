@@ -238,13 +238,14 @@ trait html_content {
      * @param null|string|array $selectval
      * @param null|string $titlefield
      * @param null| \callable $compmetacallback
+     * @param boolean $includecontentcheck
      * @return component[]
      * @throws \dml_exception
      */
     protected function get_selected_html_content_items($courseid, $contentfield,
                                                        $table = null, $selectfield = null,
                                                        $selectval = null, $titlefield = null,
-                                                       $compmetacallback = null) {
+                                                       $compmetacallback = null, $includecontentcheck = true) {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -262,7 +263,12 @@ trait html_content {
 
         $formatfld = $contentfield.'format';
 
-        $select = "$selectfield $selectsql AND $formatfld = ? AND $contentfield != ''";
+        if ($includecontentcheck) {
+            $select = "$selectfield $selectsql AND $formatfld = ? AND $contentfield != ''";
+        } else {
+            $select = "$selectfield $selectsql AND $formatfld = ?";
+        }
+
         $params = array_merge($selectparams, [FORMAT_HTML]);
         $rs = $DB->get_recordset_select($table, $select, $params);
         foreach ($rs as $row) {
@@ -282,11 +288,19 @@ trait html_content {
     /**
      * Get introduction html content items.
      * @param int $courseid
+     * @param boolean $includecontentcheck
      * @return array
      * @throws \dml_exception
      */
-    protected function get_intro_html_content_items($courseid) {
-        return $this->get_selected_html_content_items($courseid, 'intro');
+    protected function get_intro_html_content_items($courseid, $includecontentcheck = true) {
+        return $this->get_selected_html_content_items($courseid,
+            'intro',
+            null,
+            null,
+            null,
+            null,
+            null,
+            $includecontentcheck);
     }
 
 

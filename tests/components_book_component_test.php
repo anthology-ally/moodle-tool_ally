@@ -88,15 +88,20 @@ class tool_ally_components_book_component_testcase extends advanced_testcase {
         $this->component = local_content::component_instance('book');
     }
 
-    private function setup_books($amount = 1) {
+    private function setup_books($books = [], $chapters = [], $amount = 1, $emptyintro = false) {
+        global $DB;
         $gen = $this->getDataGenerator();
         /** @var mod_book_generator $bookgenerator */
         $bookgenerator = self::getDataGenerator()->get_plugin_generator('mod_book');
 
-        $this->books = [];
-        $this->chapters = [];
+        $this->books = $books;
+        $this->chapters = $chapters;
         for ($i = 0; $i < $amount; $i++) {
             $book = $gen->create_module('book', ['course' => $this->course->id, 'introformat' => FORMAT_HTML]);
+            if ($emptyintro) {
+                $book->intro = '';
+                $DB->update_record('book', $book);
+            }
             $chapter = $bookgenerator->create_chapter([
                 'bookid' => $book->id,
                 'content' => "Test book $i content",
@@ -133,8 +138,11 @@ class tool_ally_components_book_component_testcase extends advanced_testcase {
         global $PAGE;
         $PAGE->set_pagetype('mod-book-view');
 
-        $amount = 10;
-        $this->setup_books($amount);
+        $amount = 5;
+        // Add books with intro.
+        $this->setup_books([], [], $amount);
+        // Add books without intro.
+        $this->setup_books($this->books, $this->chapters, $amount, true);
 
         $cis = $this->component->get_annotation_maps($this->course->id);
         $intros = $cis['intros'];
@@ -142,6 +150,8 @@ class tool_ally_components_book_component_testcase extends advanced_testcase {
 
         $introids = array_keys($intros);
         $chapterids = array_keys($chapters);
+        $this->assertEquals(10, count($introids));
+        $this->assertEquals(10, count($chapterids));
         for ($i = 0; $i < $amount; $i++) {
             $this->assertEquals('book:book:intro:' . $this->books[$i]->id, $intros[$introids[$i]]);
             $this->assertEquals('book:book_chapters:content:' . $this->chapters[$i]->id, $chapters[$chapterids[$i]]);
