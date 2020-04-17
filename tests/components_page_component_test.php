@@ -117,5 +117,20 @@ class tool_ally_components_page_component_testcase extends tool_ally_abstract_te
         $cis = $this->component->get_annotation_maps($this->course->id);
         $this->assertEquals('page:page:intro:' . $this->page->id, reset($cis['intros']));
         $this->assertEquals('page:page:content:' . $this->page->id, reset($cis['content']));
+
+        $gen = $this->getDataGenerator();
+        $this->admin = get_admin();
+        $this->course = $gen->create_course();
+        $this->coursecontext = context_course::instance($this->course->id);
+        $this->page = $gen->create_module('page',
+                                          [
+                                              'course' => $this->course->id,
+                                          ]
+        );
+
+        $cis = $this->component->get_annotation_maps($this->course->id);
+        $this->assertEquals([], $cis['intros']);
+        $this->assertEquals([], $cis['content']);
+
     }
 }

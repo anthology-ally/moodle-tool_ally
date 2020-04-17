@@ -189,7 +189,10 @@ abstract class component_base {
      */
     protected function map_content_items_to_cmids($table, $contentitems) {
         global $DB;
-
+        $colitems = array_column($contentitems, 'id');
+        if (empty($colitems)) {
+            return [];
+        }
         list($insql, $params) = $DB->get_in_or_equal(array_column($contentitems, 'id'), SQL_PARAMS_NAMED);
         $params['modulename'] = $table;
         $sql = "SELECT instance.id, cm.id AS cmid
