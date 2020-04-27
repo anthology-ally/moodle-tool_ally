@@ -320,7 +320,7 @@ class tool_ally_content_updates_task_testcase extends tool_ally_abstract_testcas
     public function test_performance_delete_glossary() {
         global $DB, $USER;
 
-        $this->markTestSkipped('performance test');
+        $this->markTestSkipped('performance test, to be fixed in INT-15837');
 
         // Prevent it from creating a backup of the deleted module.
         set_config('coursebinenable', 0, 'tool_recyclebin');
