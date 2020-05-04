@@ -67,8 +67,8 @@ class role_assignments {
             return false; // Nothing to do.
         }
 
-        $this->load_role_assignments();
         foreach ($context->get_parent_context_ids(true) as $contextid) {
+            $this->load_role_assignments($contextid);
             if (array_key_exists($contextid, $this->data) && array_key_exists($userid, $this->data[$contextid])) {
                 return true;
             }
@@ -83,7 +83,7 @@ class role_assignments {
      * @return array
      */
     public function user_ids_for_context(\context $context) {
-        $this->load_role_assignments();
+        $this->load_role_assignments($context->id);
         if (empty($this->data[$context->id])) {
             return [];
         }
@@ -92,18 +92,33 @@ class role_assignments {
 
     /**
      * Load all role assignments that we care about and store them into the class.
+     * @param int $contextid
+     * @throws \dml_exception
      */
-    private function load_role_assignments() {
+    private function load_role_assignments(int $contextid) {
         if (empty($this->roleids)) {
             return; // Nothing to do.
         }
-        if (is_array($this->data)) {
+
+        if (is_array($this->data) && array_key_exists($contextid, $this->data)) {
             return; // Already loaded.
         }
 
-        $this->data = [];
+        if (!is_array($this->data)) {
+            $this->data = [];
+        }
 
-        $rs = $this->db->get_recordset_list('role_assignments', 'roleid', $this->roleids, '', 'id, contextid, userid');
+        list($insql, $params) = $this->db->get_in_or_equal($this->roleids, SQL_PARAMS_NAMED);
+
+        $query = <<<SQL
+            SELECT id, contextid, userid
+              FROM {role_assignments}
+             WHERE roleid $insql
+               AND contextid = :contextid
+SQL;
+        $params['contextid'] = $contextid;
+
+        $rs = $this->db->get_recordset_sql($query, $params);
         foreach ($rs as $row) {
             if (!array_key_exists($row->contextid, $this->data)) {
                 $this->data[$row->contextid] = [];
