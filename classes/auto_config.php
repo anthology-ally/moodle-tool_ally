@@ -58,14 +58,10 @@ class auto_config {
     }
 
     /**
-     * Create web service user.
+     * Re configure a web service user.
      * @throws \moodle_exception.
      */
-    private function create_user() {
-        global $DB;
-
-        $webuserpwd = strval(new password());
-
+    public function configure_user($webuserpwd) {
         $user = local::get_ally_web_user();
 
         if ($user) {
@@ -75,6 +71,18 @@ class auto_config {
             user_update_user($user);
             profile_save_data($user);
             $this->user = $user;
+            return $user;
+        }
+    }
+
+    /**
+     * Create web service user.
+     * @throws \moodle_exception.
+     */
+    private function create_user() {
+        $webuserpwd = strval(new password());
+
+        if ($user = $this->configure_user($webuserpwd)) {
             return;
         }
 

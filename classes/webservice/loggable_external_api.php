@@ -43,6 +43,8 @@ require_once("$CFG->libdir/externallib.php");
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class loggable_external_api extends external_api {
+    use user_fill_from_context_error;
+
     /**
      * @throws Exception
      */
