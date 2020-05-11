@@ -38,6 +38,8 @@ require_once(__DIR__.'/../../../../../lib/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class log extends \external_api {
+    use user_fill_from_context_error;
+
     /**
      * @return \external_function_parameters
      */

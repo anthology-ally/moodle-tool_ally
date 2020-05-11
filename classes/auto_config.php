@@ -58,20 +58,31 @@ class auto_config {
     }
 
     /**
+     * Re configure a web service user.
+     * @throws \moodle_exception.
+     */
+    public function configure_user($webuserpwd) {
+        $user = local::get_ally_web_user();
+
+        if ($user) {
+            $user->password = $webuserpwd;
+            $user->policyagreed = 1;
+            $user = $this->load_user_profile($user);
+            user_update_user($user);
+            profile_save_data($user);
+            $this->user = $user;
+            return $user;
+        }
+    }
+
+    /**
      * Create web service user.
      * @throws \moodle_exception.
      */
     private function create_user() {
-        global $DB;
-
         $webuserpwd = strval(new password());
 
-        $user = local::get_ally_web_user();
-        if ($user) {
-            $user->password = $webuserpwd;
-            $user->policyagreed = 1;
-            user_update_user($user);
-            $this->user = $user;
+        if ($user = $this->configure_user($webuserpwd)) {
             return;
         }
 
@@ -81,8 +92,25 @@ class auto_config {
         $user->firstname = 'Ally';
         $user->lastname = 'Webservice';
         $user->email = 'allywebservice@test.local'; // Fake email address.
+        $user = $this->load_user_profile($user);
         user_update_user($user);
+        profile_save_data($user);
         $this->user = $user;
+    }
+
+    private function load_user_profile($user) {
+        if ($user->id) {
+            $profilefilds = profile_get_user_fields_with_data($user->id);
+        } else {
+            $profilefilds = profile_get_user_fields_with_data(0);
+        }
+        foreach ($profilefilds as $profilefield) {
+            if ($profilefield->field->required) {
+                $fieldname = $profilefield->inputname;
+                $user->$fieldname = '';
+            }
+        }
+        return $user;
     }
 
     /**
