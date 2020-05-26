@@ -112,6 +112,7 @@ $string['logger:annotationmoderror_exp'] = 'Module was not correctly identified.
 
 $string['logger:failedtogetcoursesectionname'] = 'Failed to get course section name';
 
+$string['logger:moduleidresolutionfailure'] = 'Failed to resolve module id';
 $string['logger:cmidresolutionfailure'] = 'Failed to resolve course module id';
 
 $string['courseupdatestask'] = 'Push course events to ally';
