@@ -42,7 +42,7 @@ trait html_content {
      * @throws \dml_exception
      */
     protected function std_get_course_html_content_items($courseid) {
-        global $DB;
+        global $DB, $PAGE;
 
         $array = [];
         if (!$this->module_installed()) {
@@ -72,6 +72,10 @@ trait html_content {
             foreach ($fields as $field) {
                 $formatfield = $field.'format';
                 if (!empty($row->$field) && $row->$formatfield === FORMAT_HTML) {
+                    if ($component == 'label' && !empty($row->intro)) {
+                        $PAGE->set_context(\context_course::instance($courseid));
+                        $row->name = strip_tags(format_string($row->intro, true));
+                    }
                     $array[] = new component(
                         $row->id, $component, $component, $field, $courseid, $row->timemodified,
                         $row->$formatfield, $row->name);
