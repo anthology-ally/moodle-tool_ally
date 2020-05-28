@@ -132,6 +132,28 @@ class tool_ally_local_content_testcase extends tool_ally_abstract_testcase {
 
         $contents = local_content::get_course_html_content_items('label', $course->id);
         $this->assertTrue(in_array($expectedlabel, $contents));
+
+        $contents = local_content::get_course_html_content_items('course', $course->id);
+        $expectedtitle = $contents[1]->title;
+        $contents = local_content::get_html_content($section->id, 'course', 'course_sections', 'summary', $course->id, true);
+        $this->assertEquals($expectedtitle, $contents->title);
+
+        $section2 = $this->getDataGenerator()->create_course_section(
+            ['section' => 1, 'course' => $course->id]);
+        $DB->update_record('course_sections', (object) [
+            'id' => $section2->id,
+            'summary' => $section0summary,
+            'summaryformat' => FORMAT_HTML,
+            'title' => ''
+        ]);
+
+        $contents = local_content::get_course_html_content_items('course', $course->id);
+        // Default title.
+        $expectedtitle = $contents[2]->title;
+        $this->assertEquals('Topic 1', $expectedtitle);
+
+        $contents = local_content::get_html_content($section2->id, 'course', 'course_sections', 'summary', $course->id, true);
+        $this->assertEquals($expectedtitle, $contents->title);
     }
 
     public function test_get_replace_html_content() {
