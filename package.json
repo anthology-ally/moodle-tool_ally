@@ -19,10 +19,15 @@
     "diff": ">=3.5.0"
   },
   "dependencies": {
-    "@vue/cli-service": "^3.9.2",
+    "@vue/cli-service": "^4.4.1",
+    "acorn": ">=6.4.1",
+    "diff": ">=3.5.0",
+    "kind-of": ">=6.0.3",
+    "minimist": ">=1.2.3",
     "node": "^12.6.0",
-    "node-sass": "^4.13.1",
-    "sass": "^1.22.5",
+    "node-sass": "^4.14.1",
+    "sass": "^1.26.7",
+    "serialize-javascript": ">=2.1.1",
     "vue-contenteditable-directive": "^1.2.0",
     "vue-wysiwyg": "^1.7.2"
   },
