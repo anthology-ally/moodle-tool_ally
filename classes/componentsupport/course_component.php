@@ -123,6 +123,10 @@ class course_component extends component_base implements iface_html_content {
         $recordlambda = null;
         if ($table === 'course_sections') {
             $recordlambda = function($record) {
+                if (empty($record->timemodified)) {
+                    $course = get_course($record->course);
+                    $record->timemodified = $course->timecreated;
+                }
                 if ($record->name !== null) {
                     return; // Don't bother modifying $record - we have a name already!
                 }
