@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'Tilføjer indhold til pushkøen';
 $string['logger:annotationmoderror'] = 'Annotering af Ally-modulindhold mislykkedes.';
 $string['logger:annotationmoderror_exp'] = 'Modulet blev ikke identificeret.';
 $string['logger:failedtogetcoursesectionname'] = 'Kunne ikke hente kursussektionens navn.';
+$string['logger:moduleidresolutionfailure'] = 'Kunne ikke løse modulets ID';
 $string['logger:cmidresolutionfailure'] = 'Kunne ikke fortolke kursusmodulets ID';
 $string['courseupdatestask'] = 'Push kursusbegivenheder til Ally';
 $string['logger:pushcoursesuccess'] = 'Push af kursusbegivenhed(er) til Ally-slutpunkt blev fuldført';
