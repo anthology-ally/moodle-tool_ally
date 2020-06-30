@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'Hinzufügen von Inhalt zur Push-Wartesc
 $string['logger:annotationmoderror'] = 'Die Kommentierung des Inhalts von Ally-Modulen ist fehlgeschlagen.';
 $string['logger:annotationmoderror_exp'] = 'Das Modul wurde nicht korrekt identifiziert.';
 $string['logger:failedtogetcoursesectionname'] = 'Der Kursabschnittsname konnte nicht abgerufen werden';
+$string['logger:moduleidresolutionfailure'] = 'Modul-ID konnte nicht aufgelöst werden';
 $string['logger:cmidresolutionfailure'] = 'Die Kurs-Modul-ID konnte nicht aufgelöst werden';
 $string['courseupdatestask'] = 'Kursereignisse per Push an Ally senden';
 $string['logger:pushcoursesuccess'] = 'Erfolgreicher Push von Kursereignissen an Ally-Endpunkt';
