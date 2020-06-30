@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = '正在新增內容至推送佇列';
 $string['logger:annotationmoderror'] = 'Ally 模組內容批註失敗。';
 $string['logger:annotationmoderror_exp'] = '未正確識別模組。';
 $string['logger:failedtogetcoursesectionname'] = '無法取得課程章節名稱';
+$string['logger:moduleidresolutionfailure'] = '無法解析模組編號';
 $string['logger:cmidresolutionfailure'] = '無法解析課程模組編號';
 $string['courseupdatestask'] = '推送課程事件至 Ally';
 $string['logger:pushcoursesuccess'] = '成功推送課程事件至 Ally 端點';
