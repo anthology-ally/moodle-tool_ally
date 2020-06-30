@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'Aggiunta dei contenuti alla coda di for
 $string['logger:annotationmoderror'] = 'Annotazione dei contenuti del modulo Ally non riuscita.';
 $string['logger:annotationmoderror_exp'] = 'Il modulo non è stato identificato correttamente.';
 $string['logger:failedtogetcoursesectionname'] = 'Impossibile ottenere il nome della sezione del corso';
+$string['logger:moduleidresolutionfailure'] = 'Impossibile risolvere l\'ID del modulo';
 $string['logger:cmidresolutionfailure'] = 'Impossibile risolvere l\'ID del modulo del corso';
 $string['courseupdatestask'] = 'Forza eventi del corso in Ally';
 $string['logger:pushcoursesuccess'] = 'Forzatura successiva degli eventi del corso al punto di fine di Ally';
