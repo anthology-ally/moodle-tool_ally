@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'Inhoud toevoegen aan push-wachtrij';
 $string['logger:annotationmoderror'] = 'Annoteren van inhoud van Ally-module mislukt.';
 $string['logger:annotationmoderror_exp'] = 'Module is niet correct geïdentificeerd.';
 $string['logger:failedtogetcoursesectionname'] = 'Fout bij ophalen van naam van cursussectie';
+$string['logger:moduleidresolutionfailure'] = 'Fout bij omzetten van ID van module';
 $string['logger:cmidresolutionfailure'] = 'Fout bij omzetten van ID van cursusmodule';
 $string['courseupdatestask'] = 'Cursusgebeurtenissen naar Ally pushen';
 $string['logger:pushcoursesuccess'] = 'Pushen van een of meer cursusgebeurtenissen naar Ally-eindpunt gelukt';
