@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'Dodawanie zawartości do kolejki przesy
 $string['logger:annotationmoderror'] = 'Niepowodzenie utworzenia adnotacji zawartości modułu Ally.';
 $string['logger:annotationmoderror_exp'] = 'Moduł nie został poprawnie zidentyfikowany.';
 $string['logger:failedtogetcoursesectionname'] = 'Nie udało się pobrać nazwy sekcji kursu';
+$string['logger:moduleidresolutionfailure'] = 'Nie udało się rozpoznać identyfikatora modułu';
 $string['logger:cmidresolutionfailure'] = 'Nie udało się rozpoznać identyfikatora modułu kursu';
 $string['courseupdatestask'] = 'Prześlij zdarzenia kursu do usługi Ally';
 $string['logger:pushcoursesuccess'] = 'Pomyślne przesłano zdarzenia kursu do punktu końcowego usługi Ally';
