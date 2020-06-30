@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'Adición de contenido a la cola de elem
 $string['logger:annotationmoderror'] = 'Hubo un error en la anotación de contenido del módulo de Ally.';
 $string['logger:annotationmoderror_exp'] = 'El módulo no se identificó correctamente.';
 $string['logger:failedtogetcoursesectionname'] = 'No se pudo obtener el nombre de la sección del curso';
+$string['logger:moduleidresolutionfailure'] = 'No se pudo averiguar el ID del módulo';
 $string['logger:cmidresolutionfailure'] = 'No se pudo averiguar la ID del módulo del curso';
 $string['courseupdatestask'] = 'Insertar eventos del curso en Ally';
 $string['logger:pushcoursesuccess'] = 'Inserción exitosa del/de los evento(s) en el punto de enlace de Ally';
