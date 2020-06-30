@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'การเพิ่มเนื้อ
 $string['logger:annotationmoderror'] = 'การทำหมายเหตุประกอบเนื้อหาโมดูล Ally ล้มเหลว';
 $string['logger:annotationmoderror_exp'] = 'ระบุโมดูลไม่ถูกต้อง';
 $string['logger:failedtogetcoursesectionname'] = 'การรับชื่อส่วนของรายวิชาล้มเหลว';
+$string['logger:moduleidresolutionfailure'] = 'ไม่สามารถแก้ไข ID โมดูล';
 $string['logger:cmidresolutionfailure'] = 'ไม่สามารถแก้ไข ID โมดูลรายวิชา';
 $string['courseupdatestask'] = 'พุชกิจกรรมของรายวิชาไปยัง Ally';
 $string['logger:pushcoursesuccess'] = 'การพุชกิจกรรมของรายวิชาไปยังจุดสิ้นสุด Ally สำเร็จ';
