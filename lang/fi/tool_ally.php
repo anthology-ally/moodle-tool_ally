@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'Lisätään sisältöä lähetysjonoon'
 $string['logger:annotationmoderror'] = 'Ally-moduulin sisällön merkitseminen epäonnistui.';
 $string['logger:annotationmoderror_exp'] = 'Moduulia ei tunnistettu oikein';
 $string['logger:failedtogetcoursesectionname'] = 'Kurssiosion nimen hakeminen epäonnistui';
+$string['logger:moduleidresolutionfailure'] = 'Kurssimoduulitunnuksen tarkistaminen epäonnistui';
 $string['logger:cmidresolutionfailure'] = 'Kurssimoduulitunnuksen tarkistaminen epäonnistui';
 $string['courseupdatestask'] = 'Lähetä kurssitapahtumat Allyyn';
 $string['logger:pushcoursesuccess'] = 'Kurssitapahtumat lähetettiin Ally-päätepisteeseen';
