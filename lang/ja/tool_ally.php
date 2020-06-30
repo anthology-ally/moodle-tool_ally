@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'コンテンツをプッシュキュー
 $string['logger:annotationmoderror'] = 'Allyモジュールコンテンツ注釈が失敗しました。';
 $string['logger:annotationmoderror_exp'] = 'モジュールが正しく識別されませんでした。';
 $string['logger:failedtogetcoursesectionname'] = 'コースセクション名の取得に失敗しました';
+$string['logger:moduleidresolutionfailure'] = 'モジュールIDの解決に失敗しました';
 $string['logger:cmidresolutionfailure'] = 'コースモジュールIDの解決に失敗しました';
 $string['courseupdatestask'] = 'Allyにコースイベントをプッシュする';
 $string['logger:pushcoursesuccess'] = 'Allyエンドポイントへのコースイベントのプッシュに成功しました';
