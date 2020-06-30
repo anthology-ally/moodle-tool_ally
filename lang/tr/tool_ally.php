@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'Aktarma kuyruğuna içerik ekleme';
 $string['logger:annotationmoderror'] = 'Ally modülü içerik ek açıklaması başarısız oldu.';
 $string['logger:annotationmoderror_exp'] = 'Modül doğru şekilde tanımlanmamış.';
 $string['logger:failedtogetcoursesectionname'] = 'Kurs bölümünün adı alınamadı';
+$string['logger:moduleidresolutionfailure'] = 'Modül kimliği çözümlenemedi';
 $string['logger:cmidresolutionfailure'] = 'Kurs modülü kimliği çözümlenemedi';
 $string['courseupdatestask'] = 'Kurs olaylarını Ally\'a aktar';
 $string['logger:pushcoursesuccess'] = 'Kurs olayları Ally uç noktasına başarıyla aktarıldı';
