@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'S\'està afegint contingut a la cua per
 $string['logger:annotationmoderror'] = 'El mòdul d\'anotació del contingut d\'Ally ha fallat.';
 $string['logger:annotationmoderror_exp'] = 'El mòdul no s\'ha identificat correctament.';
 $string['logger:failedtogetcoursesectionname'] = 'No s\'ha pogut aconseguir el nom de la secció del curs';
+$string['logger:moduleidresolutionfailure'] = 'No s\'ha pogut resoldre l\'ID del mòdul';
 $string['logger:cmidresolutionfailure'] = 'No s\'ha pogut resoldre l\'ID del mòdul del curs';
 $string['courseupdatestask'] = 'Passa els esdeveniments del curs a Ally';
 $string['logger:pushcoursesuccess'] = 'S\'han passat correctament els esdeveniments del curs al punt final d\'Ally';
