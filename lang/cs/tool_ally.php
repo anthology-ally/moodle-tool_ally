@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'Přidávání obsahu do fronty pro push
 $string['logger:annotationmoderror'] = 'Vytvoření poznámky k obsahu modulu služby Ally se nezdařilo.';
 $string['logger:annotationmoderror_exp'] = 'Modul nebyl správně identifikován.';
 $string['logger:failedtogetcoursesectionname'] = 'Nepodařilo se získat název sekce kurzu';
+$string['logger:moduleidresolutionfailure'] = 'Nepodařilo se vyřešit ID modulu';
 $string['logger:cmidresolutionfailure'] = 'Nepodařilo se vyřešit ID modulu kurzu';
 $string['courseupdatestask'] = 'Posunout události kurzu do služby Ally';
 $string['logger:pushcoursesuccess'] = 'Úspěšné posunutí události nebo událostí kurzu do koncového bodu služby Ally';
