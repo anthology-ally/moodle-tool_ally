@@ -101,6 +101,7 @@ $string['logger:addingconenttoqueue'] = 'Ajout du contenu à la file d\'attente 
 $string['logger:annotationmoderror'] = 'Échec de l\'annotation du contenu du module Ally.';
 $string['logger:annotationmoderror_exp'] = 'Le module n\'a pas été correctement identifié.';
 $string['logger:failedtogetcoursesectionname'] = 'Impossible de récupérer le nom de la section de cours';
+$string['logger:moduleidresolutionfailure'] = 'Impossible de résoudre l\'identifiant du module';
 $string['logger:cmidresolutionfailure'] = 'Impossible de résoudre l\'identifiant du module de cours';
 $string['courseupdatestask'] = 'Transmettre les événements de cours vers Ally';
 $string['logger:pushcoursesuccess'] = 'Transmission du ou des événements de cours vers Ally réussie';
