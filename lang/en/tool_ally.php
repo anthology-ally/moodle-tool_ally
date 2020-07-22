@@ -114,6 +114,7 @@ $string['logger:failedtogetcoursesectionname'] = 'Failed to get course section n
 
 $string['logger:moduleidresolutionfailure'] = 'Failed to resolve module id';
 $string['logger:cmidresolutionfailure'] = 'Failed to resolve course module id';
+$string['logger:cmvisibilityresolutionfailure'] = 'Failed to resolve course module visibility';
 
 $string['courseupdatestask'] = 'Push course events to ally';
 $string['logger:pushcoursesuccess'] = 'Successful push of course event(s) to ally end point';
