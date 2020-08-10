@@ -365,7 +365,12 @@ class local_file {
             }
         }
 
-        if (count($arr) === 2) {
+        if ((strpos($component, 'mod_') === 0) && ($arr[0] === 'intro')) {
+            // Mod intro files file a specific file format.
+            $filearea = array_shift($arr);
+            $itemid = 0;
+            $filename = implode($arr, '/');
+        } else if (count($arr) === 2) {
             $filearea = array_shift($arr);
             $itemid = 0;
             $filename = array_shift($arr);
