@@ -258,7 +258,7 @@ class files_iterator implements \Iterator {
             $filtersql .= ' AND f.filearea = :filearea ';
             $params['filearea'] = $this->filearea;
         }
-        if (!empty($this->itemid)) {
+        if (!empty($this->itemid) && is_numeric($this->itemid)) {
             $filtersql .= ' AND f.itemid = :itemid ';
             $params['itemid'] = $this->itemid;
         }
