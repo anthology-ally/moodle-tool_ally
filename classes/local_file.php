@@ -369,7 +369,7 @@ class local_file {
             // Mod intro files file a specific file format.
             $filearea = array_shift($arr);
             $itemid = 0;
-            $filename = implode($arr, '/');
+            $filename = implode('/', $arr);
         } else if (count($arr) === 2) {
             $filearea = array_shift($arr);
             $itemid = 0;
@@ -381,7 +381,7 @@ class local_file {
         } else {
             $filearea = array_shift($arr);
             $itemid = array_shift($arr);
-            $filename = implode($arr, '/');
+            $filename = implode('/', $arr);
         }
 
         return new pluginfileurlprops($contextid, $component, $filearea, $itemid, $filename);
