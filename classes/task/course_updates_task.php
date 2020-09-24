@@ -70,6 +70,10 @@ class course_updates_task extends scheduled_task {
             return;
         }
 
+        if (empty(get_config('tool_ally', 'deferredcourseevents'))) {
+            return;
+        }
+
         $updates = $this->updates ?: new push_course_updates($config);
 
         $this->clionly = $config->is_cli_only();

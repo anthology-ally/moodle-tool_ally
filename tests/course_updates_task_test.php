@@ -49,6 +49,7 @@ class tool_ally_course_updates_task_testcase extends tool_ally_abstract_testcase
         $this->setAdminUser();
 
         set_config('push_cli_only', 1, 'tool_ally');
+        set_config('deferredcourseevents', 1, 'tool_ally');
 
         $this->getDataGenerator()->create_course();
         $task          = new course_updates_task();
@@ -68,6 +69,7 @@ class tool_ally_course_updates_task_testcase extends tool_ally_abstract_testcase
         $this->resetAfterTest();
 
         set_config('push_cli_only', 1, 'tool_ally');
+        set_config('deferredcourseevents', 1, 'tool_ally');
 
         $courses = [];
         // Create 5 courses.
@@ -94,6 +96,8 @@ class tool_ally_course_updates_task_testcase extends tool_ally_abstract_testcase
         global $DB;
 
         $this->resetAfterTest();
+
+        set_config('deferredcourseevents', 1, 'tool_ally');
 
         $courses = [];
         // Create 5 courses.

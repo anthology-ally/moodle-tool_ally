@@ -82,5 +82,9 @@ if ($hassiteconfig) {
             "$CFG->wwwroot/admin/tool/ally/logs.php", 'tool/ally:viewlogs'));
     }
 
+    $settings->add(new admin_setting_configcheckbox('tool_ally/deferredcourseevents',
+        new lang_string('deferredcourseevents', 'tool_ally'),
+        new lang_string('deferredcourseeventsdesc', 'tool_ally'), 0));
+
     $ADMIN->add('tools', $settings);
 }

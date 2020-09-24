@@ -133,3 +133,6 @@ $string['logger:servicefailure_exp'] = '<br>Class: {$a->class}<br>Params: {$a->p
 
 $string['logger:autoconfigfailureteachercap'] = 'Failed when assigning a teacher archetype capability to the ally_webservice role.';
 $string['logger:autoconfigfailureteachercap_exp'] = '<br>Capability: {$a->cap}<br>Permission: {$a->permission}';
+
+$string['deferredcourseevents'] = 'Send deferred course events';
+$string['deferredcourseeventsdesc'] = 'Allow sending of stored course events, which were accumulated during communication failure with Ally';
