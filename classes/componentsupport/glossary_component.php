@@ -167,7 +167,7 @@ SQL;
      * @param null|int $courseid
      * @return component_content
      */
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    public function get_html_content($id, $table, $field, $courseid = null) {
         if ($table === 'glossary') {
             return $this->std_get_html_content($id, $table, $field, $courseid);
         } else if ($table === 'glossary_entries') {

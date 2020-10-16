@@ -196,7 +196,7 @@ class local_content {
      * @param component_content|null $content
      * @return component_content|null
      */
-    protected static function apply_embedded_file_map(?component_content $content) {
+    protected static function apply_embedded_file_map($content) {
         if (is_null($content)) {
             return $content;
         }
@@ -220,7 +220,7 @@ class local_content {
      * @throws component_validation_exception
      */
     public static function get_html_content($id, $component, $table, $field,
-                                            $courseid = null, $includeembeddedfiles = false) : ?component_content {
+                                            $courseid = null, $includeembeddedfiles = false) {
         /** @var html_content $componentinstance */
         $componentinstance = self::component_instance($component);
         if (empty($component) || $componentinstance === false) {

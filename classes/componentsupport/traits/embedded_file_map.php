@@ -50,7 +50,7 @@ trait embedded_file_map {
      * @throws \dml_exception
      * @throws \moodle_exception
      */
-    public function apply_embedded_file_map(?component_content $content) {
+    public function apply_embedded_file_map($content) {
 
         $html = $content->content;
         $doc = local_content::build_dom_doc($html);

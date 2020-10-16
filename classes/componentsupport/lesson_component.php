@@ -236,7 +236,7 @@ SQL;
         }
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    public function get_html_content($id, $table, $field, $courseid = null) {
         global $DB;
 
         $row = null;

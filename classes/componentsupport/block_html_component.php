@@ -92,7 +92,7 @@ class block_html_component extends component_base implements iface_html_content,
         return $array;
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    public function get_html_content($id, $table, $field, $courseid = null) {
         global $DB;
 
         if (!$this->module_installed()) {

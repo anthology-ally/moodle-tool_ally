@@ -100,7 +100,7 @@ trait html_content {
      */
     protected function std_get_html_content($id, $table, $field, $courseid = null, $titlefield = 'name',
                                             $modifiedfield = 'timemodified', $recordlambda = null,
-                                            $record = null) : ?component_content {
+                                            $record = null) {
         global $DB;
 
         static $prevrecord = null;

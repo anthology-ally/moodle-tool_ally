@@ -119,7 +119,7 @@ class course_component extends component_base implements iface_html_content {
         return $array;
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    public function get_html_content($id, $table, $field, $courseid = null) {
         $titlefield = $table === 'course' ? 'fullname' : 'name';
         $recordlambda = null;
         if ($table === 'course_sections') {
