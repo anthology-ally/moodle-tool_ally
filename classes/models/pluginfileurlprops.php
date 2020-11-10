@@ -54,6 +54,11 @@ class pluginfileurlprops {
     public $filename;
 
     /**
+     * @var string
+     */
+    public $filepath;
+
+    /**
      * pluginfileurlprops constructor.
      * @param int $contextid
      * @param string $component
@@ -81,6 +86,8 @@ class pluginfileurlprops {
 
         $this->filename = urldecode($this->filename);
         $this->filearea = urldecode($this->filearea);
+        $filepath = dirname($this->filename);
+        $this->filepath = $filepath == '.' ? '/' : '/' . $filepath . '/';
     }
 
     public function to_list() {

@@ -58,4 +58,21 @@ class tool_ally_local_file_testcase extends advanced_testcase {
         $this->assertEquals($iat, $signature->iat);
         $this->assertNotEmpty($signature->signature);
     }
+
+    public function test_get_fileurlproperties() {
+        global $CFG;
+        $this->resetAfterTest();
+
+        $samplefilearea = 'assets';
+        $samplecomponent = 'tool_themeassets';
+        $samplefilename = 'icon.png';
+        $samplefilepath = '/Folder 1/';
+        $sampleurl = "{$CFG->wwwroot}/pluginfile.php/1/{$samplecomponent}/{$samplefilearea}/0{$samplefilepath}{$samplefilename}";
+        $props = local_file::get_fileurlproperties($sampleurl);
+        $this->assertInstanceOf('tool_ally\models\pluginfileurlprops', $props);
+        $this->assertEquals($samplefilearea, $props->filearea);
+        $this->assertEquals($samplecomponent, $props->component);
+        $this->assertEquals($samplefilename, basename($props->filename));
+        $this->assertEquals($samplefilepath, $props->filepath);
+    }
 }

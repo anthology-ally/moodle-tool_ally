@@ -394,9 +394,8 @@ class local_file {
      */
     public static function get_file_fromprops(pluginfileurlprops $props) {
         $fs = new \file_storage();
-        $file = $fs->get_file($props->contextid, $props->component, $props->filearea, $props->itemid, $props->filename);
-        return $file;
-
+        return $fs->get_file($props->contextid, $props->component, $props->filearea, $props->itemid,
+            $props->filepath, basename($props->filename));
     }
 
     /**
