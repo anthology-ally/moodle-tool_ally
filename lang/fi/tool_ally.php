@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'Moduulia ei tunnistettu oikein';
 $string['logger:failedtogetcoursesectionname'] = 'Kurssiosion nimen hakeminen epäonnistui';
 $string['logger:moduleidresolutionfailure'] = 'Kurssimoduulitunnuksen tarkistaminen epäonnistui';
 $string['logger:cmidresolutionfailure'] = 'Kurssimoduulitunnuksen tarkistaminen epäonnistui';
+$string['logger:cmvisibilityresolutionfailure'] = 'Kurssimoduulin näkyvyyden tarkistaminen epäonnistui';
 $string['courseupdatestask'] = 'Lähetä kurssitapahtumat Allyyn';
 $string['logger:pushcoursesuccess'] = 'Kurssitapahtumat lähetettiin Ally-päätepisteeseen';
 $string['logger:pushcourseliveskip'] = 'Kurssitapahtumien live-lähetysvirhe';
