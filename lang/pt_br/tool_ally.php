@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'O módulo não foi identificado corr
 $string['logger:failedtogetcoursesectionname'] = 'Falha ao obter o nome da seção do curso';
 $string['logger:moduleidresolutionfailure'] = 'Falha ao resolver o código do módulo';
 $string['logger:cmidresolutionfailure'] = 'Falha ao resolver o código do módulo do curso';
+$string['logger:cmvisibilityresolutionfailure'] = 'Falha ao resolver a visibilidade do módulo do curso';
 $string['courseupdatestask'] = 'Enviar eventos do curso para o Ally';
 $string['logger:pushcoursesuccess'] = 'Push bem-sucedido de evento(s) do curso para o terminal do Ally';
 $string['logger:pushcourseliveskip'] = 'Falha no push de evento de curso ativo';
