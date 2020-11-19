@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'Module is niet correct geïdentifice
 $string['logger:failedtogetcoursesectionname'] = 'Fout bij ophalen van naam van cursussectie';
 $string['logger:moduleidresolutionfailure'] = 'Fout bij omzetten van ID van module';
 $string['logger:cmidresolutionfailure'] = 'Fout bij omzetten van ID van cursusmodule';
+$string['logger:cmvisibilityresolutionfailure'] = 'Fout bij oplossen van zichtbaarheid van cursusmodule';
 $string['courseupdatestask'] = 'Cursusgebeurtenissen naar Ally pushen';
 $string['logger:pushcoursesuccess'] = 'Pushen van een of meer cursusgebeurtenissen naar Ally-eindpunt gelukt';
 $string['logger:pushcourseliveskip'] = 'Fout bij pushen van live cursusgebeurtenis';
