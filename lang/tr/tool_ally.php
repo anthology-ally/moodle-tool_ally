@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'Modül doğru şekilde tanımlanmam�
 $string['logger:failedtogetcoursesectionname'] = 'Kurs bölümünün adı alınamadı';
 $string['logger:moduleidresolutionfailure'] = 'Modül kimliği çözümlenemedi';
 $string['logger:cmidresolutionfailure'] = 'Kurs modülü kimliği çözümlenemedi';
+$string['logger:cmvisibilityresolutionfailure'] = 'Kurs modülü görünürlüğü çözümlenemedi';
 $string['courseupdatestask'] = 'Kurs olaylarını Ally\'a aktar';
 $string['logger:pushcoursesuccess'] = 'Kurs olayları Ally uç noktasına başarıyla aktarıldı';
 $string['logger:pushcourseliveskip'] = 'Canlı kurs olayı aktarma hatası';
