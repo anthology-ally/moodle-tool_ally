@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'El módulo no se identificó correct
 $string['logger:failedtogetcoursesectionname'] = 'No se pudo obtener el nombre de la sección del curso';
 $string['logger:moduleidresolutionfailure'] = 'No se pudo averiguar el ID del módulo';
 $string['logger:cmidresolutionfailure'] = 'No se pudo averiguar la ID del módulo del curso';
+$string['logger:cmvisibilityresolutionfailure'] = 'No pudo solucionar la visibilidad del módulo del curso';
 $string['courseupdatestask'] = 'Insertar eventos del curso en Ally';
 $string['logger:pushcoursesuccess'] = 'Inserción exitosa del/de los evento(s) en el punto de enlace de Ally';
 $string['logger:pushcourseliveskip'] = 'Error de inserción del evento del curso en vivo';

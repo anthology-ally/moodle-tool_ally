@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'Le module n\'a pas été correctemen
 $string['logger:failedtogetcoursesectionname'] = 'Impossible de récupérer le nom de la section de cours';
 $string['logger:moduleidresolutionfailure'] = 'Impossible de résoudre l\'identifiant du module';
 $string['logger:cmidresolutionfailure'] = 'Impossible de résoudre l\'identifiant du module de cours';
+$string['logger:cmvisibilityresolutionfailure'] = 'Impossible de résoudre la visibilité du module de cours';
 $string['courseupdatestask'] = 'Transmettre les événements de cours vers Ally';
 $string['logger:pushcoursesuccess'] = 'Transmission du ou des événements de cours vers Ally réussie';
 $string['logger:pushcourseliveskip'] = 'Échec de la transmission des événements de cours dynamiques';

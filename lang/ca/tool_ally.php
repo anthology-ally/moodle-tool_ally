@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'El mòdul no s\'ha identificat corre
 $string['logger:failedtogetcoursesectionname'] = 'No s\'ha pogut aconseguir el nom de la secció del curs';
 $string['logger:moduleidresolutionfailure'] = 'No s\'ha pogut resoldre l\'ID del mòdul';
 $string['logger:cmidresolutionfailure'] = 'No s\'ha pogut resoldre l\'ID del mòdul del curs';
+$string['logger:cmvisibilityresolutionfailure'] = 'No s\'ha pogut resoldre la visibilitat del mòdul del curs';
 $string['courseupdatestask'] = 'Passa els esdeveniments del curs a Ally';
 $string['logger:pushcoursesuccess'] = 'S\'han passat correctament els esdeveniments del curs al punt final d\'Ally';
 $string['logger:pushcourseliveskip'] = 'Error en passar l\'esdeveniment del curs en temps real';

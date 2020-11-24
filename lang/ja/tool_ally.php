@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'モジュールが正しく識別さ
 $string['logger:failedtogetcoursesectionname'] = 'コースセクション名の取得に失敗しました';
 $string['logger:moduleidresolutionfailure'] = 'モジュールIDの解決に失敗しました';
 $string['logger:cmidresolutionfailure'] = 'コースモジュールIDの解決に失敗しました';
+$string['logger:cmvisibilityresolutionfailure'] = 'コースモジュールの可視性の解決に失敗しました';
 $string['courseupdatestask'] = 'Allyにコースイベントをプッシュする';
 $string['logger:pushcoursesuccess'] = 'Allyエンドポイントへのコースイベントのプッシュに成功しました';
 $string['logger:pushcourseliveskip'] = 'ライブコースイベントプッシュ失敗';

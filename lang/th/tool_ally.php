@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'ระบุโมดูลไม่
 $string['logger:failedtogetcoursesectionname'] = 'การรับชื่อส่วนของรายวิชาล้มเหลว';
 $string['logger:moduleidresolutionfailure'] = 'ไม่สามารถแก้ไข ID โมดูล';
 $string['logger:cmidresolutionfailure'] = 'ไม่สามารถแก้ไข ID โมดูลรายวิชา';
+$string['logger:cmvisibilityresolutionfailure'] = 'ไม่สามารถแก้ไขการมองเห็นโมดูลรายวิชา';
 $string['courseupdatestask'] = 'พุชกิจกรรมของรายวิชาไปยัง Ally';
 $string['logger:pushcoursesuccess'] = 'การพุชกิจกรรมของรายวิชาไปยังจุดสิ้นสุด Ally สำเร็จ';
 $string['logger:pushcourseliveskip'] = 'การพุชกิจกรรมของรายวิชาแบบสดล้มเหลว';

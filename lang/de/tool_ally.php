@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'Das Modul wurde nicht korrekt identi
 $string['logger:failedtogetcoursesectionname'] = 'Der Kursabschnittsname konnte nicht abgerufen werden';
 $string['logger:moduleidresolutionfailure'] = 'Modul-ID konnte nicht aufgelöst werden';
 $string['logger:cmidresolutionfailure'] = 'Die Kurs-Modul-ID konnte nicht aufgelöst werden';
+$string['logger:cmvisibilityresolutionfailure'] = 'Die Kursmodulsichtbarkeit konnte nicht aufgelöst werden.';
 $string['courseupdatestask'] = 'Kursereignisse per Push an Ally senden';
 $string['logger:pushcoursesuccess'] = 'Erfolgreicher Push von Kursereignissen an Ally-Endpunkt';
 $string['logger:pushcourseliveskip'] = 'Fehler beim Push von Live-Kursereignissen';

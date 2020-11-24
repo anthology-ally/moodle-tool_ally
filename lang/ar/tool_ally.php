@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'لم يتم تعريف الوحدة 
 $string['logger:failedtogetcoursesectionname'] = 'فشل في الحصول على اسم قسم المقرر الدراسي';
 $string['logger:moduleidresolutionfailure'] = 'فشل في حل معرف الوحدة النمطية';
 $string['logger:cmidresolutionfailure'] = 'فشل في حل معرف الوحدة النمطية للمقرر الدراسي';
+$string['logger:cmvisibilityresolutionfailure'] = 'فشل في حل إمكانية الاطلاع على الوحدة النمطية للمقرر الدراسي';
 $string['courseupdatestask'] = 'دفع أحداث المقرر الدراسي إلى Ally.';
 $string['logger:pushcoursesuccess'] = 'دفع ناجح لحدث (أحداث) المقرر الدراسي إلى نقطة نهاية ally';
 $string['logger:pushcourseliveskip'] = 'فشل دفع حدث المقرر الدراسي المباشر';

@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'Modulet blev ikke identificeret.';
 $string['logger:failedtogetcoursesectionname'] = 'Kunne ikke hente kursussektionens navn.';
 $string['logger:moduleidresolutionfailure'] = 'Kunne ikke løse modulets ID';
 $string['logger:cmidresolutionfailure'] = 'Kunne ikke fortolke kursusmodulets ID';
+$string['logger:cmvisibilityresolutionfailure'] = 'Kunne ikke fortolke kursusmodulets synlighed';
 $string['courseupdatestask'] = 'Push kursusbegivenheder til Ally';
 $string['logger:pushcoursesuccess'] = 'Push af kursusbegivenhed(er) til Ally-slutpunkt blev fuldført';
 $string['logger:pushcourseliveskip'] = 'Direkte push af kursusbegivenhed mislykkedes';

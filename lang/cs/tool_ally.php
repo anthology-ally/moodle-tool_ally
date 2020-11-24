@@ -103,6 +103,7 @@ $string['logger:annotationmoderror_exp'] = 'Modul nebyl správně identifikován
 $string['logger:failedtogetcoursesectionname'] = 'Nepodařilo se získat název sekce kurzu';
 $string['logger:moduleidresolutionfailure'] = 'Nepodařilo se vyřešit ID modulu';
 $string['logger:cmidresolutionfailure'] = 'Nepodařilo se vyřešit ID modulu kurzu';
+$string['logger:cmvisibilityresolutionfailure'] = 'Nepodařilo se vyřešit viditelnost modulu kurzu';
 $string['courseupdatestask'] = 'Posunout události kurzu do služby Ally';
 $string['logger:pushcoursesuccess'] = 'Úspěšné posunutí události nebo událostí kurzu do koncového bodu služby Ally';
 $string['logger:pushcourseliveskip'] = 'Selhání posunutí události živého kurzu';
