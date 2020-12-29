@@ -66,7 +66,8 @@ class content extends loggable_external_api {
             'embeddedfiles' => new external_multiple_structure(
                 new external_single_structure([
                         'filename'     => new external_value(PARAM_TEXT, 'File name'),
-                        'pathnamehash' => new external_value(PARAM_TEXT, 'File path name hash')
+                        'pathnamehash' => new external_value(PARAM_TEXT, 'File path name hash'),
+                        'tag'          => new external_value(PARAM_TEXT, 'File dom tag')
                     ],
                     'Embedded file information'
                 ), 'Embedded files information'
