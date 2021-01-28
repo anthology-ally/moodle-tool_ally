@@ -144,7 +144,7 @@ class tool_ally_local_content_testcase extends tool_ally_abstract_testcase {
             'id' => $section2->id,
             'summary' => $section0summary,
             'summaryformat' => FORMAT_HTML,
-            'title' => '',
+            'name' => '',
             'timemodified' => 0,
         ]);
 

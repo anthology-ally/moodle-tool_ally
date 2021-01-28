@@ -128,7 +128,7 @@ class course_component extends component_base implements iface_html_content {
                     $course = get_course($record->course);
                     $record->timemodified = $course->timecreated;
                 }
-                if ($record->name !== null) {
+                if (!empty($record->name)) {
                     return; // Don't bother modifying $record - we have a name already!
                 }
                 try {
