@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2020 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -118,3 +118,5 @@ $string['logger:servicefailure'] = 'サービスの使用中に失敗しまし�
 $string['logger:servicefailure_exp'] = '<br>クラス : {$a->class}<br>パラメータ : {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'ally_webserviceロールに教師アーキタイプケイパビリティを割り当て中に失敗しました。';
 $string['logger:autoconfigfailureteachercap_exp'] = '<br>ケイパビリティ : {$a->cap}<br>パーミッション : {$a->permission}';
+$string['deferredcourseevents'] = '保留されたコースイベントを送信する';
+$string['deferredcourseeventsdesc'] = 'Allyとの通信エラーの間に蓄積した、保存されたコースイベントを送信できるようにします。';
