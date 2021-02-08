@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2020 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -44,13 +44,13 @@ $string['fileupdatestask'] = 'Datei-Updates per Push in Ally übertragen';
 $string['id'] = 'ID';
 $string['key'] = 'Schlüssel';
 $string['keydesc'] = 'Der LTI-Verbraucherschlüssel.';
-$string['level'] = 'Ebenen';
-$string['message'] = 'Mitteilung';
+$string['level'] = 'Stufe';
+$string['message'] = 'Nachricht';
 $string['pluginname'] = 'Ally';
 $string['pushurl'] = 'URL für Datei-Updates';
 $string['pushurldesc'] = 'Push-Benachrichtigungen über Datei-Updates an diese URL senden.';
 $string['queuesendmessagesfailure'] = 'Beim Versenden von Mitteilungen an den AWS SQS ist ein Fehler aufgetreten. Fehlerdaten: $a';
-$string['secret'] = 'Secret';
+$string['secret'] = 'Geheimer Schlüssel';
 $string['secretdesc'] = 'Das LTI-Secret.';
 $string['showdata'] = 'Daten einblenden';
 $string['hidedata'] = 'Daten ausblenden';
@@ -81,7 +81,7 @@ $string['lessonanswertitle'] = 'Antwort für Lektion "{$a}"';
 $string['lessonresponsetitle'] = 'Beantwortung für Lektion "{$a}"';
 $string['logs'] = 'Ally-Protokolle';
 $string['logrange'] = 'Protokollbereich';
-$string['loglevel:none'] = 'Ohne';
+$string['loglevel:none'] = 'Keine';
 $string['loglevel:light'] = 'Leicht';
 $string['loglevel:medium'] = 'Mittel';
 $string['loglevel:all'] = 'Alle';
@@ -118,3 +118,5 @@ $string['logger:servicefailure'] = 'Beim Verarbeiten des Service fehlgeschlagen'
 $string['logger:servicefailure_exp'] = '<br>Klasse: {$a->class}<br>Parameter: {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'Beim Zuweisen einer Trainer-Basisfähigkeit zur Rolle ally_webservice fehlgeschlagen';
 $string['logger:autoconfigfailureteachercap_exp'] = '<br>Fähigkeit: {$a->cap}<br>Berechtigung: {$a->permission}';
+$string['deferredcourseevents'] = 'Zurückgestellte Kursereignisse senden';
+$string['deferredcourseeventsdesc'] = 'Senden von gespeicherten Kursereignissen zulassen, die während des Kommunikationsausfalls mit Ally angesammelt wurden';
