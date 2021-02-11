@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2020 Blackboard Inc. (http://www.blackboard.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -81,7 +81,7 @@ $string['lessonanswertitle'] = '"{$a}" dersi için yanıt';
 $string['lessonresponsetitle'] = '"{$a}" dersi için yanıt';
 $string['logs'] = 'Ally günlükleri';
 $string['logrange'] = 'Günlük aralığı';
-$string['loglevel:none'] = 'Yok';
+$string['loglevel:none'] = 'Hiçbiri';
 $string['loglevel:light'] = 'Hafif';
 $string['loglevel:medium'] = 'Orta';
 $string['loglevel:all'] = 'Tümü';
@@ -118,5 +118,3 @@ $string['logger:servicefailure'] = 'Hizmet kullanılırken bir hata oldu.';
 $string['logger:servicefailure_exp'] = '<br>Sınıf: {$a->class}<br>Parametreler: {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'Bir öğretmen kök örnek yeteneği ally_webservice rolüne atanamadı.';
 $string['logger:autoconfigfailureteachercap_exp'] = '<br>Yetenek: {$a->cap}<br>İzin: {$a->permission}';
-$string['deferredcourseevents'] = 'Ertelenen kurs etkinliklerini gönder';
-$string['deferredcourseeventsdesc'] = 'Ally ile iletişim sorunları yaşandığında biriken ve depolanan kurs etkinliklerinin gönderilmesine izin verin';

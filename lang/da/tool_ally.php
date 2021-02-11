@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2020 Blackboard Inc. (http://www.blackboard.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,11 +41,11 @@ $string['error:componentcontentnotfound'] = 'Indhold ikke fundet for {$a}';
 $string['error:wstokenmissing'] = 'Webtjenestetoken mangler. Måske skal en administratorbruger køre en automatisk konfiguration?';
 $string['filecoursenotfound'] = 'Den indsendte fil tilhører ikke noget kursus';
 $string['fileupdatestask'] = 'Push filopdateringer til Ally';
-$string['id'] = 'Id';
+$string['id'] = 'ID';
 $string['key'] = 'Nøgle';
 $string['keydesc'] = 'LTI-forbrugernøglen.';
 $string['level'] = 'Niveau';
-$string['message'] = 'Besked';
+$string['message'] = 'Meddelelse';
 $string['pluginname'] = 'Ally';
 $string['pushurl'] = 'URL for filopdateringer';
 $string['pushurldesc'] = 'Push notifikationer om filopdateringer til denne URL.';
@@ -118,5 +118,3 @@ $string['logger:servicefailure'] = 'Fejl under brug af servicen.';
 $string['logger:servicefailure_exp'] = '<br>Klasse: {$a->class}<br>Parametre: {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'Fejl ved tildeling af en egenskab for arketypen lærer til rollen ally_webservice.';
 $string['logger:autoconfigfailureteachercap_exp'] = '<br>Egenskab: {$a->cap}<br>Tilladelse: {$a->permission}';
-$string['deferredcourseevents'] = 'Send udsatte kursusbegivenheder';
-$string['deferredcourseeventsdesc'] = 'Gør det muligt at sende gemte kursusbegivenheder, der blev samlet ved det mislykkede forsøg på at kommunikere med Ally';
