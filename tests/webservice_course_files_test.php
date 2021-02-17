@@ -53,7 +53,7 @@ class tool_ally_webservice_course_files_testcase extends tool_ally_abstract_test
      */
     private $resourcefile;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->resetAfterTest();
         $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);

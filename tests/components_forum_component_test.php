@@ -90,7 +90,7 @@ class tool_ally_components_forum_component_testcase extends advanced_testcase {
      */
     private $component;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();

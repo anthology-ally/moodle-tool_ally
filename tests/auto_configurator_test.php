@@ -38,7 +38,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 class tool_ally_auto_configurator_testcase extends advanced_testcase {
 
-    public function setUp() {
+    public function setUp(): void {
         $this->resetAfterTest(true);
     }
 

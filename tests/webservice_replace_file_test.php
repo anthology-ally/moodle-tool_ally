@@ -54,7 +54,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
     /**
      * @throws dml_exception
      */
-    public function setUp() {
+    public function setUp(): void {
         $this->resetAfterTest();
 
         $datagen = $this->getDataGenerator();

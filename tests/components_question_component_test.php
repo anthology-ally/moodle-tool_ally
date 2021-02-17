@@ -69,7 +69,7 @@ class tool_ally_components_question_component_testcase extends tool_ally_abstrac
      */
     private $component;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();

@@ -54,7 +54,7 @@ class tool_ally_wspluginfile_testcase extends tool_ally_abstract_testcase {
      */
     private $allywebuser;
 
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
 
         $this->wspluginfile = new wspluginfile();

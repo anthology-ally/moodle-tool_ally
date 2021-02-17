@@ -34,7 +34,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_lib_testcase extends tool_ally_abstract_testcase {
-    protected function setUp() {
+    protected function setUp(): void {
         // Prevent it from creating a backup of the deleted module.
         set_config('coursebinenable', 0, 'tool_recyclebin');
     }

@@ -70,7 +70,7 @@ class tool_ally_components_component_base_testcase extends advanced_testcase {
      */
     private $component;
 
-    public function setUp() {
+    public function setUp(): void {
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();

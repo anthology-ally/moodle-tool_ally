@@ -38,7 +38,7 @@ class tool_ally_password_test extends advanced_testcase {
      */
     protected $password;
 
-    protected function setUp() {
+    protected function setUp(): void {
         $this->password = new password();
     }
 
