@@ -60,7 +60,7 @@ use tool_ally\local_content;
  */
 class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
 
-    public function setUp() {
+    public function setUp(): void {
         global $CFG;
 
         $this->resetAfterTest();

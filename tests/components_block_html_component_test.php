@@ -65,7 +65,7 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
      */
     private $component;
 
-    public function setUp() {
+    public function setUp(): void {
         global $CFG;
 
         $this->resetAfterTest();

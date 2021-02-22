@@ -44,7 +44,7 @@ class tool_ally_file_url_resolver_testcase extends tool_ally_abstract_testcase {
      */
     private $generator;
 
-    protected function setUp() {
+    protected function setUp(): void {
         $this->resetAfterTest();
         $this->setUser($this->getDataGenerator()->create_user());
 

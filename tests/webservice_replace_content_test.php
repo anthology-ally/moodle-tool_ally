@@ -37,7 +37,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  */
 class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_testcase {
 
-    public function setUp() {
+    public function setUp(): void {
         $this->resetAfterTest();
         $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);

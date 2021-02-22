@@ -26,7 +26,7 @@ use tool_ally\lti\launch_config;
 defined('MOODLE_INTERNAL') || die();
 
 class tool_ally_launch_config_test extends advanced_testcase {
-    public function setUp() {
+    public function setUp(): void {
         global $CFG;
         require_once($CFG->dirroot.'/mod/lti/locallib.php');
     }
