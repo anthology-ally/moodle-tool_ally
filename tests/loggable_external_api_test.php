@@ -18,7 +18,7 @@
  * Test for loggable_external_api.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2019 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +34,7 @@ use Psr\Log\LogLevel;
  * Test for loggable_external_api.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2019 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_loggable_external_api_testcase extends tool_ally_abstract_testcase {

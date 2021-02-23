@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/webservice/lib.php');
  * Class for dealing with wspluginfile.php endpoint.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
