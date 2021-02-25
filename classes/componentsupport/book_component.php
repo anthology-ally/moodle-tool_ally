@@ -24,7 +24,10 @@ namespace tool_ally\componentsupport;
 
 defined ('MOODLE_INTERNAL') || die();
 
+use cm_info;
+
 use tool_ally\componentsupport\interfaces\annotation_map;
+use tool_ally\componentsupport\interfaces\content_sub_tables;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\traits\embedded_file_map;
@@ -38,7 +41,8 @@ use moodle_url;
  * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class book_component extends component_base implements iface_html_content, annotation_map {
+class book_component extends component_base implements
+        iface_html_content, annotation_map, content_sub_tables {
 
     use html_content;
     use embedded_file_map;
@@ -234,5 +238,10 @@ SQL;
             return $id;
         }
         return parent::get_file_item($table, $field, $id);
+    }
+
+    public function queue_delete_sub_tables(cm_info $cm) {
+        $chapters = $this->get_chapter_html_content($cm->instance);
+        $this->bulk_queue_delete_content($chapters);
     }
 }
