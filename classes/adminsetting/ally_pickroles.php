@@ -16,8 +16,8 @@
 
 /**
  * Admin setting for picking roles available for ally configuration.
- * @author    David Castro <david.castro@blackboard.com>
- * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @author    David Castro <david.castro@openlms.net>
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @package   tool_ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,8 +30,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class admin_setting_ally_pickroles
  *
  * @package   tool_ally
- * @author    David Castro <david.castro@blackboard.com>
- * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @author    David Castro <david.castro@openlms.net>
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ally_pickroles extends \admin_setting_pickroles {

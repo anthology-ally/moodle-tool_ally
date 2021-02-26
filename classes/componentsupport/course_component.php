@@ -16,7 +16,7 @@
 
 /**
  * Html content support for courses.
- * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -36,7 +36,7 @@ require_once($CFG->dirroot.'/course/lib.php');
 
 /**
  * Html content support for courses.
- * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_component extends component_base implements iface_html_content {

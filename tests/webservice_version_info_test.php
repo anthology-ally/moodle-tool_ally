@@ -18,7 +18,7 @@
  * Test for version_info webservice.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +32,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * Test for version_info webservice.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_webservice_version_info_testcase extends tool_ally_abstract_testcase {

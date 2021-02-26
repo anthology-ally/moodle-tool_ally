@@ -17,7 +17,7 @@
 /**
  * Html file replacement support for core forum module
  * @author    Guy Thomas <citricity@gmail.com>
- * @copyright Copyright (c) 2018 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,7 +41,7 @@ use moodle_url;
 /**
  * Html file / content replacement support for core forum module
  * @author    Guy Thomas <citricity@gmail.com>
- * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class forum_component extends file_component_base implements

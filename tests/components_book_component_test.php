@@ -19,7 +19,7 @@
  *
  * @package   tool_ally
  * @author    Guy Thomas
- * @copyright Copyright (c) 2019 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @package   tool_ally
  * @author    Guy Thomas
- * @copyright Copyright (c) 2019 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_components_book_component_testcase extends advanced_testcase {

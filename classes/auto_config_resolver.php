@@ -19,7 +19,7 @@
  *
  * @package   tool_ally
  * @author    Sam Chaffee
- * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
  * Class responsible for resolving Ally tool configurations for the CLI script.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class auto_config_resolver {
