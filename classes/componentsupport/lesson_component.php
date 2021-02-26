@@ -17,8 +17,8 @@
 /**
  * Html file replacement support for core lessons.
  * @package tool_ally
- * @author    David Castro <david.castro@blackboard.com>
- * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @author    David Castro <david.castro@openlms.net>
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,8 +41,8 @@ use moodle_url;
  * Class lesson_component.
  * Html file replacement support for core lessons.
  * @package tool_ally
- * @author    David Castro <david.castro@blackboard.com>
- * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @author    David Castro <david.castro@openlms.net>
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class lesson_component extends file_component_base implements iface_html_content, annotation_map {

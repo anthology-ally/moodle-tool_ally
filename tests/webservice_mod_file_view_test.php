@@ -18,7 +18,7 @@
  * Test for file module completion web service.
  * @author    Guy Thomas <citricity@gmail.com>
  * @package   tool_ally
- * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/files/externallib.php');
  * Test for file module completion web service.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2017 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_ally_webservice_mod_file_view_testcase extends tool_ally_abstract_testcase {
