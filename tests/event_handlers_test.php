@@ -501,7 +501,55 @@ MSG;
     }
 
     public function test_book_deleted() {
+        global $USER;
+
+        $this->setAdminUser();
+
+        // First do the default check.
         $this->check_module_deleted_pushtraces('book', 'book', 'intro');
+
+        // Now the more complicated testing. Specifically we are going to confirm that when a book is deleted,
+        // any chapters within it are also marked for deletion.
+        $course = $this->getDataGenerator()->create_course();
+        $book = $this->getDataGenerator()->create_module('book',
+            ['course' => $course->id, 'introformat' => FORMAT_HTML, 'intro' => 'Some intro']);
+        $bookentityid = 'book:book:intro:'.$book->id;
+
+        list($course, $cm) = get_course_and_cm_from_cmid($book->cmid);
+
+        // The course module generator does fire the course_module_created event, so it should be there.
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $bookentityid);
+
+        $bookgenerator = $this->getDataGenerator()->get_plugin_generator('mod_book');
+        $chapter1 = $bookgenerator->create_content($book, ['contentformat' => FORMAT_HTML]);
+        $chapter2 = $bookgenerator->create_content($book, ['contentformat' => FORMAT_HTML]);
+
+        $chapter1entityid = 'book:book_chapters:content:'.$chapter1->id;
+        $chapter2entityid = 'book:book_chapters:content:'.$chapter2->id;
+
+        // The chapter generator doesn't fire the chapter created event, so we need to do it.
+        chapter_created::create_from_chapter($book, $cm->context, $chapter1)->trigger();
+        chapter_created::create_from_chapter($book, $cm->context, $chapter2)->trigger();
+
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $chapter1entityid);
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $chapter2entityid);
+
+        // Make sure the delete events aren't in there yet.
+        $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $bookentityid);
+        $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $chapter2entityid);
+        $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $chapter1entityid);
+
+        // Now we are all setup, we can confirm that deleting the book also deletes the chapters in the book.
+        course_delete_module($book->cmid);
+
+        // The task needs to run to actually push the events.
+        $cdt = new content_updates_task();
+        $cdt->execute();
+        $cdt->execute(); // We have to execute again because first time just sets exec window.
+
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $bookentityid);
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $chapter2entityid);
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $chapter1entityid);
     }
 
     public function test_forum_created() {
@@ -751,6 +799,7 @@ MSG;
 
         // Note, there shouldn't be any deletion events at this point because deletes need the task to be dealt with.
         $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $glossaryentityid);
+        $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $entityid);
 
         $cdt = new content_updates_task();
         $cdt->execute();
@@ -758,6 +807,7 @@ MSG;
 
         // After running the task it has pushed the deletion event.
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $glossaryentityid);
+        $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $entityid);
     }
 
     /**
