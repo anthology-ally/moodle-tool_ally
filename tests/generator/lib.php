@@ -22,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_ally\logging\logger;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -119,5 +121,50 @@ class tool_ally_generator extends component_generator_base {
         $DB->update_record('block_instances', $block);
         $block = $DB->get_record('block_instances', ['id' => $block->id]);
         return $block;
+    }
+
+    /**
+     * Create a ally log entry in the database.
+     *
+     * @param array $record Contains values to be set in the log entry.
+     *                      Currently supports level, message, context, and time.
+     * @return stdClass
+     * @throws coding_exception
+     * @throws dml_exception
+     */
+    public function create_log_entry(array $record = []) {
+        global $DB;
+
+        $logger = logger::get();
+
+        if (isset($record['level'])) {
+            $level = $record['level'];
+        } else {
+            $level = 'info';
+        }
+
+        if (isset($record['message'])) {
+            $message = $record['message'];
+        } else {
+            $message = 'Default message';
+        }
+
+        if (isset($record['context'])) {
+            $context = $record['context'];
+        } else {
+            $context = [];
+        }
+
+        $logid = $logger->log($level, $message, $context);
+        if (empty($logid)) {
+            throw new coding_exception("Log insert didn't return an id.");
+        }
+
+        if (isset($record['time'])) {
+            $DB->set_field('tool_ally_log', 'time', (int)$record['time'], ['id' => $logid]);
+        }
+
+        return $DB->get_record('tool_ally_log', ['id' => $logid]);
+
     }
 }
