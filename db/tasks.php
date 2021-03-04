@@ -52,4 +52,13 @@ $tasks = [
         'dayofweek' => '*',
         'month'     => '*'
     ],
+    [
+        'classname' => '\tool_ally\task\cleanup_log_task',
+        'blocking'  => 0,
+        'minute'    => '0',
+        'hour'      => '0',
+        'day'       => '*',
+        'dayofweek' => '*',
+        'month'     => '*'
+    ]
 ];

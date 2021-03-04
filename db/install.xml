@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="admin/tool/ally/db" VERSION="2018080815" COMMENT="XMLDB file for Moodle admin/tool/ally"
+<XMLDB PATH="admin/tool/ally/db" VERSION="20210227" COMMENT="XMLDB file for Moodle admin/tool/ally"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
@@ -70,6 +70,7 @@
       <INDEXES>
         <INDEX NAME="level" UNIQUE="false" FIELDS="level"/>
         <INDEX NAME="code" UNIQUE="false" FIELDS="code"/>
+        <INDEX NAME="time" UNIQUE="false" FIELDS="time"/>
       </INDEXES>
     </TABLE>
     <TABLE NAME="tool_ally_course_event" COMMENT="Table for storing pending course events to push">
