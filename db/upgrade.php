@@ -281,5 +281,20 @@ function xmldb_tool_ally_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2019061200, 'tool', 'ally');
     }
 
+    if ($oldversion < 2020061102) {
+
+        // Define index time (not unique) to be added to tool_ally_log.
+        $table = new xmldb_table('tool_ally_log');
+        $index = new xmldb_index('time', XMLDB_INDEX_NOTUNIQUE, ['time']);
+
+        // Conditionally launch add index time.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Ally savepoint reached.
+        upgrade_plugin_savepoint(true, 2020061102, 'tool', 'ally');
+    }
+
     return true;
 }
