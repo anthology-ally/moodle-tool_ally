@@ -282,6 +282,8 @@ function xmldb_tool_ally_upgrade($oldversion) {
     }
 
     if ($oldversion < 2020061102) {
+        // Table could be very large, so just clear it out.
+        $DB->delete_records('tool_ally_log');
 
         // Define index time (not unique) to be added to tool_ally_log.
         $table = new xmldb_table('tool_ally_log');
