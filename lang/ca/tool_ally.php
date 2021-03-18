@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2020 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -41,7 +41,7 @@ $string['error:componentcontentnotfound'] = 'No s\'ha trobat contingut per a {$a
 $string['error:wstokenmissing'] = 'Falta el testimoni de servei web. Potser cal que un usuari administrador executi una configuració automàtica?';
 $string['filecoursenotfound'] = 'El fitxer que s\'ha passat no pertany a cap curs';
 $string['fileupdatestask'] = 'Passa les actualitzacions de fitxers a Ally';
-$string['id'] = 'ID';
+$string['id'] = 'Identificador';
 $string['key'] = 'Clau';
 $string['keydesc'] = 'La clau de consumidor de LTI.';
 $string['level'] = 'Nivell';
@@ -50,7 +50,7 @@ $string['pluginname'] = 'Ally';
 $string['pushurl'] = 'URL d\'actualitzacions dels fitxers';
 $string['pushurldesc'] = 'Envia notificacions sobre actualitzacions de fitxers a aquest URL.';
 $string['queuesendmessagesfailure'] = 'S\'ha produït un error mentre s\'enviaven els missatges a l\'AWS SQS. Dades de l\'error: $a';
-$string['secret'] = 'Secret';
+$string['secret'] = 'Contrasenya';
 $string['secretdesc'] = 'El secret LTI.';
 $string['showdata'] = 'Mostra les dades';
 $string['hidedata'] = 'Oculta les dades';
@@ -81,10 +81,10 @@ $string['lessonanswertitle'] = 'Resposta per la lliçó "{$a}"';
 $string['lessonresponsetitle'] = 'Resposta per a la lliçó "{$a}"';
 $string['logs'] = 'Registres d\'Ally';
 $string['logrange'] = 'Interval del registre';
-$string['loglevel:none'] = 'Cap';
+$string['loglevel:none'] = 'Ningun';
 $string['loglevel:light'] = 'Lleuger';
 $string['loglevel:medium'] = 'Mitjana';
-$string['loglevel:all'] = 'Tot';
+$string['loglevel:all'] = 'Totes';
 $string['logger:pushtoallysuccess'] = 'S\'ha passat correctament al punt final d\'Ally';
 $string['logger:pushtoallyfail'] = 'No s\'ha passat al punt final d\'Ally correctament';
 $string['logger:pushfilesuccess'] = 'S\'han passat correctament els fitxers al punt final d\'Ally';
@@ -118,3 +118,5 @@ $string['logger:servicefailure'] = 'S\'ha produït un error en consumir el serve
 $string['logger:servicefailure_exp'] = '<br>Classe: {$a->class}<br>Paràmetres: {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'S\'ha produït un error en assignar la capacitat d\'arquetipus de professor al rol ally_webservice.';
 $string['logger:autoconfigfailureteachercap_exp'] = '<br>Capacitat: {$a->cap}<br>Permís: {$a->permission}';
+$string['deferredcourseevents'] = 'Envia els esdeveniments del curs diferits';
+$string['deferredcourseeventsdesc'] = 'Permet l\'enviament d\'esdeveniments del curs emmagatzemats, que s\'han acumulat durant l\'error de comunicació amb Ally.';
