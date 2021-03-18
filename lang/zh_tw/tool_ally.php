@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2020 Blackboard Inc. (http://www.blackboard.com)
+ * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -83,7 +83,7 @@ $string['logs'] = 'Ally 記錄';
 $string['logrange'] = '記錄範圍';
 $string['loglevel:none'] = '無';
 $string['loglevel:light'] = '輕度';
-$string['loglevel:medium'] = '中度';
+$string['loglevel:medium'] = '中';
 $string['loglevel:all'] = '全部';
 $string['logger:pushtoallysuccess'] = '成功推送至 Ally 端點';
 $string['logger:pushtoallyfail'] = '未成功推送至 Ally 端點';
@@ -118,3 +118,5 @@ $string['logger:servicefailure'] = '取用服務時失敗。';
 $string['logger:servicefailure_exp'] = '<br>類別：{$a->class}<br>參數：{$a->params}';
 $string['logger:autoconfigfailureteachercap'] = '指派講師 archetype 功能給 ally_webservice 角色時失敗。';
 $string['logger:autoconfigfailureteachercap_exp'] = '<br>能力：{$a->cap}<br>權限：{$a->permission}';
+$string['deferredcourseevents'] = '傳送延後的課程事件';
+$string['deferredcourseeventsdesc'] = '允許傳送儲存的課程事件，這些事件在與 Ally 通訊失敗期間累積';
