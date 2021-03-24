@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2020 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -50,7 +50,7 @@ $string['pluginname'] = 'Ally';
 $string['pushurl'] = 'URL de atualizações de arquivos';
 $string['pushurldesc'] = 'Notificações push sobre atualizações de arquivos para este URL.';
 $string['queuesendmessagesfailure'] = 'Ocorreu um erro ao enviar mensagens para AWS SQS. Dados do erro: $a';
-$string['secret'] = 'Secreto';
+$string['secret'] = 'Segredo';
 $string['secretdesc'] = 'O segredo da LTI.';
 $string['showdata'] = 'Mostrar dados';
 $string['hidedata'] = 'Ocultar dados';
@@ -81,10 +81,10 @@ $string['lessonanswertitle'] = 'Resposta para a lição "{$a}"';
 $string['lessonresponsetitle'] = 'Resposta para a lição "{$a}"';
 $string['logs'] = 'Registros do Ally';
 $string['logrange'] = 'Faixa de registros';
-$string['loglevel:none'] = 'Nenhum';
+$string['loglevel:none'] = 'Nenhuma';
 $string['loglevel:light'] = 'Leve';
 $string['loglevel:medium'] = 'Médio';
-$string['loglevel:all'] = 'Tudo';
+$string['loglevel:all'] = 'Todas';
 $string['logger:pushtoallysuccess'] = 'Push bem-sucedido para o terminal do Ally';
 $string['logger:pushtoallyfail'] = 'Push malsucedido para o terminal do Ally';
 $string['logger:pushfilesuccess'] = 'Push bem-sucedido de arquivo(s) para o terminal do Ally';
@@ -118,3 +118,5 @@ $string['logger:servicefailure'] = 'Falha ao consumir serviço.';
 $string['logger:servicefailure_exp'] = '<br>Classe: {$a->class}<br>Parâmetros: {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'Falha ao atribuir uma competência de arquétipo de professor à função ally_webservice.';
 $string['logger:autoconfigfailureteachercap_exp'] = '<br>Competência: {$a->cap}<br>Permissão: {$a->permission}';
+$string['deferredcourseevents'] = 'Enviar eventos adiados do curso';
+$string['deferredcourseeventsdesc'] = 'Permitir o envio de eventos armazenados do curso que se acumularam durante a falha de comunicação com o Ally';

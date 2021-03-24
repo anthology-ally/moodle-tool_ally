@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2020 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -42,10 +42,10 @@ $string['error:wstokenmissing'] = 'Jeton de service Web manquant. Un utilisateur
 $string['filecoursenotfound'] = 'Le fichier transmis n\'appartient à aucun cours';
 $string['fileupdatestask'] = 'Transmettre les mise à jour de fichiers vers Ally';
 $string['id'] = 'Identifiant';
-$string['key'] = 'Clé';
+$string['key'] = 'clé';
 $string['keydesc'] = 'Clé client LTI.';
 $string['level'] = 'Niveau';
-$string['message'] = 'Message';
+$string['message'] = 'Message personnel';
 $string['pluginname'] = 'Ally';
 $string['pushurl'] = 'URL de mise à jour des fichiers';
 $string['pushurldesc'] = 'Notifications Push à propos des mises à jour de fichiers vers cette URL.';
@@ -81,10 +81,10 @@ $string['lessonanswertitle'] = 'Réponse pour la leçon "{$a}"';
 $string['lessonresponsetitle'] = 'Réponse pour la leçon "{$a}"';
 $string['logs'] = 'Journaux Ally';
 $string['logrange'] = 'Plage de journal';
-$string['loglevel:none'] = 'Aucun';
+$string['loglevel:none'] = 'Aucune';
 $string['loglevel:light'] = 'Faible';
 $string['loglevel:medium'] = 'Moyen';
-$string['loglevel:all'] = 'Tous';
+$string['loglevel:all'] = 'L\'ensemble';
 $string['logger:pushtoallysuccess'] = 'Transmission vers le point d\'accès Ally réussie';
 $string['logger:pushtoallyfail'] = 'Échec de la transmission vers le point d\'accès Ally';
 $string['logger:pushfilesuccess'] = 'Transmission du ou des fichiers vers le point d\'accès Ally réussie';
@@ -118,3 +118,5 @@ $string['logger:servicefailure'] = 'Échec d\'utilisation du service.';
 $string['logger:servicefailure_exp'] = '<br>Classe : {$a->class}<br>Paramètres : {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'Échec lors de l\'attribution d\'une fonction d\'archétype d\'enseignant au rôle ally_webservice.';
 $string['logger:autoconfigfailureteachercap_exp'] = '<br>Fonction : {$a->cap}<br>Permission : {$a->permission}';
+$string['deferredcourseevents'] = 'Envoyer les événements du cours reportés';
+$string['deferredcourseeventsdesc'] = 'Permettre l’envoi des événements du cours mémorisés qui ont été accumulés lors de l’échec de la communication avec Ally';
