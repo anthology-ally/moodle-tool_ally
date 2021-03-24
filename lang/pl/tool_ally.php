@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2020 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -50,7 +50,7 @@ $string['pluginname'] = 'Ally';
 $string['pushurl'] = 'Adres URL aktualizacji plików';
 $string['pushurldesc'] = 'Powiadomienia Push dotyczące aktualizacji plików pod tym adresem URL.';
 $string['queuesendmessagesfailure'] = 'Wystąpił błąd podczas wysyłania wiadomości do AWS SQS. Dane błędu: $a';
-$string['secret'] = 'Tajny ciąg';
+$string['secret'] = 'Tajny klucz*';
 $string['secretdesc'] = 'Tajny ciąg LTI.';
 $string['showdata'] = 'Pokaż dane';
 $string['hidedata'] = 'Ukryj dane';
@@ -81,10 +81,10 @@ $string['lessonanswertitle'] = 'Odpowiedź dla lekcji „{$a}”';
 $string['lessonresponsetitle'] = 'Udzielona odpowiedź dla lekcji „{$a}”';
 $string['logs'] = 'Dzienniki usługi Ally';
 $string['logrange'] = 'Zakres dziennika';
-$string['loglevel:none'] = 'Brak';
+$string['loglevel:none'] = 'żaden';
 $string['loglevel:light'] = 'Lekki';
-$string['loglevel:medium'] = 'Średni';
-$string['loglevel:all'] = 'Wszystko';
+$string['loglevel:medium'] = 'Średnie';
+$string['loglevel:all'] = 'Wszystkie';
 $string['logger:pushtoallysuccess'] = 'Pomyślne przesłano do punktu końcowego usługi Ally';
 $string['logger:pushtoallyfail'] = 'Nie udało się przesłać do punktu końcowego usługi Ally';
 $string['logger:pushfilesuccess'] = 'Pomyślne przesłano pliki do punktu końcowego usługi Ally';
@@ -118,3 +118,5 @@ $string['logger:servicefailure'] = 'Niepowodzenie podczas korzystania z usługi.
 $string['logger:servicefailure_exp'] = '<br>Klasa: {$a->class}<br>Parametry: {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'Niepowodzenie podczas przypisywania możliwości roli bazowej nauczyciela do roli ally_webservice.';
 $string['logger:autoconfigfailureteachercap_exp'] = '<br>Możliwość: {$a->cap}<br>Uprawnienie: {$a->permission}';
+$string['deferredcourseevents'] = 'Wyślij odroczone zdarzenia kursowe';
+$string['deferredcourseeventsdesc'] = 'Zezwól na wysyłanie zapisanych zdarzeń kursowych, które zostały zgromadzone podczas awarii komunikacji z Ally';

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2020 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -81,10 +81,10 @@ $string['lessonanswertitle'] = 'Vastaus oppitunnille {$a}';
 $string['lessonresponsetitle'] = 'Vastaus oppitunnille {$a}';
 $string['logs'] = 'Ally-lokit';
 $string['logrange'] = 'Lokitaso';
-$string['loglevel:none'] = 'Ei mitään';
+$string['loglevel:none'] = 'ei mitään';
 $string['loglevel:light'] = 'Kevyt';
-$string['loglevel:medium'] = 'Keskitaso';
-$string['loglevel:all'] = 'Kaikki';
+$string['loglevel:medium'] = 'Keskisuuri';
+$string['loglevel:all'] = 'Kaikkien';
 $string['logger:pushtoallysuccess'] = 'Lähetettiin Ally-päätepisteeseen';
 $string['logger:pushtoallyfail'] = 'Lähetys Ally-päätepisteeseen epäonnistui';
 $string['logger:pushfilesuccess'] = 'Tiedostot lähetettiin Ally-päätepisteeseen';
@@ -118,3 +118,5 @@ $string['logger:servicefailure'] = 'Palvelun käyttäminen epäonnistui.';
 $string['logger:servicefailure_exp'] = '<br>Luokka: {$a->class}<br>Parametrit: {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'Roolin ally_webservice perustoimintojen määrittäminen opettajalle epäonnistui.';
 $string['logger:autoconfigfailureteachercap_exp'] = '<br>Kyky: {$a->cap}<br>Käyttöoikeus: {$a->permission}';
+$string['deferredcourseevents'] = 'Lähetä lykkäytyneet kurssin tapahtumat';
+$string['deferredcourseeventsdesc'] = 'Salli tallennettujen kurssin tapahtumien lähetys, joita on kertynyt Ally-tietoyhteysongelman aikana';

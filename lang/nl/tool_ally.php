@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2020 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -81,7 +81,7 @@ $string['lessonanswertitle'] = 'Antwoord voor les "{$a}"';
 $string['lessonresponsetitle'] = 'Reactie voor les "{$a}"';
 $string['logs'] = 'Ally-logboeken';
 $string['logrange'] = 'Logboekbereik';
-$string['loglevel:none'] = 'Geen';
+$string['loglevel:none'] = 'Niets';
 $string['loglevel:light'] = 'Licht';
 $string['loglevel:medium'] = 'Normaal';
 $string['loglevel:all'] = 'Alle';
@@ -118,3 +118,5 @@ $string['logger:servicefailure'] = 'Mislukt tijdens het gebruik van de service.'
 $string['logger:servicefailure_exp'] = '<br>Cursus: {$a->class}<br>Parameters: {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'Mislukt bij het toewijzen van een vaardigheid docentarchetype aan de rol ally_webservice.';
 $string['logger:autoconfigfailureteachercap_exp'] = '<br>Vaardigheid: {$a->cap}<br>Machtiging: {$a->permission}';
+$string['deferredcourseevents'] = 'Uitgestelde cursusgebeurtenissen verzenden';
+$string['deferredcourseeventsdesc'] = 'Verzending van opgeslagen cursusgebeurtenissen toestaan die tijdens een communicatiestoring met Ally zijn verzameld';
