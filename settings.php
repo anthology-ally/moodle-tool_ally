@@ -64,6 +64,10 @@ if ($hassiteconfig) {
     $settings->add(new ally_config_link('tool_ally/allyclientconfig', new lang_string('allyclientconfig', 'tool_ally'),
         new moodle_url('/admin/tool/ally/lti/view.php')));
 
+    $settings->add(new admin_setting_configcheckbox('tool_ally/excludeunused',
+        new lang_string('excludeunused', 'tool_ally'),
+        new lang_string('excludeunuseddesc', 'tool_ally'), 0));
+
     $choices = [
         constants::RANGE_NONE => get_string('loglevel:none', 'tool_ally'),
         constants::RANGE_LIGHT => get_string('loglevel:light', 'tool_ally'),

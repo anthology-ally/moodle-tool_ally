@@ -37,7 +37,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_components_forum_component_testcase extends advanced_testcase {
+class tool_ally_components_forum_component_testcase extends tool_ally_abstract_testcase {
     use component_assertions;
 
     /**
@@ -193,5 +193,55 @@ class tool_ally_components_forum_component_testcase extends advanced_testcase {
         $_GET['d'] = $this->studentdiscussion->id;
         $cis = $this->component->get_annotation_maps($this->course->id);
         $this->assertEmpty($cis['posts']);
+    }
+
+    /**
+     * Test if file in use detection is working with this module.
+     */
+    public function test_check_file_in_use() {
+        $context = context_module::instance($this->forum->cmid);
+
+        $usedfiles = [];
+        $unusedfiles = [];
+
+        // Check the intro.
+        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_forum', $this->forum->id,
+            $this->forumtype, 'intro', $this->teacher);
+
+        // Now we are going to setup file associated with a teacher discussion.
+        $postid = $this->teacherdiscussion->firstpost;
+
+        // Check embedded post content.
+        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_forum', $postid,
+            $this->forumtype . '_posts', 'message', $this->teacher);
+
+        // Add some attached files that are always in use.
+        list($file1, $file2) = $this->setup_check_files($context, 'mod_forum', 'attachment', $postid, $this->teacher);
+        $usedfiles[] = $file1; // Silly workaround for PHP code checker.
+        $usedfiles[] = $file2;
+
+        // Now setup a teacher post on a discussion.
+        $forumgen = self::getDataGenerator()->get_plugin_generator('mod_'.$this->forumtype);
+
+        $post = new stdClass();
+        $post->discussion = $this->teacherdiscussion->id;
+        $post->userid = $this->teacher->id;
+        $post->parent = $this->teacherdiscussion->firstpost;
+        $post->messageformat = FORMAT_HTML;
+        $teacherpost = $forumgen->create_post($post);
+
+        $postid = $teacherpost->id;
+
+        // Check embedded post content.
+        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_forum', $postid,
+            $this->forumtype . '_posts', 'message', $this->teacher);
+
+        // Add some attached files that are always in use.
+        list($file1, $file2) = $this->setup_check_files($context, 'mod_forum', 'attachment', $postid, $this->teacher);
+        $usedfiles[] = $file1; // Silly workaround for PHP code checker.
+        $usedfiles[] = $file2;
+
+        // This will double check that file iterator is working as expected.
+        $this->check_file_iterator_exclusion($context, $usedfiles, $unusedfiles);
     }
 }

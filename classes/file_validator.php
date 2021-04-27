@@ -30,6 +30,7 @@ use stored_file;
 use context;
 use context_course;
 use coding_exception;
+use tool_ally\local_content;
 
 /**
  * Validates if the file should be pushed to Ally.
@@ -102,6 +103,21 @@ class file_validator {
     ];
 
     /**
+     * Fileareas where all files should be considered in use.
+     * These are fileareas where files in them are automatically in use, even though they don't appear in
+     * any HTML content.
+     */
+    const ALWAYS_IN_USE = [
+        'course~overviewfiles',
+        'mod_assign~introattachment',
+        'mod_folder~content',
+        'mod_forum~attachment',
+        'mod_glossary~attachment',
+        'mod_hsuforum~attachment',
+        'mod_imscp~content',
+        'mod_resource~content'
+    ];
+    /**
      * @var array
      */
     private $userids;
@@ -132,10 +148,12 @@ class file_validator {
      * Validates if the file should be pushed to Ally.
      * @param stored_file $file
      * @param context|null $context
+     * @param bool $skipinusecheck Don't check files for being in use, even if the setting is on. Used during
+     *                           deletions, since we can't check the HTML content at that point.
      * @return bool
      * @throws coding_exception
      */
-    public function validate_stored_file(stored_file $file, context $context = null) {
+    public function validate_stored_file(stored_file $file, context $context = null, $skipinusecheck = false) {
         // Can a course context be gotten?
         try {
             $context = $context ?: context::instance_by_id($file->get_contextid());
@@ -154,8 +172,10 @@ class file_validator {
         $component = $file->get_component();
         $area = $file->get_filearea();
 
-        $compteacheronly = $this->check_component_area_teacher_whitelist($component, $area);
-        if ($compteacheronly) {
+        // Check if the file is in a teacher whitelist area, or if in a valid area with a creator that is
+        // an editing teacher/admin/manager/etc.
+        if ($this->check_component_area_teacher_whitelist($component, $area) ||
+                $this->check_component_area_whitelist_and_user_type($component, $area, $file, $context)) {
             // At this point we do not need to check that the user is still an editing teacher / manager / admin / etc.
             // That is because we know that the file belongs to a context that is whitelisted as teacher only.
             // E.g. the file was created as resource content, or a forum intro.
@@ -163,11 +183,98 @@ class file_validator {
             // WE DO NOT bother checking if the user who created this file is still an editing teacher / manager /
             // admin / etc because they might a) No longer be enrolled on the course, b) Have a different role to the
             // one they had when they created the file.
+
+            if (!$skipinusecheck && get_config('tool_ally', 'excludeunused')) {
+                // If we are checking files to see if they are in use, do that now.
+                return $this->check_file_in_use($file, $context);
+            }
+
             return true;
         }
 
-        // Check if component area is valid AND user is an editing teacher / manager / admin / etc.
-        return $this->check_component_area_whitelist_and_user_type($component, $area, $file, $context);
+        // At this point, the file isn't in any area we know about, so it can be considered invalid.
+        return false;
+    }
+
+    /**
+     * Checks if the provided file is in use in its context.
+     *
+     * @param stored_file $file File to check
+     * @param context $context The context object for the file.
+     * @return bool
+     */
+    protected function check_file_in_use(stored_file $file, context $context = null) {
+        global $DB;
+
+        $componentstr = $file->get_component();
+        $filearea = $file->get_filearea();
+
+        if (in_array($componentstr . '~' . $filearea, self::ALWAYS_IN_USE)) {
+            // This is a shortcut, since certain file areas are always 'in use', so we don't need to check more deeply.
+            return true;
+        }
+
+        if (is_null($context)) {
+            $context = context::instance_by_id($file->get_contextid());
+        }
+
+        if ($component = local_content::component_instance($componentstr)) {
+            // If we have component support, we are going use that to check if the file is in use.
+            return $component->check_file_in_use($file, $context);
+        }
+
+        $cleancomponentstr = local::clean_component_string($componentstr);
+        // For module components, we are going to check to see if there is a column with the filearea name that is
+        // a text or varchar, and if so check the contents for the file.
+        if (strpos($componentstr, 'mod_') === 0 && ($columns = $DB->get_columns($cleancomponentstr))
+                && isset($columns[$filearea])) {
+            list($course, $cm) = get_course_and_cm_from_cmid($context->instanceid);
+            try {
+                // Sometimes this can get called before the module is available the core functions, due to transactions.
+                list($course, $cm) = get_course_and_cm_from_cmid($context->instanceid);
+                $instanceid = $cm->instance;
+            } catch (\moodle_exception $e) {
+                $cm = $DB->get_record('course_modules', ['id' => $context->instanceid]);
+                $instanceid = $cm->instance;
+            }
+            $record = $DB->get_record($cleancomponentstr, ['id' => $instanceid]);
+            if ($record) {
+                // Get the full path and name of the file.
+                $fullfilename = ltrim($file->get_filepath() . $file->get_filename(), '/');
+
+                $foundfiles = local_content::get_pluginfiles_in_html($record->$filearea);
+                if (empty($foundfiles)) {
+                    return false;
+                }
+
+                // We are going to check the found files to see if it matches the filename we have.
+                foreach ($foundfiles as $foundfile) {
+                    if ($foundfile->type == 'fullurl') {
+                        $props = local_file::get_fileurlproperties($foundfile->src);
+                        if (empty($props) || empty($props->filename) || $context->id != $props->contextid) {
+                            // If we didn't get the properties, filename, or the context doesn't match the current one, skip.
+                            continue;
+                        }
+
+                        if ($props->filename == $fullfilename) {
+                            return true;
+                        }
+                    } else if ($foundfile->type == 'pathonly') {
+                        if ($foundfile->src == $fullfilename) {
+                            return true;
+                        }
+                    }
+                }
+                // If we got here, then it means we didn't find the file.
+                return false;
+            }
+
+        }
+
+        // If we are not sure, we are going to default to including the file.
+        debugging("Could not process in use check for {$componentstr}:{$filearea}", DEBUG_DEVELOPER);
+
+        return true;
     }
 
     /**

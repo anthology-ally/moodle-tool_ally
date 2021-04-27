@@ -95,7 +95,7 @@ class tool_ally_wspluginfile_testcase extends tool_ally_abstract_testcase {
         $signature = hash('sha256', $token . ':' . $iat . ':' . $pathnamehash);
 
         $this->expectException(webservice_access_exception::class);
-        $this->expectExceptionMessageRegExp('/Signature is invalid/');
+        $this->expectExceptionMessageMatches('/Signature is invalid/');
         $this->wspluginfile->validate_wspluginfile_signature($signature, $iat, $pathnamehash);
     }
 

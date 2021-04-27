@@ -79,7 +79,7 @@ class file_processor {
             return false;
         }
 
-        if (!local_file::file_validator()->validate_stored_file($file)) {
+        if (!local_file::file_validator()->validate_stored_file($file, null, false)) {
             return false;
         }
 

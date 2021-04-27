@@ -27,13 +27,16 @@ use tool_ally\componentsupport\component_base;
 use tool_ally\local;
 use tool_ally\local_file;
 use tool_ally\local_content;
+use tool_ally\models\component;
 use tool_ally\models\component_content;
 
+use cache;
 use coding_exception;
 use context;
 use context_block;
 use context_course;
 use file_storage;
+use stored_file;
 
 defined ('MOODLE_INTERNAL') || die();
 
@@ -51,80 +54,52 @@ trait embedded_file_map {
      * @throws \moodle_exception
      */
     public function apply_embedded_file_map(?component_content $content) {
-
         $html = $content->content;
-        $doc = local_content::build_dom_doc($html);
-        if (!$doc) {
+        $results = local_content::get_pluginfiles_in_html($html);
+
+        if (empty($results)) {
             return $content;
-        }
-        $results = [];
-
-        $anchorresults = $doc->getElementsByTagName('a');
-        foreach ($anchorresults as $anchorresult) {
-            if (!is_object($anchorresult->attributes) || !is_object($anchorresult->attributes->getNamedItem('href'))) {
-                continue;
-            }
-            $anchorresult->src = $anchorresult->attributes->getNamedItem('href')->nodeValue;
-            $results[] = $anchorresult;
-        }
-
-        $imgresults = $doc->getElementsByTagName('img');
-        foreach ($imgresults as $imgresult) {
-            if (!is_object($imgresult->attributes) || !is_object($imgresult->attributes->getNamedItem('src'))) {
-                continue;
-            }
-            $imgresult->src = $imgresult->attributes->getNamedItem('src')->nodeValue;
-            $results[] = $imgresult;
         }
 
         $fs = new file_storage();
         $component = local::get_component_instance($content->component);
 
-        foreach ($results as $result) {
-            $src = $result->src;
-
-            $componenttype = local::get_component_support_type($content->component);
-            if ($componenttype === component_base::TYPE_MOD) {
-                if ($content->table === $content->component) {
-                    /** @var \cm_info $cm */
-                    list($course, $cm) = get_course_and_cm_from_instance($content->id, $content->component);
-                } else {
-                    // Sub table detected - e.g. forum discussion, book chapter, etc...
-                    $moduleinstanceid = $component->resolve_module_instance_id($content->table, $content->id);
-                    list($course, $cm) = get_course_and_cm_from_instance($moduleinstanceid, $content->component);
-                }
-                $context = $cm->context;
-
-                $compstr = 'mod_'.$content->component;
-            } else if ($componenttype === component_base::TYPE_BLOCK) {
-                $context = context_block::instance($content->id);
-                $compstr = $content->component;
+        $componenttype = local::get_component_support_type($content->component);
+        if ($componenttype === component_base::TYPE_MOD) {
+            if ($content->table === $content->component) {
+                list($course, $cm) = get_course_and_cm_from_instance($content->id, $content->component);
             } else {
-                if (!$content->courseid) {
-                    return $content;
-                }
-                $context = context_course::instance($content->courseid);
-                $compstr = $content->component;
+                // Sub table detected - e.g. forum discussion, book chapter, etc...
+                $moduleinstanceid = $component->resolve_module_instance_id($content->table, $content->id);
+                list($course, $cm) = get_course_and_cm_from_instance($moduleinstanceid, $content->component);
             }
+            $context = $cm->context;
 
+            $compstr = 'mod_'.$content->component;
+        } else if ($componenttype === component_base::TYPE_BLOCK) {
+            $context = context_block::instance($content->id);
+            $compstr = $content->component;
+        } else {
+            $courseid = $content->get_courseid();
+            if (!$courseid) {
+                return $content;
+            }
+            $context = context_course::instance($courseid);
+            $compstr = $content->component;
+        }
+
+        foreach ($results as $result) {
             $file = null;
-
-            if (strpos($src, 'pluginfile.php') !== false) {
-                $props = local_file::get_fileurlproperties($src);
-                $context = context::instance_by_id($props->contextid, IGNORE_MISSING);
-                if (!$context) {
-                    // The context couldn't be found (perhaps this is a copy/pasted url pointing at old deleted content).
-                    // Move on.
+            if ($result->type == 'fullurl') {
+                $props = local_file::get_fileurlproperties($result->src);
+                if ($context->id != $props->contextid) {
+                    // This link doesn't have the correct context, so we are going to skip it.
                     continue;
                 }
 
                 $file = local_file::get_file_fromprops($props);
-            } else if (strpos($src, '@@PLUGINFILE@@') !== false) {
-                $filename = str_replace('@@PLUGINFILE@@', '', $src);
-                $filename = urldecode($filename);
-                if (strpos($filename, '/') === 0) {
-                    $filename = substr($filename, 1);
-                }
+            } else if ($result->type == 'pathonly') {
+                $filename = $result->src;
                 $filearea = $component->get_file_area($content->table, $content->field);
                 if (!$filearea) {
                     throw new coding_exception('Failed to get filearea for component_content '.
@@ -139,10 +114,82 @@ trait embedded_file_map {
                 $content->embeddedfiles[] = [
                     'filename' => rawurlencode($file->get_filename()),
                     'pathnamehash' => $file->get_pathnamehash(),
-                    'tag' => $result->tagName
+                    'tag' => $result->tagname
                 ];
             }
         }
+
         return $content;
+    }
+
+    /**
+     * Use the embedded filemap to check if the passed file is in use.
+     *
+     * @param stored_file $file The file to check
+     * @param context $context The context to check in
+     * @return bool
+     */
+    protected function check_embedded_file_in_use(stored_file $file, ?context $context = null) {
+        global $DB;
+
+        // We are going to cache any files used in this item instaces, so we don't have to search again.
+        $cache = cache::make('tool_ally', 'fileinusecache');
+        $contextid = $file->get_contextid();
+
+        $files = $cache->get($contextid);
+        if ($files == false) {
+            $files = [];
+            if (is_null($context)) {
+                $context = context::instance_by_id($contextid);
+            }
+
+            if ($this->component_type() === self::TYPE_MOD) {
+                try {
+                    // Sometimes this can get called before the module is available the core functions, due to transactions.
+                    list($course, $cm) = get_course_and_cm_from_cmid($context->instanceid);
+                    $instanceid = $cm->instance;
+                } catch (\moodle_exception $e) {
+                    $cm = $DB->get_record('course_modules', ['id' => $context->instanceid]);
+                    $instanceid = $cm->instance;
+                }
+            } else {
+                $instanceid = $context->instanceid;
+            }
+
+            $contents = $this->get_all_files_search_html($instanceid);
+            if (is_null($contents)) {
+                $contents = $this->get_all_html_content($instanceid);
+            }
+
+            foreach ($contents as $content) {
+                if ($content instanceof component) {
+                    // For some reason, some components return component, instead of component_contents at times. Like glossary.
+                    $content = local_content::get_html_content($content->id, $content->component, $content->table, $content->field,
+                        $content->courseid);
+                }
+                if (!$content) {
+                    // If the content is non-existent, then skip.
+                    continue;
+                }
+
+                $contentmap = $this->apply_embedded_file_map($content);
+
+                foreach ($contentmap->embeddedfiles as $embeddedfile) {
+                    $files[] = $embeddedfile['pathnamehash'];
+                }
+
+            }
+
+            if (!local::duringtesting()) {
+                // We need to skip caching this during unit tests, otherwise... problems.
+                $cache->set($contextid, $files);
+            }
+        }
+
+        if (in_array($file->get_pathnamehash(), $files)) {
+            return true;
+        }
+
+        return false;
     }
 }

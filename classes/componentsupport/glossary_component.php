@@ -27,7 +27,8 @@ namespace tool_ally\componentsupport;
 defined ('MOODLE_INTERNAL') || die();
 
 use cm_info;
-
+use context;
+use stored_file;
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\content_sub_tables;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
@@ -254,5 +255,14 @@ SQL;
             return $id;
         }
         return parent::get_file_item($table, $field, $id);
+    }
+
+    public function check_file_in_use(stored_file $file, ?context $context = null): bool {
+        if ($file->get_filearea() == 'attachment') {
+            // All attachments are in use.
+            return true;
+        }
+
+        return $this->check_embedded_file_in_use($file, $context);
     }
 }

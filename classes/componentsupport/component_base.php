@@ -23,9 +23,11 @@
 
 namespace tool_ally\componentsupport;
 
+use context;
+use stored_file;
+use tool_ally\componentsupport\interfaces\html_content;
 use tool_ally\local;
 use tool_ally\role_assignments;
-use \context;
 use tool_ally\exceptions\component_validation_exception;
 
 defined ('MOODLE_INTERNAL') || die();
@@ -245,5 +247,37 @@ MSG;
             $componentrecord = $DB->get_record($component, ['id' => $instanceid]);
             return $componentrecord->id;
         }
+    }
+
+    /**
+     * Check if the provided file is in use in the provided context.
+     * Intended to filter out files that are attached to text areas, but are aren't actually in use.
+     * Can make an assumption that only teacher generated content needs to be searched.
+     *
+     * @param stored_file $file The file to check
+     * @param context $context The context to check in
+     * @return bool
+     */
+    public function check_file_in_use(stored_file $file, ?context $context = null): bool {
+        if (is_a($this, html_content::class) && method_exists($this, 'check_embedded_file_in_use')) {
+            return $this->check_embedded_file_in_use($file, $context);
+        }
+
+        // If not implemented, we should just default to true.
+        debugging('No check_file_in_use implementation for ' . $this->get_component_name(), DEBUG_DEVELOPER);
+
+        return true;
+    }
+
+    /**
+     * Return an array of text content created by teachers, managers, admin, etc, for use in
+     * checking if files are in use.
+     *
+     * @param int $id
+     * @return array|null
+     */
+    public function get_all_files_search_html(int $id): ?array {
+        // Null return means not implemented.
+        return null;
     }
 }

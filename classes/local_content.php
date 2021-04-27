@@ -26,6 +26,9 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
+use cache;
+use moodle_url;
+use stdClass;
 use tool_ally\componentsupport\component_base;
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\html_content;
@@ -363,5 +366,82 @@ class local_content {
             'compfield'   => $field,
             'timedeleted' => time(),
         ], false);
+    }
+
+    /**
+     * Return an array of descriptors for links to local files in the provided html.
+     * Decoding those into file resources is left to the caller.
+     *
+     * @param string $html
+     * @return array
+     */
+    public static function get_pluginfiles_in_html(string $html): ?array {
+        $cache = cache::make('tool_ally', 'pluginfilesinhtml');
+
+        // Use a hash of the html to fingerprint the content for caching.
+        $sha = sha1($html);
+        $results = $cache->get($sha);
+        if ($results !== false) {
+            return $results;
+        }
+
+        // Use a DOM object of the provided HTML.
+        $doc = static::build_dom_doc($html);
+        if (!$doc) {
+            return null;
+        }
+        $results = [];
+
+        // Check any a tags.
+        $anchorresults = $doc->getElementsByTagName('a');
+        foreach ($anchorresults as $anchorresult) {
+            if (!is_object($anchorresult->attributes) || !is_object($anchorresult->attributes->getNamedItem('href'))) {
+                continue;
+            }
+
+            $file = new stdClass();
+            $file->src = $anchorresult->attributes->getNamedItem('href')->nodeValue;
+            $file->tagname = $anchorresult->tagName;
+            $results[] = $file;
+        }
+
+        // Check any img tags.
+        $imgresults = $doc->getElementsByTagName('img');
+        foreach ($imgresults as $imgresult) {
+            if (!is_object($imgresult->attributes) || !is_object($imgresult->attributes->getNamedItem('src'))) {
+                continue;
+            }
+
+            $file = new stdClass();
+            $file->src = $imgresult->attributes->getNamedItem('src')->nodeValue;
+            $file->tagname = $imgresult->tagName;
+            $results[] = $file;
+        }
+
+        // Now filter out external links.
+        $baseurl = new moodle_url('/pluginfile.php');
+        $baseurl = $baseurl->out(false);
+        foreach ($results as $key => $result) {
+            if (strpos($result->src, $baseurl) !== false) {
+                // In this case it is a full pluginfile path.
+                $result->type = 'fullurl';
+                continue;
+            }
+            if (strpos($result->src, '@@PLUGINFILE@@') !== false) {
+                // This is a url with just the pluginfile tag, so we only have the path/name of the file.
+                $result->type = 'pathonly';
+                $filename = str_replace('@@PLUGINFILE@@', '', $result->src);
+                $filename = urldecode($filename);
+                $result->src = ltrim($filename, '/');
+                continue;
+            }
+            // This means we don't have a recognized local URL, so we can remove it.
+            unset($results[$key]);
+        }
+
+        // Save the results for later.
+        $cache->set($sha, $results);
+
+        return $results;
     }
 }

@@ -215,4 +215,72 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
         $this->assertEquals($expectedtitle, $content->title);
         $this->assertEquals($expectedformat, $content->contentformat);
     }
+
+    /**
+     * Test if file in use detection is working with this module.
+     */
+    public function test_file_in_use() {
+        global $USER;
+
+        set_config('excludeunused', 1, 'tool_ally');
+
+        $this->setAdminUser();
+
+        $htmlblock = $this->add_block();
+
+        $context = $htmlblock->context;
+        // Setup some files we are going to use.
+        $usercontext = \context_user::instance($USER->id);
+        $itemid = file_get_unused_draft_itemid();
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
+
+        // Because of how block saving works, we are going to add the files to user drafts.
+        $record = [
+                'filename'  => 'unused.txt',
+                'contextid' => $usercontext->id,
+                'component' => 'user',
+                'filearea'  => 'draft',
+                'itemid'    => $itemid
+        ];
+
+        $htmlunusedfile = $generator->create_file($record);
+        $record['filename'] = 'used1.txt';
+        $htmlusedfile1 = $generator->create_file($record);
+        $record['filename'] = 'used2.txt';
+        $htmlusedfile2 = $generator->create_file($record);
+
+        $fileids = $this->get_file_ids_in_context($context);
+        $this->assertCount(0, $fileids);
+
+        $url = moodle_url::make_pluginfile_url($context->id, 'block_html', 'content',
+                null, $htmlusedfile2->get_filepath(), $htmlusedfile2->get_filename());
+
+        // Now update the content the two used links, in the two different formats.
+        $data = [
+                'title' => $htmlblock->get_title(),
+                'text' => [
+                        'text' => $generator->create_pluginfile_link_for_file($htmlusedfile1) .
+                                '<a href="' . $url->out() . '">Link</a>',
+                        'itemid' => $itemid,
+                        'format' => FORMAT_HTML
+                ]
+        ];
+        $htmlblock->instance_config_save((object) $data);
+
+        // Make sure it matches the expected file.
+        $fileids = $this->get_file_ids_in_context($context);
+        // Because of the user draft issue above, we are going to convert from file ids to filenames.
+        $fs = get_file_storage();
+        $filenames = [];
+        foreach ($fileids as $fileid) {
+            $file = $fs->get_file_by_id($fileid);
+            $filenames[] = $file->get_filename();
+
+        }
+        $this->assertCount(2, $filenames);
+
+        $this->assertContains('used1.txt', $filenames);
+        $this->assertContains('used2.txt', $filenames);
+        $this->assertNotContains('unused.txt', $filenames);
+    }
 }

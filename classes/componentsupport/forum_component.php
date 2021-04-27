@@ -26,7 +26,8 @@ namespace tool_ally\componentsupport;
 defined ('MOODLE_INTERNAL') || die();
 
 use cm_info;
-
+use context;
+use stored_file;
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\content_sub_tables;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
@@ -237,6 +238,22 @@ SQL;
         return array_merge([$main], $posts);
     }
 
+    public function get_file_item($table, $field, $id) {
+        if ($table !== $this->type) {
+            return $id;
+        }
+
+        return parent::get_file_item($table, $field, $id);
+    }
+
+    public function get_file_area($table, $field) {
+        if ($field === 'message') {
+            return 'post';
+        }
+
+        return parent::get_file_area($table, $field);
+    }
+
     public function replace_html_content($id, $table, $field, $content) {
         return $this->std_replace_html_content($id, $table, $field, $content);
     }
@@ -314,5 +331,67 @@ SQL;
     public function queue_delete_sub_tables(cm_info $cm) {
         $discussions = $this->get_discussion_html_content_items($cm->course, $cm->instance);
         $this->bulk_queue_delete_content($discussions);
+    }
+
+    public function check_file_in_use(stored_file $file, ?context $context = null): bool {
+        if ($file->get_filearea() == 'attachment') {
+            // All attachments are in use.
+            return true;
+        }
+
+        return $this->check_embedded_file_in_use($file, $context);
+    }
+
+    public function get_all_files_search_html(int $id): ?array {
+        global $DB;
+
+        // This is a modification of get_all_html_content where we get all forum posts made
+        // by course teachers, even if they aren't the first post in a discussion.
+
+        if (!$this->module_installed()) {
+            return [];
+        }
+
+        list ($course, $cm) = get_course_and_cm_from_instance($id, $this->type);
+
+        // Limit to instructor userids.
+        $userids = $this->get_approved_author_ids_for_context(\context_course::instance($course->id));
+        list($userinsql, $userparams) = $DB->get_in_or_equal($userids);
+
+        $main = $this->get_html_content($id, $this->type, 'intro');
+        $discussions = '{'.$this->type.'_discussions}';
+        $poststable = '{'.$this->type.'_posts}';
+        $sql = <<<SQL
+            SELECT fp.*,fd.course AS courseid
+              FROM $discussions fd
+              JOIN $poststable fp
+               ON fp.discussion = fd.id
+               AND fp.messageformat = ?
+            WHERE fd.forum = ?
+              AND fp.userid $userinsql
+SQL;
+        $params = [FORMAT_HTML, $id];
+        $params = array_merge($params, $userparams);
+
+        $stdposts = $DB->get_records_sql($sql, $params);
+        $posts = array_map(function ($stdpost) {
+            $table = $this->type.'_posts';
+            $field = 'message';
+            $url = $this->make_url($stdpost->id, $table, $field, $stdpost->courseid);
+            return new component_content(
+                $stdpost->id,
+                $this->get_component_name(),
+                $table,
+                $field,
+                $stdpost->courseid,
+                $stdpost->modified,
+                $stdpost->messageformat,
+                $stdpost->message,
+                $stdpost->subject,
+                $url
+            );
+        }, $stdposts);
+
+        return array_merge([$main], $posts);
     }
 }

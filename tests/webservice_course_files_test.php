@@ -89,6 +89,7 @@ class tool_ally_webservice_course_files_testcase extends tool_ally_abstract_test
     }
 
     public function test_service_section_deleted() {
+        global $DB;
         // Add file to a soon to be deleted section.
         $section      = $this->getDataGenerator()->create_course_section(
             ['section' => 1, 'course' => $this->course->id]);
@@ -107,6 +108,9 @@ class tool_ally_webservice_course_files_testcase extends tool_ally_abstract_test
         $fs = get_file_storage();
         // This file should not appear in the service returned files if section is deleted.
         $fs->create_file_from_string($filerecordinline, $filecontents);
+
+        $summary = "<a href=\"@@PLUGINFILE@@/$filename\">1</a>";
+        $DB->set_field('course_sections', 'summary', $summary, ['id' => $section->id]);
 
         $files = course_files::service([$this->course->id]);
         $files = external_api::clean_returnvalue(course_files::service_returns(), $files);

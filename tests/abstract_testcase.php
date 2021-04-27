@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 use tool_ally\local;
+use tool_ally\local_content;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
 
@@ -67,7 +68,7 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      * @throws coding_exception
      */
     protected function create_whitelisted_assign_file($module, $name = '') {
-        return $this->create_assign_file($module, 'intro', $name);
+        return $this->create_assign_file($module, 'introattachment', $name);
 
     }
 
@@ -228,5 +229,132 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
         }
 
         return false;
+    }
+
+    /**
+     * Return an array of file ids that are considered to be present in the given context.
+     * Uses files_iterator and file_validator to determine which files are included.
+     *
+     * @param context $context
+     * @return array
+     */
+    protected function get_file_ids_in_context(context $context): array {
+        $files = \tool_ally\local_file::iterator();
+        $files->in_context($context);
+        $fileids = [];
+        foreach ($files as $file) {
+            $fileids[] = $file->get_id();
+        }
+
+        return $fileids;
+    }
+
+    /**
+     * Creates two files to be used for file use testing.
+     *
+     * @param context $context
+     * @param string $componentstr
+     * @param string $filearea
+     * @param int $itemid
+     * @param stdClass|null $user
+     * @return stored_file[]
+     */
+    protected function setup_check_files(context $context,
+                                         string $componentstr,
+                                         string $filearea,
+                                         int $itemid,
+                                         stdClass $user = null): array {
+
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
+
+        $record = [
+            'contextid' => $context->id,
+            'component' => $componentstr,
+            'filearea'  => $filearea,
+            'itemid'    => $itemid,
+        ];
+
+        if (!is_null($user)) {
+            $record['userid'] = $user->id;
+        }
+
+        $file1 = $generator->create_file($record);
+        $file2 = $generator->create_file($record);
+
+        return [$file1, $file2];
+    }
+
+    /**
+     * Checks a provided component table/field to see if HTML 'in use' checking is working for associated files.
+     * Returns the used and unused files for use for checking.
+     *
+     * @param context $context
+     * @param string $componentstr
+     * @param int $id
+     * @param string $table
+     * @param string $field
+     * @param stdClass|null $user
+     * @return stored_file[] First file is the used file, second is unused.
+     */
+    protected function check_html_files_in_use(context $context,
+                                               string $componentstr,
+                                               int $id,
+                                               string $table,
+                                               string $field,
+                                               stdClass $user = null): array {
+        global $DB;
+
+        $component = local_content::component_instance($componentstr);
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
+
+        list($usedfile, $unusedfile) = $this->setup_check_files($context, $componentstr, $component->get_file_area($table, $field),
+            $component->get_file_item($table, $field, $id), $user);
+
+        // Update the intro with the link.
+        $link = $generator->create_pluginfile_link_for_file($usedfile);
+        $DB->set_field($table, $field, $link, ['id' => $id]);
+        $DB->set_field($table, $field . 'format', FORMAT_HTML, ['id' => $id]);
+
+        // Now check it.
+        $this->assertTrue($component->check_file_in_use($usedfile));
+        $this->assertFalse($component->check_file_in_use($unusedfile));
+
+        // Return the files, in case further test want to be done.
+        return [$usedfile, $unusedfile];
+    }
+
+    /**
+     * Take a context and checks the settings of excludeunused to see if results are expected.
+     *
+     * @param context $context
+     * @param array $usedfiles
+     * @param array $unusedfiles
+     */
+    protected function check_file_iterator_exclusion(context $context, array $usedfiles, array $unusedfiles): void {
+        set_config('excludeunused', 1, 'tool_ally');
+
+        // And we are going to get all the files in the context to double check.
+        $fileids = $this->get_file_ids_in_context($context);
+        $this->assertCount(count($usedfiles), $fileids);
+
+        // See if each file is used or not used as expected.
+        foreach ($usedfiles as $file) {
+            $this->assertContains($file->get_id(), $fileids);
+        }
+        foreach ($unusedfiles as $file) {
+            $this->assertNotContains($file->get_id(), $fileids);
+        }
+
+        set_config('excludeunused', 0, 'tool_ally');
+
+        // Merge them together and see that they are now all present.
+        $allfiles = array_merge($usedfiles, $unusedfiles);
+
+        $fileids = $this->get_file_ids_in_context($context);
+        $this->assertCount(count($allfiles), $fileids);
+
+        foreach ($allfiles as $file) {
+            $this->assertContains($file->get_id(), $fileids);
+        }
     }
 }

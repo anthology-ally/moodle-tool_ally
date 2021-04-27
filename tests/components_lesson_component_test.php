@@ -24,10 +24,11 @@
  */
 
 use tool_ally\local_content;
-use tool_ally\componentsupport\glossary_component;
 use tool_ally\testing\traits\component_assertions;
 
 defined('MOODLE_INTERNAL') || die();
+
+require_once('abstract_testcase.php');
 
 /**
  * Testcase class for the tool_ally\componentsupport\lesson_component class.
@@ -37,7 +38,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_components_lesson_component_testcase extends advanced_testcase {
+class tool_ally_components_lesson_component_testcase extends tool_ally_abstract_testcase {
     use component_assertions;
 
     /**
@@ -152,5 +153,39 @@ class tool_ally_components_lesson_component_testcase extends advanced_testcase {
             $key = $this->lessonquestion->id.'_'.$answer->id.'_'.$a;
             $this->assertEquals('lesson:lesson_answers:answer:'.$answer->id, $cis['lesson_answers'][$key]);
         }
+    }
+
+    /**
+     * Test if file in use detection is working with this module.
+     */
+    public function test_check_file_in_use() {
+        global $DB;
+
+        $context = context_module::instance($this->lesson->cmid);
+
+        $usedfiles = [];
+        $unusedfiles = [];
+
+        // Check the intro.
+        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $this->lesson->id,
+            'lesson', 'intro', $this->teacher);
+
+        // Check both the standard page and the question page.
+        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $this->lessonpage->id,
+            'lesson_pages', 'contents', $this->teacher);
+        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $this->lessonquestion->id,
+            'lesson_pages', 'contents', $this->teacher);
+
+        $answers = $DB->get_records('lesson_answers', ['pageid' => $this->lessonquestion->id]);
+
+        foreach ($answers as $answer) {
+            list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $answer->id,
+                'lesson_answers', 'answer', $this->teacher);
+            list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $answer->id,
+                'lesson_answers', 'response', $this->teacher);
+        }
+
+        // This will double check that file iterator is working as expected.
+        $this->check_file_iterator_exclusion($context, $usedfiles, $unusedfiles);
     }
 }

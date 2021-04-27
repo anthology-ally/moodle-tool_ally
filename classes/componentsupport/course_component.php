@@ -24,13 +24,15 @@ namespace tool_ally\componentsupport;
 
 defined ('MOODLE_INTERNAL') || die();
 
+use context;
+use moodle_url;
+use stored_file;
 use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use tool_ally\logging\logger;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
-use moodle_url;
 
 require_once($CFG->dirroot.'/course/lib.php');
 
@@ -147,6 +149,7 @@ class course_component extends component_base implements iface_html_content {
                 }
             };
         }
+
         $content = $this->std_get_html_content($id, $table, $field, $courseid, $titlefield, 'timemodified', $recordlambda);
         return $content;
     }
@@ -254,5 +257,14 @@ class course_component extends component_base implements iface_html_content {
             return 'section';
         }
         return parent::get_file_area($table, $field);
+    }
+
+    public function check_file_in_use(stored_file $file, ?context $context = null): bool {
+        if ($file->get_filearea() == 'overviewfiles') {
+            // Overview files is the area for the course image.
+            return true;
+        }
+
+        return $this->check_embedded_file_in_use($file, $context);
     }
 }

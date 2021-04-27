@@ -67,12 +67,12 @@ class tool_ally_auto_config_resolver_testcase extends advanced_testcase {
     }
 
     /**
-     * @expectedException \coding_exception
-     * @expectedExceptionMessage No configs supplied.
      * You provide configs by using the 'configs' CLI option or by setting them to MOODLE_TOOL_ALLY_AUTO_CONFIGS
      * environment variable
      */
     public function test_resolve_noconfigs() {
+        $this->expectException(\coding_exception::class);
+        $this->expectExceptionMessage('No configs supplied.');
         // Be sure that the env variable is not set any longer.
         putenv('MOODLE_TOOL_ALLY_AUTO_CONFIGS');
 
@@ -80,11 +80,10 @@ class tool_ally_auto_config_resolver_testcase extends advanced_testcase {
         $resolver->resolve();
     }
 
-    /**
-     * @expectedException \coding_exception
-     * @expectedExceptionMessage Config string was not valid
-     */
     public function test_resolve_badconfigs() {
+        $this->expectException(\coding_exception::class);
+        $this->expectExceptionMessage('Config string was not valid');
+
         $resolver = new auto_config_resolver('somebad;$jsonstring[');
         $resolver->resolve();
     }

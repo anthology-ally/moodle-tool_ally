@@ -30,4 +30,12 @@ $definitions = [
         'simplekeys' => true,
         'ttl'        => 43200, // 12 hours.
     ],
+    'fileinusecache' => [
+        'mode'       => cache_store::MODE_REQUEST,
+        'simplekeys' => true
+    ],
+    'pluginfilesinhtml' => [
+        'mode'       => cache_store::MODE_REQUEST,
+        'simplekeys' => true
+    ]
 ];

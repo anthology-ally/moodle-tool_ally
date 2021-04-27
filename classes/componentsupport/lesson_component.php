@@ -339,11 +339,20 @@ SQL;
         if ($table === 'lesson_pages' && $field === 'contents') {
             return 'page_contents';
         }
+        if ($table === 'lesson_answers' && $field === 'answer') {
+            return 'page_answers';
+        }
+        if ($table === 'lesson_answers' && $field === 'response') {
+            return 'page_responses';
+        }
         return parent::get_file_area($table, $field);
     }
 
     public function get_file_item($table, $field, $id) {
         if ($table === 'lesson_pages' && $field === 'contents') {
+            return $id;
+        }
+        if ($table === 'lesson_answers' && ($field === 'answer' || $field === 'response')) {
             return $id;
         }
         return parent::get_file_item($table, $field, $id);
@@ -382,4 +391,28 @@ SQL;
         return null;
     }
 
+    public function get_all_files_search_html(int $id): ?array {
+        global $DB;
+
+        // Get the main content, and extract the lesson from hit.
+        $content = $this->get_all_html_content($id);
+        $lesson = reset($content);
+
+        // Now we are going to add content for each answer.
+        $answerrows = $DB->get_recordset('lesson_answers', ['lessonid' => $id]);
+        foreach ($answerrows as $row) {
+            // For each answer row, we need to make content for both the answer and the response.
+            if (!empty($row->answer) && $row->answerformat == FORMAT_HTML) {
+                $content[] = $this->std_get_html_content(
+                    $row->id, 'lesson_answers', 'answer', $lesson->courseid, null, 'timemodified', null, $row);
+            }
+            if (!empty($row->response) && $row->responseformat == FORMAT_HTML) {
+                $content[] = $this->std_get_html_content(
+                    $row->id, 'lesson_answers', 'response', $lesson->courseid, null, 'timemodified', null, $row);
+            }
+        }
+        $answerrows->close();
+
+        return $content;
+    }
 }

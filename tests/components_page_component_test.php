@@ -133,4 +133,25 @@ class tool_ally_components_page_component_testcase extends tool_ally_abstract_te
         $this->assertEquals([], $cis['content']);
 
     }
+
+    /**
+     * Test if file in use detection is working with this module.
+     */
+    public function test_check_file_in_use() {
+        $context = context_module::instance($this->page->cmid);
+
+        $usedfiles = [];
+        $unusedfiles = [];
+
+        // Check the intro.
+        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_page', $this->page->id,
+            'page', 'intro');
+
+        // Check the page content.
+        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_page', $this->page->id,
+            'page', 'content');
+
+        // This will double check that file iterator is working as expected.
+        $this->check_file_iterator_exclusion($context, $usedfiles, $unusedfiles);
+    }
 }

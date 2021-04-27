@@ -39,7 +39,7 @@ function tool_ally_after_file_deleted($filerecord) {
     $fs = get_file_storage();
     $file = $fs->get_file_instance($filerecord);
 
-    if (!local_file::file_validator()->validate_stored_file($file)) {
+    if (!local_file::file_validator()->validate_stored_file($file, null, true)) {
         return; // Ally does not support files outside of a course.
     }
 

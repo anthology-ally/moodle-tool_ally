@@ -247,8 +247,9 @@ class files_iterator implements \Iterator {
             $params['since'] = $this->since;
         }
         if ($this->context instanceof \context) {
-            $filtersql .= ' AND c.path LIKE :path ';
-            $params['path'] = $this->context->path.'%';
+            $filtersql .= ' AND (c.path LIKE :path OR c.id = :ctxid)';
+            $params['path'] = $this->context->path.'/%';
+            $params['ctxid'] = $this->context->id;
         }
         if (!empty($this->component)) {
             $filtersql .= ' AND f.component = :component ';
