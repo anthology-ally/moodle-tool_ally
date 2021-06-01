@@ -38,6 +38,7 @@ require_once($CFG->dirroot . '/webservice/lib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class local {
+
     /**
      * Get list of role IDs from admin settings.
      *
@@ -239,5 +240,39 @@ class local {
         }
         $wstoken = reset($tokens);
         return $wstoken;
+    }
+
+    /**
+     * Gets the instance id of a course module for a give course module id.
+     *
+     * @param int $contextid
+     * @return int|null
+     */
+    public static function get_instanceid_for_cmid(int $cmid): ?int {
+        global $DB;
+
+        static $staticcache = [];
+
+        if (isset($staticcache[$cmid])) {
+            return $staticcache[$cmid];
+        }
+
+        try {
+            // Sometimes this can get called before the module is available the core functions, I think due to transactions.
+            list($course, $cm) = get_course_and_cm_from_cmid($cmid);
+            $instanceid = $cm->instance;
+        } catch (\Exception $e) {
+            // Because of the above transaction issue, we may get here. Try to get it strait out of the DB.
+            if (!$instanceid = $DB->get_field('course_modules', 'instance', ['id' => $cmid])) {
+                $instanceid = null;
+            }
+        }
+
+        if (!static::duringtesting() && !is_null($instanceid)) {
+            // Don't save to cache during testing, otherwise things break during tests.
+            $staticcache[$cmid] = $instanceid;
+        }
+        return $instanceid;
+
     }
 }

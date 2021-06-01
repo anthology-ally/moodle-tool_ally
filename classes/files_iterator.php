@@ -107,10 +107,11 @@ class files_iterator implements \Iterator {
 
     /**
      * SQL sorting.
+     * Set a default sort order, as some DBs (like postgres) may return results in an inconsistent order otherwise.
      *
      * @var string
      */
-    private $sort = '';
+    private $sort = 'ORDER BY f.id ASC';
 
     /**
      * Start page to use when rewinding.

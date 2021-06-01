@@ -22,6 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_ally\files_in_use;
 use tool_ally\files_iterator;
 use tool_ally\local;
 use tool_ally\role_assignments;
@@ -682,6 +683,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
 
         // Now test with a blank intro.
         $DB->set_field('resource', 'intro', '', ['id' => $resource->id]);
+        files_in_use::set_context_needs_updating($context);
 
         $fileids = $this->get_file_ids_in_context($context);
         $this->assertCount(1, $fileids);
@@ -692,6 +694,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         // Now try with a different link format.
         $pluginlink = $generator->create_full_link_for_file($usedfile, false);
         $DB->set_field('resource', 'intro', $pluginlink, ['id' => $resource->id]);
+        files_in_use::set_context_needs_updating($context);
 
         $fileids = $this->get_file_ids_in_context($context);
         $this->assertCount(2, $fileids);
@@ -699,6 +702,5 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $this->assertContains($usedfile->get_id(), $fileids);
         $this->assertNotContains($unusedfile->get_id(), $fileids);
     }
-
 
 }

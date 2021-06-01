@@ -129,7 +129,7 @@ trait embedded_file_map {
      * @param context $context The context to check in
      * @return bool
      */
-    protected function check_embedded_file_in_use(stored_file $file, ?context $context = null) {
+    protected function check_embedded_file_in_use(stored_file $file, ?context $context = null): bool {
         global $DB;
 
         // We are going to cache any files used in this item instaces, so we don't have to search again.
@@ -144,13 +144,10 @@ trait embedded_file_map {
             }
 
             if ($this->component_type() === self::TYPE_MOD) {
-                try {
-                    // Sometimes this can get called before the module is available the core functions, due to transactions.
-                    list($course, $cm) = get_course_and_cm_from_cmid($context->instanceid);
-                    $instanceid = $cm->instance;
-                } catch (\moodle_exception $e) {
-                    $cm = $DB->get_record('course_modules', ['id' => $context->instanceid]);
-                    $instanceid = $cm->instance;
+                if (!$instanceid = local::get_instanceid_for_cmid($context->instanceid)) {
+                    // This is a pretty bad case. Just say the file is in use.
+                    debugging("Could not get instance id for cm {$context->instanceid}", DEBUG_DEVELOPER);
+                    return true;
                 }
             } else {
                 $instanceid = $context->instanceid;

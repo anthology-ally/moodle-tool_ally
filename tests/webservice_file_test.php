@@ -227,4 +227,74 @@ class tool_ally_webservice_file_testcase extends tool_ally_abstract_testcase {
         $this->expectExceptionMessage(get_string('filenotfound', 'error'));
         file::service($file->get_pathnamehash());
     }
+
+    /**
+     * Test if the file in use setting properly changes the response of this service.
+     */
+    public function test_files_in_use() {
+        global $DB;
+        $this->resetAfterTest();
+
+        // Configure the service.
+        $ac = new auto_config();
+        $ac->configure();
+
+        $this->setAdminUser();
+
+        // First some setup.
+        $gen = $this->getDataGenerator();
+        $course = $gen->create_course();
+        $assign = $gen->create_module('assign',
+            [
+                'course' => $course->id,
+                'introformat' => FORMAT_HTML,
+                'intro' => 'Text in intro'
+            ]
+        );
+        $context = context_module::instance($assign->cmid);
+        $linkgen = $this->getDataGenerator()->get_plugin_generator('tool_ally');
+
+        list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_assign', 'intro', 0);
+
+        // Update the intro with the link.
+        $link = $linkgen->create_pluginfile_link_for_file($usedfile);
+        $DB->set_field('assign', 'intro', $link, ['id' => $assign->id]);
+
+        // Test with the setting off.
+        set_config('excludeunused', 0, 'tool_ally');
+
+        // Should be able to get both files.
+        $this->assert_file_service_returns_file($usedfile);
+        $this->assert_file_service_returns_file($unusedfile);
+
+        // Test with the setting on.
+        set_config('excludeunused', 1, 'tool_ally');
+
+        // Should be able to get both files.
+        $this->assert_file_service_returns_file($usedfile);
+        $this->assert_file_service_not_returns_file($unusedfile);
+
+    }
+
+    /**
+     * Check if the file is returned by the file service.
+     *
+     * @param stored_file $file
+     */
+    protected function assert_file_service_returns_file(stored_file $file) {
+        $foundfile = file::service($file->get_pathnamehash());
+        $foundfile = external_api::clean_returnvalue(file::service_returns(), $foundfile);
+        $this->assertEquals($file->get_pathnamehash(), $foundfile['id']);
+        $this->assertEquals($file->get_filename(), $foundfile['name']);
+    }
+
+    /**
+     * Check if the file is not returned by the service.
+     *
+     * @param stored_file $file
+     */
+    protected function assert_file_service_not_returns_file(stored_file $file) {
+        $this->expectExceptionMessage(get_string('filenotfound', 'error'));
+        file::service($file->get_pathnamehash());
+    }
 }

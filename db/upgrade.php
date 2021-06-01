@@ -298,5 +298,48 @@ function xmldb_tool_ally_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2020061102, 'tool', 'ally');
     }
 
+    if ($oldversion < 2020061104) {
+
+        // Define table tool_ally_file_in_use to be created.
+        $table = new xmldb_table('tool_ally_file_in_use');
+
+        // Adding fields to table tool_ally_file_in_use.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('fileid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('contextid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('courseid', XMLDB_TYPE_INTEGER, '11', null, null, null, null);
+        $table->add_field('inuse', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
+        $table->add_field('needsupdate', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+
+        // Adding keys to table tool_ally_file_in_use.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('fileid', XMLDB_KEY_FOREIGN_UNIQUE, ['fileid'], 'files', ['id']);
+        $table->add_key('contextid', XMLDB_KEY_FOREIGN, ['contextid'], 'context', ['id']);
+        $table->add_key('courseid', XMLDB_KEY_FOREIGN, ['courseid'], 'course', ['id']);
+
+        // Conditionally launch create table for tool_ally_file_in_use.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Ally savepoint reached.
+        upgrade_plugin_savepoint(true, 2020061104, 'tool', 'ally');
+    }
+
+    if ($oldversion < 2020061105) {
+
+        // Define index needsupdate (not unique) to be added to tool_ally_file_in_use.
+        $table = new xmldb_table('tool_ally_file_in_use');
+        $index = new xmldb_index('needsupdate', XMLDB_INDEX_NOTUNIQUE, ['needsupdate']);
+
+        // Conditionally launch add index needsupdate.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Ally savepoint reached.
+        upgrade_plugin_savepoint(true, 2020061105, 'tool', 'ally');
+    }
+
     return true;
 }

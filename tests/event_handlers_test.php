@@ -46,9 +46,11 @@ use \mod_book\event\chapter_updated;
 
 use tool_ally\content_processor;
 use tool_ally\course_processor;
+use tool_ally\file_processor;
 use tool_ally\traceable_processor;
 
 use tool_ally\event_handlers;
+use tool_ally\files_in_use;
 use tool_ally\task\content_updates_task;
 use tool_ally\local_content;
 /**
@@ -72,10 +74,13 @@ class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
         set_config('key', 'key', 'tool_ally');
         set_config('secret', 'secret', 'tool_ally');
         set_config('push_cli_only', 0, 'tool_ally');
+        set_config('excludeunused', 1, 'tool_ally');
         content_processor::clear_push_traces();
         course_processor::clear_push_traces();
+        file_processor::clear_push_traces();
         content_processor::get_config(true);
         course_processor::get_config(true);
+        file_processor::get_config(true);
     }
 
     /**
@@ -114,6 +119,17 @@ class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
     }
 
     /**
+     * Check if a file with a provided file entity if (pathnamehash) is in the file pushtrace.
+     *
+     * @param $eventname
+     * @param $fileid
+     * @return bool
+     */
+    private function check_pushtrace_contains_file_id($eventname, $fileid) {
+        return $this->check_pushtrace_contains_key_value('file_processor', $eventname, 'entity_id', $fileid);
+    }
+
+    /**
      * Asserts inclusion of an entity id in content processor push traces.
      *
      * @param string $eventname
@@ -130,6 +146,19 @@ class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
     }
 
     /**
+     * @param $eventname
+     * @param $fileid
+     * @throws coding_exception
+     */
+    private function assert_pushtrace_contains_file_id($eventname, $fileid) {
+        $pushtraces = file_processor::get_push_traces($eventname);
+        $contains = $this->check_pushtrace_contains_file_id($eventname, $fileid);
+        $msg = 'Push trace does not contain an file id of ' . $fileid . "\n\n".
+            var_export($pushtraces, true);
+        $this->assertTrue($contains, $msg);
+    }
+
+    /**
      * @param string $eventname
      * @param string $entityid
      * @throws coding_exception
@@ -138,6 +167,19 @@ class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
         $pushtraces = content_processor::get_push_traces($eventname);
         $contains = $this->check_pushtrace_contains_entity_id($eventname, $entityid);
         $msg = 'Push trace does not contain an entity id of '.$entityid."\n\n".
+            var_export($pushtraces, true);
+        $this->assertFalse($contains, $msg);
+    }
+
+    /**
+     * @param $eventname
+     * @param $fileid
+     * @throws coding_exception
+     */
+    private function assert_pushtrace_not_contains_file_id($eventname, $fileid) {
+        $pushtraces = content_processor::get_push_traces($eventname);
+        $contains = $this->check_pushtrace_contains_file_id($eventname, $fileid);
+        $msg = 'Push trace does not contain an entity id of ' . $fileid . "\n\n".
             var_export($pushtraces, true);
         $this->assertFalse($contains, $msg);
     }
@@ -375,12 +417,44 @@ MSG;
             ['course' => $course->id, $modfield.'format' => FORMAT_HTML]);
         list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
 
-        $mod->$modfield = 'Updated '.$modfield.' with some text';
+        $context = context_module::instance($mod->cmid);
+        // Make two files to use.
+        list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_'.$modname, $filearea, 0);
 
+        // Confirm they didn't get sent yet.
+        $this->assert_pushtrace_not_contains_file_id("file_created", $usedfile->get_pathnamehash());
+        $this->assert_pushtrace_not_contains_file_id("file_created", $unusedfile->get_pathnamehash());
+
+        // They aren't in the content yet, so both should be false.
+        $this->assertFalse(files_in_use::check_file_in_use($usedfile));
+        $this->assertFalse(files_in_use::check_file_in_use($unusedfile));
+
+        // Still shouldn't be sent, since none are in use.
+        $this->assert_pushtrace_not_contains_file_id("file_created", $usedfile->get_pathnamehash());
+        $this->assert_pushtrace_not_contains_file_id("file_created", $unusedfile->get_pathnamehash());
+
+        // Make a link and put it in the field.
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
+        $link = $generator->create_pluginfile_link_for_file($usedfile);
+        $mod->$modfield = 'Updated ' . $modfield . ' with some a link ' . $link;
         $DB->update_record($modtable, $mod);
 
+        // Fire the update.
         course_module_updated::create_from_cm($cm)->trigger();
 
+        // Check that the records got marked as needing update.
+        $this->assertTrue($DB->record_exists('tool_ally_file_in_use', ['fileid' => $usedfile->get_id(), 'needsupdate' => 1]));
+        $this->assertTrue($DB->record_exists('tool_ally_file_in_use', ['fileid' => $unusedfile->get_id(), 'needsupdate' => 1]));
+
+        // Now see that it gets updated as expected.
+        $this->assertTrue(files_in_use::check_file_in_use($usedfile));
+        $this->assertFalse(files_in_use::check_file_in_use($unusedfile));
+
+        // And confirm that the one file got sent, but not the other.
+        $this->assert_pushtrace_contains_file_id("file_created", $usedfile->get_pathnamehash());
+        $this->assert_pushtrace_not_contains_file_id("file_created", $unusedfile->get_pathnamehash());
+
+        // Finally, check that the content update also got sent.
         $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_UPDATED, $entityid);
 
@@ -395,9 +469,23 @@ MSG;
         $course = $this->getDataGenerator()->create_course();
         $mod = $this->getDataGenerator()->create_module($modname,
             ['course' => $course->id, $modfield.'format' => FORMAT_HTML, $modfield => 'Some content']);
+
+        // Setup some files.
+        $context = context_module::instance($mod->cmid);
+        list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_'.$modname, $modfield, 0);
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
+        $link = $generator->create_pluginfile_link_for_file($usedfile);
+        $mod->$modfield = 'Updated ' . $modfield . ' with some a link ' . $link;
+        $DB->update_record($modtable, $mod);
+        // Now make sure that records exist.
+        $this->assertCount(2, $DB->get_records('tool_ally_file_in_use', ['contextid' => $context->id]));
+
         $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
         list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
         course_delete_module($cm->id);
+
+        // Make sure the records were deleted.
+        $this->assertCount(0, $DB->get_records('tool_ally_file_in_use', ['contextid' => $context->id]));
 
         // Push should not have happened - it needs cron task to make it happen.
         $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $entityid);

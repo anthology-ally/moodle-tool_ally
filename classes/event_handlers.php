@@ -22,6 +22,8 @@
  */
 namespace tool_ally;
 
+use context_course;
+
 use core\event\base;
 
 use core\event\course_created;
@@ -36,6 +38,9 @@ use core\event\course_section_created;
 use core\event\course_section_updated;
 use core\event\course_section_deleted;
 
+use core\event\group_created;
+use core\event\group_deleted;
+use core\event\group_updated;
 use mod_forum\event\discussion_created;
 use mod_forum\event\discussion_updated;
 use mod_forum\event\discussion_deleted;
@@ -96,6 +101,7 @@ class event_handlers {
     public static function course_updated(course_updated $event) {
         $courseid = $event->courseid;
         $contents = local_content::get_html_content($courseid, 'course', 'course', 'summary', $courseid);
+        files_in_use::set_context_needs_updating($event->get_context());
         content_processor::push_content_update($contents, self::API_RICH_CNT_UPDATED);
         course_processor::push_course_event(
             self::API_COURSE_UPDATED,
@@ -113,6 +119,7 @@ class event_handlers {
             self::API_COURSE_DELETED,
             $event->timecreated,
             $courseid);
+        files_in_use::delete_course_records($courseid);
     }
 
     /**
@@ -128,7 +135,7 @@ class event_handlers {
             local_content::queue_delete($courseid, $sectionid, 'course', 'course_sections', 'summary');
             return;
         }
-
+        files_in_use::set_context_needs_updating(context_course::instance($courseid));
         $content = local_content::get_html_content($sectionid, 'course', 'course_sections', 'summary', $courseid);
 
         content_processor::push_content_update([$content], $apieventname);
@@ -146,6 +153,7 @@ class event_handlers {
      * @throws \dml_exception
      */
     public static function course_section_updated(course_section_updated $event) {
+        files_in_use::set_context_needs_updating($event->get_context());
         self::course_section_crud($event, self::API_RICH_CNT_UPDATED);
     }
 
@@ -154,7 +162,22 @@ class event_handlers {
      * @throws \dml_exception
      */
     public static function course_section_deleted(course_section_deleted $event) {
+        files_in_use::set_context_needs_updating($event->get_context());
         self::course_section_crud($event, self::API_RICH_CNT_DELETED);
+    }
+
+    /**
+     * @param group_created $event
+     */
+    public static function group_created(group_created $event) {
+        files_in_use::set_group_needs_updating($event->objectid, $event->contextid);
+    }
+
+    /**
+     * @param group_updated $event
+     */
+    public static function group_updated(group_updated $event) {
+        files_in_use::set_group_needs_updating($event->objectid, $event->contextid);
     }
 
     /**
@@ -164,6 +187,12 @@ class event_handlers {
     private static function course_module_crud(base $event, $apieventname) {
         $module = $event->other['modulename'];
         $id = $event->other['instanceid'];
+
+        if ($apieventname == self::API_RICH_CNT_UPDATED) {
+            // We only need to do this on update.
+            files_in_use::set_context_needs_updating($event->get_context());
+        }
+
         $contents = local_content::get_all_html_content($id, $module);
         if (empty($contents)) {
             return;
@@ -194,6 +223,8 @@ class event_handlers {
         $module = $event->other['modulename'];
         $id = $event->other['instanceid'];
 
+        files_in_use::delete_context_records($event->get_context()->id);
+
         if (!local_content::component_supports_html_content($module)) {
             return;
         }
@@ -207,6 +238,7 @@ class event_handlers {
         foreach ($fields as $field) {
             local_content::queue_delete($event->courseid, $id, $module, $module, $field);
         }
+
     }
 
     /**
@@ -223,6 +255,10 @@ class event_handlers {
         // Don't go any further if user is not a teacher / manager / admin, etc..
         if (!$component->user_is_approved_author_type($userid, $event->get_context())) {
             return;
+        }
+
+        if ($eventname == self::API_RICH_CNT_UPDATED) {
+            files_in_use::set_context_needs_updating($event->get_context());
         }
 
         // Get the forum post id from the discussion without hitting the DB!
@@ -286,6 +322,7 @@ class event_handlers {
         $discussionid = $event->other['discussionid'];
         $postid = $event->objectid;
         $table = $forumtype.'_posts';
+        files_in_use::set_context_needs_updating($event->get_context());
 
         $recordsnapshot = $event->get_record_snapshot($forumtype.'_discussions', $discussionid);
         if (intval($recordsnapshot->firstpost) === intval($postid)) {
@@ -354,6 +391,10 @@ class event_handlers {
         // Don't go any further if user is not a teacher / manager / admin, etc..
         if (!$component->user_is_approved_author_type($userid, $event->get_context())) {
             return;
+        }
+
+        if ($eventname !== self::API_RICH_CNT_CREATED) {
+            files_in_use::set_context_needs_updating($event->get_context());
         }
 
         if ($table === null) {

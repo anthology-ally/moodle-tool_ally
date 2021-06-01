@@ -62,6 +62,14 @@ $observers = [
         'callback'  => '\tool_ally\event_handlers::course_module_deleted'
     ],
     [
+        'eventname' => \core\event\group_created::class,
+        'callback'  => '\tool_ally\event_handlers::group_created'
+    ],
+    [
+        'eventname' => \core\event\group_updated::class,
+        'callback'  => '\tool_ally\event_handlers::group_updated'
+    ],
+    [
         'eventname' => \mod_forum\event\discussion_created::class,
         'callback'  => '\tool_ally\event_handlers::forum_discussion_created'
     ],

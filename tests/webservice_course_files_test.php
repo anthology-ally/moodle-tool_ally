@@ -145,4 +145,55 @@ class tool_ally_webservice_course_files_testcase extends tool_ally_abstract_test
         $files = external_api::clean_returnvalue(course_files::service_returns(), $files);
         $this->assertCount(0, $files);
     }
+
+    /**
+     * Test that the files in use setting works with the course files service.
+     */
+    public function test_files_in_use() {
+        global $DB;
+
+        // First some setup.
+        $context = context_module::instance($this->resource->cmid);
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
+
+        list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_resource', 'intro', 0);
+
+        // Update the intro with the link.
+        $link = $generator->create_pluginfile_link_for_file($usedfile);
+        $DB->set_field('resource', 'intro', $link, ['id' => $this->resource->id]);
+
+        // Test with the setting off.
+        set_config('excludeunused', 0, 'tool_ally');
+
+        // We expect both files to be returned.
+        $files = course_files::service([$this->course->id]);
+        $files = external_api::clean_returnvalue(course_files::service_returns(), $files);
+        $this->assertCount(3, $files);
+
+        $file = array_shift($files);
+        $this->assertEquals($this->resourcefile->get_pathnamehash(), $file['id']);
+        $file = array_shift($files);
+        $this->assertEquals($usedfile->get_pathnamehash(), $file['id']);
+        $file = array_shift($files);
+        $this->assertEquals($unusedfile->get_pathnamehash(), $file['id']);
+
+        // And the DB shouldn't have records.
+        $this->assertCount(0, $DB->get_records('tool_ally_file_in_use'));
+
+        // Now turn the setting on and try again.
+        set_config('excludeunused', 1, 'tool_ally');
+
+        // Now only the one in use file should be present.
+        $files = course_files::service([$this->course->id]);
+        $files = external_api::clean_returnvalue(course_files::service_returns(), $files);
+        $this->assertCount(2, $files);
+
+        $file = array_shift($files);
+        $this->assertEquals($this->resourcefile->get_pathnamehash(), $file['id']);
+        $file = reset($files);
+        $this->assertEquals($usedfile->get_pathnamehash(), $file['id']);
+
+        // And two tracking records should be there.
+        $this->assertCount(2, $DB->get_records('tool_ally_file_in_use'));
+    }
 }

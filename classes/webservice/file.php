@@ -26,6 +26,7 @@ namespace tool_ally\webservice;
 
 use tool_ally\file_url_resolver;
 use tool_ally\file_validator;
+use tool_ally\files_in_use;
 use tool_ally\local;
 use tool_ally\local_file;
 
@@ -102,6 +103,10 @@ class file extends loggable_external_api {
         $wlkey = $component.'~'.$filearea;
 
         if (!in_array($wlkey, file_validator::whitelist())) {
+            throw new \moodle_exception('filenotfound', 'error');
+        }
+
+        if (!files_in_use::check_file_in_use($file)) {
             throw new \moodle_exception('filenotfound', 'error');
         }
 

@@ -38,6 +38,9 @@ use tool_ally\adminsetting\ally_pickroles;
 use tool_ally\adminsetting\ally_trim;
 
 if ($hassiteconfig) {
+    // We need to import the library to use a setting update callback in here.
+    require_once($CFG->dirroot.'/admin/tool/ally/lib.php');
+
     $settings = new admin_settingpage('tool_ally', get_string('pluginname', 'tool_ally'));
 
     $settings->add(new ally_pickroles('tool_ally/roles', new lang_string('contentauthors', 'tool_ally'),
@@ -64,9 +67,11 @@ if ($hassiteconfig) {
     $settings->add(new ally_config_link('tool_ally/allyclientconfig', new lang_string('allyclientconfig', 'tool_ally'),
         new moodle_url('/admin/tool/ally/lti/view.php')));
 
-    $settings->add(new admin_setting_configcheckbox('tool_ally/excludeunused',
+    $setting = new admin_setting_configcheckbox('tool_ally/excludeunused',
         new lang_string('excludeunused', 'tool_ally'),
-        new lang_string('excludeunuseddesc', 'tool_ally'), 0));
+        new lang_string('excludeunuseddesc', 'tool_ally'), 0);
+    $setting->set_updatedcallback('tool_ally_exclude_setting_changed');
+    $settings->add($setting);
 
     $choices = [
         constants::RANGE_NONE => get_string('loglevel:none', 'tool_ally'),

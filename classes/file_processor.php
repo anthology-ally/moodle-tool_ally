@@ -35,22 +35,44 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class file_processor {
+class file_processor extends traceable_processor {
+
+    protected static $pushtrace = [];
+
+    public static function build_payload($event, $eventname) {
+        return [local_file::to_crud($event)];
+    }
 
     /**
      * Push file updates to Ally without batching, etc.
      *
      * @param push_file_updates $updates
-     * @param \stored_file $file
+     * @param $data mixed The stored file object to send
+     * @param $eventname
      * @return bool Successfully pushed file.
+     * @throws \coding_exception
      */
-    private static function push_update(push_file_updates $updates, \stored_file $file) {
+    public static function push_update(push_updates $updates, $data, $eventname) {
         // Ignore draft files and files in the recycle bin.
-        $filearea = $file->get_filearea();
+        $filearea = $data->get_filearea();
         if ($filearea === 'draft' || $filearea === 'recyclebin_course') {
             return false;
         }
-        $payload = [local_file::to_crud($file)];
+        $payload = [local_file::to_crud($data)];
+
+        if (PHPUNIT_TEST) {
+            if (!isset(static::$pushtrace[$eventname])) {
+                static::$pushtrace[$eventname] = [];
+            }
+            static::$pushtrace[$eventname][] = $payload;
+
+            // If we aren't using a mock version of $updates service then return now.
+            if ($updates instanceof \Prophecy\Prophecy\ProphecySubjectInterface) {
+                $updates->send($payload);
+            }
+            return true; // Return true always for PHPUNIT_TEST.
+        }
+
         $updates->send($payload);
         return true;
     }
@@ -59,9 +81,9 @@ class file_processor {
      * Get ally config.
      * @return null|push_config
      */
-    private static function get_config() {
+    public static function get_config($reset = false) {
         static $config = null;
-        if ($config === null || PHPUNIT_TEST) {
+        if ($config === null || PHPUNIT_TEST || $reset) {
             $config = new push_config();
         }
         return $config;
@@ -70,20 +92,23 @@ class file_processor {
     /**
      * Push updates for files.
      * @param \stored_file $file;
+     * @param bool $validate If false, skip the validator step.
      * @return bool Successfully pushed file.
      * @throws \Exception
      */
-    public static function push_file_update(\stored_file $file) {
+    public static function push_file_update(\stored_file $file, bool $validate = true) {
         $config = self::get_config();
         if (!$config->is_valid() || $config->is_cli_only()) {
             return false;
         }
 
-        if (!local_file::file_validator()->validate_stored_file($file, null, false)) {
+        if ($validate && !local_file::file_validator()->validate_stored_file($file, null, false)) {
             return false;
         }
 
+        local_file::remove_file_from_deletion_queue($file);
+
         $updates = new push_file_updates($config);
-        return self::push_update($updates, $file);
+        return self::push_update($updates, $file, 'file_created');
     }
 }

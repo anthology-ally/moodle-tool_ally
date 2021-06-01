@@ -23,6 +23,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use tool_ally\files_in_use;
 use tool_ally\local_content;
 use tool_ally\componentsupport\book_component;
 use tool_ally\testing\traits\component_assertions;
@@ -187,6 +188,8 @@ class tool_ally_components_book_component_testcase extends tool_ally_abstract_te
         // Test with an empty chapter.
         set_config('excludeunused', 1, 'tool_ally');
         $DB->set_field('book_chapters', 'content', '', ['id' => $this->chapters[0]->id]);
+
+        files_in_use::set_context_needs_updating($context);
 
         $fileids = $this->get_file_ids_in_context($context);
         $this->assertCount(1, $fileids);

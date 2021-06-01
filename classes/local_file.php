@@ -26,6 +26,7 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
+use stored_file;
 use tool_ally\componentsupport\component_base;
 use tool_ally\componentsupport\file_component_base;
 use tool_ally\componentsupport\interfaces\file_replacement;
@@ -526,5 +527,24 @@ class local_file {
         ], false);
 
         cache::instance()->invalidate_file_keys($file);
+    }
+
+    /**
+     * Remote a file from the deletion queue. This is needed because a file can be readded while still in
+     * the deletion queue, which would cause the file to be 'missing'.
+     *
+     * @param stored_file $file
+     */
+    public static function remove_file_from_deletion_queue(stored_file $file) {
+        global $DB;
+
+        $courseid = self::courseid($file);
+
+        $DB->delete_records('tool_ally_deleted_files', [
+            'courseid'     => $courseid,
+            'pathnamehash' => $file->get_pathnamehash(),
+            'contenthash'  => $file->get_contenthash(),
+        ]);
+
     }
 }
