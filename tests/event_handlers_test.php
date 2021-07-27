@@ -27,9 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once(__DIR__.'/abstract_testcase.php');
+require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
+require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
 use core\event\course_created;
 use core\event\course_updated;
+use core\event\course_restored;
 use core\event\course_section_created;
 use core\event\course_section_updated;
 use core\event\course_module_created;
@@ -287,6 +290,66 @@ MSG;
 
         // Ensure section information is not included.
         $this->assert_pushtrace_not_contains_entity_regex('/course:course_sections:summary:/');
+    }
+
+    /**
+     * Basic test to see if a message is sent for course copies.
+     */
+    public function test_course_restored() {
+        global $DB, $CFG;
+
+        $course = $this->getDataGenerator()->create_course();
+        course_processor::clear_push_traces();
+
+        // Disable all backup loggers.
+        $CFG->backup_error_log_logger_level = backup::LOG_NONE;
+        $CFG->backup_output_indented_logger_level = backup::LOG_NONE;
+        $CFG->backup_file_logger_level = backup::LOG_NONE;
+        $CFG->backup_database_logger_level = backup::LOG_NONE;
+        $CFG->backup_file_logger_level_extra = backup::LOG_NONE;
+
+        $this->setAdminUser();
+
+        // Test setup based on course_copy_test.
+        // Mock up the form data.
+        $formdata = new \stdClass;
+        $formdata->courseid = $course->id;
+        $formdata->fullname = 'copy course';
+        $formdata->shortname = 'copy course short';
+        $formdata->category = 1;
+        $formdata->visible = 0;
+        $formdata->startdate = 1582376400;
+        $formdata->enddate = 1582386400;
+        $formdata->idnumber = 123;
+        $formdata->userdata = 1;
+        $formdata->role_1 = 1;
+        $formdata->role_3 = 3;
+        $formdata->role_5 = 5;
+
+        // Create the course copy records and associated ad-hoc task.
+        $coursecopy = new \core_backup\copy\copy($formdata);
+        $coursecopy->create_copy();
+
+        // We are expecting trace output during this test, caused by the copy task.
+        $this->expectOutputRegex("/{$course->id}/");
+
+        // Execute adhoc task.
+        $now = time();
+        $task = \core\task\manager::get_next_adhoc_task($now);
+        $this->assertInstanceOf('\\core\\task\\asynchronous_copy_task', $task);
+        $task->execute();
+        \core\task\manager::adhoc_task_complete($task);
+
+        $newcourseid = $DB->get_field_sql('SELECT MAX(id) FROM {course}');
+
+        // Now make sure the pushtrace contains the event.
+        $contains = $this->check_pushtrace_contains_key_value('course_processor', event_handlers::API_COURSE_COPIED,
+            'context_id', $newcourseid);
+        $this->assertTrue($contains, "Course push trace with context_id of {$newcourseid} not found.");
+
+        $this->check_pushtrace_contains_key_value('course_processor', event_handlers::API_COURSE_COPIED,
+            'source_context_id', $course->id);
+        $this->assertTrue($contains, "Course push trace with source_context_id of {$course->id} not found.");
     }
 
     public function test_course_section_created() {

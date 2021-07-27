@@ -38,6 +38,10 @@ $observers = [
         'callback'  => '\tool_ally\event_handlers::course_deleted'
     ],
     [
+        'eventname' => \core\event\course_restored::class,
+        'callback'  => '\tool_ally\event_handlers::course_restored'
+    ],
+    [
         'eventname' => \core\event\course_section_created::class,
         'callback'  => '\tool_ally\event_handlers::course_section_created'
     ],
