@@ -40,9 +40,6 @@ require_once(__DIR__.'/abstract_testcase.php');
  */
 class tool_ally_course_updates_task_testcase extends tool_ally_abstract_testcase {
 
-    public function setUp(): void {
-        $this->markTestSkipped("Dbunit has been removed since Phpunit 8");
-    }
     /**
      * Ensure that basic execution and timestamp management is working.
      */

@@ -40,9 +40,6 @@ require_once(__DIR__.'/abstract_testcase.php');
  */
 class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
 
-    public function setUp(): void {
-        $this->markTestSkipped("Dbunit has been removed since Phpunit 8");
-    }
     /**
      * First run should set the timestamp then exit.
      */
@@ -140,9 +137,7 @@ class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
 
         set_config('push_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
 
-        $this->loadDataSet(
-            $this->createArrayDataSet(include(__DIR__.'/fixtures/deleted_files.php'))
-        );
+        $this->dataset_from_array(include(__DIR__.'/fixtures/deleted_files.php'))->to_database();
 
         $updates = $this->prophesize(push_file_updates::class);
         $updates->send(Argument::type('array'))->willReturn(true);
