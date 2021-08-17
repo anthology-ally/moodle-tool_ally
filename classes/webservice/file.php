@@ -102,7 +102,7 @@ class file extends loggable_external_api {
         $filearea = $file->get_filearea();
         $wlkey = $component.'~'.$filearea;
 
-        if (!in_array($wlkey, file_validator::whitelist())) {
+        if (!in_array($wlkey, file_validator::whitelist()) || !file_validator::check_pathname($file)) {
             throw new \moodle_exception('filenotfound', 'error');
         }
 

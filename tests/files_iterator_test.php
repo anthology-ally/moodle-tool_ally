@@ -109,6 +109,39 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         }
     }
 
+    public function test_get_files_pathname() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $course    = $this->getDataGenerator()->create_course();
+        $user      = $this->getDataGenerator()->create_user();
+        $roleid    = $DB->get_field('role', 'id', ['shortname' => 'editingteacher'], MUST_EXIST);
+        $managerid = $DB->get_field('role', 'id', ['shortname' => 'manager'], MUST_EXIST);
+
+        $this->getDataGenerator()->enrol_user($user->id, $course->id, $roleid);
+        $this->setUser($user);
+
+        $fs = get_file_storage();
+        $filerecord = array(
+            'contextid' => context_course::instance($course->id)->id,
+            'component' => 'course',
+            'filearea' => 'section',
+            'itemid' => 1,
+            'filepath' => '/gridimage/',
+            'filename' => 'test.txt',
+            'userid' => $user->id,
+            'modified' => time()
+        );
+        $teststring = 'moodletest';
+        $file1 = $fs->create_file_from_string($filerecord, $teststring);
+
+        $validator = new file_validator();
+        $files = new files_iterator($validator);
+        $this->assertEmpty(iterator_to_array($files));
+
+    }
+
     /**
      * Test get_files when there are no files to fetch.
      */

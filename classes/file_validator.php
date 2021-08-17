@@ -172,6 +172,9 @@ class file_validator {
         // i.e. is it in a component that only teachers should have access to use.
         $component = $file->get_component();
         $area = $file->get_filearea();
+        if (!self::check_pathname($file)) {
+            return false;
+        }
 
         // Check if the file is in a teacher whitelist area, or if in a valid area with a creator that is
         // an editing teacher/admin/manager/etc.
@@ -227,5 +230,16 @@ class file_validator {
         $userid = $file->get_userid();
         return empty($userid) || array_key_exists($userid, $this->userids) ||
             $this->assignments->has($userid, $context);
+    }
+
+    /**
+     * @param stored_file $file
+     * @return bool
+     */
+    public static function check_pathname(stored_file $file) {
+        if ($file->get_filepath() == '/gridimage/') {
+            return false;
+        }
+        return true;
     }
 }
