@@ -25,6 +25,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 $definitions = [
+    'annotationmaps' => [
+        'mode'       => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'ttl'        => 300, // 5 minutes.
+    ],
     'request' => [
         'mode'       => cache_store::MODE_APPLICATION,
         'simplekeys' => true,

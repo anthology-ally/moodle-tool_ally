@@ -86,6 +86,7 @@ class event_handlers {
      * @param course_created $event
      */
     public static function course_created(course_created $event) {
+        \cache::make('tool_ally', 'annotationmaps')->delete($event->courseid);
         $courseid = $event->courseid;
         $contents = local_content::get_html_content($courseid, 'course', 'course', 'summary', $courseid);
         content_processor::push_content_update($contents, self::API_RICH_CNT_CREATED);
@@ -99,6 +100,7 @@ class event_handlers {
      * @param course_updated $event
      */
     public static function course_updated(course_updated $event) {
+        \cache::make('tool_ally', 'annotationmaps')->delete($event->courseid);
         $courseid = $event->courseid;
         $contents = local_content::get_html_content($courseid, 'course', 'course', 'summary', $courseid);
         files_in_use::set_context_needs_updating($event->get_context());
@@ -128,6 +130,7 @@ class event_handlers {
      * @throws \dml_exception
      */
     private static function course_section_crud(base $event, $apieventname) {
+        \cache::make('tool_ally', 'annotationmaps')->delete($event->courseid);
         $sectionid = $event->objectid;
         $courseid = $event->courseid;
 
@@ -185,6 +188,7 @@ class event_handlers {
      * @param $apieventname
      */
     private static function course_module_crud(base $event, $apieventname) {
+        \cache::make('tool_ally', 'annotationmaps')->delete($event->courseid);
         $module = $event->other['modulename'];
         $id = $event->other['instanceid'];
 
@@ -220,6 +224,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     public static function course_module_deleted(course_module_deleted $event) {
+        \cache::make('tool_ally', 'annotationmaps')->delete($event->courseid);
         $module = $event->other['modulename'];
         $id = $event->other['instanceid'];
 
@@ -249,6 +254,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     private static function forum_discussion_crud(base $event, $eventname, $forumtype = 'forum') {
+        \cache::make('tool_ally', 'annotationmaps')->delete($event->courseid);
         $module = $forumtype;
         $component = local_content::component_instance($module);
         $userid = $event->userid;
@@ -312,6 +318,7 @@ class event_handlers {
      * @param string $forumtype
      */
     public static function forum_post_updated(base $event, $forumtype = 'forum') {
+        \cache::make('tool_ally', 'annotationmaps')->delete($event->courseid);
         $module = $forumtype;
         $component = local_content::component_instance($module);
         $userid = $event->userid;
@@ -385,6 +392,7 @@ class event_handlers {
      * @throws \moodle_exception
      */
     private static function module_item_crud(base $event, $eventname, $contentfield, $table = null, $id = null) {
+        \cache::make('tool_ally', 'annotationmaps')->delete($event->courseid);
         $module = local::clean_component_string($event->component);
         $component = local_content::component_instance($module);
         $userid = $event->userid;
@@ -480,6 +488,7 @@ class event_handlers {
      */
     private static function lesson_page_crud(base $event, $eventname) {
         global $DB;
+        \cache::make('tool_ally', 'annotationmaps')->delete($event->courseid);
 
         self::module_item_crud($event, $eventname, 'contents');
         // Get answers for page.

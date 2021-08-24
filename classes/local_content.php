@@ -125,12 +125,25 @@ class local_content {
      * @return array;
      */
     public static function annotation_maps($courseid) {
-        $components = self::list_html_content_supported_components();
+        $cache = cache::make('tool_ally', 'annotationmaps');
         $maps = [];
+        $blocksonly = false;
+        if (($result = $cache->get($courseid)) !== false) {
+            $maps = $result;
+            $blocksonly = true;
+        }
+
+        $components = self::list_html_content_supported_components();
         foreach ($components as $component) {
             $instance = self::component_instance($component);
             // We are now working with a component instance located in admin/tool/ally/classes/componentsupport.
             if ($instance instanceof annotation_map) {
+                // If we pulled data up from the cache - we only need to load data for blocks.
+                // This is because changes to blocks don't trigger any events that can be
+                // used to purge the cache.
+                if ($blocksonly && $instance->component_type() != component_base::TYPE_BLOCK) {
+                    continue;
+                }
                 try {
                     $maps = array_merge($maps, [$component => $instance->get_annotation_maps($courseid)]);
                 } catch (\moodle_exception $ex) {
@@ -144,6 +157,7 @@ class local_content {
                 }
             }
         }
+        $cache->set($courseid, $maps);
         return $maps;
     }
 

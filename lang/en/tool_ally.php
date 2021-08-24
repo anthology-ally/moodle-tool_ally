@@ -78,6 +78,7 @@ $string['privacy:metadata:files:filecontents'] = 'The actual file\'s content is 
 $string['privacy:metadata:files:mimetype'] = 'The file MIME type, EG: text/plain, image/jpeg, etc.';
 $string['privacy:metadata:files:pathnamehash'] = 'The file\'s path name hash to uniquely identify it.';
 $string['privacy:metadata:files:timemodified'] = 'The time when the field was last modified.';
+$string['cachedef_annotationmaps'] = 'Store annotation data for courses';
 $string['cachedef_fileinusecache'] = 'Ally files in use cache';
 $string['cachedef_pluginfilesinhtml'] = 'Ally files in HTML cache';
 $string['cachedef_request'] = 'Ally filter request cache';
