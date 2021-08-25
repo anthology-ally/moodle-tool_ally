@@ -54,6 +54,9 @@ trait embedded_file_map {
      * @throws \moodle_exception
      */
     public function apply_embedded_file_map(?component_content $content) {
+        if (empty($content->content)) {
+            return $content;
+        }
         $html = $content->content;
         $results = local_content::get_pluginfiles_in_html($html);
 
