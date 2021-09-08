@@ -124,11 +124,11 @@ class tool_ally_components_glossary_component_testcase extends tool_ally_abstrac
 
     public function test_get_approved_author_ids_for_context() {
         $authorids = $this->component->get_approved_author_ids_for_context($this->coursecontext);
-        $this->assertContains($this->teacher->id, $authorids,
+        $this->assertTrue(in_array($this->teacher->id, $authorids),
                 'Teacher id '.$this->teacher->id.' should be in list of author ids.');
-        $this->assertContains($this->admin->id, $authorids,
+        $this->assertTrue(in_array($this->admin->id, $authorids),
                 'Admin id '.$this->admin->id.' should be in list of author ids.');
-        $this->assertNotContains($this->student->id, $authorids,
+        $this->assertFalse(in_array($this->student->id, $authorids),
                 'Student id '.$this->student->id.' should NOT be in list of author ids.');
     }
 

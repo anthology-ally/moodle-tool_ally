@@ -339,10 +339,10 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
 
         // See if each file is used or not used as expected.
         foreach ($usedfiles as $file) {
-            $this->assertContains($file->get_id(), $fileids);
+            $this->assertTrue(in_array($file->get_id(), $fileids));
         }
         foreach ($unusedfiles as $file) {
-            $this->assertNotContains($file->get_id(), $fileids);
+            $this->assertFalse(in_array($file->get_id(), $fileids));
         }
 
         set_config('excludeunused', 0, 'tool_ally');
@@ -354,7 +354,7 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
         $this->assertCount(count($allfiles), $fileids);
 
         foreach ($allfiles as $file) {
-            $this->assertContains($file->get_id(), $fileids);
+            $this->assertTrue(in_array($file->get_id(), $fileids));
         }
     }
 }

@@ -711,8 +711,8 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $fileids = $this->get_file_ids_in_context($context);
         $this->assertCount(2, $fileids);
         $this->assertContains($resourcefile->get_id(), $fileids);
-        $this->assertContains($usedfile->get_id(), $fileids);
-        $this->assertNotContains($unusedfile->get_id(), $fileids);
+        $this->assertTrue(in_array($usedfile->get_id(), $fileids));
+        $this->assertFalse(in_array($unusedfile->get_id(), $fileids));
 
         // Now test with a blank intro.
         $DB->set_field('resource', 'intro', '', ['id' => $resource->id]);
@@ -732,7 +732,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $fileids = $this->get_file_ids_in_context($context);
         $this->assertCount(2, $fileids);
         $this->assertContains($resourcefile->get_id(), $fileids);
-        $this->assertContains($usedfile->get_id(), $fileids);
+        $this->assertTrue(in_array($usedfile->get_id(), $fileids));
         $this->assertNotContains($unusedfile->get_id(), $fileids);
     }
 
