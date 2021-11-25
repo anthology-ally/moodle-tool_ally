@@ -22,6 +22,8 @@
  */
 namespace tool_ally;
 
+use backup;
+
 use context_course;
 
 use core\event\base;
@@ -29,6 +31,7 @@ use core\event\base;
 use core\event\course_created;
 use core\event\course_updated;
 use core\event\course_deleted;
+use core\event\course_restored;
 
 use core\event\course_module_created;
 use core\event\course_module_updated;
@@ -81,6 +84,7 @@ class event_handlers {
     const API_RICH_CNT_DELETED = 'rich_content_deleted';
     const API_COURSE_UPDATED = 'course_updated';
     const API_COURSE_DELETED = 'course_deleted';
+    const API_COURSE_COPIED = 'course_copied';
 
     /**
      * @param course_created $event
@@ -122,6 +126,28 @@ class event_handlers {
             $event->timecreated,
             $courseid);
         files_in_use::delete_course_records($courseid);
+    }
+
+    /**
+     * @param course_restored $event
+     */
+    public static function course_restored(course_restored $event) {
+        $destcourseid = $event->courseid;
+
+        $sourcecourseid = $event->other['originalcourseid'] ?? null;
+        $mode = $event->other['mode'] ?? null;
+        $target = $event->other['target'] ?? null;
+
+        // Specifically catch course copy events.
+        if ($mode === backup::MODE_COPY && $target === backup::TARGET_NEW_COURSE && $sourcecourseid) {
+            course_processor::push_course_event(
+                self::API_COURSE_COPIED,
+                $event->timecreated,
+                $destcourseid,
+                $sourcecourseid);
+        }
+
+        // Can intercept more types of restores here if we want.
     }
 
     /**

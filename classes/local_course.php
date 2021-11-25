@@ -44,11 +44,17 @@ class local_course {
      * @return array
      */
     public static function to_crud($event) {
-        return [
+        $result = [
             'event_name' => $event->name,
             'event_time' => local::iso_8601($event->time),
             'context_id' => $event->courseid,
         ];
+
+        if (isset($event->sourcecourseid)) {
+            $result['source_context_id'] = $event->sourcecourseid;
+        }
+
+        return $result;
     }
 
     /**
