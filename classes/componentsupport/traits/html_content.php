@@ -136,6 +136,9 @@ trait html_content {
         // Record is still null, let's get it.
         if (empty($record)) {
             $record = $DB->get_record($table, ['id' => $id]);
+            if (isset($record->course) && !empty($courseid) && $record->course != $courseid) {
+                return null;
+            }
         }
         if (!$record) {
             return null;

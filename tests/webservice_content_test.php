@@ -344,4 +344,28 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
         );
         $this->assertEquals($expected, $content);
     }
+
+    public function test_service_module_wrong_course() {
+        global $DB, $CFG;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        $field = 'intro';
+        $titlefield = 'name';
+        $modname = 'page';
+        $table = 'page';
+
+        $course = $this->getDataGenerator()->create_course();
+
+        // Test getting mod content.
+        $modintro = '<p>My original intro content</p>';
+        $mod = $this->getDataGenerator()->create_module($modname,
+            ['course' => $course->id, $field => $modintro]);
+        $modinst = $DB->get_record($table, ['id' => $mod->id]);
+        $expectedmessage = "Content not found for component={$modname}&table={$table}&field={$field}&id={$mod->id}";
+
+        $this->expectException(moodle_exception::class);
+        $this->expectExceptionMessage($expectedmessage);
+        content::service($mod->id, $modname, $table, $field, $course->id + 1); // Wrong course.
+    }
 }
