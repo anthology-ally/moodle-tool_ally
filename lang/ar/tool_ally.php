@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = 'معرف المكون {$a} غير صا
 $string['error:pluginfilequestiononly'] = 'يتم دعم مكونات السؤال فقط لعنوان URL هذا';
 $string['error:componentcontentnotfound'] = 'لم يتم العثور على محتوى لـ {$a}';
 $string['error:wstokenmissing'] = 'الرمز المميز لخدمة الويب مفقود. ربما يتعين على مستخدم مسؤول تشغيل التكوين التلقائي؟';
+$string['excludeunused'] = 'استبعاد الملفات غير المستخدمة';
+$string['excludeunuseddesc'] = 'حذف الملفات المرفقة بمحتوى HTML لكنها مرتبطة بـ/مُشار إليها في HTML.';
 $string['filecoursenotfound'] = 'الملف الذي تم تمريره لا ينتمي إلى أي مقرر دراسي';
 $string['fileupdatestask'] = 'دفع تحديثات الملف إلى Ally';
 $string['id'] = 'المعرف';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = 'تم إرسال المحتوى
 $string['privacy:metadata:files:mimetype'] = 'نوع الملف MIME، EG: نص/عادي، صورة/jpeg، وما إلى ذلك.';
 $string['privacy:metadata:files:pathnamehash'] = 'قم بتجزئة اسم مسار الملف لتعريفه بشكل فريد.';
 $string['privacy:metadata:files:timemodified'] = 'الوقت الذي تم فيه التعديل الأخير للحقل.';
+$string['cachedef_annotationmaps'] = 'تخزين بيانات التعليق التوضيحي للمقررات الدراسية';
+$string['cachedef_fileinusecache'] = 'التخزين المؤقت لملفات Ally المستخدمة';
+$string['cachedef_pluginfilesinhtml'] = 'التخزين المؤقت ملفات Ally بتنسيق HTML';
 $string['cachedef_request'] = 'التخزين المؤقت لطلب عامل تصفية Ally';
 $string['pushfilessummary'] = 'ملخص تحديثات ملف Ally.';
 $string['pushfilessummary:explanation'] = 'ملخص تحديثات الملفات المرسلة إلى Ally.';
