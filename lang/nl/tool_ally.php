@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = 'Ongeldige component-ID {$a}';
 $string['error:pluginfilequestiononly'] = 'Alleen vraagcomponenten worden ondersteund voor deze url';
 $string['error:componentcontentnotfound'] = 'Geen inhoud gevonden voor {$a}';
 $string['error:wstokenmissing'] = 'Webservicetoken ontbreekt. Misschien moet een beheerder automatische configuratie uitvoeren?';
+$string['excludeunused'] = 'Niet-gebruikte bestanden uitsluiten';
+$string['excludeunuseddesc'] = 'Laat bestanden weg die zijn toegevoegd aan HTML-inhoud, maar waarnaar wordt gelinkt/verwezen in de HTML.';
 $string['filecoursenotfound'] = 'Het doorgegeven bestand hoort niet bij een cursus';
 $string['fileupdatestask'] = 'Bestandsupdates naar Ally pushen';
 $string['id'] = 'ID';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = 'De inhoud van het bestand word
 $string['privacy:metadata:files:mimetype'] = 'Het MIME-type van het bestand, zoals: text/plain, image/jpeg, etc.';
 $string['privacy:metadata:files:pathnamehash'] = 'De hash van de padnaam van het bestand om het pad uniek te identificeren.';
 $string['privacy:metadata:files:timemodified'] = 'Het tijdstip waarop het veld het laatst is gewijzigd.';
+$string['cachedef_annotationmaps'] = 'Annotatiegegevens opslaan voor cursussen';
+$string['cachedef_fileinusecache'] = 'Cache met Allly-bestanden in gebruik';
+$string['cachedef_pluginfilesinhtml'] = 'Ally-bestanden in HTML-cache';
 $string['cachedef_request'] = 'Cache met Ally-filteraanvragen';
 $string['pushfilessummary'] = 'Overzicht van Ally-bestandsupdates.';
 $string['pushfilessummary:explanation'] = 'Overzicht van bestandsupdates verzonden naar Ally.';
