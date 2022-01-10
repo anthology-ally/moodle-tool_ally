@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = 'Neplatný identifikátor komponenty {$
 $string['error:pluginfilequestiononly'] = 'U této adresy URL jsou podporovány pouze komponenty otázek';
 $string['error:componentcontentnotfound'] = 'Obsah pro položku {$a} nebyl nalezen';
 $string['error:wstokenmissing'] = 'Chybí token webové služby. Možná by měl uživatel správce spustit automatickou konfiguraci?';
+$string['excludeunused'] = 'Vyloučit nepoužívané soubory';
+$string['excludeunuseddesc'] = 'Vynechejte soubory, které jsou připojeny k obsahu HTML, ale v kódu HTML jsou propojeny nebo odkazují.';
 $string['filecoursenotfound'] = 'Předaný soubor nenáleží žádnému kurzu.';
 $string['fileupdatestask'] = 'Posunout aktualizace souborů do služby Ally';
 $string['id'] = 'ID';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = 'Skutečný obsah souboru byl o
 $string['privacy:metadata:files:mimetype'] = 'Typ MIME souboru, například text/plain, image/jpeg atd.';
 $string['privacy:metadata:files:pathnamehash'] = 'Hash hodnota názvu cesty k souboru za účelem jedinečné identifikace';
 $string['privacy:metadata:files:timemodified'] = 'Čas poslední úpravy pole';
+$string['cachedef_annotationmaps'] = 'Ukládat data anotací pro kurzy';
+$string['cachedef_fileinusecache'] = 'Spojit soubory v mezipaměti použití';
+$string['cachedef_pluginfilesinhtml'] = 'Spojit soubory v mezipaměti HTML';
 $string['cachedef_request'] = 'Vyrovnávací paměť požadavků filtru služby Ally';
 $string['pushfilessummary'] = 'Souhrn aktualizací souboru služby Ally';
 $string['pushfilessummary:explanation'] = 'Souhrn aktualizací souborů odeslaných do služby Ally';
