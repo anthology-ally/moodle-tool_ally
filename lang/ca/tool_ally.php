@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = 'Identificador de component no vàlid {
 $string['error:pluginfilequestiononly'] = 'Aquest URL només és compatible amb els components de qüestions';
 $string['error:componentcontentnotfound'] = 'No s\'ha trobat contingut per a {$a}';
 $string['error:wstokenmissing'] = 'Falta el testimoni de servei web. Potser cal que un usuari administrador executi una configuració automàtica?';
+$string['excludeunused'] = 'Excloure els fitxers no utilitzats';
+$string['excludeunuseddesc'] = 'Ometeu els fitxers que s\'adjunten al contingut HTML, però tenen enllaços o referències a l\'HTML.';
 $string['filecoursenotfound'] = 'El fitxer que s\'ha passat no pertany a cap curs';
 $string['fileupdatestask'] = 'Passa les actualitzacions de fitxers a Ally';
 $string['id'] = 'Identificador';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = 'El contingut del fitxer actual
 $string['privacy:metadata:files:mimetype'] = 'El tipus de MIME del fitxer, per exemple: text/plain, image/jpeg, etc.';
 $string['privacy:metadata:files:pathnamehash'] = 'El camí al hash del nom del fitxer per identificar-lo de manera única.';
 $string['privacy:metadata:files:timemodified'] = 'La data de l\'última modificació del camp';
+$string['cachedef_annotationmaps'] = 'Emmagatzemar les dades d\'anotacions dels cursos';
+$string['cachedef_fileinusecache'] = 'Fitxers Ally a la memòria cau en ús';
+$string['cachedef_pluginfilesinhtml'] = 'Fitxers Ally a la memòria cau HTML';
 $string['cachedef_request'] = 'Memòria cau de la sol·licitud de filtre d\'Ally';
 $string['pushfilessummary'] = 'Resum de les actualitzacions de fitxers d\'Ally.';
 $string['pushfilessummary:explanation'] = 'Resum de les actualitzacions de fitxers enviades a Ally.';
