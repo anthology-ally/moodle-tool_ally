@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = 'Ugyldigt komponent-ID {$a}';
 $string['error:pluginfilequestiononly'] = 'Kun spørgsmålskomponenter er understøttet for denne url';
 $string['error:componentcontentnotfound'] = 'Indhold ikke fundet for {$a}';
 $string['error:wstokenmissing'] = 'Webtjenestetoken mangler. Måske skal en administratorbruger køre en automatisk konfiguration?';
+$string['excludeunused'] = 'Udelad ubrugte filer';
+$string['excludeunuseddesc'] = 'Udelad filer, der er vedhæftet HTML-indhold, men som er linket/referencer i HTML-filen.';
 $string['filecoursenotfound'] = 'Den indsendte fil tilhører ikke noget kursus';
 $string['fileupdatestask'] = 'Push filopdateringer til Ally';
 $string['id'] = 'Id';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = 'Den faktiske fils indhold send
 $string['privacy:metadata:files:mimetype'] = 'Filens MIME-type, f.eks tekst/almindelig, billede/jpeg, osv.';
 $string['privacy:metadata:files:pathnamehash'] = 'Filens stinavns-hash for at den kan defineres entydigt.';
 $string['privacy:metadata:files:timemodified'] = 'Tidspunktet, hvor feltet sidst blev ændret.';
+$string['cachedef_annotationmaps'] = 'Gem noteringsdata for kurser';
+$string['cachedef_fileinusecache'] = 'Tilknyt filer i brugscache';
+$string['cachedef_pluginfilesinhtml'] = 'Tilknyt filer i HTML-cache';
 $string['cachedef_request'] = 'Ally-filterets anmodningscache';
 $string['pushfilessummary'] = 'Oversigt over Ally-filopdateringer.';
 $string['pushfilessummary:explanation'] = 'Oversigt over filopdateringer sendt til Ally.';
