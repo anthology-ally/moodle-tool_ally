@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = 'Geçersiz bileşen tanımlayıcısı {
 $string['error:pluginfilequestiononly'] = 'Bu url için yalnızca soru bileşenleri desteklenir';
 $string['error:componentcontentnotfound'] = '{$a} için içerik bulunamadı';
 $string['error:wstokenmissing'] = 'Web hizmet belirteci yok. Bir yönetici kullanıcının otomatik yapılandırmayı çalıştırması gerekebilir.';
+$string['excludeunused'] = 'Kullanılmayan dosyaları hariç tut';
+$string['excludeunuseddesc'] = 'HTML\'deki bağlantılı dosyalar/referans dosyaları haricinde HTML içeriğine eklenmiş olan dosyaları yok sayın.';
 $string['filecoursenotfound'] = 'Aktarılan dosya herhangi bir kursa ait değil';
 $string['fileupdatestask'] = 'Dosya güncelleştirmelerini Ally\'a aktar';
 $string['id'] = 'Kimlik';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = 'Asıl dosyanın içeriği eri�
 $string['privacy:metadata:files:mimetype'] = 'Dosya MIME türü, örneğin: Metin/düz, resim/jpeg, vb.';
 $string['privacy:metadata:files:pathnamehash'] = 'Dosyayı benzersiz şekilde tanımlayan yol adı karması.';
 $string['privacy:metadata:files:timemodified'] = 'Alanın son değiştirildiği zaman.';
+$string['cachedef_annotationmaps'] = 'Kurslar için ek açıklama verilerini sakla';
+$string['cachedef_fileinusecache'] = 'Dosyaları kullanılan önbellekte birleştir';
+$string['cachedef_pluginfilesinhtml'] = 'Dosyaları HTML önbelleğinde birleştir';
 $string['cachedef_request'] = 'Ally filtre isteği önbelleği';
 $string['pushfilessummary'] = 'Ally dosya güncelleştirme özeti.';
 $string['pushfilessummary:explanation'] = 'Ally\'a gönderilen dosya güncelleştirmelerinin özeti.';
