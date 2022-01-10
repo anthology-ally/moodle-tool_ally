@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = 'Ungültige Komponenten-ID {$a}';
 $string['error:pluginfilequestiononly'] = 'Für diese URL werden nur Fragenkomponenten unterstützt';
 $string['error:componentcontentnotfound'] = 'Inhalt für {$a} nicht gefunden';
 $string['error:wstokenmissing'] = 'Webservice-Token fehlt. Eventuell muss ein(e) Admin-Nutzer/in die automatische Konfiguration ausführen.';
+$string['excludeunused'] = 'Nicht verwendete Dateien ausschließen';
+$string['excludeunuseddesc'] = 'Lassen Sie an HTML-Inhalte angehängte Dateien aus, die in der HTML verlinkt/querverwiesen sind.';
 $string['filecoursenotfound'] = 'Die eingereichte Datei gehört zu keinem Kurs';
 $string['fileupdatestask'] = 'Datei-Updates per Push in Ally übertragen';
 $string['id'] = 'ID';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = 'Der Inhalt der Datei wird an A
 $string['privacy:metadata:files:mimetype'] = 'Der MIME-Typ der Datei, z. B. text/plain, image/jpeg usw.';
 $string['privacy:metadata:files:pathnamehash'] = 'Dier Pfadnamen-Hash zur eindeutigen Identifizierung der Datei.';
 $string['privacy:metadata:files:timemodified'] = 'Die Uhrzeit, zu der das Feld zuletzt geändert wurde.';
+$string['cachedef_annotationmaps'] = 'Kommentardaten für Kurse speichern';
+$string['cachedef_fileinusecache'] = 'Zwischenspeicher für verwendete Ally-Dateien';
+$string['cachedef_pluginfilesinhtml'] = 'Zwischenspeicher für Ally-Dateien in HTML';
 $string['cachedef_request'] = 'Zwischenspeicher für Ally-Filteranfragen';
 $string['pushfilessummary'] = 'Zusammenfassung der Ally-Datei-Updates.';
 $string['pushfilessummary:explanation'] = 'Zusammenfassung der an Ally gesendeten Datei-Updates.';
