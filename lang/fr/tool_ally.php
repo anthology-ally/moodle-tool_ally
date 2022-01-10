@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = 'Identifiant de composant non valide :
 $string['error:pluginfilequestiononly'] = 'Seuls les composants de questions sont pris en charge pour cette url';
 $string['error:componentcontentnotfound'] = 'Contenu introuvable pour {$a}';
 $string['error:wstokenmissing'] = 'Jeton de service Web manquant. Un utilisateur administrateur devra peut-être exécuter une configuration automatique.';
+$string['excludeunused'] = 'Exclure les fichiers inutilisés';
+$string['excludeunuseddesc'] = 'Omettre les fichiers joints au contenu HTML, mais liés/référencés dans le HTML.';
 $string['filecoursenotfound'] = 'Le fichier transmis n\'appartient à aucun cours';
 $string['fileupdatestask'] = 'Transmettre les mise à jour de fichiers vers Ally';
 $string['id'] = 'Identifiant';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = 'Le contenu réel du fichier es
 $string['privacy:metadata:files:mimetype'] = 'Type MIME du fichier.Par ex. : texte/brut, image/jpeg, etc.';
 $string['privacy:metadata:files:pathnamehash'] = 'Hachage du nom du chemin d\'accès du fichier servant à l\'identifier de façon unique.';
 $string['privacy:metadata:files:timemodified'] = 'Heure de la dernière modification du champ.';
+$string['cachedef_annotationmaps'] = 'Stocker les données d\'annotation pour les cours';
+$string['cachedef_fileinusecache'] = 'Fichiers Ally dans le cache d\'utilisation';
+$string['cachedef_pluginfilesinhtml'] = 'Fichiers Ally dans le cache HTML';
 $string['cachedef_request'] = 'Cache de requête de filtre Ally';
 $string['pushfilessummary'] = 'Résumé des mises à jour de fichiers Ally.';
 $string['pushfilessummary:explanation'] = 'Résumé des mises à jour de fichiers envoyés à Ally.';
