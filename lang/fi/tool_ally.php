@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = 'Virheellinen komponenttitunniste {$a}'
 $string['error:pluginfilequestiononly'] = 'Tässä URL-osoitteessa tuetaan vain kysymyskomponentteja';
 $string['error:componentcontentnotfound'] = '{$a}-sisältöä ei löydetty';
 $string['error:wstokenmissing'] = 'Verkkopalveluavain puuttuu. Ylläpitäjäkäyttäjän täytyy ehkä suorittaa automaattinen määritys.';
+$string['excludeunused'] = 'Jätä käyttämättömät tiedostot pois';
+$string['excludeunuseddesc'] = 'Jätä pois tiedostot, jotka on liitetty HTML-sisältöön, mutta linkkeinä/viittauksina HTML:ssä.';
 $string['filecoursenotfound'] = 'Välitetty tiedosto ei kuulu mihinkään kurssiin';
 $string['fileupdatestask'] = 'Lähetä tiedostopäivitykset Allyyn';
 $string['id'] = 'Tunnus';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = 'Tiedoston todellinen sisältö
 $string['privacy:metadata:files:mimetype'] = 'Tämä on tiedoston MIME-tyyppi, esimerkiksi pelkkä teksti, jpeg-kuva jne.';
 $string['privacy:metadata:files:pathnamehash'] = 'Tämä on tiedostopolun nimen hajautusarvo, jolla tiedosto yksilöidään.';
 $string['privacy:metadata:files:timemodified'] = 'Tämä on kentän edellinen muokkausaika.';
+$string['cachedef_annotationmaps'] = 'Tallenna kurssien huomautustiedot';
+$string['cachedef_fileinusecache'] = 'Ally-tiedostot käytön välimuistissa';
+$string['cachedef_pluginfilesinhtml'] = 'Ally-tiedostot HTML-välimuistissa';
 $string['cachedef_request'] = 'Ally-suodatinpyyntövälimuisti';
 $string['pushfilessummary'] = 'Tämä on Ally-tiedostopäivitysten yhteenveto.';
 $string['pushfilessummary:explanation'] = 'Tämä on yhteenveto Allyyn lähetetyistä tiedostopäivityksistä.';
