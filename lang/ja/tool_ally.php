@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = '不正なコンポーネント識別�
 $string['error:pluginfilequestiononly'] = 'このURLでは問題コンポーネントのみサポートされています';
 $string['error:componentcontentnotfound'] = '{$a} のコンテンツが見つかりません';
 $string['error:wstokenmissing'] = 'ウェブサービストークンがありません。管理者ユーザは自動設定を実行する必要があるかもしれません。';
+$string['excludeunused'] = '未使用のファイルを除外する';
+$string['excludeunuseddesc'] = 'HTMLコンテンツに添付されていて、HTML内でリンク/参照されているファイルを除外します。';
 $string['filecoursenotfound'] = '渡されたファイルはどのコースにも属していません';
 $string['fileupdatestask'] = 'ファイルの更新をAllyにプッシュ';
 $string['id'] = 'ID';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = '実際のファイルのコン
 $string['privacy:metadata:files:mimetype'] = 'ファイルMIMEタイプ、例 : テキスト/プレイン、イメージ/jpegなど。';
 $string['privacy:metadata:files:pathnamehash'] = '一意に識別するためのファイルのパス名ハッシュ。';
 $string['privacy:metadata:files:timemodified'] = 'フィールドが最後に修正された日時。';
+$string['cachedef_annotationmaps'] = 'コースの注釈データを保存する';
+$string['cachedef_fileinusecache'] = '使用中の関連ファイルのキャッシュ';
+$string['cachedef_pluginfilesinhtml'] = 'HTML内の関連ファイルのキャッシュ';
 $string['cachedef_request'] = 'Allyフィルタリクエストのキャッシュ';
 $string['pushfilessummary'] = 'Allyファイル更新の要約。';
 $string['pushfilessummary:explanation'] = 'Allyに送信された更新の要約。';
