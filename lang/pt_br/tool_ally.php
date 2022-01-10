@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = 'Identificador de componente inválido 
 $string['error:pluginfilequestiononly'] = 'Somente componentes de questões são suportados para este URL';
 $string['error:componentcontentnotfound'] = 'Conteúdo não encontrado para {$a}';
 $string['error:wstokenmissing'] = 'Está faltando a chave de serviço da web. Talvez um usuário administrador precise executar a configuração automática?';
+$string['excludeunused'] = 'Excluir arquivos não utilizados';
+$string['excludeunuseddesc'] = 'Omitir arquivos anexados ao conteúdo HTML, mas vinculados ou que referenciam no HTML.';
 $string['filecoursenotfound'] = 'O arquivo transmitido não pertence a nenhum curso';
 $string['fileupdatestask'] = 'Enviar atualizações de arquivos para o Ally';
 $string['id'] = 'Código';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = 'O conteúdo do arquivo real é
 $string['privacy:metadata:files:mimetype'] = 'O tipo MIME de arquivo (por exemplo: texto/simples, imagem/jpeg, entre outros).';
 $string['privacy:metadata:files:pathnamehash'] = 'O hash do nome de caminho do arquivo para identificá-lo com exclusividade.';
 $string['privacy:metadata:files:timemodified'] = 'A hora em que o campo foi modificado pela última vez.';
+$string['cachedef_annotationmaps'] = 'Armazenar dados de anotação para cursos';
+$string['cachedef_fileinusecache'] = 'Cache em uso de arquivos do Ally';
+$string['cachedef_pluginfilesinhtml'] = 'Cache em HTML de arquivos do Ally';
 $string['cachedef_request'] = 'Cache de solicitação de filtro do Ally';
 $string['pushfilessummary'] = 'Resumo das atualizações de arquivo do Ally.';
 $string['pushfilessummary:explanation'] = 'Resumo das atualizações de arquivo enviadas para o Ally.';
