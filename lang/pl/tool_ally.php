@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = 'Nieprawidłowy identyfikator komponent
 $string['error:pluginfilequestiononly'] = 'W przypadku tego adresu URL obsługiwane są tylko komponenty pytań';
 $string['error:componentcontentnotfound'] = 'Nie znaleziono zawartości elementu {$a}';
 $string['error:wstokenmissing'] = 'Brak tokenu usługi sieciowej. Być może administrator musi uruchomić automatyczną konfigurację?';
+$string['excludeunused'] = 'Wyklucz nieużywane pliki';
+$string['excludeunuseddesc'] = 'Pomiń pliki, które są dołączone do treści HTML, ale do których łącza/odniesienia znajdują się w kodzie HTML.';
 $string['filecoursenotfound'] = 'Przekazany plik nie należy do żadnego kursu';
 $string['fileupdatestask'] = 'Prześlij aktualizacje plików do usługi Ally';
 $string['id'] = 'Identyfikator';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = 'Rzeczywista zawartość pliku 
 $string['privacy:metadata:files:mimetype'] = 'Typ MIME pliku, np. text/plain, image/jpeg itp.';
 $string['privacy:metadata:files:pathnamehash'] = 'Skrót ścieżki do pliku w celu jego jednoznacznego zidentyfikowania.';
 $string['privacy:metadata:files:timemodified'] = 'Czas ostatniej modyfikacji pola.';
+$string['cachedef_annotationmaps'] = 'Zapisz dane adnotacji do kursów';
+$string['cachedef_fileinusecache'] = 'Pliki Ally w użytkowej pamięci podręcznej';
+$string['cachedef_pluginfilesinhtml'] = 'Pliki Ally w pamięci podręcznej HTML';
 $string['cachedef_request'] = 'Pamięć podręczna żądań filtru usługi Ally';
 $string['pushfilessummary'] = 'Podsumowanie aktualizacji plików usługi Ally.';
 $string['pushfilessummary:explanation'] = 'Podsumowanie aktualizacji plików wysyłanych do usługi Ally.';
