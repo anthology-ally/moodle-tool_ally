@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = 'ID del componente no válido {$a}';
 $string['error:pluginfilequestiononly'] = 'Solo se admiten los componentes de las preguntas para esta URL';
 $string['error:componentcontentnotfound'] = 'No se encontró el contenido para {$a}';
 $string['error:wstokenmissing'] = 'Falta el token del servicio web. ¿Es posible que un usuario administrador necesite ejecutar la configuración automática?';
+$string['excludeunused'] = 'Excluir archivos sin usar';
+$string['excludeunuseddesc'] = 'Omitir archivos adjuntos al contenido HTML, pero permitir archivos vinculados/referencias en el HTML.';
 $string['filecoursenotfound'] = 'Los archivos aprobados no pertenecen a ningún curso';
 $string['fileupdatestask'] = 'Insertar actualizaciones de archivos en Ally';
 $string['id'] = 'ID';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = 'El contenido del archivo real 
 $string['privacy:metadata:files:mimetype'] = 'Tipo de archivo MIME. Por ejemplo: text/plain, image/jpeg, etc.';
 $string['privacy:metadata:files:pathnamehash'] = 'Función hash para el nombre de la ruta del archivo a fin de identificarlo de forma única.';
 $string['privacy:metadata:files:timemodified'] = 'Hora de la última modificación del campo.';
+$string['cachedef_annotationmaps'] = 'Almacenar datos de anotaciones para cursos';
+$string['cachedef_fileinusecache'] = 'Archivos de Ally en caché de uso';
+$string['cachedef_pluginfilesinhtml'] = 'Archivos de Ally en caché HTML';
 $string['cachedef_request'] = 'Caché de solicitud de filtros de Ally';
 $string['pushfilessummary'] = 'Resumen de actualizaciones de archivos de Ally.';
 $string['pushfilessummary:explanation'] = 'Resumen de las actualizaciones de archivos que se envían a Ally.';
