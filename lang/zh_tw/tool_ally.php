@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -39,6 +39,8 @@ $string['error:invalidcomponentident'] = '無效的元件識別碼 {$a}';
 $string['error:pluginfilequestiononly'] = '此 URL 僅支援問題元件';
 $string['error:componentcontentnotfound'] = '針對 {$a} 找不到任何內容';
 $string['error:wstokenmissing'] = '缺少 Web 服務 Token。管理使用者可能需要執行自動配置？';
+$string['excludeunused'] = '排除未使用的檔案';
+$string['excludeunuseddesc'] = '略過附加於 HTML 內容，但已在 HTML 中連結/參照的檔案。';
 $string['filecoursenotfound'] = '傳入的檔案不屬於任何課程';
 $string['fileupdatestask'] = '推送檔案更新至 Ally';
 $string['id'] = '編號';
@@ -73,6 +75,9 @@ $string['privacy:metadata:files:filecontents'] = '實際檔案內容會傳送至
 $string['privacy:metadata:files:mimetype'] = '檔案 MIME 類型，例如：text/plain、image/jpeg 等。';
 $string['privacy:metadata:files:pathnamehash'] = '用於唯一識別檔案的檔案路徑名稱。';
 $string['privacy:metadata:files:timemodified'] = '上次修改此欄位的時間。';
+$string['cachedef_annotationmaps'] = '儲存課程的註解資料';
+$string['cachedef_fileinusecache'] = '使用快取內的 Ally 檔案';
+$string['cachedef_pluginfilesinhtml'] = 'HTML 快取內的 Ally 檔案';
 $string['cachedef_request'] = 'Ally 篩選器請求快取';
 $string['pushfilessummary'] = 'Ally 檔案更新摘要。';
 $string['pushfilessummary:explanation'] = '傳送至 Ally 的檔案更新摘要。';
