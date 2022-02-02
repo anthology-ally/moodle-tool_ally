@@ -28,7 +28,7 @@ use tool_ally\models\component;
 use tool_ally\componentsupport\block_html_component;
 use tool_ally\webservice\course_content;
 use tool_ally\testing\traits\component_assertions;
-use block_html\search_content_testcase;
+use block_html\search_content_test;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -82,7 +82,7 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
     private function add_block( array $data = null) : block_html {
         global $USER;
 
-        $sctc = new search_content_testcase();
+        $sctc = new search_content_test();
 
         $block = phpunit_util::call_internal_method($sctc, 'create_block',
             ['course' => $this->course], get_class($sctc));
@@ -135,7 +135,7 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
     }
 
     public function test_get_all_html_content() {
-        $sctc = new search_content_testcase();
+        $sctc = new search_content_test();
 
         // Create an empty unconfigured block.
         // Ensure this does not trigger an error and that content has empty format and text.
@@ -177,7 +177,7 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
     }
 
     public function test_get_course_html_content_items() {
-        $sctc = new search_content_testcase();
+        $sctc = new search_content_test();
 
         // Create an empty unconfigured block.
         // Ensure this does not trigger an error and that content has empty format and text.

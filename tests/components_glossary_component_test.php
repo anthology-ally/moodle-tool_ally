@@ -108,7 +108,7 @@ class tool_ally_components_glossary_component_testcase extends tool_ally_abstrac
         $record->glossary = $this->glossary->id;
         $record->userid = $this->teacher->id;
         $record->definitionformat = FORMAT_HTML;
-        $this->teacherentry = $glossarygenerator->create_content($this->glossary, $record);
+        $this->teacherentry = $glossarygenerator->create_content($this->glossary, (array) $record);
 
         // Add an entry by student - should NOT show up in results.
         $this->setUser($this->student);
@@ -117,7 +117,7 @@ class tool_ally_components_glossary_component_testcase extends tool_ally_abstrac
         $record->glossary = $this->glossary->id;
         $record->userid = $this->student->id;
         $record->definitionformat = FORMAT_HTML;
-        $this->studententry = $glossarygenerator->create_content($this->glossary, $record);
+        $this->studententry = $glossarygenerator->create_content($this->glossary, (array) $record);
 
         $this->component = local_content::component_instance('glossary');
     }

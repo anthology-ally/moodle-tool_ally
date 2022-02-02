@@ -912,7 +912,7 @@ MSG;
         $record->glossary = $glossary->id;
         $record->userid = $USER->id;
         $record->definitionformat = FORMAT_HTML;
-        $entry = self::getDataGenerator()->get_plugin_generator('mod_glossary')->create_content($glossary, $record);
+        $entry = self::getDataGenerator()->get_plugin_generator('mod_glossary')->create_content($glossary, (array) $record);
 
         $params = array(
             'context' => $cm->context,

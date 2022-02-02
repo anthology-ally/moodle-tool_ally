@@ -180,7 +180,7 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
         $record->course = $courseid;
         $record->glossary = $glossary->id;
         $record->userid = $USER->id;
-        $entry = self::getDataGenerator()->get_plugin_generator('mod_glossary')->create_content($glossary, $record);
+        $entry = self::getDataGenerator()->get_plugin_generator('mod_glossary')->create_content($glossary, (array) $record);
         $definitionreplaced = '<p>Content replaced!</p>';
         $result = replace_content::service(
             $entry->id, 'glossary', 'glossary_entries', 'definition', $definitionreplaced
