@@ -347,7 +347,46 @@ MSG;
             'context_id', $newcourseid);
         $this->assertTrue($contains, "Course push trace with context_id of {$newcourseid} not found.");
 
-        $this->check_pushtrace_contains_key_value('course_processor', event_handlers::API_COURSE_COPIED,
+        $contains = $this->check_pushtrace_contains_key_value('course_processor', event_handlers::API_COURSE_COPIED,
+            'source_context_id', $course->id);
+        $this->assertTrue($contains, "Course push trace with source_context_id of {$course->id} not found.");
+    }
+
+    /**
+     * Basic test to see if a message is sent for course import.
+     */
+    public function test_course_imported() {
+        global $CFG, $USER;
+
+        $course = $this->getDataGenerator()->create_course();
+        $courseimport = $this->getDataGenerator()->create_course();
+        course_processor::clear_push_traces();
+
+        // Disable all backup loggers.
+        $CFG->backup_error_log_logger_level = backup::LOG_NONE;
+        $CFG->backup_output_indented_logger_level = backup::LOG_NONE;
+        $CFG->backup_file_logger_level = backup::LOG_NONE;
+        $CFG->backup_database_logger_level = backup::LOG_NONE;
+        $CFG->backup_file_logger_level_extra = backup::LOG_NONE;
+
+        $this->setAdminUser();
+
+        // Import creates a backup for the samesite so includes course id on the back up.
+        $bc = new backup_controller(backup::TYPE_1COURSE, $course->id, backup::FORMAT_MOODLE,
+            backup::INTERACTIVE_NO, backup::MODE_IMPORT, $USER->id);
+        $bc->execute_plan();
+        $bcid = $bc->get_backupid();
+
+        $bcrestore = new restore_controller($bcid, $courseimport->id, backup::INTERACTIVE_NO, backup::MODE_IMPORT, $USER->id,
+            backup::TARGET_EXISTING_ADDING);
+        $bcrestore->execute_precheck();
+        $bcrestore->execute_plan();
+
+        $contains = $this->check_pushtrace_contains_key_value('course_processor', event_handlers::API_COURSE_IMPORTED,
+            'context_id', $courseimport->id);
+        $this->assertTrue($contains, "Course push trace with context_id of {$courseimport->id} not found.");
+
+        $contains = $this->check_pushtrace_contains_key_value('course_processor', event_handlers::API_COURSE_IMPORTED,
             'source_context_id', $course->id);
         $this->assertTrue($contains, "Course push trace with source_context_id of {$course->id} not found.");
     }
