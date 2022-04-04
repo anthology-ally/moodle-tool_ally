@@ -28,8 +28,6 @@ use tool_ally\local;
 use tool_ally\local_course;
 use tool_ally\local_file;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Provide a list of course files to process for accessibility.
  *

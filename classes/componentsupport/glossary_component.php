@@ -24,8 +24,6 @@
 
 namespace tool_ally\componentsupport;
 
-defined ('MOODLE_INTERNAL') || die();
-
 use cm_info;
 use context;
 use stored_file;

@@ -24,8 +24,6 @@
 
 namespace tool_ally;
 
-defined('MOODLE_INTERNAL') || die();
-
 use coding_exception;
 use context;
 use context_course;

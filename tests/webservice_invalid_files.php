@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\webservice\invalid_files;
 use tool_ally\webservice\files;
@@ -36,14 +37,14 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_webservice_invalid_files_testcase extends tool_ally_abstract_testcase {
+class webservice_invalid_files extends abstract_testcase {
     /**
      * Test the web service.
      */
     public function test_service() {
         $this->resetAfterTest();
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
 
         $course1  = $this->getDataGenerator()->create_course();
         $assign11 = $this->getDataGenerator()->create_module('assign', ['course' => $course1->id]);
@@ -66,7 +67,7 @@ class tool_ally_webservice_invalid_files_testcase extends tool_ally_abstract_tes
 
         // Should be getting exactly 2 invalid files.
         $files = invalid_files::service($page, $perpage);
-        $files = external_api::clean_returnvalue(invalid_files::service_returns(), $files);
+        $files = \external_api::clean_returnvalue(invalid_files::service_returns(), $files);
 
         $this->assertCount(2, $files);
         $file = reset($files);
@@ -79,7 +80,7 @@ class tool_ally_webservice_invalid_files_testcase extends tool_ally_abstract_tes
 
         // Should be getting exactly 2 valid files.
         $files = files::service($page, $perpage);
-        $files = external_api::clean_returnvalue(files::service_returns(), $files);
+        $files = \external_api::clean_returnvalue(files::service_returns(), $files);
 
         $this->assertCount(2, $files);
         $file = reset($files);
@@ -95,7 +96,7 @@ class tool_ally_webservice_invalid_files_testcase extends tool_ally_abstract_tes
 
         // Should be getting exactly 1 invalid file.
         $files = invalid_files::service($page, $perpage);
-        $files = external_api::clean_returnvalue(invalid_files::service_returns(), $files);
+        $files = \external_api::clean_returnvalue(invalid_files::service_returns(), $files);
 
         $this->assertCount(1, $files);
         $file = reset($files);
@@ -104,7 +105,7 @@ class tool_ally_webservice_invalid_files_testcase extends tool_ally_abstract_tes
 
         // Should be getting exactly 1 valid file.
         $files = files::service($page, $perpage);
-        $files = external_api::clean_returnvalue(files::service_returns(), $files);
+        $files = \external_api::clean_returnvalue(files::service_returns(), $files);
 
         $this->assertCount(1, $files);
         $file = reset($files);

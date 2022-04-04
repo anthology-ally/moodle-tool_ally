@@ -22,12 +22,11 @@
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\local_content;
 use tool_ally\componentsupport\forum_component;
 use tool_ally\testing\traits\component_assertions;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Testcase class for the tool_ally\components\forum_component class.
@@ -37,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_components_forum_component_testcase extends tool_ally_abstract_testcase {
+class components_forum_component_test extends abstract_testcase {
     use component_assertions;
 
     /**
@@ -98,7 +97,7 @@ class tool_ally_components_forum_component_testcase extends tool_ally_abstract_t
         $this->teacher = $gen->create_user();
         $this->admin = get_admin();
         $this->course = $gen->create_course();
-        $this->coursecontext = context_course::instance($this->course->id);
+        $this->coursecontext = \context_course::instance($this->course->id);
         $gen->enrol_user($this->student->id, $this->course->id, 'student');
         $gen->enrol_user($this->teacher->id, $this->course->id, 'editingteacher');
         $forumdata = [
@@ -110,7 +109,7 @@ class tool_ally_components_forum_component_testcase extends tool_ally_abstract_t
 
         // Add a discussion / post by teacher - should show up in results.
         $this->setUser($this->teacher);
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $this->course->id;
         $record->forum = $this->forum->id;
         $record->userid = $this->teacher->id;
@@ -119,7 +118,7 @@ class tool_ally_components_forum_component_testcase extends tool_ally_abstract_t
 
         // Add a discussion / post by student - should NOT show up in results.
         $this->setUser($this->student);
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $this->course->id;
         $record->forum = $this->forum->id;
         $record->userid = $this->student->id;
@@ -146,7 +145,7 @@ class tool_ally_components_forum_component_testcase extends tool_ally_abstract_t
     }
 
     public function test_get_discussion_html_content_items() {
-        $contentitems = phpunit_util::call_internal_method(
+        $contentitems = \phpunit_util::call_internal_method(
             $this->component, 'get_discussion_html_content_items', [
                 $this->course->id, $this->forum->id
             ],
@@ -199,7 +198,7 @@ class tool_ally_components_forum_component_testcase extends tool_ally_abstract_t
      * Test if file in use detection is working with this module.
      */
     public function test_check_file_in_use() {
-        $context = context_module::instance($this->forum->cmid);
+        $context = \context_module::instance($this->forum->cmid);
 
         $usedfiles = [];
         $unusedfiles = [];
@@ -223,7 +222,7 @@ class tool_ally_components_forum_component_testcase extends tool_ally_abstract_t
         // Now setup a teacher post on a discussion.
         $forumgen = self::getDataGenerator()->get_plugin_generator('mod_'.$this->forumtype);
 
-        $post = new stdClass();
+        $post = new \stdClass();
         $post->discussion = $this->teacherdiscussion->id;
         $post->userid = $this->teacher->id;
         $post->parent = $this->teacherdiscussion->firstpost;

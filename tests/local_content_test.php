@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\local_content;
 use tool_ally\models\component;
@@ -40,19 +41,19 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_local_content_testcase extends tool_ally_abstract_testcase {
+class local_content_test extends abstract_testcase {
 
     public function test_component_supports_html_content() {
 
-        $supported = phpunit_util::call_internal_method(
+        $supported = \phpunit_util::call_internal_method(
                 null, 'component_supports_html_content', ['label'],
-                tool_ally\local_content::class);
+            \tool_ally\local_content::class);
 
         $this->assertEquals(true, $supported);
 
-        $supported = phpunit_util::call_internal_method(
+        $supported = \phpunit_util::call_internal_method(
             null, 'component_supports_html_content', ['unknowncomponent'],
-            tool_ally\local_content::class);
+            \tool_ally\local_content::class);
 
         $this->assertEquals(false, $supported);
     }
@@ -75,8 +76,8 @@ class tool_ally_local_content_testcase extends tool_ally_abstract_testcase {
         global $DB;
 
         $this->resetAfterTest();
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
 
         $coursesummary = '<p>My course summary</p>';
         $course = $this->getDataGenerator()->create_course(
@@ -163,8 +164,8 @@ class tool_ally_local_content_testcase extends tool_ally_abstract_testcase {
 
         $this->resetAfterTest();
 
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
 
         $content = local_content::get_html_content(9999, 'course', 'course', 'summary');
         $this->assertEquals(null, $content);
@@ -182,7 +183,7 @@ class tool_ally_local_content_testcase extends tool_ally_abstract_testcase {
             $course->summaryformat,
             $coursesummary,
             $course->fullname,
-            new moodle_url('/course/edit.php?id='.$course->id).''
+            new \moodle_url('/course/edit.php?id='.$course->id).''
         );
 
         $content = local_content::get_html_content($course->id, 'course', 'course', 'summary');
@@ -204,13 +205,13 @@ class tool_ally_local_content_testcase extends tool_ally_abstract_testcase {
         $coursesummary = '<p>My course summary</p>';
         $course = $this->getDataGenerator()->create_course(
             ['summary' => $coursesummary, 'summaryformat' => FORMAT_HTML]);
-        $context = context_course::instance($course->id);
+        $context = \context_course::instance($course->id);
         $annotation = local_content::get_annotation($context);
         $this->assertEmpty($annotation); // Course summaries / sections can't be annotated via php.
 
         $label = $this->getDataGenerator()->create_module('label',
             ['course' => $course->id]);
-        $context = context_module::instance($label->cmid);
+        $context = \context_module::instance($label->cmid);
         $annotation = local_content::get_annotation($context);
         $expected = 'label:label:intro:'.$label->id;
         $this->assertEquals($expected, $annotation);

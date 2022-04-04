@@ -22,10 +22,9 @@
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\auto_config_resolver;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Testcase class for the tool_ally\auto_config_resolver class.
@@ -34,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_auto_config_resolver_testcase extends advanced_testcase {
+class auto_config_resolver_test extends \advanced_testcase {
     public function setUp(): void {
         $this->resetAfterTest(true);
     }

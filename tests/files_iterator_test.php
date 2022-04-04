@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\files_in_use;
 use tool_ally\files_iterator;
@@ -40,7 +41,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
+class files_iterator_test extends abstract_testcase {
     /**
      * Test get_files.
      */
@@ -59,7 +60,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
 
         $fs = get_file_storage();
         $filerecord = array(
-            'contextid' => context_course::instance($course->id)->id,
+            'contextid' => \context_course::instance($course->id)->id,
             'component' => 'mod_notwhitelisted',
             'filearea' => 'content',
             'itemid' => 0,
@@ -72,7 +73,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $file1 = $fs->create_file_from_string($filerecord, $teststring);
 
         $filerecord = array(
-            'contextid' => context_course::instance($course->id)->id,
+            'contextid' => \context_course::instance($course->id)->id,
             'component' => 'mod_notwhitelisted',
             'filearea' => 'content',
             'itemid' => 0,
@@ -124,7 +125,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
 
         $fs = get_file_storage();
         $filerecord = array(
-            'contextid' => context_course::instance($course->id)->id,
+            'contextid' => \context_course::instance($course->id)->id,
             'component' => 'course',
             'filearea' => 'section',
             'itemid' => 1,
@@ -292,7 +293,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
 
         $fs = get_file_storage();
         $filerecord = array(
-            'contextid' => context_module::instance($assign1->cmid)->id,
+            'contextid' => \context_module::instance($assign1->cmid)->id,
             'component' => 'mod_assign',
             'filearea' => 'intro',
             'itemid' => 0,
@@ -317,7 +318,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         // Make sure files iterator includes it.
         $fs = get_file_storage();
         $filerecord = array(
-            'contextid' => context_module::instance($assign1->cmid)->id,
+            'contextid' => \context_module::instance($assign1->cmid)->id,
             'component' => 'mod_assign',
             'filearea' => 'intro',
             'itemid' => 0,
@@ -343,7 +344,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         // In this case, even though the file was created by a teacher, it should NOT be included.
         $fs = get_file_storage();
         $filerecord = array(
-            'contextid' => context_module::instance($assign1->cmid)->id,
+            'contextid' => \context_module::instance($assign1->cmid)->id,
             'component' => 'mod_assign',
             'filearea' => 'notwhitelisted',
             'itemid' => 0,
@@ -370,7 +371,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         // Make sure files iterator DOES include it.
         $fs = get_file_storage();
         $filerecord = array(
-            'contextid' => context_module::instance($assign2->cmid)->id,
+            'contextid' => \context_module::instance($assign2->cmid)->id,
             'component' => 'mod_assign',
             'filearea' => 'intro',
             'itemid' => 0,
@@ -394,7 +395,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         // Make sure files iterator does NOT include it.
         $fs = get_file_storage();
         $filerecord = array(
-            'contextid' => context_module::instance($assign2->cmid)->id,
+            'contextid' => \context_module::instance($assign2->cmid)->id,
             'component' => 'mod_assign',
             'filearea' => 'notwhitelisted',
             'itemid' => 0,
@@ -441,7 +442,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $filecount = 100;
         for ($i = 0; $i < $filecount; $i++) {
             $filerecord = array(
-                'contextid' => context_course::instance($course->id)->id,
+                'contextid' => \context_course::instance($course->id)->id,
                 'component' => 'mod_assign',
                 'filearea' => 'intro',
                 'itemid' => 0,
@@ -489,7 +490,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         // Add a file in course where user is a teacher.
         $fs = get_file_storage();
         $filerecord = array(
-            'contextid' => context_course::instance($course1->id)->id,
+            'contextid' => \context_course::instance($course1->id)->id,
             'component' => 'mod_notwhitelisted',
             'filearea' => 'content',
             'itemid' => 0,
@@ -504,7 +505,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         // Add a file in course where user is not a teacher.
         $fs = get_file_storage();
         $filerecord = array(
-            'contextid' => context_course::instance($course2->id)->id,
+            'contextid' => \context_course::instance($course2->id)->id,
             'component' => 'mod_notwhitelisted',
             'filearea' => 'content',
             'itemid' => 0,
@@ -550,7 +551,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         // Create a file with a not whitelisted module.
         $fs = get_file_storage();
         $filerecord = array(
-            'contextid' => context_course::instance($course1->id)->id,
+            'contextid' => \context_course::instance($course1->id)->id,
             'component' => 'mod_notwhitelisted',
             'filearea' => 'content',
             'itemid' => 0,
@@ -586,7 +587,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         // Add another file in course where user is teacher but with a whitelisted module.
         $fs = get_file_storage();
         $filerecord = array(
-            'contextid' => context_course::instance($course1->id)->id,
+            'contextid' => \context_course::instance($course1->id)->id,
             'component' => 'mod_assign',
             'filearea' => 'intro',
             'itemid' => 0,
@@ -646,7 +647,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $filecount = 100;
         for ($i = 0; $i < $filecount; $i++) {
             $filerecord = array(
-                'contextid' => context_course::instance($course->id)->id,
+                'contextid' => \context_course::instance($course->id)->id,
                 'component' => 'mod_assign',
                 'filearea' => 'intro',
                 'itemid' => 0,
@@ -690,7 +691,7 @@ class tool_ally_files_iterator_testcase extends tool_ally_abstract_testcase {
         $intro = '<img src="@@PLUGINFILE@@/subpath/used.jpg">';
         $resource = $this->getDataGenerator()->create_module('resource', ['course' => $course->id, 'intro' => $intro]);
         $resourcefile = $this->get_resource_file($resource);
-        $context = context::instance_by_id($resourcefile->get_contextid());
+        $context = \context::instance_by_id($resourcefile->get_contextid());
 
         $record = [
                 'contextid' => $context->id,

@@ -26,8 +26,6 @@ namespace tool_ally\webservice;
 
 use tool_ally\local;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Gets the amount of students and instructors per course.
  *

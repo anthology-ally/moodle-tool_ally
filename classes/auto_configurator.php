@@ -27,8 +27,6 @@ namespace tool_ally;
 
 use tool_ally\adminsetting\ally_configpasswordunmask;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class responsible for executing auto configuration for ally settings and web services.
  *

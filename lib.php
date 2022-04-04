@@ -20,7 +20,8 @@
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
+// Prepare for code checker update. Will be removed on INT-17966.
+// @codingStandardsIgnoreLine
 defined('MOODLE_INTERNAL') || die();
 
 use tool_ally\file_processor,

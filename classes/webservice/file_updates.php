@@ -27,8 +27,6 @@ namespace tool_ally\webservice;
 use tool_ally\local;
 use tool_ally\local_file;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * File updates web service class definition.
  *

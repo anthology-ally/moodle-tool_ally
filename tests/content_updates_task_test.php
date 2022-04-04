@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use Prophecy\Argument;
 use \core\event\course_module_updated;
@@ -39,7 +40,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_content_updates_task_testcase extends tool_ally_abstract_testcase {
+class content_updates_task_test extends abstract_testcase {
 
     /**
      * First run should set the timestamp then exit.
@@ -200,7 +201,7 @@ class tool_ally_content_updates_task_testcase extends tool_ally_abstract_testcas
 
         // Add a discussion / post by admin user - should show up in results.
         $this->setAdminUser();
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $course->id;
         $record->forum = $forum->id;
         $record->userid = $USER->id;
@@ -270,7 +271,7 @@ class tool_ally_content_updates_task_testcase extends tool_ally_abstract_testcas
             ]
         );
 
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $course->id;
         $record->glossary = $glossary->id;
         $record->userid = $USER->id;
@@ -332,7 +333,7 @@ class tool_ally_content_updates_task_testcase extends tool_ally_abstract_testcas
             ]
         );
 
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $course->id;
         $record->glossary = $glossary->id;
         $record->userid = $USER->id;

@@ -46,7 +46,7 @@ if ($action === 'confirm' || $action === 'view') {
     }
     $wstoken = local::get_ws_token();
     if (empty($wstoken->token)) {
-        print_error('error:wstokenmissing', 'tool_ally');
+        throw new moodle_exception('generalexceptionmessage', 'error', '', get_string('error:wstokenmissing', 'tool_ally'));
     }
     $token = $wstoken->token;
     $sampleapicall = $CFG->wwwroot.'/webservice/rest/server.php?wstoken='.$token.

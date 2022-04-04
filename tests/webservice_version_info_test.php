@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\webservice\version_info;
 
@@ -35,7 +36,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_webservice_version_info_testcase extends tool_ally_abstract_testcase {
+class webservice_version_info_test extends abstract_testcase {
     /**
      * Test the web service.
      */
@@ -69,8 +70,8 @@ class tool_ally_webservice_version_info_testcase extends tool_ally_abstract_test
 
         try {
             version_info::service();
-        } catch (moodle_exception $e) {
-            $this->assertInstanceOf(moodle_exception::class, $e);
+        } catch (\moodle_exception $e) {
+            $this->assertInstanceOf(\moodle_exception::class, $e);
             $this->assertEquals($e->errorcode, 'sitepolicynotagreed');
             $this->assertEquals($e->module, 'error');
             $this->assertEquals($e->a, 'sitepolicyURL.com');
@@ -81,8 +82,8 @@ class tool_ally_webservice_version_info_testcase extends tool_ally_abstract_test
 
         try {
             version_info::service();
-        } catch (moodle_exception $e) {
-            $this->assertInstanceOf(moodle_exception::class, $e);
+        } catch (\moodle_exception $e) {
+            $this->assertInstanceOf(\moodle_exception::class, $e);
             $this->assertEquals($e->errorcode, 'sitepolicynotagreed');
             $this->assertEquals($e->module, 'error');
             $this->assertEquals($e->a, 'sitepolicyURLguest.com');

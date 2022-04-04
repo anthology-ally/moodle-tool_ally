@@ -21,11 +21,10 @@
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\local;
 use tool_ally\auto_config;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Tests for local library.
@@ -34,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_local_testcase extends advanced_testcase {
+class local_test extends \advanced_testcase {
     /**
      * Test get role IDs.
      */

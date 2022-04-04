@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\webservice\delete_file;
 use tool_ally\local;
@@ -36,7 +37,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_webservice_delete_file_testcase extends tool_ally_abstract_testcase {
+class webservice_delete_file_test extends abstract_testcase {
     /**
      * Test the web service.
      *
@@ -48,9 +49,9 @@ class tool_ally_webservice_delete_file_testcase extends tool_ally_abstract_testc
 
         $datagen = $this->getDataGenerator();
 
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
-        $this->assignUserCapability('moodle/course:managefiles', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
+        $this->assignUserCapability('moodle/course:managefiles', \context_system::instance()->id, $roleid);
 
         $teacher = $datagen->create_user();
         $teacherrole = $DB->get_record('role', ['shortname' => 'editingteacher']);
@@ -62,7 +63,7 @@ class tool_ally_webservice_delete_file_testcase extends tool_ally_abstract_testc
         $datagen->enrol_user($teacher->id, $course->id, $teacherrole->id);
 
         $return = delete_file::service($file->get_pathnamehash(), $teacher->id);
-        $return = external_api::clean_returnvalue(delete_file::service_returns(), $return);
+        $return = \external_api::clean_returnvalue(delete_file::service_returns(), $return);
 
         $this->assertSame($return['success'], true);
 
@@ -74,9 +75,9 @@ class tool_ally_webservice_delete_file_testcase extends tool_ally_abstract_testc
     public function test_service_invalid_user() {
         $this->resetAfterTest();
 
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
-        $this->assignUserCapability('moodle/course:managefiles', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
+        $this->assignUserCapability('moodle/course:managefiles', \context_system::instance()->id, $roleid);
 
         $otheruser = $this->getDataGenerator()->create_user();
 
@@ -86,7 +87,7 @@ class tool_ally_webservice_delete_file_testcase extends tool_ally_abstract_testc
 
         $this->expectException(\moodle_exception::class);
         $return = delete_file::service($file->get_pathnamehash(), $otheruser->id);
-        $return = external_api::clean_returnvalue(delete_file::service_returns(), $return);
+        $return = \external_api::clean_returnvalue(delete_file::service_returns(), $return);
 
         // Check file hasn't been deleted.
         $this->assertInstanceOf(\stored_file, $this->get_resource_file($resource));
@@ -99,9 +100,9 @@ class tool_ally_webservice_delete_file_testcase extends tool_ally_abstract_testc
 
         $datagen = $this->getDataGenerator();
 
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
-        $this->assignUserCapability('moodle/course:managefiles', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
+        $this->assignUserCapability('moodle/course:managefiles', \context_system::instance()->id, $roleid);
 
         $teacher = $datagen->create_user();
         $teacherrole = $DB->get_record('role', ['shortname' => 'editingteacher']);

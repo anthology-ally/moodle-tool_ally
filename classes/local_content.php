@@ -24,8 +24,6 @@
 
 namespace tool_ally;
 
-defined('MOODLE_INTERNAL') || die();
-
 use cache;
 use moodle_url;
 use stdClass;

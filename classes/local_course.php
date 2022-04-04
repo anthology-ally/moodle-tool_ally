@@ -24,8 +24,6 @@
 
 namespace tool_ally;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Course updates local library.
  *
@@ -72,3 +70,4 @@ class local_course {
         return array_keys($DB->get_records_sql($sql, [CONTEXT_MODULE, $courseid]));
     }
 }
+

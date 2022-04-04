@@ -66,8 +66,6 @@ use mod_lesson\event\page_created;
 use mod_lesson\event\page_updated;
 use mod_lesson\event\page_deleted;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * File processor for Ally.
  * Can be used to process individual or groups of files.

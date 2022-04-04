@@ -29,8 +29,6 @@ use tool_ally\local_course;
 use tool_ally\push_config;
 use tool_ally\push_course_updates;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * File updates task.
  *

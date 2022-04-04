@@ -24,8 +24,6 @@
 
 use tool_ally\logging\logger;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Testing generator.
  *

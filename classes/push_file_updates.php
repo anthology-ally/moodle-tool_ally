@@ -39,7 +39,7 @@ require_once($CFG->libdir.'/filelib.php');
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class push_file_updates extends push_updates{
+class push_file_updates extends push_updates {
 
     public function handle_send_error(\Exception $e) {
         $climode = get_config('tool_ally', 'push_cli_only');

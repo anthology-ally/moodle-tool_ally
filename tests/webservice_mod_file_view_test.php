@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\webservice\mod_file_view;
 
@@ -37,7 +38,7 @@ require_once($CFG->dirroot . '/files/externallib.php');
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_webservice_mod_file_view_testcase extends tool_ally_abstract_testcase {
+class webservice_mod_file_view_test extends abstract_testcase {
     /**
      * Test the web service.
      *
@@ -56,9 +57,9 @@ class tool_ally_webservice_mod_file_view_testcase extends tool_ally_abstract_tes
         $course = $datagen->create_course((object) ['enablecompletion' => 1]);
 
         // Assign capabilities to user testing web service call (this would normally be web service user).
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
-        $this->assignUserCapability('mod/resource:view', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
+        $this->assignUserCapability('mod/resource:view', \context_system::instance()->id, $roleid);
 
         // Enrol student on course.
         $datagen->enrol_user($student->id, $course->id, 'student');
@@ -83,9 +84,9 @@ class tool_ally_webservice_mod_file_view_testcase extends tool_ally_abstract_tes
 
         $this->resetAfterTest();
 
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
-        $this->assignUserCapability('mod/resource:view', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
+        $this->assignUserCapability('mod/resource:view', \context_system::instance()->id, $roleid);
 
         $datagen = $this->getDataGenerator();
         $student = $datagen->create_user();
@@ -120,9 +121,9 @@ class tool_ally_webservice_mod_file_view_testcase extends tool_ally_abstract_tes
     public function test_service_invalid_user() {
         $this->resetAfterTest();
 
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
-        $this->assignUserCapability('mod/resource:view', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
+        $this->assignUserCapability('mod/resource:view', \context_system::instance()->id, $roleid);
 
         $course      = $this->getDataGenerator()->create_course();
         $resource    = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
@@ -140,9 +141,9 @@ class tool_ally_webservice_mod_file_view_testcase extends tool_ally_abstract_tes
 
         $datagen = $this->getDataGenerator();
 
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
-        $this->assignUserCapability('moodle/course:managefiles', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
+        $this->assignUserCapability('moodle/course:managefiles', \context_system::instance()->id, $roleid);
 
         $teacher = $datagen->create_user();
         $teacherrole = $DB->get_record('role', ['shortname' => 'editingteacher']);

@@ -23,7 +23,6 @@
  */
 
 namespace tool_ally\exceptions;
-defined('MOODLE_INTERNAL') || die();
 
 class component_validation_exception extends \Exception {
 

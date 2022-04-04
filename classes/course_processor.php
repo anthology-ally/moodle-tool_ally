@@ -22,8 +22,6 @@
  */
 namespace tool_ally;
 
-defined('MOODLE_INTERNAL') || die();
-
 use tool_ally\logging\logger;
 
 /**

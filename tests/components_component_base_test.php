@@ -22,12 +22,11 @@
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\local_content;
 use tool_ally\componentsupport\glossary_component; // Note this could be any component that extends component_base.
 use tool_ally\testing\traits\component_assertions;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Testcase class for the tool_ally\componentsupport\component_base class.
@@ -37,7 +36,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_components_component_base_testcase extends advanced_testcase {
+class components_component_base_test extends \advanced_testcase {
     use component_assertions;
 
     /**
@@ -78,7 +77,7 @@ class tool_ally_components_component_base_testcase extends advanced_testcase {
         $this->teacher = $gen->create_user();
         $this->admin = get_admin();
         $this->course = $gen->create_course();
-        $this->coursecontext = context_course::instance($this->course->id);
+        $this->coursecontext = \context_course::instance($this->course->id);
         $gen->enrol_user($this->student->id, $this->course->id, 'student');
         $gen->enrol_user($this->teacher->id, $this->course->id, 'editingteacher');
 

@@ -22,6 +22,7 @@
  * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\files_in_use;
 use tool_ally\webservice\course_files;
@@ -38,7 +39,7 @@ require_once('abstract_testcase.php');
  * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class files_in_use_test extends tool_ally_abstract_testcase {
+class files_in_use_test extends abstract_testcase {
     /**
      * @var stdClass
      */
@@ -65,7 +66,7 @@ class files_in_use_test extends tool_ally_abstract_testcase {
         $gen = $this->getDataGenerator();
         $this->admin = get_admin();
         $this->course = $gen->create_course();
-        $this->coursecontext = context_course::instance($this->course->id);
+        $this->coursecontext = \context_course::instance($this->course->id);
         $this->assign = $gen->create_module('assign',
             [
                 'course' => $this->course->id,
@@ -82,7 +83,7 @@ class files_in_use_test extends tool_ally_abstract_testcase {
         global $DB;
 
         set_config('excludeunused', 1, 'tool_ally');
-        $context = context_module::instance($this->assign->cmid);
+        $context = \context_module::instance($this->assign->cmid);
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
 
         list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_assign', 'intro', 0);

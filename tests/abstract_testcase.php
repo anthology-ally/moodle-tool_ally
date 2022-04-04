@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -40,7 +41,7 @@ require_once($CFG->dirroot.'/webservice/tests/helpers.php');
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase {
+abstract class abstract_testcase extends \externallib_advanced_testcase {
     /**
      * Given a resource activity, return its associated file.
      *
@@ -49,11 +50,11 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      * @throws coding_exception
      */
     protected function get_resource_file($resource) {
-        $context = context_module::instance($resource->cmid);
+        $context = \context_module::instance($resource->cmid);
         $files   = get_file_storage()->get_area_files($context->id, 'mod_resource', 'content', 0, 'sortorder DESC, id ASC', false);
 
         if (count($files) < 1) {
-            throw new coding_exception('Failed to find any files associated to resource activity');
+            throw new \coding_exception('Failed to find any files associated to resource activity');
         }
 
         return reset($files);
@@ -94,7 +95,7 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      * @throws coding_exception
      */
     private function create_assign_file($module, $filearea, $name = '') {
-        $context = context_module::instance($module->cmid);
+        $context = \context_module::instance($module->cmid);
 
         $fs = get_file_storage();
 
@@ -120,10 +121,10 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      */
     protected function create_draft_file($filename = 'red dot.png') {
         global $USER;
-        $usercontext = context_user::instance($USER->id);
+        $usercontext = \context_user::instance($USER->id);
         $filecontent = "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38"
             . "GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
-        $draftfile = core_files_external::upload($usercontext->id, 'user', 'draft', 0, '/', $filename, $filecontent, null, null);
+        $draftfile = \core_files_external::upload($usercontext->id, 'user', 'draft', 0, '/', $filename, $filecontent, null, null);
         $draftfile['filecontent'] = $filecontent;
         return $draftfile;
     }
@@ -159,7 +160,7 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      * @param stored_file $expected
      * @param stored_file $actual
      */
-    public function assertStoredFileEquals(stored_file $expected, stored_file $actual) { // @codingStandardsIgnoreLine
+    public function assertStoredFileEquals(\stored_file $expected, \stored_file $actual) { // @codingStandardsIgnoreLine
         $this->assertEquals($expected->get_pathnamehash(), $actual->get_pathnamehash(), 'Stored files should be the same');
     }
 
@@ -238,7 +239,7 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      * @param context $context
      * @return array
      */
-    protected function get_file_ids_in_context(context $context): array {
+    protected function get_file_ids_in_context(\context $context): array {
         $files = \tool_ally\local_file::iterator();
         $files->in_context($context);
         $fileids = [];
@@ -259,11 +260,11 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      * @param stdClass|null $user
      * @return stored_file[]
      */
-    protected function setup_check_files(context $context,
+    protected function setup_check_files(\context $context,
                                          string $componentstr,
                                          string $filearea,
                                          int $itemid,
-                                         stdClass $user = null): array {
+                                         \stdClass $user = null): array {
 
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
 
@@ -296,12 +297,12 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      * @param stdClass|null $user
      * @return stored_file[] First file is the used file, second is unused.
      */
-    protected function check_html_files_in_use(context $context,
+    protected function check_html_files_in_use(\context $context,
                                                string $componentstr,
                                                int $id,
                                                string $table,
                                                string $field,
-                                               stdClass $user = null): array {
+                                               \stdClass $user = null): array {
         global $DB;
 
         $component = local_content::component_instance($componentstr);
@@ -330,7 +331,7 @@ abstract class tool_ally_abstract_testcase extends externallib_advanced_testcase
      * @param array $usedfiles
      * @param array $unusedfiles
      */
-    protected function check_file_iterator_exclusion(context $context, array $usedfiles, array $unusedfiles): void {
+    protected function check_file_iterator_exclusion(\context $context, array $usedfiles, array $unusedfiles): void {
         set_config('excludeunused', 1, 'tool_ally');
 
         // And we are going to get all the files in the context to double check.

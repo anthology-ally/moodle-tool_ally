@@ -29,8 +29,6 @@ use tool_ally\local_file;
 use tool_ally\push_config;
 use tool_ally\push_file_updates;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * File updates task.
  *

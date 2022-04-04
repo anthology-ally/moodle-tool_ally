@@ -25,8 +25,6 @@
 
 namespace tool_ally\webservice;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Ally course retrieval webservice class.
  *

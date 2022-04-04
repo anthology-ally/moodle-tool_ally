@@ -24,8 +24,6 @@
 
 namespace tool_ally\webservice;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Delete a file.
  *

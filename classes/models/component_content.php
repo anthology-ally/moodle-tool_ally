@@ -26,8 +26,6 @@ namespace tool_ally\models;
 
 use moodle_url;
 
-defined ('MOODLE_INTERNAL') || die();
-
 class component_content extends component {
     /**
      * @var string

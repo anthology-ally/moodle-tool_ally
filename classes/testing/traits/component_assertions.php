@@ -22,8 +22,6 @@
 
 namespace tool_ally\testing\traits;
 
-defined('MOODLE_INTERNAL') || die;
-
 trait component_assertions {
 
     /**

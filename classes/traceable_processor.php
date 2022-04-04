@@ -25,8 +25,6 @@ namespace tool_ally;
 use tool_ally\logging\logger;
 use tool_ally\models\component_content;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Traceable processor for Ally.
  * Can be used to allow an Ally processor to be traced during unit tests.
@@ -77,7 +75,7 @@ abstract class traceable_processor {
      * @param string $eventname
      * @return array
      */
-    public static abstract function build_payload($data, $eventname);
+    abstract public static function build_payload($data, $eventname);
 
     /**
      * Push content update to Ally without batching, etc.

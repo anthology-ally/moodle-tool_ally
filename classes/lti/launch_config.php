@@ -24,8 +24,6 @@
  */
 namespace tool_ally\lti;
 
-defined('MOODLE_INTERNAL') || die();
-
 use report_allylti\local\launch_config as base_launch_config;
 use stdClass;
 

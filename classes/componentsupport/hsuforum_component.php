@@ -23,8 +23,6 @@
 
 namespace tool_ally\componentsupport;
 
-defined ('MOODLE_INTERNAL') || die();
-
 use tool_ally\local_file;
 
 /**

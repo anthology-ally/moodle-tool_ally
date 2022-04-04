@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\webservice\content;
 use tool_ally\models\component_content;
@@ -36,7 +37,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase {
+class webservice_content_test extends abstract_testcase {
 
     public function test_invalid_component() {
         $this->resetAfterTest();
@@ -73,8 +74,8 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
 
         $this->resetAfterTest();
 
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
 
         // Test getting course summary content.
         $coursesummary = '<p>My course summary</p>';
@@ -159,7 +160,7 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
         $mod = $this->getDataGenerator()->create_module($modname,
             ['course' => $course->id, $field => $modintro]);
 
-        $context = context_module::instance($mod->cmid);
+        $context = \context_module::instance($mod->cmid);
         $filename = 'test image.png';
         $filenameanchor = 'test pdf.pdf';
         $filearea = $field;
@@ -233,7 +234,7 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
         $this->setUser($user);
 
         // Add a discussion.
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->forum = $forum->id;
         $record->userid = $user->id;
         $record->course = $forum->course;
@@ -242,7 +243,7 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
         // Add a reply.
         $posttitle = 'My post title';
         $postmessage = 'My post message';
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->messageformat = FORMAT_HTML;
         $record->discussion = $discussion->id;
         $record->userid = $user->id;
@@ -287,7 +288,7 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
         $this->setAdminUser();
         $lessongenerator = self::getDataGenerator()->get_plugin_generator('mod_lesson');
 
-        $lessonobj = new lesson($lesson);
+        $lessonobj = new \lesson($lesson);
 
         $pagecontents = 'Some text';
         $pagetitle = 'Test title';
@@ -321,7 +322,7 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
 
         $gen = $this->getDataGenerator();
         $course = $gen->create_course();
-        $context = context_course::instance($course->id);
+        $context = \context_course::instance($course->id);
 
         /** @var tool_ally_generator $blockgen */
         $blockgen = $gen->get_plugin_generator('tool_ally');
@@ -364,7 +365,7 @@ class tool_ally_webservice_content_testcase extends tool_ally_abstract_testcase 
         $modinst = $DB->get_record($table, ['id' => $mod->id]);
         $expectedmessage = "Content not found for component={$modname}&table={$table}&field={$field}&id={$mod->id}";
 
-        $this->expectException(moodle_exception::class);
+        $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessage($expectedmessage);
         content::service($mod->id, $modname, $table, $field, $course->id + 1); // Wrong course.
     }

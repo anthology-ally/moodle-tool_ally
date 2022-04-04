@@ -22,6 +22,7 @@
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\local_content;
 use tool_ally\testing\traits\component_assertions;
@@ -38,7 +39,7 @@ require_once('abstract_testcase.php');
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_components_lesson_component_testcase extends tool_ally_abstract_testcase {
+class components_lesson_component_test extends abstract_testcase {
     use component_assertions;
 
     /**
@@ -89,7 +90,7 @@ class tool_ally_components_lesson_component_testcase extends tool_ally_abstract_
         $this->admin = get_admin();
         $this->setAdminUser();
         $this->course = $gen->create_course();
-        $this->coursecontext = context_course::instance($this->course->id);
+        $this->coursecontext = \context_course::instance($this->course->id);
         $gen->enrol_user($this->teacher->id, $this->course->id, 'editingteacher');
         $this->lesson = $gen->create_module('lesson', ['course' => $this->course->id, 'introformat' => FORMAT_HTML]);
         $lessongenerator = self::getDataGenerator()->get_plugin_generator('mod_lesson');
@@ -161,7 +162,7 @@ class tool_ally_components_lesson_component_testcase extends tool_ally_abstract_
     public function test_check_file_in_use() {
         global $DB;
 
-        $context = context_module::instance($this->lesson->cmid);
+        $context = \context_module::instance($this->lesson->cmid);
 
         $usedfiles = [];
         $unusedfiles = [];

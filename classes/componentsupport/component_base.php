@@ -30,8 +30,6 @@ use tool_ally\local;
 use tool_ally\role_assignments;
 use tool_ally\exceptions\component_validation_exception;
 
-defined ('MOODLE_INTERNAL') || die();
-
 /**
  * Base class for processing module html.
  * @author    Guy Thomas <citricity@gmail.com>

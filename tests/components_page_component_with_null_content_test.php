@@ -23,6 +23,7 @@
  * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\local_content;
 use tool_ally\componentsupport\page_component;
@@ -31,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once('abstract_testcase.php');
 
-class tool_ally_components_page_component_with_null_content_testcase extends tool_ally_abstract_testcase {
+class components_page_component_with_null_content_test extends abstract_testcase {
 
     /**
      * @var stdClass

@@ -25,8 +25,6 @@
 
 namespace tool_ally;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class responsible for resolving Ally tool configurations for the CLI script.
  *

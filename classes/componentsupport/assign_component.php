@@ -23,8 +23,6 @@
 
 namespace tool_ally\componentsupport;
 
-defined ('MOODLE_INTERNAL') || die();
-
 use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;

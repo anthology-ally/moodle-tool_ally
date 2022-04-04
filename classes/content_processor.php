@@ -25,8 +25,6 @@ namespace tool_ally;
 use tool_ally\logging\logger;
 use tool_ally\models\component_content;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Content processor for Ally.
  * Can be used to process individual or groups of content.

@@ -24,8 +24,6 @@
 
 namespace tool_ally;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Files that are processed for accessibility.
  *

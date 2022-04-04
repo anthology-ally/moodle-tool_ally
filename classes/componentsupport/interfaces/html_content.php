@@ -26,8 +26,6 @@ namespace tool_ally\componentsupport\interfaces;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
 
-defined ('MOODLE_INTERNAL') || die();
-
 interface html_content {
 
     /**

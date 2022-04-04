@@ -24,8 +24,6 @@
 
 namespace tool_ally\webservice;
 
-defined('MOODLE_INTERNAL') || die();
-
 use tool_ally\local;
 use tool_ally\local_content;
 

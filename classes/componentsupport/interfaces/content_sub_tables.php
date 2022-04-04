@@ -23,8 +23,6 @@
 
 namespace tool_ally\componentsupport\interfaces;
 
-defined ('MOODLE_INTERNAL') || die();
-
 use cm_info;
 
 interface content_sub_tables {
