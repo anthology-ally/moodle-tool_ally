@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\file_url_resolver;
 
@@ -35,7 +36,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_file_url_resolver_testcase extends tool_ally_abstract_testcase {
+class file_url_resolver_test extends abstract_testcase {
 
     private $course;
 
@@ -64,7 +65,7 @@ class tool_ally_file_url_resolver_testcase extends tool_ally_abstract_testcase {
         $resolver = new file_url_resolver();
         $url      = $resolver->resolve_url($file);
 
-        $this->assertInstanceOf(moodle_url::class, $url);
+        $this->assertInstanceOf(\moodle_url::class, $url);
         $this->assertEquals($CFG->wwwroot.'/mod/resource/view.php?id='.$resource->cmid, $url->out());
     }
 
@@ -75,10 +76,10 @@ class tool_ally_file_url_resolver_testcase extends tool_ally_abstract_testcase {
         global $USER, $DB;
 
         $forum      = $this->getDataGenerator()->create_module('forum', ['course' => $this->course->id]);
-        $modcontext = context_module::instance($forum->cmid);
+        $modcontext = \context_module::instance($forum->cmid);
         $draft      = $this->generator->create_draft_file();
 
-        /** @var mod_forum_generator $generator */
+        /** @var \mod_forum_generator $generator */
         $generator  = $this->getDataGenerator()->get_plugin_generator('mod_forum');
         $discussion = $generator->create_discussion([
             'forum'  => $forum->id,
@@ -94,9 +95,9 @@ class tool_ally_file_url_resolver_testcase extends tool_ally_abstract_testcase {
         $resolver = new file_url_resolver();
         $url      = $resolver->resolve_url($file);
 
-        $this->assertInstanceOf(moodle_url::class, $url);
+        $this->assertInstanceOf(\moodle_url::class, $url);
         $this->assertTrue($url->compare(
-            new moodle_url('/mod/forum/discuss.php', ['d' => $discussion->id], 'p'.$post->id)
+            new \moodle_url('/mod/forum/discuss.php', ['d' => $discussion->id], 'p'.$post->id)
         ));
     }
 
@@ -104,7 +105,7 @@ class tool_ally_file_url_resolver_testcase extends tool_ally_abstract_testcase {
      * Test question URL resolution.
      */
     public function test_resolve_question() {
-        $context = context_course::instance($this->course->id);
+        $context = \context_course::instance($this->course->id);
         $draft   = $this->generator->create_draft_file();
 
         /** @var core_question_generator $generator */
@@ -125,9 +126,9 @@ class tool_ally_file_url_resolver_testcase extends tool_ally_abstract_testcase {
         $resolver = new file_url_resolver();
         $url      = $resolver->resolve_url($file);
 
-        $this->assertInstanceOf(moodle_url::class, $url);
+        $this->assertInstanceOf(\moodle_url::class, $url);
         $this->assertTrue($url->compare(
-            new moodle_url('/question/question.php', ['courseid' => $this->course->id, 'id' => $question->id])
+            new \moodle_url('/question/question.php', ['courseid' => $this->course->id, 'id' => $question->id])
         ));
     }
 }

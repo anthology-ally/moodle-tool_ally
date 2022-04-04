@@ -22,6 +22,7 @@
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\local_content;
 use tool_ally\models\component;
@@ -42,7 +43,7 @@ require_once('abstract_testcase.php');
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_components_block_html_component_testcase extends tool_ally_abstract_testcase {
+class components_block_html_component_test extends abstract_testcase {
     use component_assertions;
 
     /**
@@ -74,17 +75,17 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
         $this->admin = get_admin();
         $this->setAdminUser();
         $this->course = $gen->create_course();
-        $this->coursecontext = context_course::instance($this->course->id);
+        $this->coursecontext = \context_course::instance($this->course->id);
         require_once($CFG->dirroot.'/blocks/html/tests/search_content_test.php');
         $this->component = local_content::component_instance('block_html');
     }
 
-    private function add_block( array $data = null) : block_html {
+    private function add_block( array $data = null) : \block_html {
         global $USER;
 
         $sctc = new search_content_test();
 
-        $block = phpunit_util::call_internal_method($sctc, 'create_block',
+        $block = \phpunit_util::call_internal_method($sctc, 'create_block',
             ['course' => $this->course], get_class($sctc));
 
         // Change block settings to add some text and a file.
@@ -108,7 +109,7 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
             $data['text']['itemid'] = $itemid;
         }
         $block->instance_config_save((object) $data);
-        $page = phpunit_util::call_internal_method($sctc, 'construct_page',
+        $page = \phpunit_util::call_internal_method($sctc, 'construct_page',
             ['course' => $this->course], get_class($sctc));
         $blocks = $page->blocks->get_blocks_for_region($page->blocks->get_default_region());
         return end($blocks);
@@ -139,7 +140,7 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
 
         // Create an empty unconfigured block.
         // Ensure this does not trigger an error and that content has empty format and text.
-        $htmlblock = phpunit_util::call_internal_method($sctc, 'create_block',
+        $htmlblock = \phpunit_util::call_internal_method($sctc, 'create_block',
             ['course' => $this->course], get_class($sctc));
         $block = $htmlblock->instance;
         $contents = $this->component->get_all_html_content($block->id);
@@ -181,7 +182,7 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
 
         // Create an empty unconfigured block.
         // Ensure this does not trigger an error and that content has empty format and text.
-        $htmlblock = phpunit_util::call_internal_method($sctc, 'create_block',
+        $htmlblock = \phpunit_util::call_internal_method($sctc, 'create_block',
             ['course' => $this->course], get_class($sctc));
         $contents = $this->component->get_course_html_content_items($this->course->id);
 
@@ -252,7 +253,7 @@ class tool_ally_components_block_html_component_testcase extends tool_ally_abstr
         $fileids = $this->get_file_ids_in_context($context);
         $this->assertCount(0, $fileids);
 
-        $url = moodle_url::make_pluginfile_url($context->id, 'block_html', 'content',
+        $url = \moodle_url::make_pluginfile_url($context->id, 'block_html', 'content',
                 null, $htmlusedfile2->get_filepath(), $htmlusedfile2->get_filename());
 
         // Now update the content the two used links, in the two different formats.

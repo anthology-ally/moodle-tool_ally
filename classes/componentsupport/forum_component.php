@@ -23,8 +23,6 @@
 
 namespace tool_ally\componentsupport;
 
-defined ('MOODLE_INTERNAL') || die();
-
 use cm_info;
 use context;
 use stored_file;
@@ -46,7 +44,7 @@ use moodle_url;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class forum_component extends file_component_base implements
-        iface_html_content, annotation_map, content_sub_tables {
+    iface_html_content, annotation_map, content_sub_tables {
 
     use html_content;
     use embedded_file_map;
@@ -72,8 +70,8 @@ class forum_component extends file_component_base implements
         $area = $file->get_filearea();
         $itemid = $file->get_itemid();
         if ($area === 'post') {
-            local_file::update_filenames_in_html('message', $this->type.'_posts', ' id = ? ',
-                    ['id' => $itemid], $this->oldfilename, $file->get_filename());
+            local_file::update_filenames_in_html('message', $this->type . '_posts', ' id = ? ',
+                ['id' => $itemid], $this->oldfilename, $file->get_filename());
         }
     }
 
@@ -102,8 +100,8 @@ class forum_component extends file_component_base implements
         list($userinsql, $userparams) = $DB->get_in_or_equal($userids);
 
         // Just get discussions - we aren't going to bother with posts.
-        $discussions = '{'.$this->type.'_discussions}';
-        $posts = '{'.$this->type.'_posts}';
+        $discussions = '{' . $this->type . '_discussions}';
+        $posts = '{' . $this->type . '_posts}';
 
         $forumfilter = '';
         $discussionfilter = '';
@@ -135,7 +133,7 @@ SQL;
         $rs = $DB->get_recordset_sql($sql, $params);
         foreach ($rs as $row) {
             $array[] = new component(
-                $row->id, $this->type, $this->type.'_posts', 'message', $courseid, $row->modified,
+                $row->id, $this->type, $this->type . '_posts', 'message', $courseid, $row->modified,
                 $row->messageformat, $row->subject);
         }
         $rs->close();
@@ -161,7 +159,7 @@ SQL;
             return [];
         }
 
-        if ($PAGE->pagetype === 'mod-'.$this->type.'-discuss') {
+        if ($PAGE->pagetype === 'mod-' . $this->type . '-discuss') {
             $discussion = optional_param('d', null, PARAM_INT);
             if ($discussion === null) {
                 return [];
@@ -186,12 +184,12 @@ SQL;
         return ['posts' => $posts, 'intros' => $forumintros];
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    public function get_html_content($id, $table, $field, $courseid = null): ?component_content {
         if (!$this->module_installed()) {
             return null;
         }
 
-        if ($table === $this->type.'_posts') {
+        if ($table === $this->type . '_posts') {
             return $this->std_get_html_content($id, $table, $field, $courseid, 'subject', 'modified');
         }
         return $this->std_get_html_content($id, $table, $field);
@@ -205,8 +203,8 @@ SQL;
         }
 
         $main = $this->get_html_content($id, $this->type, 'intro');
-        $discussions = '{'.$this->type.'_discussions}';
-        $poststable = '{'.$this->type.'_posts}';
+        $discussions = '{' . $this->type . '_discussions}';
+        $poststable = '{' . $this->type . '_posts}';
         $sql = <<<SQL
             SELECT fp.*,fd.course AS courseid
               FROM $discussions fd
@@ -219,7 +217,7 @@ SQL;
         $params = [FORMAT_HTML, $id];
         $stdposts = $DB->get_records_sql($sql, $params);
         $posts = array_map(function ($stdpost) {
-            $table = $this->type.'_posts';
+            $table = $this->type . '_posts';
             $field = 'message';
             $url = $this->make_url($stdpost->id, $table, $field, $stdpost->courseid);
             return new component_content(
@@ -270,7 +268,7 @@ SQL;
             return $forum->course;
         }
 
-        throw new \coding_exception('Invalid table used to recover course id '.$table);
+        throw new \coding_exception('Invalid table used to recover course id ' . $table);
     }
 
     public function resolve_module_instance_id($table, $id) {
@@ -279,13 +277,17 @@ SQL;
         if (!$this->module_installed()) {
             return -1;
         }
-        if ($table === 'forum_posts') {
+        $discussions = '{' . $this->type . '_discussions}';
+        $poststable = '{' . $this->type . '_posts}';
+        $forum = '{' . $this->type . '}';
+        $params = [$id];
+        if ($table === $this->type . '_posts') {
             $params = [$id];
             $sql = <<<SQL
             SELECT f.id
-              FROM {forum_posts} fp
-         LEFT JOIN {forum_discussions} fd ON fp.discussion = fd.id
-         LEFT JOIN {forum} f ON f.id = fd.forum
+              FROM $poststable fp
+         LEFT JOIN $discussions fd ON fp.discussion = fd.id
+         LEFT JOIN {$forum} f ON f.id = fd.forum
              WHERE fp.id = ?
 SQL;
             return $DB->get_field_sql($sql, $params);
@@ -301,7 +303,7 @@ SQL;
      */
     private function get_discussion_id_from_post_id($postid) {
         global $DB;
-        $post = $DB->get_record($this->type.'_posts', ['id' => $postid]);
+        $post = $DB->get_record($this->type . '_posts', ['id' => $postid]);
         return $post->discussion;
     }
 
@@ -320,10 +322,10 @@ SQL;
         if ($table === $this->type) {
             list ($course, $cm) = get_course_and_cm_from_instance($id, $this->type, $courseid);
             unset($course);
-            return new moodle_url('/mod/'.$this->type.'/view.php?id='.$cm->id).'';
-        } else if ($table === $this->type.'_posts') {
+            return new moodle_url('/mod/' . $this->type . '/view.php?id=' . $cm->id) . '';
+        } else if ($table === $this->type . '_posts') {
             $discussionid = $this->get_discussion_id_from_post_id($id);
-            return new moodle_url('/mod/'.$this->type.'/discuss.php?d='.$discussionid.'#p'.$id).'';
+            return new moodle_url('/mod/' . $this->type . '/discuss.php?d=' . $discussionid . '#p' . $id) . '';
         }
         return null;
     }
@@ -359,8 +361,8 @@ SQL;
         list($userinsql, $userparams) = $DB->get_in_or_equal($userids);
 
         $main = $this->get_html_content($id, $this->type, 'intro');
-        $discussions = '{'.$this->type.'_discussions}';
-        $poststable = '{'.$this->type.'_posts}';
+        $discussions = '{' . $this->type . '_discussions}';
+        $poststable = '{' . $this->type . '_posts}';
         $sql = <<<SQL
             SELECT fp.*,fd.course AS courseid
               FROM $discussions fd
@@ -375,7 +377,7 @@ SQL;
 
         $stdposts = $DB->get_records_sql($sql, $params);
         $posts = array_map(function ($stdpost) {
-            $table = $this->type.'_posts';
+            $table = $this->type . '_posts';
             $field = 'message';
             $url = $this->make_url($stdpost->id, $table, $field, $stdpost->courseid);
             return new component_content(

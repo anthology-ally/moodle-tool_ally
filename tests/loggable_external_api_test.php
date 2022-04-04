@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,7 +38,7 @@ use Psr\Log\LogLevel;
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_loggable_external_api_testcase extends tool_ally_abstract_testcase {
+class loggable_external_api_test extends abstract_testcase {
 
     public function test_service_version_failure_logged() {
         $this->resetAfterTest();
@@ -47,7 +48,7 @@ class tool_ally_loggable_external_api_testcase extends tool_ally_abstract_testca
 
         try {
             version_info::service();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->setAdminUser();
             $logentries = log::service(null);
             $this->assertCount(1, $logentries['data']);

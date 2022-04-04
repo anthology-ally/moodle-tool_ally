@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\webservice\replace_file;
 use tool_ally\local;
@@ -39,7 +40,7 @@ require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_testcase {
+class webservice_replace_file_test extends abstract_testcase {
 
     /**
      * @var stdClass
@@ -59,9 +60,9 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
 
         $datagen = $this->getDataGenerator();
 
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
-        $this->assignUserCapability('moodle/course:managefiles', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
+        $this->assignUserCapability('moodle/course:managefiles', \context_system::instance()->id, $roleid);
         $this->teacher = $datagen->create_user();
         $this->course = $datagen->create_course();
 
@@ -84,7 +85,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $draftfile = $this->create_draft_file();
 
         $return = replace_file::service($file->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
-        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+        $return = \external_api::clean_returnvalue(replace_file::service_returns(), $return);
 
         $this->assertSame($return['success'], true);
         $this->assertNotSame($return['newid'], $file->get_itemid());
@@ -109,11 +110,11 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
 
         $this->expectException(\moodle_exception::class);
         $return = replace_file::service($file->get_pathnamehash(), $otheruser->id, $fakeitemid);
-        external_api::clean_returnvalue(replace_file::service_returns(), $return);
+        \external_api::clean_returnvalue(replace_file::service_returns(), $return);
 
         // Check file has not been changed.
         $newfile = $this->get_resource_file($resource);
-        $this->assertInstanceOf(\stored_file, $newfile);
+        $this->assertInstanceOf(stored_file, $newfile);
         $this->assertSame($file->get_filename(), $newfile->get_filename());
         $this->assertSame($file->get_content(), $newfile->get_content());
     }
@@ -136,7 +137,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $datagen = $this->getDataGenerator();
 
         $label = $datagen->create_module('label', ['course' => $this->course->id]);
-        $context = context_module::instance($label->cmid);
+        $context = \context_module::instance($label->cmid);
 
         $file = $this->create_test_file($context->id, 'mod_label', 'intro');
 
@@ -149,7 +150,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $draftfile = $this->create_draft_file();
 
         $return = replace_file::service($file->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
-        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+        $return = \external_api::clean_returnvalue(replace_file::service_returns(), $return);
 
         $this->assertSame($return['success'], true);
         $this->assertNotSame($return['newid'], $file->get_itemid());
@@ -168,7 +169,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $datagen = $this->getDataGenerator();
 
         $page = $datagen->create_module('page', ['course' => $this->course->id]);
-        $context = context_module::instance($page->cmid);
+        $context = \context_module::instance($page->cmid);
 
         $introfile = $this->create_test_file($context->id, 'mod_page', 'intro');
         $contentfile = $this->create_test_file($context->id, 'mod_page', 'content');
@@ -203,7 +204,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
     public function test_service_course_html() {
         global $DB;
 
-        $context = context_course::instance($this->course->id);
+        $context = \context_course::instance($this->course->id);
         $file = $this->create_test_file($context->id, 'course', 'summary');
 
         $dobj = (object) [
@@ -215,7 +216,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $draftfile = $this->create_draft_file();
 
         $return = replace_file::service($file->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
-        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+        $return = \external_api::clean_returnvalue(replace_file::service_returns(), $return);
 
         $this->assertSame($return['success'], true);
         $this->assertNotSame($return['newid'], $file->get_itemid());
@@ -238,7 +239,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
 
         $datagen->enrol_user($this->teacher->id, $course->id, 'editingteacher');
 
-        $context = context_course::instance($course->id);
+        $context = \context_course::instance($course->id);
         $file = $this->create_test_file($context->id, 'course', 'section');
 
         $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 1]);
@@ -247,7 +248,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $draftfile = $this->create_draft_file();
 
         $return = replace_file::service($file->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
-        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+        $return = \external_api::clean_returnvalue(replace_file::service_returns(), $return);
 
         $this->assertSame($return['success'], true);
         $this->assertNotSame($return['newid'], $file->get_itemid());
@@ -269,11 +270,11 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
             'format' => FORMAT_HTML
         ];
 
-        $time = new DateTime("now", core_date::get_user_timezone_object());
+        $time = new \DateTime("now", \core_date::get_user_timezone_object());
 
         $blockinsert = (object) [
             'blockname' => 'html',
-            'parentcontextid' => context_course::instance($this->course->id)->id,
+            'parentcontextid' => \context_course::instance($this->course->id)->id,
             'pagetypepattern' => 'course-view-*',
             'defaultregion' => 'side-pre',
             'defaultweight' => 1,
@@ -285,7 +286,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $blockid = $DB->insert_record('block_instances', $blockinsert);
         $block = $DB->get_record('block_instances', ['id' => $blockid]);
 
-        $context = context_block::instance($block->id);
+        $context = \context_block::instance($block->id);
         $file = $this->create_test_file($context->id, 'block_html', 'content');
 
         $configdata = (object) [
@@ -300,7 +301,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $draftfile = $this->create_draft_file();
 
         $return = replace_file::service($file->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
-        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+        $return = \external_api::clean_returnvalue(replace_file::service_returns(), $return);
 
         $this->assertSame($return['success'], true);
         $this->assertNotSame($return['newid'], $file->get_itemid());
@@ -325,7 +326,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         }
         $draftfile = $this->create_draft_file();
         $return = replace_file::service($originalfile->get_pathnamehash(), $user->id, $draftfile['itemid']);
-        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+        $return = \external_api::clean_returnvalue(replace_file::service_returns(), $return);
         $this->assertSame($return['success'], true);
         $this->assertNotSame($return['newid'], $originalfile->get_itemid());
     }
@@ -339,7 +340,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $datagen = $this->getDataGenerator();
 
         $forum = $datagen->create_module($forumtype, ['course' => $this->course->id]);
-        $context = context_module::instance($forum->cmid);
+        $context = \context_module::instance($forum->cmid);
         $forumfile = $this->create_test_file($context->id, 'mod_'.$forumtype, 'intro');
         $dobj = (object) [
             'id' => $forum->id
@@ -351,7 +352,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $fdg = $datagen->get_plugin_generator('mod_'.$forumtype);
 
         // Create discussion / post.
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $this->course->id;
         $record->userid = $this->teacher->id;
         $record->forum = $forum->id;
@@ -363,7 +364,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $DB->update_record($forumtype.'_posts', $discussionpost);
 
         // Create post replying to discussion.
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->discussion = $discussionpost->discussion;
         $record->parent = $discussionpost->id;
         $record->userid = $this->teacher->id;
@@ -433,7 +434,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $questionrow = $DB->get_record('question', ['id' => $question->id]);
 
         $quiz = $this->getDataGenerator()->create_module('quiz', array('course' => $this->course->id));
-        $context = context_course::instance($this->course->id);
+        $context = \context_course::instance($this->course->id);
         quiz_add_quiz_question($question->id, $quiz);
 
         $qfile = $this->create_test_file($context->id, 'question', 'questiontext', $question->id);
@@ -480,7 +481,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $questionrow = $DB->get_record('question', ['id' => $question->id]);
 
         $quiz = $this->getDataGenerator()->create_module('quiz', array('course' => $this->course->id));
-        $context = context_course::instance($this->course->id);
+        $context = \context_course::instance($this->course->id);
         quiz_add_quiz_question($question->id, $quiz);
 
         $qfile = $this->create_test_file($context->id, 'question', 'questiontext', $question->id);
@@ -642,7 +643,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
             array('id' => $questionid));
 
         $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $this->course->id]);
-        $context = context_course::instance($this->course->id);
+        $context = \context_course::instance($this->course->id);
         quiz_add_quiz_question($questionid, $quiz);
 
         $qfile = $this->create_test_file($context->id, 'question', 'questiontext', $questionid);
@@ -764,7 +765,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
             'id' => $lesson->id
         ];
         $dobj->intro = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
-        $context = context_module::instance($lesson->cmid);
+        $context = \context_module::instance($lesson->cmid);
         $DB->update_record('lesson', $dobj);
 
         $lfile = $this->create_test_file($context->id, 'mod_lesson', 'intro');
@@ -809,7 +810,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
             'id' => $glossary->id
         ];
         $dobj->intro = '<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100" height="100">';
-        $context = context_module::instance($glossary->cmid);
+        $context = \context_module::instance($glossary->cmid);
         $DB->update_record('glossary', $dobj);
 
         $gfile = $this->create_test_file($context->id, 'mod_glossary', 'intro');
@@ -850,7 +851,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $datagen = $this->getDataGenerator();
 
         $label = $datagen->create_module('label', ['course' => $this->course->id]);
-        $context = context_module::instance($label->cmid);
+        $context = \context_module::instance($label->cmid);
 
         $filetoreplacename = 'file to replace.png';
         $filetoreplace = $this->create_test_file($context->id, 'mod_label', 'intro', 0, $filetoreplacename);
@@ -869,7 +870,7 @@ class tool_ally_webservice_replace_file_testcase extends tool_ally_abstract_test
         $draftfile = $this->create_draft_file($filename);
 
         $return = replace_file::service($filetoreplace->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
-        $return = external_api::clean_returnvalue(replace_file::service_returns(), $return);
+        $return = \external_api::clean_returnvalue(replace_file::service_returns(), $return);
 
         $this->assertSame($return['success'], true);
         $this->assertNotSame($return['newid'], $filetoreplace->get_itemid());

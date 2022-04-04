@@ -26,8 +26,6 @@ namespace tool_ally\task;
 
 use core\task\scheduled_task;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Log cleanup task.
  *

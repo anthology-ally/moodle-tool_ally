@@ -24,8 +24,6 @@
 
 namespace tool_ally;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Determine if a user has a role assignment in a context or parent contexts.
  *

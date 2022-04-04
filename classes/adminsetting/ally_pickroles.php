@@ -24,8 +24,6 @@
 
 namespace tool_ally\adminsetting;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Class admin_setting_ally_pickroles
  *

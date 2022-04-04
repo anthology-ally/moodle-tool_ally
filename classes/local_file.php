@@ -24,8 +24,6 @@
 
 namespace tool_ally;
 
-defined('MOODLE_INTERNAL') || die();
-
 use stored_file;
 use tool_ally\componentsupport\component_base;
 use tool_ally\componentsupport\file_component_base;

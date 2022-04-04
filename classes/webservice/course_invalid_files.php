@@ -26,8 +26,6 @@ namespace tool_ally\webservice;
 use tool_ally\local;
 use tool_ally\local_file;
 
-defined('MOODLE_INTERNAL') || die();
-
 class course_invalid_files extends loggable_external_api {
 
     /**
@@ -94,4 +92,3 @@ class course_invalid_files extends loggable_external_api {
     }
 
 }
-

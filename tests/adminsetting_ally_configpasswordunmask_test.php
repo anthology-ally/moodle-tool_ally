@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-use tool_ally\adminsetting\ally_configpasswordunmask;
+namespace tool_ally;
 
-defined('MOODLE_INTERNAL') || die();
+use tool_ally\adminsetting\ally_configpasswordunmask;
 
 /**
  * @package tool_admin
@@ -24,7 +24,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_adminsetting_ally_configpasswordunmask_testcase extends advanced_testcase {
+class adminsetting_ally_configpasswordunmask_test extends \advanced_testcase {
     /**
      * Test ally configpasswordunmask settings are trimmed.
      */
@@ -33,7 +33,7 @@ class tool_ally_adminsetting_ally_configpasswordunmask_testcase extends advanced
         $text = '    ABCDEFG1234    ';
 
         $setting = new ally_configpasswordunmask('tool_ally/secret',
-            new lang_string('secret', 'tool_ally'), new lang_string('secretdesc', 'tool_ally'), '');
+            new \lang_string('secret', 'tool_ally'), new \lang_string('secretdesc', 'tool_ally'), '');
 
         $setting->write_setting($text);
         $secret = get_config('tool_ally', 'secret');

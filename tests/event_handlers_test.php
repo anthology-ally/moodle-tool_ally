@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -63,7 +64,7 @@ use tool_ally\local_content;
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_event_handlers_testcase extends tool_ally_abstract_testcase {
+class event_handlers_test extends abstract_testcase {
 
     public function setUp(): void {
         global $CFG;
@@ -257,7 +258,7 @@ MSG;
         // Trigger a course created event.
         course_created::create([
             'objectid' => $course->id,
-            'context' => context_course::instance($course->id),
+            'context' => \context_course::instance($course->id),
             'other' => [
                 'shortname' => $course->shortname,
                 'fullname' => $course->fullname
@@ -281,7 +282,7 @@ MSG;
 
         course_updated::create([
             'objectid' => $course->id,
-            'context' => context_course::instance($course->id),
+            'context' => \context_course::instance($course->id),
             'other' => ['shortname' => $course->shortname]
         ])->trigger();
 
@@ -302,11 +303,11 @@ MSG;
         course_processor::clear_push_traces();
 
         // Disable all backup loggers.
-        $CFG->backup_error_log_logger_level = backup::LOG_NONE;
-        $CFG->backup_output_indented_logger_level = backup::LOG_NONE;
-        $CFG->backup_file_logger_level = backup::LOG_NONE;
-        $CFG->backup_database_logger_level = backup::LOG_NONE;
-        $CFG->backup_file_logger_level_extra = backup::LOG_NONE;
+        $CFG->backup_error_log_logger_level = \backup::LOG_NONE;
+        $CFG->backup_output_indented_logger_level = \backup::LOG_NONE;
+        $CFG->backup_file_logger_level = \backup::LOG_NONE;
+        $CFG->backup_database_logger_level = \backup::LOG_NONE;
+        $CFG->backup_file_logger_level_extra = \backup::LOG_NONE;
 
         $this->setAdminUser();
 
@@ -363,22 +364,22 @@ MSG;
         course_processor::clear_push_traces();
 
         // Disable all backup loggers.
-        $CFG->backup_error_log_logger_level = backup::LOG_NONE;
-        $CFG->backup_output_indented_logger_level = backup::LOG_NONE;
-        $CFG->backup_file_logger_level = backup::LOG_NONE;
-        $CFG->backup_database_logger_level = backup::LOG_NONE;
-        $CFG->backup_file_logger_level_extra = backup::LOG_NONE;
+        $CFG->backup_error_log_logger_level = \backup::LOG_NONE;
+        $CFG->backup_output_indented_logger_level = \backup::LOG_NONE;
+        $CFG->backup_file_logger_level = \backup::LOG_NONE;
+        $CFG->backup_database_logger_level = \backup::LOG_NONE;
+        $CFG->backup_file_logger_level_extra = \backup::LOG_NONE;
 
         $this->setAdminUser();
 
         // Import creates a backup for the samesite so includes course id on the back up.
-        $bc = new backup_controller(backup::TYPE_1COURSE, $course->id, backup::FORMAT_MOODLE,
-            backup::INTERACTIVE_NO, backup::MODE_IMPORT, $USER->id);
+        $bc = new \backup_controller(\backup::TYPE_1COURSE, $course->id, \backup::FORMAT_MOODLE,
+            \backup::INTERACTIVE_NO, \backup::MODE_IMPORT, $USER->id);
         $bc->execute_plan();
         $bcid = $bc->get_backupid();
 
-        $bcrestore = new restore_controller($bcid, $courseimport->id, backup::INTERACTIVE_NO, backup::MODE_IMPORT, $USER->id,
-            backup::TARGET_EXISTING_ADDING);
+        $bcrestore = new \restore_controller($bcid, $courseimport->id, \backup::INTERACTIVE_NO, \backup::MODE_IMPORT, $USER->id,
+            \backup::TARGET_EXISTING_ADDING);
         $bcrestore->execute_precheck();
         $bcrestore->execute_plan();
 
@@ -420,7 +421,7 @@ MSG;
         course_section_updated::create([
             'objectid' => $section0->id,
             'courseid' => $course->id,
-            'context' => context_course::instance($course->id),
+            'context' => \context_course::instance($course->id),
             'other' => array(
                 'sectionnum' => $section0->section
             )
@@ -451,7 +452,7 @@ MSG;
         course_section_updated::create([
             'objectid' => $section1->id,
             'courseid' => $course->id,
-            'context' => context_course::instance($course->id),
+            'context' => \context_course::instance($course->id),
             'other' => array(
                 'sectionnum' => $section1->section
             )
@@ -519,7 +520,7 @@ MSG;
             ['course' => $course->id, $modfield.'format' => FORMAT_HTML]);
         list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
 
-        $context = context_module::instance($mod->cmid);
+        $context = \context_module::instance($mod->cmid);
         // Make two files to use.
         list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_'.$modname, $filearea, 0);
 
@@ -573,7 +574,7 @@ MSG;
             ['course' => $course->id, $modfield.'format' => FORMAT_HTML, $modfield => 'Some content']);
 
         // Setup some files.
-        $context = context_module::instance($mod->cmid);
+        $context = \context_module::instance($mod->cmid);
         list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_'.$modname, $modfield, 0);
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
         $link = $generator->create_pluginfile_link_for_file($usedfile);
@@ -642,7 +643,7 @@ MSG;
         $this->setAdminUser();
 
         $mod = $this->check_module_updated_pushtraces('book', 'book', 'intro', 'intro');
-        $context = context_module::instance($mod->cmid);
+        $context = \context_module::instance($mod->cmid);
         $bookgenerator = self::getDataGenerator()->get_plugin_generator('mod_book');
 
         $data = [
@@ -667,7 +668,7 @@ MSG;
         $event->trigger();
 
         $chapter = $DB->get_record('book_chapters', ['id' => $chapter->id]);
-        $context = context_module::instance($mod->cmid);
+        $context = \context_module::instance($mod->cmid);
 
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
 
@@ -795,8 +796,8 @@ MSG;
         $dg = $this->getDataGenerator();
 
         $lesson = $this->check_module_updated_pushtraces('lesson', 'lesson', 'intro', 'intro');
-        $context = context_module::instance($lesson->cmid);
-        $lesson = new lesson($lesson);
+        $context = \context_module::instance($lesson->cmid);
+        $lesson = new \lesson($lesson);
 
         $pdg = $dg->get_plugin_generator('mod_lesson');
 
@@ -804,7 +805,7 @@ MSG;
         $questionpage->pageid = $questionpage->id;
         $questionpage->contents_editor = ['text' => 'some text', 'format' => FORMAT_HTML];
         $questionpage->answer_editor = [];
-        $mcpage = lesson_page_type_multichoice::create($questionpage, $lesson, $context, 0);
+        $mcpage = \lesson_page_type_multichoice::create($questionpage, $lesson, $context, 0);
         $mcpage->id = $questionpage->id;
         $mcpage->update($questionpage, $context);
 
@@ -855,7 +856,7 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
 
         // Add a discussion.
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->forum = $forum->id;
         $record->userid = $USER->id;
         $record->course = $forum->course;
@@ -912,7 +913,7 @@ MSG;
         $introentityid = 'forum:forum:intro:'.$forum->id;
 
         // Add a discussion.
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->forum = $forum->id;
         $record->userid = $USER->id;
         $record->course = $forum->course;
@@ -946,7 +947,7 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $glossaryentityid);
 
         // Add an entry.
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $course->id;
         $record->glossary = $glossary->id;
         $record->userid = $USER->id;
@@ -1012,7 +1013,7 @@ MSG;
         // Course creation triggers course_updated event.
         $createevent = \core\event\course_created::create([
             'objectid' => $course->id,
-            'context' => context_course::instance($course->id),
+            'context' => \context_course::instance($course->id),
             'other' => [
                 'shortname' => $course->shortname,
                 'fullname' => $course->fullname,
@@ -1034,7 +1035,7 @@ MSG;
         // Course deletion triggers the event, so creating the Moodle course deletion event.
         $delevent = \core\event\course_deleted::create([
             'objectid' => $course->id,
-            'context' => context_course::instance($course->id),
+            'context' => \context_course::instance($course->id),
             'other' => [
                 'shortname' => $course->shortname,
                 'fullname' => $course->fullname,

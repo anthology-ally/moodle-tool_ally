@@ -23,9 +23,6 @@
  */
 namespace tool_ally;
 
-
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * File processor for Ally.
  * Can be used to process individual or groups of files.

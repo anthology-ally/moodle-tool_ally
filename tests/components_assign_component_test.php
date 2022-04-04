@@ -22,6 +22,7 @@
  * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\componentsupport\assign_component;
 use tool_ally\local_content;
@@ -38,7 +39,7 @@ require_once('abstract_testcase.php');
  * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_components_assign_component_testcase extends tool_ally_abstract_testcase {
+class components_assign_component_test extends abstract_testcase {
     /**
      * @var stdClass
      */
@@ -70,7 +71,7 @@ class tool_ally_components_assign_component_testcase extends tool_ally_abstract_
         $gen = $this->getDataGenerator();
         $this->admin = get_admin();
         $this->course = $gen->create_course();
-        $this->coursecontext = context_course::instance($this->course->id);
+        $this->coursecontext = \context_course::instance($this->course->id);
         $this->assign = $gen->create_module('assign',
             [
                 'course' => $this->course->id,
@@ -86,7 +87,7 @@ class tool_ally_components_assign_component_testcase extends tool_ally_abstract_
      * Test if file in use detection is working with this module.
      */
     public function test_check_file_in_use() {
-        $context = context_module::instance($this->assign->cmid);
+        $context = \context_module::instance($this->assign->cmid);
 
         $usedfiles = [];
         $unusedfiles = [];

@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-use tool_ally\adminsetting\ally_trim;
+namespace tool_ally;
 
-defined('MOODLE_INTERNAL') || die();
+use tool_ally\adminsetting\ally_trim;
 
 /**
  * @package tool_admin
@@ -24,15 +24,15 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_adminsetting_ally_trim_testcase extends advanced_testcase {
+class adminsetting_ally_trim_test extends \advanced_testcase {
     /**
      * Test settings are trimmed.
      */
     public function test_trim() {
         $this->resetAfterTest();
         $text = '    This should be trimmed    ';
-        $setting = new ally_trim('tool_ally/testtrim', new lang_string('key', 'tool_ally'),
-            new lang_string('keydesc', 'tool_ally'), '', PARAM_TEXT);
+        $setting = new ally_trim('tool_ally/testtrim', new \lang_string('key', 'tool_ally'),
+            new \lang_string('keydesc', 'tool_ally'), '', PARAM_TEXT);
         $setting->write_setting($text);
         $testtrimtext = get_config('tool_ally', 'testtrim');
         $this->assertEquals(trim($text), $testtrimtext);

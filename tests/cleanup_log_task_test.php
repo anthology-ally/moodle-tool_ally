@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\logging\constants;
 use tool_ally\logging\logger;
@@ -37,7 +38,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_cleanup_log_task_testcase extends tool_ally_abstract_testcase {
+class cleanup_log_task_test extends abstract_testcase {
     /**
      * Test the general behavior of the task execution.
      */

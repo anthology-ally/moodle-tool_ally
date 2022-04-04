@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -37,7 +38,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_wspluginfile_testcase extends tool_ally_abstract_testcase {
+class wspluginfile_test extends abstract_testcase {
 
     /**
      * @var webservice
@@ -50,7 +51,7 @@ class tool_ally_wspluginfile_testcase extends tool_ally_abstract_testcase {
     private $wspluginfile = null;
 
     /**
-     * @var stdClass
+     * @var \stdClass
      */
     private $allywebuser;
 
@@ -58,7 +59,7 @@ class tool_ally_wspluginfile_testcase extends tool_ally_abstract_testcase {
         parent::setUp();
 
         $this->wspluginfile = new wspluginfile();
-        $this->webservice = new webservice();
+        $this->webservice = new \webservice();
     }
 
     public function test_validate_wspluginfile_signature_ally_webuser_exception() {
@@ -68,7 +69,7 @@ class tool_ally_wspluginfile_testcase extends tool_ally_abstract_testcase {
         $signature = hash('sha256', $token . ':' . $iat . ':' . $pathnamehash);
 
         $msg = 'Access control exception (Ally web user (ally_webuser) does not exist. Has auto configure been run?)';
-        $this->expectException(webservice_access_exception::class);
+        $this->expectException(\webservice_access_exception::class);
         $this->expectExceptionMessage($msg);
         $this->wspluginfile->validate_wspluginfile_signature($signature, $iat, $pathnamehash);
 
@@ -94,7 +95,7 @@ class tool_ally_wspluginfile_testcase extends tool_ally_abstract_testcase {
         $token = '123'; // This is an invalid token and will cause the exception!
         $signature = hash('sha256', $token . ':' . $iat . ':' . $pathnamehash);
 
-        $this->expectException(webservice_access_exception::class);
+        $this->expectException(\webservice_access_exception::class);
         $this->expectExceptionMessageMatches('/Signature is invalid/');
         $this->wspluginfile->validate_wspluginfile_signature($signature, $iat, $pathnamehash);
     }

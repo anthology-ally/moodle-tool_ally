@@ -23,8 +23,6 @@
 
 namespace tool_ally;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Password generator.
  * @author    Guy Thomas <citricity@gmail.com>

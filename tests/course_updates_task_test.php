@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use Prophecy\Argument;
 use tool_ally\push_config;
@@ -38,7 +39,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_course_updates_task_testcase extends tool_ally_abstract_testcase {
+class course_updates_task_test extends abstract_testcase {
 
     /**
      * Ensure that basic execution and timestamp management is working.
@@ -112,7 +113,7 @@ class tool_ally_course_updates_task_testcase extends tool_ally_abstract_testcase
             // Course deletion triggers the event, so creating the Moodle course deletion event.
             $delevent = \core\event\course_deleted::create([
                 'objectid' => $course->id,
-                'context'  => context_course::instance($course->id),
+                'context'  => \context_course::instance($course->id),
                 'other'    => [
                     'shortname' => $course->shortname,
                     'fullname' => $course->fullname,

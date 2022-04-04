@@ -22,6 +22,7 @@
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\files_in_use;
 use tool_ally\local_content;
@@ -40,7 +41,7 @@ require_once('abstract_testcase.php');
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_components_book_component_testcase extends tool_ally_abstract_testcase {
+class components_book_component_test extends abstract_testcase {
     use component_assertions;
 
     /**
@@ -86,7 +87,7 @@ class tool_ally_components_book_component_testcase extends tool_ally_abstract_te
         $this->admin = get_admin();
         $this->setAdminUser();
         $this->course = $gen->create_course();
-        $this->coursecontext = context_course::instance($this->course->id);
+        $this->coursecontext = \context_course::instance($this->course->id);
         $gen->enrol_user($this->teacher->id, $this->course->id, 'editingteacher');
         $this->component = local_content::component_instance('book');
     }
@@ -169,7 +170,7 @@ class tool_ally_components_book_component_testcase extends tool_ally_abstract_te
 
         $this->setup_books();
 
-        $context = context_module::instance($this->books[0]->cmid);
+        $context = \context_module::instance($this->books[0]->cmid);
 
         $usedfiles = [];
         $unusedfiles = [];

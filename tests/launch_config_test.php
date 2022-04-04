@@ -20,12 +20,11 @@
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\lti\launch_config;
 
-defined('MOODLE_INTERNAL') || die();
-
-class tool_ally_launch_config_test extends advanced_testcase {
+class launch_config_test extends \advanced_testcase {
     public function setUp(): void {
         global $CFG;
         require_once($CFG->dirroot.'/mod/lti/locallib.php');

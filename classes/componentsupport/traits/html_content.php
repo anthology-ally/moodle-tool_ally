@@ -30,8 +30,6 @@ use tool_ally\models\component_content;
 
 use stdClass;
 
-defined ('MOODLE_INTERNAL') || die();
-
 trait html_content {
 
     /**

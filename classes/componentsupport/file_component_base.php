@@ -23,8 +23,6 @@
 
 namespace tool_ally\componentsupport;
 
-defined ('MOODLE_INTERNAL') || die();
-
 /**
  * Base class for processing module html.
  * @author    Guy Thomas <citricity@gmail.com>

@@ -22,6 +22,7 @@
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\local_content;
 use tool_ally\testing\traits\component_assertions;
@@ -41,7 +42,7 @@ require_once('abstract_testcase.php');
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_components_question_component_testcase extends tool_ally_abstract_testcase {
+class components_question_component_test extends abstract_testcase {
     use component_assertions;
 
     /**
@@ -75,7 +76,7 @@ class tool_ally_components_question_component_testcase extends tool_ally_abstrac
         $gen = $this->getDataGenerator();
         $this->admin = get_admin();
         $this->course = $gen->create_course();
-        $this->coursecontext = context_course::instance($this->course->id);
+        $this->coursecontext = \context_course::instance($this->course->id);
         $this->resetAfterTest();
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
 
@@ -104,7 +105,7 @@ class tool_ally_components_question_component_testcase extends tool_ally_abstrac
     }
 
     public function test_get_question() {
-        $quest = phpunit_util::call_internal_method(
+        $quest = \phpunit_util::call_internal_method(
             $this->component,
             'get_question',
             [$this->quest1->id],

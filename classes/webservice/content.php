@@ -24,8 +24,6 @@
 
 namespace tool_ally\webservice;
 
-defined('MOODLE_INTERNAL') || die();
-
 use tool_ally\exceptions\component_validation_exception;
 use tool_ally\local_content;
 use tool_ally\models\component_content;

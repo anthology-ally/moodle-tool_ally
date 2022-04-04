@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\webservice\files;
 
@@ -35,14 +36,14 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_webservice_files_testcase extends tool_ally_abstract_testcase {
+class webservice_files_test extends abstract_testcase {
     /**
      * Test the web service.
      */
     public function test_service() {
         $this->resetAfterTest();
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
 
         $course       = $this->getDataGenerator()->create_course();
         $resource1    = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
@@ -57,7 +58,7 @@ class tool_ally_webservice_files_testcase extends tool_ally_abstract_testcase {
         $perpage = 2;
 
         $files = files::service($page, $perpage);
-        $files = external_api::clean_returnvalue(files::service_returns(), $files);
+        $files = \external_api::clean_returnvalue(files::service_returns(), $files);
 
         $this->assertCount(2, $files);
         $file = reset($files);
@@ -72,7 +73,7 @@ class tool_ally_webservice_files_testcase extends tool_ally_abstract_testcase {
         $page = 1;
 
         $files = files::service($page, $perpage);
-        $files = external_api::clean_returnvalue(files::service_returns(), $files);
+        $files = \external_api::clean_returnvalue(files::service_returns(), $files);
 
         $this->assertCount(1, $files);
         $file = reset($files);

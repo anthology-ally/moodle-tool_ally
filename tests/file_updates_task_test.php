@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use Prophecy\Argument;
 use tool_ally\push_config;
@@ -38,7 +39,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_file_updates_task_testcase extends tool_ally_abstract_testcase {
+class file_updates_task_test extends abstract_testcase {
 
     /**
      * First run should set the timestamp then exit.

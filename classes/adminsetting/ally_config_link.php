@@ -24,8 +24,6 @@
 
 namespace tool_ally\adminsetting;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * No setting - just heading and text.
  *

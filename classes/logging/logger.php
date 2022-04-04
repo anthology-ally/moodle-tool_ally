@@ -16,8 +16,6 @@
 
 namespace tool_ally\logging;
 
-defined('MOODLE_INTERNAL') || die();
-
 class logger {
 
     /**

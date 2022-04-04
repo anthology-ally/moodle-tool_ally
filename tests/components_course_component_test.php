@@ -22,6 +22,7 @@
  * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -35,7 +36,7 @@ require_once('abstract_testcase.php');
  * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_components_course_component_testcase extends tool_ally_abstract_testcase {
+class components_course_component_test extends abstract_testcase {
     /**
      * @var stdClass
      */
@@ -56,7 +57,7 @@ class tool_ally_components_course_component_testcase extends tool_ally_abstract_
 
         $gen = $this->getDataGenerator();
         $this->course = $gen->create_course(['summaryformat' => FORMAT_HTML]);
-        $this->coursecontext = context_course::instance($this->course->id);
+        $this->coursecontext = \context_course::instance($this->course->id);
         $this->sections[] = $gen->create_course_section(['section' => 0, 'course' => $this->course->id]);
     }
 

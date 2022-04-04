@@ -26,8 +26,6 @@ namespace tool_ally\webservice;
 
 use tool_ally\version_information;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Get version information.
  *

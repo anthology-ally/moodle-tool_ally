@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\webservice\course_content;
 use tool_ally\models\component;
@@ -36,7 +37,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_webservice_course_content_testcase extends tool_ally_abstract_testcase {
+class webservice_course_content_test extends abstract_testcase {
 
     private function get_forum_expectations($course, $forumtype = 'forum') {
         global $USER;
@@ -60,7 +61,7 @@ class tool_ally_webservice_course_content_testcase extends tool_ally_abstract_te
         $this->setUser($user);
 
         // Add a discussion by regular user.
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->forum = $forum->id;
         $record->userid = $user->id;
         $record->course = $course->id;
@@ -69,7 +70,7 @@ class tool_ally_webservice_course_content_testcase extends tool_ally_abstract_te
         // Add a reply by regular user.
         $posttitle = 'My post title';
         $postmessage = 'My post message';
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->discussion = $discussion->id;
         $record->userid = $user->id;
         $record->subject = $posttitle;
@@ -90,7 +91,7 @@ class tool_ally_webservice_course_content_testcase extends tool_ally_abstract_te
 
         // Add a discussion / post by admin user - should show up in results.
         $this->setAdminUser();
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $course->id;
         $record->forum = $forum->id;
         $record->userid = $USER->id;
@@ -98,7 +99,7 @@ class tool_ally_webservice_course_content_testcase extends tool_ally_abstract_te
 
         $posttitle = 'My post title';
         $postmessage = 'My post message';
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->discussion = $discussion->id;
         $record->userid = $USER->id;
         $record->subject = $posttitle;
@@ -127,8 +128,8 @@ class tool_ally_webservice_course_content_testcase extends tool_ally_abstract_te
         global $DB, $CFG;
 
         $this->resetAfterTest();
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
 
         $coursesummary = '<p>My course summary</p>';
         $course = $this->getDataGenerator()->create_course(

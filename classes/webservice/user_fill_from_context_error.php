@@ -16,8 +16,6 @@
 
 namespace tool_ally\webservice;
 
-defined('MOODLE_INTERNAL') || die();
-
 use moodle_exception;
 use tool_ally\auto_config;
 use tool_ally\password;

@@ -24,7 +24,6 @@
 
 namespace tool_ally\models;
 
-defined ('MOODLE_INTERNAL') || die();
 
 class pluginfileurlprops {
 

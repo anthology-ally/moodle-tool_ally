@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\webservice\replace_content;
 
@@ -35,12 +36,12 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_testcase {
+class webservice_replace_content_test extends abstract_testcase {
 
     public function setUp(): void {
         $this->resetAfterTest();
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
     }
 
     /**
@@ -142,7 +143,7 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
         $courseid = $forum->course;
 
         $this->setAdminUser();
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $courseid;
         $record->forum = $forum->id;
         $record->userid = $USER->id;
@@ -150,7 +151,7 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
 
         $posttitle = 'My post title';
         $postmessage = '<p>My post message</p>';
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->discussion = $discussion->id;
         $record->userid = $USER->id;
         $record->subject = $posttitle;
@@ -176,7 +177,7 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
         $courseid = $glossary->course;
 
         $this->setAdminUser();
-        $record = new stdClass();
+        $record = new \stdClass();
         $record->course = $courseid;
         $record->glossary = $glossary->id;
         $record->userid = $USER->id;
@@ -205,7 +206,7 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
         $this->setAdminUser();
         $lessongenerator = self::getDataGenerator()->get_plugin_generator('mod_lesson');
 
-        $lessonobj = new lesson($lesson);
+        $lessonobj = new \lesson($lesson);
 
         $page = $lessongenerator->create_question_truefalse($lessonobj);
         $contentreplaced = '<p>Content replaced!</p>';
@@ -232,7 +233,7 @@ class tool_ally_webservice_replace_content_testcase extends tool_ally_abstract_t
 
         $gen = $this->getDataGenerator();
         $course = $gen->create_course();
-        $context = context_course::instance($course->id);
+        $context = \context_course::instance($course->id);
 
         /** @var tool_ally_generator $blockgen */
         $blockgen = $gen->get_plugin_generator('tool_ally');

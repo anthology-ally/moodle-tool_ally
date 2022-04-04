@@ -21,6 +21,7 @@
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+namespace tool_ally;
 
 use tool_ally\local;
 use tool_ally\webservice\course_invalid_files;
@@ -37,14 +38,14 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class tool_ally_webservice_course_invalid_files_testcase extends tool_ally_abstract_testcase {
+class webservice_course_invalid_files_test extends abstract_testcase {
     /**
      * Test the web service.
      */
     public function test_service() {
         $this->resetAfterTest();
-        $roleid = $this->assignUserCapability('moodle/course:view', context_system::instance()->id);
-        $this->assignUserCapability('moodle/course:viewhiddencourses', context_system::instance()->id, $roleid);
+        $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
+        $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
 
         $course1 = $this->getDataGenerator()->create_course();
         $assign1 = $this->getDataGenerator()->create_module('assign', ['course' => $course1->id]);
@@ -54,7 +55,7 @@ class tool_ally_webservice_course_invalid_files_testcase extends tool_ally_abstr
         $expectedfile2 = $this->create_whitelisted_assign_file($assign2);
 
         $files = course_invalid_files::service([$course1->id]);
-        $files = external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
+        $files = \external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
 
         $this->assertCount(1, $files);
         $file = reset($files);
@@ -67,17 +68,17 @@ class tool_ally_webservice_course_invalid_files_testcase extends tool_ally_abstr
         $this->assertEquals($expectedfile1->get_timemodified(), local::iso_8601_to_timestamp($file['timemodified']));
 
         $files = course_files::service([$course1->id]);
-        $files = external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
+        $files = \external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
 
         $this->assertCount(0, $files);
 
         $files = course_invalid_files::service([$course2->id]);
-        $files = external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
+        $files = \external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
 
         $this->assertCount(0, $files);
 
         $files = course_files::service([$course2->id]);
-        $files = external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
+        $files = \external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
 
         $this->assertCount(1, $files);
         $file = reset($files);
@@ -93,12 +94,12 @@ class tool_ally_webservice_course_invalid_files_testcase extends tool_ally_abstr
         $this->create_notwhitelisted_assign_file($assign2);
 
         $files = course_invalid_files::service([$course1->id, $course2->id]);
-        $files = external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
+        $files = \external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
 
         $this->assertCount(2, $files);
 
         $files = course_files::service([$course1->id, $course2->id]);
-        $files = external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
+        $files = \external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
 
         $this->assertCount(1, $files);
 

@@ -23,8 +23,6 @@
 
 namespace tool_ally\componentsupport\interfaces;
 
-defined ('MOODLE_INTERNAL') || die();
-
 interface annotation_map {
 
     /**

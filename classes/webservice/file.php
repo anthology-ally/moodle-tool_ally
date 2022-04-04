@@ -30,8 +30,6 @@ use tool_ally\files_in_use;
 use tool_ally\local;
 use tool_ally\local_file;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Get information about a single file.
  *
