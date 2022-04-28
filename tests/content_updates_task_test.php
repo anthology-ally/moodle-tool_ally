@@ -271,11 +271,12 @@ class content_updates_task_test extends abstract_testcase {
             ]
         );
 
-        $record = new \stdClass();
-        $record->course = $course->id;
-        $record->glossary = $glossary->id;
-        $record->userid = $USER->id;
-        $record->definitionformat = FORMAT_HTML;
+        $record = [
+            'course' => $course->id,
+            'glossary' => $glossary->id,
+            'userid' => $USER->id,
+            'definitionformat' => FORMAT_HTML
+        ];
         $this->setAdminUser();
         $entry = self::getDataGenerator()->get_plugin_generator(
             'mod_glossary')->create_content($glossary, $record);
@@ -333,11 +334,12 @@ class content_updates_task_test extends abstract_testcase {
             ]
         );
 
-        $record = new \stdClass();
-        $record->course = $course->id;
-        $record->glossary = $glossary->id;
-        $record->userid = $USER->id;
-        $record->definitionformat = FORMAT_HTML;
+        $record = [
+            'course' => $course->id,
+            'glossary' => $glossary->id,
+            'userid' => $USER->id,
+            'definitionformat' => FORMAT_HTML
+        ];
         $this->setAdminUser();
 
         $entries = 10001; // Increase this to test larger volumes (100,001 entires = 13 seconds).
