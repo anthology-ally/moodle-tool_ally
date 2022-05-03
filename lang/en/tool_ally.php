@@ -100,6 +100,8 @@ $string['logcleanuptask'] = 'Ally log cleanup task';
 $string['loglifetimedays'] = 'Keep logs for this many days';
 $string['loglifetimedaysdesc'] = 'Retain Ally logs for this many days. Set to 0 to never delete logs. A scheduled task is (by default) set to run daily, and will remove log entries that are more than this many days old.';
 
+$string['logger:filtersetupdebugger'] = 'Ally filter setup log';
+
 $string['logger:pushtoallysuccess'] = 'Successful push to ally end point';
 $string['logger:pushtoallyfail'] = 'Unsuccessful push to ally end point';
 
