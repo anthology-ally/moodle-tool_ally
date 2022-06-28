@@ -139,7 +139,7 @@ class local_content {
                 // If we pulled data up from the cache - we only need to load data for blocks.
                 // This is because changes to blocks don't trigger any events that can be
                 // used to purge the cache.
-                if ($blocksonly && $instance->component_type() != component_base::TYPE_BLOCK) {
+                if ($blocksonly && $instance->component_type() != component_base::TYPE_BLOCK && $component != "mod_forum") {
                     continue;
                 }
                 try {
