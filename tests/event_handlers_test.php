@@ -33,7 +33,6 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
 use core\event\course_created;
 use core\event\course_updated;
-use core\event\course_restored;
 use core\event\course_section_created;
 use core\event\course_section_updated;
 use core\event\course_module_created;
@@ -328,8 +327,12 @@ MSG;
         $formdata->role_5 = 5;
 
         // Create the course copy records and associated ad-hoc task.
-        $coursecopy = new \core_backup\copy\copy($formdata);
-        $coursecopy->create_copy();
+        try {
+            $copydata = \copy_helper::process_formdata($formdata);
+            \copy_helper::create_copy($copydata);
+        } catch (\moodle_exception $e) {
+            throw new moodle_exception('copyformfail', 'backup');
+        }
 
         // We are expecting trace output during this test, caused by the copy task.
         $this->expectOutputRegex("/{$course->id}/");
