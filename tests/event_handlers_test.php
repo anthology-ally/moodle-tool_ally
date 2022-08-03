@@ -328,8 +328,8 @@ MSG;
         $formdata->role_5 = 5;
 
         // Create the course copy records and associated ad-hoc task.
-        $coursecopy = new \core_backup\copy\copy($formdata);
-        $coursecopy->create_copy();
+        $backupdata = \copy_helper::process_formdata($formdata);
+        $coursecopy = \copy_helper::create_copy($backupdata);
 
         // We are expecting trace output during this test, caused by the copy task.
         $this->expectOutputRegex("/{$course->id}/");
