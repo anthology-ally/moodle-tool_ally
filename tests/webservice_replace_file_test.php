@@ -602,7 +602,6 @@ class webservice_replace_file_test extends abstract_testcase {
     }
 
     public function test_service_qtype_ddmatch_html() {
-        $this->markTestSkipped('Failing after 4.0 merge. To be reviewed in INT-18144');
         global $CFG, $DB, $USER;
 
         if (!file_exists($CFG->dirroot.'/question/type/ddmatch')) {
@@ -632,16 +631,22 @@ class webservice_replace_file_test extends abstract_testcase {
             'penalty' => 1,
             'qtype' => 'ddmatch',
             'length' => 1,
-            'hidden' => 0,
             'timecreated' => time(),
             'timemodified' => time(),
             'createdby' => $USER->id,
             'modifiedby' => $USER->id,
             'stamp' => make_unique_id_code(),
         ]);
+        $bankentryid = $DB->insert_record('question_bank_entries', (object) [
+            'questioncategoryid' => $cat->id,
+            'ownerid' => $USER->id,
+        ]);
+        $DB->insert_record('question_versions', (object) [
+            'questionbankentryid' => $bankentryid,
+            'version' => 0,
+            'questionid' => $questionid,
+        ]);
         $question = $DB->get_record('question', ['id' => $questionid]);
-        $DB->set_field('question', 'version', question_hash($question),
-            array('id' => $questionid));
 
         $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $this->course->id]);
         $context = \context_course::instance($this->course->id);

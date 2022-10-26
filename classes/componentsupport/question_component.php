@@ -90,7 +90,12 @@ class question_component extends file_component_base {
      */
     private function get_question($id) {
         global $DB;
-        return $DB->get_record('question', ['id' => $id]);
+        $sql = "SELECT q.*, qbe.idnumber
+                  FROM {question} q
+                  JOIN {question_versions} qv ON q.id = qv.questionid
+                  JOIN {question_bank_entries} qbe ON qbe.id=qv.questionbankentryid
+                 WHERE q.id = ?";
+        return $DB->get_record_sql($sql, [$id]);
     }
 
     public function replace_file_links() {

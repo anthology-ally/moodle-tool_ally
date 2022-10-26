@@ -105,7 +105,6 @@ class components_question_component_test extends abstract_testcase {
     }
 
     public function test_get_question() {
-        $this->markTestSkipped('Failing after 4.0 merge. To be reviewed in INT-18144');
         $quest = \phpunit_util::call_internal_method(
             $this->component,
             'get_question',
