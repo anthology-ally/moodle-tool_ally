@@ -175,11 +175,18 @@ SQL;
     }
 
     public function get_all_html_content($id) {
+        global $DB;
+
         if (!$this->module_installed()) {
             return;
         }
 
-        list ($course, $cm) = get_course_and_cm_from_instance($id, 'glossary');
+        $pagetable = '{glossary}';
+        $course = $DB->get_record_sql("
+                    SELECT c.*
+                      FROM $pagetable instance
+                      JOIN {course} c ON c.id = instance.course
+                     WHERE instance.id = ?", array($id), MUST_EXIST);
 
         $main = $this->get_html_content($id, 'glossary', 'intro');
         $entries = $this->get_entry_html_content_items($course->id, $id);

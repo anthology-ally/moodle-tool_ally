@@ -354,6 +354,19 @@ SQL;
             return [];
         }
 
+        $pagetable = '{' . $this->type . '}';
+        $course = $DB->get_record_sql("
+                    SELECT c.*
+                      FROM $pagetable instance
+                      JOIN {course} c ON c.id = instance.course
+                     WHERE instance.id = ?", array($id), MUST_EXIST);
+        $modinfo = get_fast_modinfo($course);
+        $instances = $modinfo->get_instances_of($this->type);
+
+        if (empty($instances[$id])) {
+            return array();
+        }
+
         list ($course, $cm) = get_course_and_cm_from_instance($id, $this->type);
 
         // Limit to instructor userids.

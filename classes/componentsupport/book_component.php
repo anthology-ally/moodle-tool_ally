@@ -130,9 +130,14 @@ SQL;
             return null;
         }
 
+        $chapters = $DB->get_records('book_chapters', ['bookid' => $bookid]);
+
+        if (empty($chapters)) {
+            return $content;
+        }
+
         list ($course, $cm) = get_course_and_cm_from_instance($bookid, 'book');
 
-        $chapters = $DB->get_records('book_chapters', ['bookid' => $bookid]);
         foreach ($chapters as $chapter) {
             $url = new \moodle_url('/mod/book/view.php', ['id' => $cm->id, 'chapterid' => $chapter->id]);
             $contentmodel = new component_content($chapter->id, 'book', 'book_chapters',
