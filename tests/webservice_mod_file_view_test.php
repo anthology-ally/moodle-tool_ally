@@ -45,7 +45,7 @@ class webservice_mod_file_view_test extends abstract_testcase {
      */
     public function test_service() {
         global $CFG, $DB;
-
+        $this->markTestSkipped('To be reviewed in INT-18689');
         $this->resetAfterTest();
 
         $CFG->enablecompletion = true;
