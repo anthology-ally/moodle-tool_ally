@@ -37,6 +37,7 @@ use context_block;
 use context_course;
 use file_storage;
 use stored_file;
+use moodle_url;
 
 defined ('MOODLE_INTERNAL') || die();
 
@@ -70,7 +71,26 @@ trait embedded_file_map {
         $componenttype = local::get_component_support_type($content->component);
         if ($componenttype === component_base::TYPE_MOD) {
             if ($content->table === $content->component) {
-                list($course, $cm) = get_course_and_cm_from_instance($content->id, $content->component);
+                try {
+                    list($course, $cm) = get_course_and_cm_from_instance($content->id, $content->component);
+                } catch (\Throwable $e) {
+                    // We couldn't get $cm, we will get it next time. Just send the embedded draft file if present.
+                    $drafturl = new moodle_url('/draftfile.php');
+                    $drafturl = $drafturl->out(false);
+                    foreach ($results as $result) {
+                        if ($result->type == 'fullurl' && strpos($result->src, $drafturl) !== false) {
+                            $props = local_file::get_fileurlproperties($result->src);
+                            $file = local_file::get_file_fromprops($props);
+                            $content->embeddedfiles[] = [
+                                'filename' => rawurlencode($file->get_filename()),
+                                'contenthash' => $file->get_contenthash(),
+                                'pathnamehash' => $file->get_pathnamehash(),
+                                'tag' => $result->tagname
+                            ];
+                        }
+                    }
+                    return $content;
+                }
             } else {
                 // Sub table detected - e.g. forum discussion, book chapter, etc...
                 $moduleinstanceid = $component->resolve_module_instance_id($content->table, $content->id);
@@ -117,6 +137,7 @@ trait embedded_file_map {
                 $content->embeddedfiles[] = [
                     'filename' => rawurlencode($file->get_filename()),
                     'pathnamehash' => $file->get_pathnamehash(),
+                    'contenthash' => $file->get_contenthash(),
                     'tag' => $result->tagname
                 ];
             }
@@ -142,6 +163,7 @@ trait embedded_file_map {
         $files = $cache->get($contextid);
         if ($files == false) {
             $files = [];
+            $filescontenthash = [];
             if (is_null($context)) {
                 $context = context::instance_by_id($contextid);
             }
@@ -176,6 +198,7 @@ trait embedded_file_map {
 
                 foreach ($contentmap->embeddedfiles as $embeddedfile) {
                     $files[] = $embeddedfile['pathnamehash'];
+                    $filescontenthash[] = $embeddedfile['contenthash'];
                 }
 
             }
@@ -187,6 +210,11 @@ trait embedded_file_map {
         }
 
         if (in_array($file->get_pathnamehash(), $files)) {
+            return true;
+        }
+
+        // When Ally asks too early, this might be a file going from the draft area into the intro area.
+        if (in_array($file->get_contenthash(), $filescontenthash)) {
             return true;
         }
 

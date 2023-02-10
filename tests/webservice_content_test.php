@@ -196,11 +196,13 @@ class webservice_content_test extends abstract_testcase {
         $expected->embeddedfiles = [
             [
                 'filename' => rawurlencode($fileanchor->get_filename()),
+                'contenthash' => $fileanchor->get_contenthash(),
                 'pathnamehash' => $fileanchor->get_pathnamehash(),
                 'tag' => 'a'
             ],
             [
                 'filename' => rawurlencode($file->get_filename()),
+                'contenthash' => $file->get_contenthash(),
                 'pathnamehash' => $file->get_pathnamehash(),
                 'tag' => 'img'
             ]
