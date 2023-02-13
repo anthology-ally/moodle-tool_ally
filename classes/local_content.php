@@ -433,9 +433,11 @@ class local_content {
         // Now filter out external links.
         $baseurl = new moodle_url('/pluginfile.php');
         $baseurl = $baseurl->out(false);
+        $drafturl = new moodle_url('/draftfile.php');
+        $drafturl = $drafturl->out(false);
         foreach ($results as $key => $result) {
-            if (strpos($result->src, $baseurl) !== false) {
-                // In this case it is a full pluginfile path.
+            if (strpos($result->src, $baseurl) !== false || strpos($result->src, $drafturl) !== false) {
+                // In this case it is a full pluginfile path, or a full draftfile path.
                 $result->type = 'fullurl';
                 continue;
             }

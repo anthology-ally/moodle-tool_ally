@@ -335,12 +335,13 @@ class local_file {
         // First, make sure this pluginfile.php is for the current site.
         // We're not interested in URLs pointing to other sites!
         $baseurl = new moodle_url('/pluginfile.php');
+        $drafturl = new moodle_url('/draftfile.php');
         $fileurl = new moodle_url($pluginfileurl);
-        if (!$fileurl->compare($baseurl, URL_MATCH_BASE)) {
+        if (!$fileurl->compare($baseurl, URL_MATCH_BASE) && !$fileurl->compare($drafturl, URL_MATCH_BASE)) {
             return;
         }
 
-        $regex = '/(?:.*)pluginfile\.php(?:\?file=|)(?:\/|%2F)(\d*?)(?:\/|%2F)(.*)$/';
+        $regex = '/(?:.*)(?:pluginfile\.php|draftfile\.php)(?:\?file=|)(?:\/|%2F)(\d*?)(?:\/|%2F)(.*)$/';
         $matches = [];
         $matched = preg_match($regex, $pluginfileurl, $matches);
         if (!$matched) {
