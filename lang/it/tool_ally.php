@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -38,7 +38,7 @@ $string['curlnohttpcode'] = 'Impossibile verificare il codice stato HTTP';
 $string['error:invalidcomponentident'] = 'Identificatore componente non valido {$a}';
 $string['error:pluginfilequestiononly'] = 'Solo i componenti della domanda sono supportati per questo URL';
 $string['error:componentcontentnotfound'] = 'Contenuti non trovati per {$a}';
-$string['error:wstokenmissing'] = 'Manca il token del servizio Web. Può essere necessario che un amministratore esegua la configurazione automatica?';
+$string['error:wstokenmissing'] = 'Token del servizio Web mancante. Un amministratore potrebbe dover eseguire la configurazione automatica.';
 $string['excludeunused'] = 'Esclusi file non utilizzati';
 $string['excludeunuseddesc'] = 'Omettere file allegati al contenuto HTML, ma collegati/richiamati in HTML.';
 $string['filecoursenotfound'] = 'Il file non appartiene a nessun corso';
@@ -52,7 +52,7 @@ $string['pluginname'] = 'Ally';
 $string['pushurl'] = 'URL aggiornamenti file';
 $string['pushurldesc'] = 'Forza le notifiche sugli aggiornamenti dei file in questo URL.';
 $string['queuesendmessagesfailure'] = 'Si è verificato un errore durante l\'invio dei messaggi a AWS SQS. Dati errore: $a';
-$string['secret'] = 'Secret';
+$string['secret'] = 'Segreto';
 $string['secretdesc'] = 'Il segreto LTI.';
 $string['showdata'] = 'Mostra dati';
 $string['hidedata'] = 'Nascondi dati';
@@ -62,8 +62,8 @@ $string['showexception'] = 'Mostra eccezione';
 $string['hideexception'] = 'Nascondi eccezione';
 $string['usercapabilitymissing'] = 'L\'utente fornito non è in grado di eliminare questo file.';
 $string['autoconfigure'] = 'Configura automaticamente il servizio Web Ally';
-$string['autoconfiguredesc'] = 'Crea automaticamente il ruolo e dell\'utente del servizio Web per Ally.';
-$string['autoconfigureconfirmation'] = 'Crea automaticamente il ruolo del servizio Web per Ally e consenti il servizio Web. Saranno intraprese le seguenti azioni: <ul><li>creazione di un ruolo chiamato \'ally_webservice\' e di un utente con il nome \'ally_webuser\'</li><li>aggiunta dell\'utente \'ally_webuser\' nel ruolo \'ally_webservice\'</li><li>attivazione dei servizi Web</li><li>attivazione del resto del protocollo del servizio Web</li><li>attivazione del servizio Web Ally</li><li>creazione di un token per l\'account \'ally_webuser\'</li></ul>';
+$string['autoconfiguredesc'] = 'Crea automaticamente il ruolo e l\'utente del servizio Web per Ally.';
+$string['autoconfigureconfirmation'] = 'Crea automaticamente il ruolo e l\'utente del servizio Web per Ally e consenti il servizio Web. Saranno intraprese le seguenti azioni:<ul><li>creazione di un ruolo chiamato "ally_webservice" e di un utente con il nome "ally_webuser"</li><li>aggiunta dell\'utente "ally_webuser" nel ruolo "ally_webservice"</li><li>attivazione dei servizi Web</li><li>attivazione del resto del protocollo del servizio Web</li><li>attivazione del servizio Web per Ally</li><li>creazione di un token per l\'account "ally_webuser"</li></ul>';
 $string['autoconfigsuccess'] = 'Successo - il servizio Web Ally è stato configurato automaticamente.';
 $string['autoconfigtoken'] = 'Il token del servizio Web è il seguente:';
 $string['autoconfigapicall'] = 'È possibile testare che il servizio Web funzioni tramite il seguente URL:';
@@ -92,17 +92,18 @@ $string['loglevel:medium'] = 'Medio';
 $string['loglevel:all'] = 'Tutto';
 $string['logcleanuptask'] = 'Attività di pulizia log Ally';
 $string['loglifetimedays'] = 'Conserva i log per questi molti giorni';
-$string['loglifetimedaysdesc'] = 'Per conservare i log Ally per questi molti giorni. Imposta su 0 per non eliminare mai i log. L’esecuzione quotidiana di un’attività pianificata è preimpostata ed elimina le voci log più vecchie di questi molti giorni.';
+$string['loglifetimedaysdesc'] = 'Conserva i log Ally per un determinato numero di giorni. Imposta su 0 per non eliminare mai i log. L\'esecuzione quotidiana di un\'attività pianificata è preimpostata ed elimina le voci log più vecchie di tale numero di giorni.';
+$string['logger:filtersetupdebugger'] = 'Log di impostazione del filtro Ally';
 $string['logger:pushtoallysuccess'] = 'Forzato con successo al punto finale Ally';
 $string['logger:pushtoallyfail'] = 'Push all\'end point Ally non riuscito';
 $string['logger:pushfilesuccess'] = 'Forzatura dei file al punto finale Ally riuscita';
 $string['logger:pushfileliveskip'] = 'Impossibile forzare il file in tempo reale';
-$string['logger:pushfileliveskip_exp'] = 'Forzatura dei file in tempo reale saltata a causa di problemi di comunicazione. La forzatura del file in tempo reale sarà ripristinata quando l\'attività degli aggiornamenti dei file sarà riuscita. Esaminare la configurazione.';
+$string['logger:pushfileliveskip_exp'] = 'Forzatura dei file in tempo reale è stata saltata a causa di problemi di comunicazione. La forzatura del file in tempo reale sarà ripristinata quando l\'attività degli aggiornamenti dei file sarà riuscita. Verificare la configurazione.';
 $string['logger:pushfileserror'] = 'Push all\'end point Ally non riuscito';
 $string['logger:pushfileserror_exp'] = 'Errori associati alla forzatura degli aggiornamenti dei contenuti ai servizi Ally.';
 $string['logger:pushcontentsuccess'] = 'Forzatura del contenuto al punto finale Ally riuscita';
 $string['logger:pushcontentliveskip'] = 'Errore di forzatura dei contenuti in tempo reale';
-$string['logger:pushcontentliveskip_exp'] = 'La forzatura dei contenuti in tempo reale è stata saltata a causa di problemi di comunicazione. La forzatura dei contenuti in tempo reale sarà ripristinata quando l\'attività di aggiornamento dei contenuti avverrà con successo. Esaminare la configurazione.';
+$string['logger:pushcontentliveskip_exp'] = 'La forzatura dei contenuti in tempo reale è stata saltata a causa di problemi di comunicazione. La forzatura dei contenuti in tempo reale sarà ripristinata quando l\'attività di aggiornamento dei contenuti sarà riuscita. Verificare la configurazione.';
 $string['logger:pushcontentserror'] = 'Push all\'end point Ally non riuscito';
 $string['logger:pushcontentserror_exp'] = 'Errori associati alla forzatura degli aggiornamenti dei contenuti ai servizi Ally.';
 $string['logger:addingconenttoqueue'] = 'Aggiunta dei contenuti alla coda di forzatura';
@@ -116,15 +117,15 @@ $string['courseupdatestask'] = 'Forza eventi del corso in Ally';
 $string['logger:pushcoursesuccess'] = 'Forzatura successiva degli eventi del corso al punto di fine di Ally';
 $string['logger:pushcourseliveskip'] = 'Errore di forzatura evento corso in tempo reale';
 $string['logger:pushcourseerror'] = 'Errore di forzatura evento corso in tempo reale';
-$string['logger:pushcourseliveskip_exp'] = 'Gli eventi del corso in tempo reale non vengono riprodotti a causa di problemi di comunicazione. L\'evento del corso pubblico sarà ripristinato quando l\'attività di aggiornamento degli eventi avverrà successo. Rivedere la configurazione.';
+$string['logger:pushcourseliveskip_exp'] = 'La forzatura degli eventi del corso in tempo reale è stata saltata a causa di problemi di comunicazione. La forzatura degli eventi del corso in tempo reale sarà ripristinata quando l\'attività di aggiornamento degli eventi del corso sarà riuscita. Verificare la configurazione.';
 $string['logger:pushcourseserror'] = 'Push all\'end point Ally non riuscito';
 $string['logger:pushcourseserror_exp'] = 'Gli errori associati agli aggiornamenti del corso rimandano ai servizi Ally.';
 $string['logger:addingcourseevttoqueue'] = 'Aggiunta dell\'evento del corso per forzare la coda';
 $string['logger:cmiderraticpremoddelete'] = 'L\'ID del modulo del corso riscontra dei problemi a eliminare questo elemento.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'Il modulo non è stato identificato correttamente. Il modulo è inesistente poiché è stato eliminato oppure è presente un fattore che ha attivato l\'eliminazione e pertanto non è stato trovato.';
 $string['logger:servicefailure'] = 'Non andato a buon fine durante la fruizione del servizio.';
-$string['logger:servicefailure_exp'] = '<br>Classe {$a->class}<br>Parametri: {$a->params}';
+$string['logger:servicefailure_exp'] = '<br>Classe: {$a->class}<br>Parametri: {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'Non andato a buon fine durante l\'assegnazione a un docente di una capacità archetipo al ruolo ally_webservice.';
-$string['logger:autoconfigfailureteachercap_exp'] = '<br>Capacità: {$a->cap}<br>Permesso: {$a->permission}';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Privilegio: {$a->cap}<br>Autorizzazione: {$a->permission}';
 $string['deferredcourseevents'] = 'Invia eventi corso rinviati';
 $string['deferredcourseeventsdesc'] = 'Consenti l’invio di eventi corso salvati e conservati durante l’errore di comunicazione con Ally';
