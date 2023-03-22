@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -63,7 +63,7 @@ $string['hideexception'] = 'Ausnahme ausblenden';
 $string['usercapabilitymissing'] = 'Die/der bereitgestellte Nutzer/in kann diese Datei nicht löschen.';
 $string['autoconfigure'] = 'Ally-Webservice automatisch konfigurieren';
 $string['autoconfiguredesc'] = 'Webservice-Rolle und - Nutzer/in für Ally automatisch erstellen.';
-$string['autoconfigureconfirmation'] = 'Webservice-Rolle und - Nutzer/in für Ally automatisch erstellen und Webservice aktivieren. Die folgenden Aktionen werden ausgeführt: <ul><li>Es werden eine Rolle mit der Bezeichnung \'ally_webservice\' und ein(e) Nutzer/in mit dem Nutzernamen \'ally_webuser\' erstellt</li><li>Die/der Nutzer/in \'ally_webuser\' wird der Rolle \'ally_webservice\' hinzugefügt</li><li>Webservices werden aktiviert</li><li>Das Webservice-Protokoll \'rest\' wird aktiviert</li><li>Der Ally-Webservice wird aktiviert</li><li>Es wird ein Token für das Konto \'ally_webuser\' erstellt</li></ul>';
+$string['autoconfigureconfirmation'] = 'Erstellen Sie automatisch eine Webservicerolle und Nutzer/innen für Ally und aktivieren Sie den Webservice. Folgende Aktionen werden durchgeführt:<ul><li>Erstellen einer Rolle mit dem Titel &quot;ally_webservice&quot; und eines Nutzers/einer Nutzerin mit dem Nutzer/innen-Namen &quot;ally_webuser&quot;</li><li>Hinzufügen des Nutzers/der Nutzerin &quot;ally_webuser&quot; zur Rolle &quot;ally_webservice&quot;</li><li>Aktivieren der Webservices</li><li>Aktivieren des Rest-Webdienstprotokolls</li><li>Aktivieren des Ally-Webservices</li><li>Erstellen eines Tokens für das Konto &quot;ally_webuser&quot;</li></ul>';
 $string['autoconfigsuccess'] = 'Erfolg: Der Ally-Webservice wurde automatisch konfiguriert.';
 $string['autoconfigtoken'] = 'Das Webservice-Token lautet wie folgt:';
 $string['autoconfigapicall'] = 'Sie können über die folgende URL testen, ob der Webservice funktioniert:';
@@ -82,8 +82,8 @@ $string['cachedef_request'] = 'Zwischenspeicher für Ally-Filteranfragen';
 $string['pushfilessummary'] = 'Zusammenfassung der Ally-Datei-Updates.';
 $string['pushfilessummary:explanation'] = 'Zusammenfassung der an Ally gesendeten Datei-Updates.';
 $string['section'] = 'Abschnitt {$a}';
-$string['lessonanswertitle'] = 'Antwort für Lektion "{$a}"';
-$string['lessonresponsetitle'] = 'Beantwortung für Lektion "{$a}"';
+$string['lessonanswertitle'] = 'Antwort für Lektion &quot;{$a}&quot;';
+$string['lessonresponsetitle'] = 'Beantwortung für Lektion &quot;{$a}&quot;';
 $string['logs'] = 'Ally-Protokolle';
 $string['logrange'] = 'Protokollbereich';
 $string['loglevel:none'] = 'Keine';
@@ -93,6 +93,7 @@ $string['loglevel:all'] = 'Alle';
 $string['logcleanuptask'] = 'Bereinigungsaufgabe für Ally-Protokolle';
 $string['loglifetimedays'] = 'Protokolle aufbewahren für einen Zeitraum von';
 $string['loglifetimedaysdesc'] = 'Bewahren Sie Ally-Protokolle für den angegebenen Zeitraum auf. Setzen Sie den Wert auf „0“, damit Protokolle niemals gelöscht werden. Eine geplante Aufgabe ist (standardmäßig) so eingestellt, dass sie täglich ausgeführt wird, und entfernt Protokolleinträge, die außerhalb dieses Zeitraums liegen.';
+$string['logger:filtersetupdebugger'] = 'Ally-Filter-Setup-Protokoll';
 $string['logger:pushtoallysuccess'] = 'Erfolgreicher Push zu Ally-Endpunkt';
 $string['logger:pushtoallyfail'] = 'Erfolgloser Push zu Ally-Endpunkt';
 $string['logger:pushfilesuccess'] = 'Erfolgreicher Push von Datei(en) zu Ally-Endpunkt';
