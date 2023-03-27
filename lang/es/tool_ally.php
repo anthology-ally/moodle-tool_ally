@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -63,7 +63,7 @@ $string['hideexception'] = 'Ocultar excepción';
 $string['usercapabilitymissing'] = 'El usuario suministrado no cuenta con el permiso para eliminar este archivo.';
 $string['autoconfigure'] = 'Configurar automáticamente el servicio web de Ally';
 $string['autoconfiguredesc'] = 'Cree un usuario y un rol de servicio web para Ally de forma automática.';
-$string['autoconfigureconfirmation'] = 'Cree un usuario y un rol de servicio web para Ally de forma automática y habilite el servicio web. Se deben llevar a cabo las siguientes acciones: <ul><li>crear un rol denominado "ally_webservice" y un usuario con el nombre de usuario "ally_webuser"</li><li>agregar el usuario "ally_webuser" al rol "ally_webservice"</li><li>habilitar los servicios web</li><li>habilitar el protocolo de servicio web rest</li><li>habilitar el servicio web de Ally</li><li>crear un token para la cuenta "ally_webuser"</li></ul>';
+$string['autoconfigureconfirmation'] = 'Cree un usuario y un rol de servicio web para Ally de forma automática y habilite el servicio web. Se deben llevar a cabo las siguientes acciones:<ul><li>crear un rol denominado "ally_webservice" y un usuario con el nombre de usuario "ally_webuser"</li><li>agregar el usuario "ally_webuser" al rol "ally_webservice"</li><li>habilitar servicios web</li><li>habilitar el protocolo de servicio web rest</li><li>habilitar el servicio web de Ally</li><li>crear un token para la cuenta "ally_webuser"</li></ul>';
 $string['autoconfigsuccess'] = 'Listo: el servicio web de Ally se configuró automáticamente.';
 $string['autoconfigtoken'] = 'El token del servicio web es el siguiente:';
 $string['autoconfigapicall'] = 'Puede probar el funcionamiento del servicio web a través de la siguiente URL:';
@@ -93,6 +93,7 @@ $string['loglevel:all'] = 'Todas';
 $string['logcleanuptask'] = 'Tarea de limpieza del registro de Ally';
 $string['loglifetimedays'] = 'Mantener los registros durante tantos días';
 $string['loglifetimedaysdesc'] = 'Conserve los registros de Ally durante este número de días. Establezca 0 para no borrar nunca los registros. Una tarea programada está (por defecto) configurada para ejecutarse diariamente, y eliminará las entradas de registro que tengan un número superior a este número de días.';
+$string['logger:filtersetupdebugger'] = 'Registro de configuración de filtro de Ally';
 $string['logger:pushtoallysuccess'] = 'Inserción exitosa en el punto de enlace de Ally';
 $string['logger:pushtoallyfail'] = 'Inserción fallida en el punto de enlace de Ally';
 $string['logger:pushfilesuccess'] = 'Inserción exitosa del/de los archivo(s) en el punto de enlace de Ally';

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -35,7 +35,7 @@ $string['contentupdatestask'] = 'Taak voor bijwerken van inhoud';
 $string['curlerror'] = 'cURL-fout: {$a}';
 $string['curlinvalidhttpcode'] = 'Ongeldige HTTP-statuscode: {$a}';
 $string['curlnohttpcode'] = 'Kan HTTP-statuscode niet verifiëren';
-$string['error:invalidcomponentident'] = 'Ongeldige component-ID {$a}';
+$string['error:invalidcomponentident'] = 'Ongeldige component-id {$a}';
 $string['error:pluginfilequestiononly'] = 'Alleen vraagcomponenten worden ondersteund voor deze url';
 $string['error:componentcontentnotfound'] = 'Geen inhoud gevonden voor {$a}';
 $string['error:wstokenmissing'] = 'Webservicetoken ontbreekt. Misschien moet een beheerder automatische configuratie uitvoeren?';
@@ -63,13 +63,13 @@ $string['hideexception'] = 'Uitzondering verbergen';
 $string['usercapabilitymissing'] = 'De opgegeven gebruiker heeft niet de mogelijkheid om dit bestand te verwijderen.';
 $string['autoconfigure'] = 'Ally-webservice automatisch configureren';
 $string['autoconfiguredesc'] = 'Automatsch webservicerol en -gebruiker maken voor Ally.';
-$string['autoconfigureconfirmation'] = 'Automatisch webservicerol en -gebruiker maken voor Ally en webservice inschakelen. De volgende acties worden uitgevoerd: <ul><li>een rol met de titel \'ally_webservice\' maken en een gebruiker met de gebruikersnaam \'ally_webuser\'</li><li>de gebruiker \'ally_webuser\' toevoegen aan de rol \'ally_webservice\'</li><li>webservices inschakelen</li><li>het rest-webserviceprotocol inschakelen</li><li>de Ally-webservice inschakelen</li><li>een token maken voor de account \'ally_webuser\'</li></ul>';
+$string['autoconfigureconfirmation'] = 'Maak automatisch een webservicerol en -gebruiker voor Ally en schakel de webservice in. De volgende acties worden uitgevoerd:<ul><li>maak een rol met de naam &apos;ally_webservice&apos; en een gebruiker met de gebruikersnaam &apos;ally_webuser&apos;</li><li>voeg de gebruiker &apos;ally_webuser&apos; toe aan de rol &apos;ally_webservice&apos;</li><li>schakel webservices in</li><li>schakel het resterende webserviceprotocol in</li><li>schakel de ally-webservice in</li><li>maak een token voor de account &apos;ally_webuser&apos;</li></ul>';
 $string['autoconfigsuccess'] = 'Gelukt. De Ally-webservice is automatisch geconfigureerd.';
 $string['autoconfigtoken'] = 'Dit is het webservicetoken:';
 $string['autoconfigapicall'] = 'Je kunt via de volgende url testen of de webservice werkt:';
 $string['privacy:metadata:files:action'] = 'De actie die wordt uitgevoerd op het bestand, zoals: gemaakt, bijgewerkt of verwijderd.';
 $string['privacy:metadata:files:contenthash'] = 'De hash van de inhoud van het bestand teneinde het bestand uniek te maken.';
-$string['privacy:metadata:files:courseid'] = 'De ID van de cursus waarbij het bestand hoort.';
+$string['privacy:metadata:files:courseid'] = 'De id van de cursus waarbij het bestand hoort.';
 $string['privacy:metadata:files:externalpurpose'] = 'Voor integratie met Ally moeten er bestanden worden uitgewisseld met Ally.';
 $string['privacy:metadata:files:filecontents'] = 'De inhoud van het bestand wordt naar Ally verzonden om deze te controleren op toegankelijkheid.';
 $string['privacy:metadata:files:mimetype'] = 'Het MIME-type van het bestand, zoals: text/plain, image/jpeg, etc.';
@@ -82,8 +82,8 @@ $string['cachedef_request'] = 'Cache met Ally-filteraanvragen';
 $string['pushfilessummary'] = 'Overzicht van Ally-bestandsupdates.';
 $string['pushfilessummary:explanation'] = 'Overzicht van bestandsupdates verzonden naar Ally.';
 $string['section'] = 'Sectie {$a}';
-$string['lessonanswertitle'] = 'Antwoord voor les "{$a}"';
-$string['lessonresponsetitle'] = 'Reactie voor les "{$a}"';
+$string['lessonanswertitle'] = 'Antwoord voor les &quot;{$a}&quot;';
+$string['lessonresponsetitle'] = 'Reactie voor les &quot;{$a}&quot;';
 $string['logs'] = 'Ally-logboeken';
 $string['logrange'] = 'Logboekbereik';
 $string['loglevel:none'] = 'Niets';
@@ -93,6 +93,7 @@ $string['loglevel:all'] = 'Alle';
 $string['logcleanuptask'] = 'Opschoontaak Ally-logboek';
 $string['loglifetimedays'] = 'Logs dit aantal dagen bewaren';
 $string['loglifetimedaysdesc'] = 'Ally-logboeken worden gedurende dit aantal dagen bewaard. Stel hier 0 in om nooit logboeken te verwijderen. Dit is een geplande taak die (standaard) elke dag wordt uitgevoerd en waarmee logboekregels worden gewist die ouder zijn dan dit aantal dagen.';
+$string['logger:filtersetupdebugger'] = 'Logboek setup Ally-filter';
 $string['logger:pushtoallysuccess'] = 'Pushen naar Ally-eindpunt gelukt';
 $string['logger:pushtoallyfail'] = 'Pushen naar Ally-eindpunt mislukt';
 $string['logger:pushfilesuccess'] = 'Pushen van bestand(en) naar Ally-eindpunt gelukt';
@@ -109,8 +110,8 @@ $string['logger:addingconenttoqueue'] = 'Inhoud toevoegen aan push-wachtrij';
 $string['logger:annotationmoderror'] = 'Annoteren van inhoud van Ally-module mislukt.';
 $string['logger:annotationmoderror_exp'] = 'Module is niet correct geïdentificeerd.';
 $string['logger:failedtogetcoursesectionname'] = 'Fout bij ophalen van naam van cursussectie';
-$string['logger:moduleidresolutionfailure'] = 'Fout bij omzetten van ID van module';
-$string['logger:cmidresolutionfailure'] = 'Fout bij omzetten van ID van cursusmodule';
+$string['logger:moduleidresolutionfailure'] = 'Fout bij omzetten van id van module';
+$string['logger:cmidresolutionfailure'] = 'Fout bij omzetten van id van cursusmodule';
 $string['logger:cmvisibilityresolutionfailure'] = 'Fout bij oplossen van zichtbaarheid van cursusmodule';
 $string['courseupdatestask'] = 'Cursusgebeurtenissen naar Ally pushen';
 $string['logger:pushcoursesuccess'] = 'Pushen van een of meer cursusgebeurtenissen naar Ally-eindpunt gelukt';
@@ -120,11 +121,11 @@ $string['logger:pushcourseliveskip_exp'] = 'Het pushen van cursusgebeurtenissen 
 $string['logger:pushcourseserror'] = 'Pushen naar Ally-eindpunt mislukt';
 $string['logger:pushcourseserror_exp'] = 'Fouten behorende bij pushen van cursusupdates naar Ally-services.';
 $string['logger:addingcourseevttoqueue'] = 'Cursusgebeurtenis toevoegen aan push-wachtrij';
-$string['logger:cmiderraticpremoddelete'] = 'Cursusmodule-ID heeft problemen met vooraf verwijderen.';
+$string['logger:cmiderraticpremoddelete'] = 'Cursusmodule-id heeft problemen met vooraf verwijderen.';
 $string['logger:cmiderraticpremoddelete_exp'] = 'De module is niet juist geïdentificeerd; de module bestaat niet vanwege sectieverwijdering of er is sprake van een andere factor die de verwijderings-hook heeft geactiveerd waardoor de module niet is gevonden.';
 $string['logger:servicefailure'] = 'Mislukt tijdens het gebruik van de service.';
-$string['logger:servicefailure_exp'] = '<br>Cursus: {$a->class}<br>Parameters: {$a->params}';
+$string['logger:servicefailure_exp'] = '<br>Klasse: {$a->class}<br>Parameters: {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'Mislukt bij het toewijzen van een vaardigheid docentarchetype aan de rol ally_webservice.';
-$string['logger:autoconfigfailureteachercap_exp'] = '<br>Vaardigheid: {$a->cap}<br>Machtiging: {$a->permission}';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Capaciteit: {$a->cap}<br>Machtiging: {$a->permission}';
 $string['deferredcourseevents'] = 'Uitgestelde cursusgebeurtenissen verzenden';
 $string['deferredcourseeventsdesc'] = 'Verzending van opgeslagen cursusgebeurtenissen toestaan die tijdens een communicatiestoring met Ally zijn verzameld';

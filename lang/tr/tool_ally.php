@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -63,7 +63,7 @@ $string['hideexception'] = 'İstisnayı gizle';
 $string['usercapabilitymissing'] = 'Sağlanan kullanıcının bu dosyayı silme izni yok.';
 $string['autoconfigure'] = 'Ally web hizmetini otomatik yapılandır';
 $string['autoconfiguredesc'] = 'Ally için web hizmeti rolünü ve kullanıcıyı otomatik olarak oluşturun.';
-$string['autoconfigureconfirmation'] = 'Ally için web hizmeti rolünü ve kullanıcıyı otomatik olarak oluşturun ve web hizmetini etkinleştirin. Şu işlemler gerçekleştirilir: <ul><li>\'ally_webservice\' adlı bir rol ve \'ally_webuser\' kullanıcı adına sahip bir kullanıcı oluşturma</li><li>\'ally_webuser\' kullanıcısını \'ally_webservice\' rolüne ekleme</li><li>web hizmetlerini etkinleştirme</li><li>rest web hizmeti protokolünü etkinleştirme</li><li>ally web hizmetini etkinleştirme</li><li>\'ally_webuser\' hesabı için bir belirteç oluşturma</li></ul>';
+$string['autoconfigureconfirmation'] = 'Ally için web hizmeti rolünü ve kullanıcıyı otomatik olarak oluşturup web hizmetlerini etkinleştirin. Aşağıdaki işlemler gerçekleştirilecektir:<ul><li>"ally_webservice" isimli bir rol ve "ally_webuser" kullanıcı adına sahip bir kullanıcı oluşturma</li><li>"ally_webuser" adlı kullanıcıyı "ally_webservice" rolüne ekleme</li><li>web hizmetlerini etkinleştirme</li><li>rest web hizmeti protokollerini etkinleştirme</li><li>ally web hizmetini etkinleştirme</li><li>\'ally_webuser\' hesabı için bir belirteç oluşturma</li></ul>';
 $string['autoconfigsuccess'] = 'Başarılı - Ally web hizmeti otomatik olarak yapılandırıldı.';
 $string['autoconfigtoken'] = 'Web hizmeti belirteci aşağıdaki gibidir:';
 $string['autoconfigapicall'] = 'Web hizmetinin çalışıp çalışmadığını anlamak üzere test etmek için şu url\'yi kullanabilirsiniz:';
@@ -93,6 +93,7 @@ $string['loglevel:all'] = 'Tümü';
 $string['logcleanuptask'] = 'Ally günlüğü temizleme görevi';
 $string['loglifetimedays'] = 'Günlükleri şu kadar gün boyunca sakla';
 $string['loglifetimedaysdesc'] = 'Ally günlüklerini şu kadar gün boyunca sakla. 0 ila günlükleri asla silme arasında bir değere ayarlayın. Zamanlanmış bir görev (varsayılan olarak) günlük olarak çalışacak şekilde ayarlanır ve belirtilen günden daha eski günlük girdilerini kaldırır.';
+$string['logger:filtersetupdebugger'] = 'Ally filtre kurulumu günlüğü';
 $string['logger:pushtoallysuccess'] = 'Ally uç noktasına başarılı aktarma';
 $string['logger:pushtoallyfail'] = 'Ally uç noktasına başarısız aktarma';
 $string['logger:pushfilesuccess'] = 'Ally uç noktasına başarılı dosya aktarma';

@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -63,7 +63,7 @@ $string['hideexception'] = 'ซ่อนข้อยกเว้น';
 $string['usercapabilitymissing'] = 'ผู้ใช้งานที่ระบุไม่มีความสามารถในการลบไฟล์นี้';
 $string['autoconfigure'] = 'กำหนดค่าบริการเว็บ Ally โดยอัตโนมัติ';
 $string['autoconfiguredesc'] = 'สร้างบทบาทบริการเว็บและผู้ใช้งานโดยอัตโนมัติสำหรับ Ally';
-$string['autoconfigureconfirmation'] = 'สร้างบทบาทบริการเว็บและผู้ใช้งานโดยอัตโนมัติสำหรับ Ally และเปิดใช้งานบริการของเว็บ การดำเนินการต่อไปนี้จะถูกดำเนินการ: <ul><li> สร้างบทบาทที่ชื่อว่า \'ally_webservice\' และผู้ใช้งานที่มีชื่อผู้ใช้งาน \'ally_webuser\' </li><li>เพิ่มผู้ใช้งาน \'ally_webuser\' ให้กับบทบาท \'ally_webservice\'</li><li>เปิดใช้งานบริการเว็บ</li><li>เปิดใช้งานโพรโทคอลบริการเว็บที่เหลือ</li><li>เปิดใช้บริการเว็บ Ally</li><li>สร้าง Token สำหรับบัญชี \'ally_webuser\'</li></ul>';
+$string['autoconfigureconfirmation'] = 'สร้างบทบาทและผู้ใช้งานสำหรับพันธมิตรโดยอัตโนมัติและเปิดใช้งานบริการบนเว็บ ระบบจะดำเนินการดังนี้:<ul><li>สร้างบทบาทที่มีชื่อว่า \'ally_webservice\' และผู้ใช้งานที่มีชื่อผู้ใช้งาน \'ally_webuser\'</li><li>เพิ่มผู้ใช้งาน \'ally_webuser\' ไปยังบทบาท \'ally_webservice\'</li><li>เปิดใช้งานบริการบนเว็บ</li><li>เปิดใช้งานโพรโทคอลบริการบนเว็บ REST</li><li>เปิดใช้งานบริการบนเว็บ Ally</li><li>สร้างโทเคนสำหรับบัญชี \'ally_webuser\'</li></ul>';
 $string['autoconfigsuccess'] = 'สำเร็จ - บริการเว็บ Ally ถูกกำหนดค่าโดยอัตโนมัติ';
 $string['autoconfigtoken'] = 'Token บริการเว็บเป็นดังนี้:';
 $string['autoconfigapicall'] = 'คุณสามารถทดสอบว่า webservice สามารถทำงานผ่าน url ต่อไปนี้:';
@@ -93,6 +93,7 @@ $string['loglevel:all'] = 'ทั้งหมด';
 $string['logcleanuptask'] = 'ภารกิจล้างข้อมูลล็อก Ally';
 $string['loglifetimedays'] = 'เก็บล็อกไว้หลายวัน';
 $string['loglifetimedaysdesc'] = 'เก็บล็อก Ally ไว้หลายวัน เมื่อตั้งค่าไปที่ 0 เพื่อไม่ลบล็อก หากภารกิจที่กำหนดเวลาไว้ (ค่าเริ่มต้น) ถูกตั้งไว้ที่ทำงานทุกวันซึ่งจะลบรายการล็อกที่มีอายุมากกว่าค่าหลายวันนี้ออกไป';
+$string['logger:filtersetupdebugger'] = 'บันทึกการตั้งค่าตัวกรอง Ally';
 $string['logger:pushtoallysuccess'] = 'พุชไปยังจุดสิ้นสุดของ Ally สำเร็จ';
 $string['logger:pushtoallyfail'] = 'พุชไปยังจุดสิ้นสุดของ Ally ไม่สำเร็จ';
 $string['logger:pushfilesuccess'] = 'การพุชไฟล์ไปยังจุดสิ้นสุดของ Ally สำเร็จ';

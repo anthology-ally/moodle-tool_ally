@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -63,7 +63,7 @@ $string['hideexception'] = 'Skrýt výjimku';
 $string['usercapabilitymissing'] = 'Poskytnutý uživatel není způsobilý k odstranění tohoto souboru.';
 $string['autoconfigure'] = 'Automaticky konfigurovat webovou službu Ally';
 $string['autoconfiguredesc'] = 'Automaticky vytvoří uživatele a roli webové služby pro službu Ally.';
-$string['autoconfigureconfirmation'] = 'Automaticky se vytvoří role a uživatel webové služby Ally a webová služba se povolí. Budou provedeny následující akce: <ul><li>vytvoření role s názvem \'ally_webservice\' a uživatele se jménem \'ally_webuser\'</li><li>přidání role \'ally_webservice\' uživateli \'ally_webuser\'</li><li>povolení webových služeb</li><li>povolení protokolu rest webové služby</li><li>povolení webové služby Ally</li><li>vytvoření tokenu pro účet \'ally_webuser\'</li></ul>';
+$string['autoconfigureconfirmation'] = 'Automaticky vytvoří uživatele a roli webové služby pro službu Ally a povolí webovou službu. Provedou se následující akce:<ul><li>vytvořte roli s názvem ,ally_webservice\' a uživatele s uživatelským jménem ,ally_webuser‘</li><li>přidejte uživatele ,ally_webuser‘ k roli ,ally_webservice‘</li><li>povolte webové služby</li><li>povolte protokol webových služeb Rest</li><li>povolte webovou službu Ally</li><li>vytvořte token pro účet ,ally_webuser‘</li></ul>';
 $string['autoconfigsuccess'] = 'Webová služba Ally byla úspěšně automaticky nakonfigurována.';
 $string['autoconfigtoken'] = 'Token webové služby:';
 $string['autoconfigapicall'] = 'Pomocí následující adresy URL můžete otestovat, zda webová služba funguje:';
@@ -93,6 +93,7 @@ $string['loglevel:all'] = 'Všechny';
 $string['logcleanuptask'] = 'Úloha čištění protokolu služby Ally';
 $string['loglifetimedays'] = 'Uchovávat protokoly tento počet dnů';
 $string['loglifetimedaysdesc'] = 'Protokoly Ally se budou uchovávat po tento počet dnů. Když nastavíte 0, protokoly nebudou odstraňovány nikdy. Naplánovaná úloha je (ve výchozím nastavení) nastavena na denní spouštění a odstraní záznamy protokolů, které jsou starší než tento počet dní.';
+$string['logger:filtersetupdebugger'] = 'Protokol nastavení filtru služby Ally';
 $string['logger:pushtoallysuccess'] = 'Úspěšné posunutí do koncového bodu služby Ally';
 $string['logger:pushtoallyfail'] = 'Neúspěšné posunutí do koncového bodu služby Ally';
 $string['logger:pushfilesuccess'] = 'Úspěšné posunutí souboru nebo souborů do koncového bodu služby Ally';
