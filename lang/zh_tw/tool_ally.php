@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -63,7 +63,7 @@ $string['hideexception'] = '隱藏例外情況';
 $string['usercapabilitymissing'] = '提供的使用者無權刪除此檔案。';
 $string['autoconfigure'] = '自動配置 Ally Web 服務';
 $string['autoconfiguredesc'] = '自動為 Ally 建立 Web 服務角色和使用者。';
-$string['autoconfigureconfirmation'] = '自動為 Ally 建立 Web 服務角色和使用者，並啟用 Web 服務。將執行以下動作：<ul><li>建立名為「ally_webservice」的角色和使用者名稱為「ally_webuser」的使用者</li><li>新增「ally_webuser」使用者至「ally_webservice」角色</li><li>啟用 Web 服務</li><li>啟用 REST Web 服務通訊協定</li><li>啟用 Ally Web 服務</li><li>為「ally_webuser」帳戶建立 Token</li></ul>';
+$string['autoconfigureconfirmation'] = '自動建立 Ally 網路服務角色和使用者，並啟用網路服務。系統將進行下列動作：<ul><li>建立標題為「ally_webservice」的角色和使用者名稱為「ally_webuser」的使用者</li><li>將使用者「ally_webuser」新增至「ally_webservice」角色</li><li>啟用網路服務</li><li>啟用其餘網路服務傳輸協定</li><li>啟用 Ally 網路服務</li><li>為「ally_webuser」帳戶建立 Token</li></ul>';
 $string['autoconfigsuccess'] = '成功 - 已自動配置 Ally Web 服務。';
 $string['autoconfigtoken'] = 'Web 服務 Token 如下：';
 $string['autoconfigapicall'] = '您可以透過以下 URL 測試 Web 服務是否正常運作：';
@@ -93,6 +93,7 @@ $string['loglevel:all'] = '全部';
 $string['logcleanuptask'] = 'Ally 日誌清除工作';
 $string['loglifetimedays'] = '在此天數內保留日誌';
 $string['loglifetimedaysdesc'] = '在此天數內保留 Ally 日誌。設為 0 表示從不刪除日誌。排定的工作 (預設) 設為每天執行，並且將移除比此天數更久的日誌項目。';
+$string['logger:filtersetupdebugger'] = 'Ally 篩選器設定日誌';
 $string['logger:pushtoallysuccess'] = '成功推送至 Ally 端點';
 $string['logger:pushtoallyfail'] = '未成功推送至 Ally 端點';
 $string['logger:pushfilesuccess'] = '成功推送檔案至 Ally 端點';

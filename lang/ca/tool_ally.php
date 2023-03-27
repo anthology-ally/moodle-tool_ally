@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -63,7 +63,7 @@ $string['hideexception'] = 'Oculta l\'excepció';
 $string['usercapabilitymissing'] = 'L\'usuari que s\'ha proporcionat no té la capacitat necessària per suprimir aquest fitxer.';
 $string['autoconfigure'] = 'Configura automàticament el servei web d\'Ally';
 $string['autoconfiguredesc'] = 'Creació automàtica de l\'usuari i el servei web d\'Ally.';
-$string['autoconfigureconfirmation'] = 'Crea automàticament un rol de servei web i un usuari per Ally i activa el servei web. S\'executaran aquestes accions: <ul><li>crear un rol amb el títol "ally_webservice" i un usuari amb el nom d\'usuari "ally_webuser"</li><li>afegir l\'usuari "ally_webuser" al rol "ally_webservice"</li><li>activar els serveis web</li><li>activar el protocol REST web service</li><li>activar el servei web d\'Ally</li><li>crear un testimoni per al compte "ally_webuser"</li></ul>';
+$string['autoconfigureconfirmation'] = 'Crea automàticament un rol de servei web i un usuari per Ally i activa el servei web. S\'executaran aquestes accions:<ul><li>crear un rol amb el títol &quot;ally_webservice&quot; i un usuari amb el nom d\'usuari &quot;ally_webuser&quot;</li><li>afegir l\'usuari &quot;ally_webuser&quot; al rol &quot;ally_webservice&quot;</li><li>activar els serveis web</li><li>activar el protocol REST web service</li><li>activar el servei web d\'Ally</li><li>crear un testimoni per al compte &quot;ally_webuser&quot;</li></ul>';
 $string['autoconfigsuccess'] = 'Èxit - el servei web d\'Ally s\'ha configurat automàticament.';
 $string['autoconfigtoken'] = 'El testimoni de servei de web és com s\'indica:';
 $string['autoconfigapicall'] = 'Podeu comprovar que el servei web funciona utilitzant aquest URL:';
@@ -82,8 +82,8 @@ $string['cachedef_request'] = 'Memòria cau de la sol·licitud de filtre d\'Ally
 $string['pushfilessummary'] = 'Resum de les actualitzacions de fitxers d\'Ally.';
 $string['pushfilessummary:explanation'] = 'Resum de les actualitzacions de fitxers enviades a Ally.';
 $string['section'] = 'Secció {$a}';
-$string['lessonanswertitle'] = 'Resposta per la lliçó "{$a}"';
-$string['lessonresponsetitle'] = 'Resposta per a la lliçó "{$a}"';
+$string['lessonanswertitle'] = 'Resposta per la lliçó &quot;{$a}&quot;';
+$string['lessonresponsetitle'] = 'Resposta per a la lliçó &quot;{$a}&quot;';
 $string['logs'] = 'Registres d\'Ally';
 $string['logrange'] = 'Interval del registre';
 $string['loglevel:none'] = 'Ningun';
@@ -93,6 +93,7 @@ $string['loglevel:all'] = 'Totes';
 $string['logcleanuptask'] = 'Tasca de neteja de registres d\'Ally';
 $string['loglifetimedays'] = 'Conserva els registres durant tots aquests dies';
 $string['loglifetimedaysdesc'] = 'Conserva els registres d\'Ally durant tots aquests dies. Si es defineix a 0 no s\'esborren mai els registres. Una tasca programada (per defecte) s\'executa diàriament i esborrarà les entrades del registre que tinguin més d\'aquests dies.';
+$string['logger:filtersetupdebugger'] = 'Registre de configuració del filtre d’Ally';
 $string['logger:pushtoallysuccess'] = 'S\'ha passat correctament al punt final d\'Ally';
 $string['logger:pushtoallyfail'] = 'No s\'ha passat al punt final d\'Ally correctament';
 $string['logger:pushfilesuccess'] = 'S\'han passat correctament els fitxers al punt final d\'Ally';

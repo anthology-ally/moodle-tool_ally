@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -63,7 +63,7 @@ $string['hideexception'] = 'Piilota poikkeus';
 $string['usercapabilitymissing'] = 'Annetulla käyttäjällä ei ole oikeutta poistaa tätä tiedostoa.';
 $string['autoconfigure'] = 'Määritä Ally-verkkopalvelu automaattisesti';
 $string['autoconfiguredesc'] = 'Luo verkkopalvelurooli ja -käyttäjä Allylle automaattisesti.';
-$string['autoconfigureconfirmation'] = 'Luo verkkopalvelurooli ja -käyttäjä Allylle automaattisesti ja ota verkkopalvelu käyttöön. Seuraavat toiminnot suoritetaan: <ul><li>Rooli nimeltä ally_webservice luodaan ja käyttäjä nimeltä ally_webuser luodaan.</li><li>Käyttäjä ally_webuser lisätään roolin ally_webservice.</li><li>Verkkopalvelut otetaan käyttöön.</li><li>REST-verkkopalveluprotokolla otetaan käyttöön.</li><li>Ally-verkkopalvelu otetaan käyttöön.</li><li>Tilille ally_webuser luodaan avain.</li></ul>';
+$string['autoconfigureconfirmation'] = 'Luo Allyn verkkopalvelurooli ja käyttäjä ja ota verkkopalvelu käyttöön automaattisesti. Seuraavat toimet suoritetaan:<ul><li>ally_webservice-rooli ja käyttäjä käyttäjänimellä ally_webuser luodaan</li><li>ally_webuser-käyttäjä lisätään ally_webservice-rooliin</li><li>verkkopalvelut otetaan käyttöön</li><li>REST-verkkopalveluprotokolla otetaan käyttöön</li><li>Ally-verkkopalvelu otetaan käyttöön</li><li>ally_webuser-tilille luodaan avain</li></ul>';
 $string['autoconfigsuccess'] = 'Ally-verkkopalvelu on määritetty automaattisesti.';
 $string['autoconfigtoken'] = 'Verkkopalvelun avain on seuraava:';
 $string['autoconfigapicall'] = 'Seuraavan URL-osoitteen avulla voit testata, että verkkopalvelu toimii:';
@@ -93,6 +93,7 @@ $string['loglevel:all'] = 'Kaikkien';
 $string['logcleanuptask'] = 'Ally-lokin puhdistustehtävä';
 $string['loglifetimedays'] = 'Säilytä lokit näin monen päivän ajan';
 $string['loglifetimedaysdesc'] = 'Säilytä Ally-lokit näin monen päivän ajan. Kun arvoksi on määritetty 0, lokeja ei poisteta koskaan. Ajastettu tehtävä on (oletusarvoisesti) määritetty siten, että se suoritetaan päivittäin ja että se poistaa lokitietueet, joita on säilytetty kauemmin kuin näin monen päivän ajan.';
+$string['logger:filtersetupdebugger'] = 'Ally-suodatinmäärityksen loki';
 $string['logger:pushtoallysuccess'] = 'Lähetettiin Ally-päätepisteeseen';
 $string['logger:pushtoallyfail'] = 'Lähetys Ally-päätepisteeseen epäonnistui';
 $string['logger:pushfilesuccess'] = 'Tiedostot lähetettiin Ally-päätepisteeseen';
@@ -125,6 +126,6 @@ $string['logger:cmiderraticpremoddelete_exp'] = 'Moduulia ei ole tunnistettu oik
 $string['logger:servicefailure'] = 'Palvelun käyttäminen epäonnistui.';
 $string['logger:servicefailure_exp'] = '<br>Luokka: {$a->class}<br>Parametrit: {$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'Roolin ally_webservice perustoimintojen määrittäminen opettajalle epäonnistui.';
-$string['logger:autoconfigfailureteachercap_exp'] = '<br>Kyky: {$a->cap}<br>Käyttöoikeus: {$a->permission}';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>Oikeus: {$a->cap}<br>Käyttöoikeus: {$a->permission}';
 $string['deferredcourseevents'] = 'Lähetä lykkäytyneet kurssin tapahtumat';
 $string['deferredcourseeventsdesc'] = 'Salli tallennettujen kurssin tapahtumien lähetys, joita on kertynyt Ally-tietoyhteysongelman aikana';

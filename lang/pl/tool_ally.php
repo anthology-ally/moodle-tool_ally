@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -63,7 +63,7 @@ $string['hideexception'] = 'Ukryj wyjątek';
 $string['usercapabilitymissing'] = 'Podany użytkownik nie ma możliwości usunięcia tego pliku.';
 $string['autoconfigure'] = 'Automatycznie skonfiguruj usługę sieciową Ally';
 $string['autoconfiguredesc'] = 'Automatycznie utwórz rolę i użytkownika usługi sieciowej dla usługi Ally.';
-$string['autoconfigureconfirmation'] = 'Automatycznie utwórz rolę i użytkownika usługi sieciowej dla usługi Ally i włącz usługę sieciową. Zostaną wykonane następujące działania: <ul><li>utworzenie roli zatytułowanej „ally_webservice” i użytkownika o nazwie „ally_webuser”</li><li>dodanie użytkownika „ally_webuser” do roli „ally_webservice”</li><li>włączenie usług sieciowych</li><li>włączenie protokołu REST usługi sieciowej</li><li>włączenie usługi sieciowej Ally</li><li>utworzenie tokenu dla konta „ally_webuser”</li></ul>';
+$string['autoconfigureconfirmation'] = 'Automatycznie utwórz rolę i użytkownika usługi sieciowej dla usługi Ally i włącz usługę sieciową. Zostaną wykonane poniższe działania:<ul><li>utworzenie roli o nazwie „ally_webservice” i użytkownika o nazwie „ally_webuser”,</li><li>dodanie użytkownika „ally_webuser” do roli „ally_webservice”,</li><li>włączenie usług sieciowych,</li><li>włączenie protokołu REST usługi sieciowej,</li><li>włączenie usługi sieciowej Ally,</li><li>utworzeniu tokenu dla konta „ally_webuser”.</li></ul>';
 $string['autoconfigsuccess'] = 'Powodzenie — usługa sieciowa Ally została automatycznie skonfigurowana.';
 $string['autoconfigtoken'] = 'Token usługi sieciowej jest następujący:';
 $string['autoconfigapicall'] = 'Możesz przetestować działanie usługi sieciowej za pośrednictwem następującego adresu URL:';
@@ -93,6 +93,7 @@ $string['loglevel:all'] = 'Wszystkie';
 $string['logcleanuptask'] = 'Zadanie usuwania wpisów z dziennika Ally';
 $string['loglifetimedays'] = 'Zachowaj wpisy w dziennikach przez tę liczbę dni';
 $string['loglifetimedaysdesc'] = 'Zachowaj wpisy w dziennikach Ally przez tę liczbę dni. Ustaw na 0, aby nigdy nie usuwać wpisów. Zaplanowane zadanie jest (domyślnie) ustawione na codzienne uruchamianie i będzie usuwać wpisy w dzienniku, które mają więcej niż podaną liczbę dni.';
+$string['logger:filtersetupdebugger'] = 'Dziennik konfiguracji filtra usługi Ally';
 $string['logger:pushtoallysuccess'] = 'Pomyślne przesłano do punktu końcowego usługi Ally';
 $string['logger:pushtoallyfail'] = 'Nie udało się przesłać do punktu końcowego usługi Ally';
 $string['logger:pushfilesuccess'] = 'Pomyślne przesłano pliki do punktu końcowego usługi Ally';

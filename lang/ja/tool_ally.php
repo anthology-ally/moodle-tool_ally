@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,8 +32,8 @@ $string['code'] = 'ソースコード';
 $string['contentauthors'] = 'コンテンツの作者';
 $string['contentauthorsdesc'] = '選択されたロールに割り当てられた管理者とユーザは、アップロードされたコースファイルのアクセシビリティについて評価されます。ファイルにはアクセシビリティの評価が与えられます。評価が低いということは、そのファイルのアクセシビリティを改善するために変更が必要であることを意味します。';
 $string['contentupdatestask'] = 'コンテンツの更新タスク';
-$string['curlerror'] = 'cURLエラー : {$a}';
-$string['curlinvalidhttpcode'] = '不正なHTTPステータスコード : {$a}';
+$string['curlerror'] = 'cURLエラー：{$a}';
+$string['curlinvalidhttpcode'] = '不正なHTTPステータスコード：{$a}';
 $string['curlnohttpcode'] = 'HTTPステータスコードを確認できません';
 $string['error:invalidcomponentident'] = '不正なコンポーネント識別子{$a}';
 $string['error:pluginfilequestiononly'] = 'このURLでは問題コンポーネントのみサポートされています';
@@ -51,9 +51,9 @@ $string['message'] = 'メッセージ';
 $string['pluginname'] = 'Ally';
 $string['pushurl'] = 'ファイル更新URL';
 $string['pushurldesc'] = 'ファイル更新に関する通知をこのURLにプッシュします。';
-$string['queuesendmessagesfailure'] = 'AWS SQSへのメッセージ送信中にエラーが発生しました。エラーデータ : $a';
-$string['secret'] = '秘密鍵';
-$string['secretdesc'] = 'LTIの秘密鍵。';
+$string['queuesendmessagesfailure'] = 'AWS SQSへのメッセージ送信中にエラーが発生しました。エラーデータ：$a';
+$string['secret'] = 'プライベートキー';
+$string['secretdesc'] = 'LTIのプライベートキー。';
 $string['showdata'] = 'データを表示する';
 $string['hidedata'] = 'データを非表示にする';
 $string['showexplanation'] = '説明を表示する';
@@ -63,16 +63,16 @@ $string['hideexception'] = '例外を非表示にする';
 $string['usercapabilitymissing'] = '指定されたユーザは、このファイルを削除することができません。';
 $string['autoconfigure'] = 'Allyウェブサービスを自動設定する';
 $string['autoconfiguredesc'] = 'Allyのために自動的にウェブサービスロールとユーザを作成します。';
-$string['autoconfigureconfirmation'] = 'Allyのために自動的にウェブサービスロールとユーザを作成し、ウェブサービスを有効にします。次のアクションが実行されます : <ul><li>「ally_webservice」という名前のロールと「ally_webuser」というユーザ名のユーザを作成する</li><li>「ally_webuser」ユーザを「ally_webservice」ロールに追加する</li><li>ウェブサービスを有効にする</li><li>残りのウェブサービスプロトコルを有効にする</li><li>Allyウェブサービスを有効にする</li><li>「ally_webuser」アカウントのトークンを作成する</li></ul>';
+$string['autoconfigureconfirmation'] = 'Allyのために自動的にウェブサービスロールとユーザを作成します。次のアクションが実行されます。<ul><li>「ally_webservice」というロールと「ally_webuser」というユーザ名のユーザを作成します</li><li>「ally_webuser」ユーザを「ally_webservice」ロールに追加します</li><li>ウェブサービスを有効にします</li><li>ウェブサービスプロトコルを有効にします</li><li>Allyウェブサービスを有効にします</li><li>「ally_webuser」アカウントのトークンを作成します</li></ul>';
 $string['autoconfigsuccess'] = '成功 - Allyウェブサービスが自動的に設定されました。';
-$string['autoconfigtoken'] = 'ウェブサービストークンは次のとおりです :';
-$string['autoconfigapicall'] = '次のURLを介してウェブサービスが機能しているかどうかをテストできます :';
-$string['privacy:metadata:files:action'] = 'ファイルに対して行われたアクション、例 : 作成、更新、または削除。';
+$string['autoconfigtoken'] = 'ウェブサービストークンは次のとおりです：';
+$string['autoconfigapicall'] = '次のURLを介してウェブサービスが機能しているかどうかをテストできます：';
+$string['privacy:metadata:files:action'] = 'ファイルに対して行われたアクション、例：作成、更新、または削除。';
 $string['privacy:metadata:files:contenthash'] = '一意性を判断するためのファイルのコンテンツハッシュ。';
 $string['privacy:metadata:files:courseid'] = 'ファイルが所属するコースID。';
 $string['privacy:metadata:files:externalpurpose'] = 'Allyと統合するには、ファイルをAllyと交換する必要があります。';
 $string['privacy:metadata:files:filecontents'] = '実際のファイルのコンテンツは、アクセシビリティを評価するためAllyに送信されました。';
-$string['privacy:metadata:files:mimetype'] = 'ファイルMIMEタイプ、例 : テキスト/プレイン、イメージ/jpegなど。';
+$string['privacy:metadata:files:mimetype'] = 'ファイルMIMEタイプ、例：テキスト/プレイン、イメージ/jpegなど。';
 $string['privacy:metadata:files:pathnamehash'] = '一意に識別するためのファイルのパス名ハッシュ。';
 $string['privacy:metadata:files:timemodified'] = 'フィールドが最後に修正された日時。';
 $string['cachedef_annotationmaps'] = 'コースの注釈データを保存する';
@@ -93,6 +93,7 @@ $string['loglevel:all'] = 'すべて';
 $string['logcleanuptask'] = 'Allyログのクリーンアップタスク';
 $string['loglifetimedays'] = 'この日数の間ログを保持する';
 $string['loglifetimedaysdesc'] = 'この日数の間Allyログを保持します。0に設定して、決してログを削除しないようにします。スケジュールタスクは毎日実行するように (デフォルトで) 設定され、この日数より古くなったログエントリを削除するようにします。';
+$string['logger:filtersetupdebugger'] = 'Allyフィルタ設定ログ';
 $string['logger:pushtoallysuccess'] = 'Allyエンドポイントへのプッシュ成功';
 $string['logger:pushtoallyfail'] = 'Allyエンドポイントへのプッシュ失敗';
 $string['logger:pushfilesuccess'] = 'Allyエンドポイントへのファイルのプッシュ成功';
@@ -123,8 +124,8 @@ $string['logger:addingcourseevttoqueue'] = 'コースイベントをプッシュ
 $string['logger:cmiderraticpremoddelete'] = 'コースモジュールIDに事前削除の問題があります。';
 $string['logger:cmiderraticpremoddelete_exp'] = 'モジュールが正しく識別できませんでした。セクションが削除されたために存在しないか、他の要因で削除フックがトリガされ、見つからなくなりました。';
 $string['logger:servicefailure'] = 'サービスの使用中に失敗しました。';
-$string['logger:servicefailure_exp'] = '<br>クラス : {$a->class}<br>パラメータ : {$a->params}';
+$string['logger:servicefailure_exp'] = '<br>クラス：{$a->class}<br>パラメータ：{$a->params}';
 $string['logger:autoconfigfailureteachercap'] = 'ally_webserviceロールに教師アーキタイプケイパビリティを割り当て中に失敗しました。';
-$string['logger:autoconfigfailureteachercap_exp'] = '<br>ケイパビリティ : {$a->cap}<br>パーミッション : {$a->permission}';
+$string['logger:autoconfigfailureteachercap_exp'] = '<br>ケイパビリティ：{$a->cap}<br>パーミッション：{$a->permission}';
 $string['deferredcourseevents'] = '保留されたコースイベントを送信する';
 $string['deferredcourseeventsdesc'] = 'Allyとの通信エラーの間に蓄積した、保存されたコースイベントを送信できるようにします。';

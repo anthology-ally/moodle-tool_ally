@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @copyright  Copyright (c) 2022 Open LMS (https://www.openlms.net)
+ * @copyright  Copyright (c) 2023 Open LMS (https://www.openlms.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -63,13 +63,13 @@ $string['hideexception'] = 'Skjul undtagelse';
 $string['usercapabilitymissing'] = 'Den angivne bruger har ikke den nødvendige egenskab til at slette denne fil.';
 $string['autoconfigure'] = 'Konfigurer Allys webservice automatisk';
 $string['autoconfiguredesc'] = 'Opret webservicerolle og bruger for Ally automatisk.';
-$string['autoconfigureconfirmation'] = 'Opret webtjenesterolle og bruger for Ally automatisk, og aktivér webservice. Følgende handlinger vil blive foretaget: <ul><li>Opret en rolle med titlen "ally_webservice" og en bruger med brugernavnet "ally_webuser"</li><li>Tilføj brugeren "ally_webuser" til rollen "ally_webservice"</li><li>Aktivér webtjenesten</li><li>Aktivér resten af webserviceprotokollenl</li><li>Aktivér Ally-webtjenesten</li><li>Opret et token for "ally_webuser"-kontoen</li></ul>';
+$string['autoconfigureconfirmation'] = 'Opret webtjenesterolle og bruger for Ally automatisk, og aktivér webtjeneste. Følgende handlinger udføres:<ul><li>opret en rolle med titlen &quot;ally_webservice&quot; og en bruger med brugernavnet &quot;ally_webuser&quot;</li><li>føj &quot;ally_webuser&quot;-brugeren til rollen &quot;ally_webservice&quot;</li><li>aktivér webtjenester</li><li>aktivér de resterende webtjenesteprotokoller</li><li>aktivér Ally-webtjeneste automatisk</li><li>opret en token for &quot;ally_webuser&quot;-kontoen</li></ul>';
 $string['autoconfigsuccess'] = 'Fuldført – Ally-webtjenesten er blevet konfigureret.';
 $string['autoconfigtoken'] = 'Token for webtjenesten er som følger:';
 $string['autoconfigapicall'] = 'På følgende URL kan du teste, om webtjenesten fungerer:';
 $string['privacy:metadata:files:action'] = 'Handlingen, som er foretaget på filen, f.eks: oprettet, opdateret eller slettet.';
 $string['privacy:metadata:files:contenthash'] = 'Filens indholds-hash for at afgøre entydighed.';
-$string['privacy:metadata:files:courseid'] = 'Kursus-ID\'et, som filen tilhører.';
+$string['privacy:metadata:files:courseid'] = 'Kursus-ID&apos;et, som filen tilhører.';
 $string['privacy:metadata:files:externalpurpose'] = 'For at kunne integreres med Ally, skal der udveksles filer med Ally.';
 $string['privacy:metadata:files:filecontents'] = 'Den faktiske fils indhold sendes til Ally, så det kan blive evalueret for tilgængelighed.';
 $string['privacy:metadata:files:mimetype'] = 'Filens MIME-type, f.eks tekst/almindelig, billede/jpeg, osv.';
@@ -82,8 +82,8 @@ $string['cachedef_request'] = 'Ally-filterets anmodningscache';
 $string['pushfilessummary'] = 'Oversigt over Ally-filopdateringer.';
 $string['pushfilessummary:explanation'] = 'Oversigt over filopdateringer sendt til Ally.';
 $string['section'] = 'Sektion {$a}';
-$string['lessonanswertitle'] = 'Svar for lektion "{$a}"';
-$string['lessonresponsetitle'] = 'Svar for lektion "{$a}"';
+$string['lessonanswertitle'] = 'Svar for lektion &quot;{$a}&quot;';
+$string['lessonresponsetitle'] = 'Svar for lektion &quot;{$a}&quot;';
 $string['logs'] = 'Ally-logfiler';
 $string['logrange'] = 'Loginterval';
 $string['loglevel:none'] = 'Ingen';
@@ -93,6 +93,7 @@ $string['loglevel:all'] = 'Alle';
 $string['logcleanuptask'] = 'Oprydningsopgave for Ally-logfiler';
 $string['loglifetimedays'] = 'Behold logfiler så mange dage';
 $string['loglifetimedaysdesc'] = 'Behold Ally-logfiler i så mange dage. Angiv 0 for aldrig at slette logfiler. En planlagt opgave er (som standard) indstillet til at køre dagligt og fjerner logposter, der er mere end så mange dage gamle.';
+$string['logger:filtersetupdebugger'] = 'Ally-filterets opsætningslog';
 $string['logger:pushtoallysuccess'] = 'Push til Ally-slutpunkt lykkedes';
 $string['logger:pushtoallyfail'] = 'Push til Ally-slutpunkt lykkedes ikke';
 $string['logger:pushfilesuccess'] = 'Push af filen/filerne til Ally-slutpunkt blev gennemført.';
