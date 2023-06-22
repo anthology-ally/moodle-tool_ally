@@ -17,7 +17,7 @@
 /**
  * Admin setting for picking roles available for ally configuration.
  * @author    David Castro <david.castro@openlms.net>
- * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @package   tool_ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -29,7 +29,7 @@ namespace tool_ally\adminsetting;
  *
  * @package   tool_ally
  * @author    David Castro <david.castro@openlms.net>
- * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net)
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ally_pickroles extends \admin_setting_pickroles {

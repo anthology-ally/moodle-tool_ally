@@ -18,7 +18,7 @@
  * Tests for log cleanup task.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_ally;
@@ -35,7 +35,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * Tests for log cleanup task.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cleanup_log_task_test extends abstract_testcase {
