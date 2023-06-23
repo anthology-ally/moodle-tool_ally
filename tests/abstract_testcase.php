@@ -18,7 +18,7 @@
  * Base test case.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
+ * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_ally;
@@ -38,7 +38,7 @@ require_once($CFG->dirroot.'/webservice/tests/helpers.php');
  * Base test case.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net)
+ * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class abstract_testcase extends \externallib_advanced_testcase {

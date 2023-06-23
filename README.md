@@ -65,7 +65,7 @@ The report should be located and named as:
 
 ## License for Ally admin tool
 
-© Open LMS 2017 / Anthology Group Ltd 2023
+© 2017 Open LMS / 2023 Anthology Inc. and its affiliates
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software

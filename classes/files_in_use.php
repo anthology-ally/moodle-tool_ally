@@ -18,7 +18,7 @@
  * Checks and tracks if files in use by a component.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,7 +34,7 @@ use stored_file;
  * Checks and tracks if files in use by a component.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net)
+ * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class files_in_use {
