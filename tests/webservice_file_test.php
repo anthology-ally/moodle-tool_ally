@@ -21,8 +21,8 @@
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace tool_ally;
 
+use tool_ally\abstract_testcase;
 use tool_ally\webservice\file;
 use tool_ally\local;
 use tool_ally\auto_config;
@@ -37,6 +37,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @package   tool_ally
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @runTestsInSeparateProcesses
  */
 class webservice_file_test extends abstract_testcase {
 

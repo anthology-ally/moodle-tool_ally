@@ -24,6 +24,7 @@
 namespace tool_ally;
 
 use Prophecy\Argument;
+use prophesize_deprecation_workaround_mixin;
 use tool_ally\push_config;
 use tool_ally\file_processor;
 use tool_ally\task\file_updates_task;
@@ -32,6 +33,7 @@ use tool_ally\push_file_updates;
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
 
 /**
  * Tests for file push error retrying.
@@ -42,6 +44,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class push_file_updates_error_retry_test extends abstract_testcase {
+    use prophesize_deprecation_workaround_mixin;
 
     public function test_retry_increase_push_disabled_task_reset() {
         $this->resetAfterTest();
@@ -67,7 +70,7 @@ class push_file_updates_error_retry_test extends abstract_testcase {
         set_config('push_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
 
         // Since the file was not pushed above, the task should call cURL push once.
-        $updates = $this->prophesize(push_file_updates::class);
+        $updates = $this->prophesize_without_deprecation_warning(push_file_updates::class);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(1);
         $updates->send(Argument::type('array'))->willReturn(true);
 

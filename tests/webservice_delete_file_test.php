@@ -21,10 +21,9 @@
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace tool_ally;
 
+use tool_ally\abstract_testcase;
 use tool_ally\webservice\delete_file;
-use tool_ally\local;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -36,6 +35,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @package   tool_ally
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @runTestsInSeparateProcesses
  */
 class webservice_delete_file_test extends abstract_testcase {
     /**

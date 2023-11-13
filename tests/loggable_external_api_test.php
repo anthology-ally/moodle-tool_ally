@@ -21,15 +21,17 @@
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__.'/abstract_testcase.php');
 
+use tool_ally\abstract_testcase;
 use tool_ally\webservice\log;
 use tool_ally\webservice\version_info;
 use Psr\Log\LogLevel;
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
  * Test for loggable_external_api.
@@ -37,8 +39,14 @@ use Psr\Log\LogLevel;
  * @package   tool_ally
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @runTestsInSeparateProcesses
  */
 class loggable_external_api_test extends abstract_testcase {
+    protected function setUp(): void {
+        parent::setUp();
+        global $CFG;
+        require_once($CFG->dirroot.'/lib/externallib.php');
+    }
 
     public function test_service_version_failure_logged() {
         $this->resetAfterTest();

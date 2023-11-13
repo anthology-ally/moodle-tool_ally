@@ -21,7 +21,6 @@
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -35,6 +34,7 @@ use tool_ally\webservice\course_user_count;
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @runTestsInSeparateProcesses
  */
 class webservice_course_user_count_test extends \externallib_advanced_testcase {
 

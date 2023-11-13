@@ -21,8 +21,8 @@
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-namespace tool_ally;
 
+use tool_ally\abstract_testcase;
 use tool_ally\webservice\course_content;
 use tool_ally\models\component;
 
@@ -36,8 +36,14 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @runTestsInSeparateProcesses
  */
 class webservice_course_content_test extends abstract_testcase {
+    protected function setUp(): void {
+        parent::setUp();
+        global $CFG;
+        require_once($CFG->dirroot.'/lib/externallib.php');
+    }
 
     private function get_forum_expectations($course, $forumtype = 'forum') {
         global $USER;
