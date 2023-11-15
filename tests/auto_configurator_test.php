@@ -20,12 +20,17 @@
  * @package   tool_ally
  * @author    Sam Chaffee
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @group     tool_ally
+ * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+namespace tool_ally;
 
 use tool_ally\auto_config_resolver;
 use tool_ally\auto_configurator;
 use tool_ally\auto_config;
+use advanced_testcase;
 
 defined('MOODLE_INTERNAL') || die();
 
