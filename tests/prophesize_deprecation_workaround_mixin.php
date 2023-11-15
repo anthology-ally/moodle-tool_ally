@@ -1,8 +1,11 @@
 <?php
 
+namespace tool_ally;
+
 use PHPUnit\Framework\Exception;
 use Prophecy\Prophecy\ObjectProphecy;
 use Prophecy\Prophet;
+use ReflectionMethod;
 
 trait prophesize_deprecation_workaround_mixin {
     /**

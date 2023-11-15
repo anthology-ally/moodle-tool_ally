@@ -31,6 +31,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__.'/abstract_testcase.php');
 
+/**
+ * @group     tool_ally
+ * @group     ally
+ */
 class version_information_test extends abstract_testcase {
 
     public function test_plugin_not_intsalled() {

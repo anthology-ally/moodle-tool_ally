@@ -18,14 +18,16 @@
  * Test launch config class.
  * @author    Guy Thomas <dev@citri.city>
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
- * @group     tool_ally
- * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_ally;
 
 use tool_ally\lti\launch_config;
 
+/**
+ * @group     tool_ally
+ * @group     ally
+ */
 class launch_config_test extends \advanced_testcase {
     public function setUp(): void {
         global $CFG;

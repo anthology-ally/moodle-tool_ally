@@ -19,14 +19,12 @@
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
- * @group     tool_ally
- * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_ally;
 
 use Prophecy\Argument;
-use prophesize_deprecation_workaround_mixin;
+use tool_ally\prophesize_deprecation_workaround_mixin;
 use tool_ally\push_config;
 use tool_ally\file_processor;
 use tool_ally\task\file_updates_task;
@@ -43,6 +41,8 @@ require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
  * @class     tool_ally_push_file_updates_error_retry_test
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @group     tool_ally
+ * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class push_file_updates_error_retry_test extends abstract_testcase {

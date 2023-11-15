@@ -21,8 +21,6 @@
  * @package   tool_ally
  * @author    Julian Tovar <julian.tovar@openlms.net>
  * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
- * @group     tool_ally
- * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_ally;
@@ -34,6 +32,10 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once('abstract_testcase.php');
 
+/**
+ * @group     tool_ally
+ * @group     ally
+ */
 class components_page_component_with_null_content_test extends abstract_testcase {
 
     /**

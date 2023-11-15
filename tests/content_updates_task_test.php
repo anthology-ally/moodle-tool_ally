@@ -27,10 +27,10 @@ namespace tool_ally;
 
 use Prophecy\Argument;
 use \core\event\course_module_updated;
-use prophesize_deprecation_workaround_mixin;
 use tool_ally\push_config;
 use tool_ally\push_content_updates;
 use tool_ally\task\content_updates_task;
+use tool_ally\prophesize_deprecation_workaround_mixin;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -42,6 +42,8 @@ require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @group     tool_ally
+ * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class content_updates_task_test extends abstract_testcase {
