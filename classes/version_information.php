@@ -23,9 +23,6 @@
  */
 
 namespace tool_ally;
-// Prepare for code checker update. Will be removed on INT-17966.
-// @codingStandardsIgnoreLine
-defined('MOODLE_INTERNAL') || die();
 
 use core_component,
     core_plugin_manager,

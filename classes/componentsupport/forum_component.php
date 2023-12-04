@@ -280,7 +280,6 @@ SQL;
         $discussions = '{' . $this->type . '_discussions}';
         $poststable = '{' . $this->type . '_posts}';
         $forum = '{' . $this->type . '}';
-        $params = [$id];
         if ($table === $this->type . '_posts') {
             $params = [$id];
             $sql = <<<SQL
