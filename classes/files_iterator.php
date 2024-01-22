@@ -165,11 +165,11 @@ class files_iterator implements \Iterator {
     /**
      * @return \stored_file
      */
-    public function current() {
+    public function current(): mixed {
         return $this->current;
     }
 
-    public function next() {
+    public function next(): void {
         if ($this->reached_count_limit()) {
             $this->current = null;
             return;
@@ -211,7 +211,7 @@ class files_iterator implements \Iterator {
         $this->current = null;
     }
 
-    public function key() {
+    public function key(): mixed {
         if ($this->current instanceof \stored_file) {
             return (int) $this->current->get_id();
         }
@@ -219,11 +219,11 @@ class files_iterator implements \Iterator {
         return null;
     }
 
-    public function valid() {
+    public function valid(): bool {
         return $this->current instanceof \stored_file;
     }
 
-    public function rewind() {
+    public function rewind(): void {
         $this->page = 0;
         $this->resultcount = 0;
         $this->next_page();
