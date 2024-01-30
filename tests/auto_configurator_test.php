@@ -22,20 +22,31 @@
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 namespace tool_ally;
 
 use tool_ally\auto_config_resolver;
 use tool_ally\auto_configurator;
 use tool_ally\auto_config;
+use advanced_testcase;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
+
 
 /**
  * Testcase class for the tool_ally\auto_configurator class.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @group     tool_ally
+ * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @runTestsInSeparateProcesses
  */
-class auto_configurator_test extends \advanced_testcase {
+class auto_configurator_test extends advanced_testcase {
+    use prophesize_deprecation_workaround_mixin;
 
     public function setUp(): void {
         $this->resetAfterTest(true);
@@ -49,7 +60,7 @@ class auto_configurator_test extends \advanced_testcase {
             'pushurl' => 'http://someotherfakeurl.invalid',
         ];
 
-        $resolver = $this->prophesize(auto_config_resolver::class);
+        $resolver = $this->prophesize_without_deprecation_warning(auto_config_resolver::class);
         $configurator = new auto_configurator();
 
         $resolver->resolve()->willReturn($configs);
@@ -71,7 +82,7 @@ class auto_configurator_test extends \advanced_testcase {
             'blawblaw' => 'yada',
         ];
 
-        $resolver = $this->prophesize(auto_config_resolver::class);
+        $resolver = $this->prophesize_without_deprecation_warning(auto_config_resolver::class);
         $configurator = new auto_configurator();
 
         $resolver->resolve()->willReturn($configs);

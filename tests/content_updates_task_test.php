@@ -19,6 +19,8 @@
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @group     tool_ally
+ * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_ally;
@@ -28,19 +30,24 @@ use \core\event\course_module_updated;
 use tool_ally\push_config;
 use tool_ally\push_content_updates;
 use tool_ally\task\content_updates_task;
+use tool_ally\prophesize_deprecation_workaround_mixin;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
 
 /**
  * Tests for content updates task.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @group     tool_ally
+ * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class content_updates_task_test extends abstract_testcase {
+    use prophesize_deprecation_workaround_mixin;
 
     /**
      * First run should set the timestamp then exit.
@@ -52,7 +59,7 @@ class content_updates_task_test extends abstract_testcase {
 
         $task          = new content_updates_task();
         $task->config  = new push_config('url', 'key', 'sceret');
-        $task->updates = $this->prophesize(push_content_updates::class)->reveal();
+        $task->updates = $this->prophesize_without_deprecation_warning(push_content_updates::class)->reveal();
 
         $expected = time();
         $task->execute();
@@ -65,7 +72,7 @@ class content_updates_task_test extends abstract_testcase {
      */
     public function test_invalid_config() {
         $task          = new content_updates_task();
-        $task->updates = $this->prophesize(push_content_updates::class)->reveal();
+        $task->updates = $this->prophesize_without_deprecation_warning(push_content_updates::class)->reveal();
 
         $task->execute();
 
@@ -97,7 +104,7 @@ class content_updates_task_test extends abstract_testcase {
 
         $task          = new content_updates_task();
         $task->config  = new push_config('url', 'key', 'sceret');
-        $updates = $this->prophesize(push_content_updates::class);
+        $updates = $this->prophesize_without_deprecation_warning(push_content_updates::class);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(1);
         $task->updates = $updates->reveal();
 
@@ -127,7 +134,7 @@ class content_updates_task_test extends abstract_testcase {
                     ['introformat' => FORMAT_HTML, 'course' => $course->id]);
         }
 
-        $updates = $this->prophesize(push_content_updates::class);
+        $updates = $this->prophesize_without_deprecation_warning(push_content_updates::class);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(3);
 
         $task          = new content_updates_task();
@@ -152,7 +159,7 @@ class content_updates_task_test extends abstract_testcase {
 
         $this->dataset_from_array(include(__DIR__.'/fixtures/deleted_content.php'))->to_database();
 
-        $updates = $this->prophesize(push_content_updates::class);
+        $updates = $this->prophesize_without_deprecation_warning(push_content_updates::class);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(3);
 
         $task          = new content_updates_task();
@@ -214,7 +221,7 @@ class content_updates_task_test extends abstract_testcase {
 
         $task          = new content_updates_task();
         $task->config  = new push_config('url', 'key', 'sceret');
-        $updates = $this->prophesize(push_content_updates::class);
+        $updates = $this->prophesize_without_deprecation_warning(push_content_updates::class);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(1);
         $task->updates = $updates->reveal();
 
@@ -285,7 +292,7 @@ class content_updates_task_test extends abstract_testcase {
 
         $task          = new content_updates_task();
         $task->config  = new push_config('url', 'key', 'sceret');
-        $updates = $this->prophesize(push_content_updates::class);
+        $updates = $this->prophesize_without_deprecation_warning(push_content_updates::class);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(1);
         $task->updates = $updates->reveal();
 
@@ -355,7 +362,7 @@ class content_updates_task_test extends abstract_testcase {
         fwrite(STDOUT, "\nGlossary deletion took " . (microtime(true) - $start));
         $task          = new content_updates_task();
         $task->config  = new push_config('url', 'key', 'sceret');
-        $updates = $this->prophesize(push_content_updates::class);
+        $updates = $this->prophesize_without_deprecation_warning(push_content_updates::class);
         $sendcount = ceil($pushcount / $task->config->get_batch_size());
         $updates->send(Argument::type('array'))->shouldBeCalledTimes($sendcount);
         $task->updates = $updates->reveal();

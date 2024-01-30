@@ -19,6 +19,8 @@
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @group     tool_ally
+ * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_ally;
@@ -27,19 +29,24 @@ use Prophecy\Argument;
 use tool_ally\push_config;
 use tool_ally\push_course_updates;
 use tool_ally\task\course_updates_task;
+use tool_ally\prophesize_deprecation_workaround_mixin;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
 
 /**
  * Tests for course updates task.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @group     tool_ally
+ * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_updates_task_test extends abstract_testcase {
+    use prophesize_deprecation_workaround_mixin;
 
     /**
      * Ensure that basic execution and timestamp management is working.
@@ -55,7 +62,7 @@ class course_updates_task_test extends abstract_testcase {
         $this->getDataGenerator()->create_course();
         $task          = new course_updates_task();
         $task->config  = new push_config('url', 'key', 'secret');
-        $updates       = $this->prophesize(push_course_updates::class);
+        $updates       = $this->prophesize_without_deprecation_warning(push_course_updates::class);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(1);
         $task->updates = $updates->reveal();
 
@@ -78,7 +85,7 @@ class course_updates_task_test extends abstract_testcase {
             $courses[] = $this->getDataGenerator()->create_course();
         }
 
-        $updates = $this->prophesize(push_course_updates::class);
+        $updates = $this->prophesize_without_deprecation_warning(push_course_updates::class);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(3);
 
         $task          = new course_updates_task();
@@ -124,7 +131,7 @@ class course_updates_task_test extends abstract_testcase {
             $delevent->trigger();
         }
 
-        $updates = $this->prophesize(push_course_updates::class);
+        $updates = $this->prophesize_without_deprecation_warning(push_course_updates::class);
         $updates->send(Argument::type('array'))->shouldBeCalledTimes(3);
 
         $task          = new course_updates_task();
