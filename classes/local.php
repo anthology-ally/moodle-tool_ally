@@ -249,7 +249,7 @@ class local {
      * @return \stdClass
      * @throws \dml_exception
      */
-    private static function add_token_to_wstoken(\stdClass $wstoken): \stdClass {
+    public static function add_token_to_wstoken(\stdClass $wstoken): \stdClass {
         if (empty($wstoken->token)) {
             global $DB;
             $wstoken->token = $DB->get_field('external_tokens', 'token', ['id' => $wstoken->id]);
