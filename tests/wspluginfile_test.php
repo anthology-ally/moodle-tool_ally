@@ -110,6 +110,7 @@ class wspluginfile_test extends abstract_testcase {
 
         $tokens = $this->webservice->get_user_ws_tokens($this->allywebuser->id);
         $wstoken = reset($tokens);
+        $wstoken = \tool_ally\local::add_token_to_wstoken($wstoken);
 
         $pathnamehash = sha1(uniqid());
         $iat = time();
@@ -124,6 +125,7 @@ class wspluginfile_test extends abstract_testcase {
 
         $tokens = $this->webservice->get_user_ws_tokens($this->allywebuser->id);
         $wstoken = reset($tokens);
+        $wstoken = \tool_ally\local::add_token_to_wstoken($wstoken);
 
         $this->setAdminUser(); // We need a user before we can create a file.
 

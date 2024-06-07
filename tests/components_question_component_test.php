@@ -72,6 +72,11 @@ class components_question_component_test extends abstract_testcase {
      */
     private $component;
 
+    /**
+     * @var stdClass
+     */
+    private object $quest1;
+
     public function setUp(): void {
         $this->resetAfterTest();
 
