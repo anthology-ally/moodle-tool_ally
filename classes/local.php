@@ -222,7 +222,7 @@ class local {
      * @throws \dml_exception
      * @throws \webservice_access_exception
      */
-    public static function get_ws_token() {
+    public static function  get_ws_token() {
         $allyuser = self::get_ally_web_user();
         if (!$allyuser) {
             $msg = 'Ally web user (ally_webuser) does not exist. Has auto configure been run?';
@@ -239,6 +239,7 @@ class local {
             throw new \webservice_access_exception($msg);
         }
         $wstoken = reset($tokens);
+
         return self::add_token_to_wstoken($wstoken);
     }
 
