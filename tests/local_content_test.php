@@ -112,7 +112,7 @@ class local_content_test extends abstract_testcase {
             $course->id,
             $section->timemodified,
             $section->summaryformat,
-            'Topic 0' // Default section name for section 0 where no section name set.
+            'Section 0' // Default section name for section 0 where no section name set.
         );
 
         $labelintro = '<p>My original intro content</p>';
@@ -154,7 +154,7 @@ class local_content_test extends abstract_testcase {
         $contents = local_content::get_course_html_content_items('course', $course->id);
         // Default title.
         $expectedtitle = $contents[2]->title;
-        $this->assertEquals('Topic 1', $expectedtitle);
+        $this->assertEquals('Section 1', $expectedtitle);
 
         $expectedtimemodified = $course->timecreated;
         $contents = local_content::get_html_content($section2->id, 'course', 'course_sections', 'summary', $course->id, true);
