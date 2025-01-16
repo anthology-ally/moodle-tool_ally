@@ -134,7 +134,7 @@ class webservice_content_test extends abstract_testcase {
             $section->timemodified,
             $section->summaryformat,
             $section0summary,
-            'Topic 0' // Default section name for section 0 where no section name set.
+            'Section 0' // Default section name for section 0 where no section name set.
         );
         $content->courseid = null;
         $this->assertEquals($expected, $content);

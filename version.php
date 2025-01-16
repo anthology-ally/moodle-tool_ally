@@ -26,11 +26,11 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component = 'tool_ally';
-$plugin->release   = '4.3.0';
-$plugin->version   = 2024060300;
-$plugin->requires  = 2022041900;
+$plugin->release   = '4.4.3';
+$plugin->version   = 2024112200;
+$plugin->requires  = 2024042203;
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->dependencies = [
-    'filter_ally'    => 2024060300,
-    'report_allylti' => 2024060300,
+    'filter_ally'    => 2024112200,
+    'report_allylti' => 2024112200,
 ];

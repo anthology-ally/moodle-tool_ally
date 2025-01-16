@@ -60,12 +60,13 @@ class auto_configurator_test extends advanced_testcase {
             'pushurl' => 'http://someotherfakeurl.invalid',
         ];
 
-        $resolver = $this->prophesize_without_deprecation_warning(auto_config_resolver::class);
+        $resolver = $this->createMock(auto_config_resolver::class);
         $configurator = new auto_configurator();
 
-        $resolver->resolve()->willReturn($configs);
+        $resolver->method('resolve')
+            ->willReturn($configs);
 
-        $configurator->configure_settings($resolver->reveal());
+        $configurator->configure_settings($resolver);
 
         $dbconfigs = get_config('tool_ally');
         foreach ($configs as $name => $expected) {
@@ -82,12 +83,13 @@ class auto_configurator_test extends advanced_testcase {
             'blawblaw' => 'yada',
         ];
 
-        $resolver = $this->prophesize_without_deprecation_warning(auto_config_resolver::class);
+        $resolver = $this->createMock(auto_config_resolver::class);
         $configurator = new auto_configurator();
 
-        $resolver->resolve()->willReturn($configs);
+        $resolver->method('resolve')
+            ->willReturn($configs);
 
-        $configurator->configure_settings($resolver->reveal());
+        $configurator->configure_settings($resolver);
 
         $dbconfigs = get_config('tool_ally');
         $this->assertArrayNotHasKey('blawblaw', (array) $dbconfigs);

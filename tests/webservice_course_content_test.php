@@ -171,7 +171,7 @@ class webservice_course_content_test extends abstract_testcase {
             $course->id,
             $section->timemodified,
             $section->summaryformat,
-            'Topic 0' // Default section name for section 0 where no section name set.
+            'Section 0' // Default section name for section 0 where no section name set.
         );
 
         $labelintro = '<p>My original intro content</p>';

@@ -72,16 +72,16 @@ class push_file_updates_error_retry_test extends abstract_testcase {
         set_config('push_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
 
         // Since the file was not pushed above, the task should call cURL push once.
-        $updates = $this->prophesize_without_deprecation_warning(push_file_updates::class);
-        $updates->send(Argument::type('array'))->shouldBeCalledTimes(1);
-        $updates->send(Argument::type('array'))->willReturn(true);
+        $updates = $this->createMock(push_file_updates::class);
+        $updates->expects($this->once())
+        ->method('send')
+        ->with($this->isType('array'))
+        ->willReturn(true);
 
         $task          = new file_updates_task();
         $task->config  = new push_config('url', 'key', 'sceret');
-        $task->updates = $updates->reveal();
+        $task->updates = $updates;
         $task->execute();
-
-        $updates->checkProphecyMethodsPredictions();
 
         // Recreate push config to get current counter values.
         unset($config);
