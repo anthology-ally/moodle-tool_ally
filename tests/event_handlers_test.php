@@ -33,7 +33,6 @@ require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
 use core\event\course_created;
 use core\event\course_updated;
-use core\event\course_restored;
 use core\event\course_section_created;
 use core\event\course_section_updated;
 use core\event\course_module_created;
@@ -48,20 +47,14 @@ use \mod_glossary\event\entry_updated;
 use \mod_book\event\chapter_created;
 use \mod_book\event\chapter_updated;
 
-use tool_ally\content_processor;
-use tool_ally\course_processor;
-use tool_ally\file_processor;
-use tool_ally\traceable_processor;
-
-use tool_ally\event_handlers;
-use tool_ally\files_in_use;
 use tool_ally\task\content_updates_task;
-use tool_ally\local_content;
+
 /**
  * Tests for event handlers.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @group     tool_ally_event_handlers
  * @group     tool_ally
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -582,6 +575,7 @@ MSG;
         $link = $generator->create_pluginfile_link_for_file($usedfile);
         $mod->$modfield = 'Updated ' . $modfield . ' with some a link ' . $link;
         $DB->update_record($modtable, $mod);
+
         // Now make sure that records exist.
         $this->assertCount(2, $DB->get_records('tool_ally_file_in_use', ['contextid' => $context->id]));
 
@@ -631,7 +625,24 @@ MSG;
         $this->check_module_updated_pushtraces('assign', 'assign', 'intro', 'intro');
     }
 
+    /**
+     * Returns true if test was marked as skipped due to Moodle version not supporting PHP Unit tests for create_file.
+     * @return bool
+     */
+    private function skip_module_deleted_create_file_not_supported(): bool {
+        global $CFG;
+        if (intval($CFG->branch) >= 405) {
+            // Unsupported for Moodle 405+ due to https://tracker.moodle.org/browse/MDL-84977.
+            $this->markTestSkipped('Moodle 405+ does not facilitate full testing of file_storage class - see MDL-84977');
+            return true;
+        }
+        return false;
+    }
+
     public function test_assign_deleted() {
+        if ($this->skip_module_deleted_create_file_not_supported()) {
+            return;
+        }
         $this->check_module_deleted_pushtraces('assign', 'assign', 'intro');
     }
 
@@ -694,12 +705,15 @@ MSG;
     }
 
     public function test_book_deleted() {
-        global $USER;
+        global $CFG;
 
         $this->setAdminUser();
 
         // First do the default check.
-        $this->check_module_deleted_pushtraces('book', 'book', 'intro');
+        // Unsupported for Moodle 405+ due to https://tracker.moodle.org/browse/MDL-84977.
+        if (intval($CFG->branch) < 405) {
+            $this->check_module_deleted_pushtraces('book', 'book', 'intro');
+        }
 
         // Now the more complicated testing. Specifically we are going to confirm that when a book is deleted,
         // any chapters within it are also marked for deletion.
@@ -754,6 +768,9 @@ MSG;
     }
 
     public function test_forum_deleted() {
+        if ($this->skip_module_deleted_create_file_not_supported()) {
+            return;
+        }
         $this->check_module_deleted_pushtraces('forum', 'forum', 'intro');
     }
 
@@ -766,6 +783,9 @@ MSG;
     }
 
     public function test_label_deleted() {
+        if ($this->skip_module_deleted_create_file_not_supported()) {
+            return;
+        }
         $this->check_module_deleted_pushtraces('label', 'label', 'intro');
     }
 
@@ -821,6 +841,9 @@ MSG;
     }
 
     public function test_lesson_deleted() {
+        if ($this->skip_module_deleted_create_file_not_supported()) {
+            return;
+        }
         $this->check_module_deleted_pushtraces('lesson', 'lesson', 'intro');
     }
 
@@ -835,10 +858,16 @@ MSG;
     }
 
     public function test_page_deleted_intro() {
+        if ($this->skip_module_deleted_create_file_not_supported()) {
+            return;
+        }
         $this->check_module_deleted_pushtraces('page', 'page', 'intro');
     }
 
     public function test_page_deleted_content() {
+        if ($this->skip_module_deleted_create_file_not_supported()) {
+            return;
+        }
         $this->check_module_deleted_pushtraces('page', 'page', 'content');
     }
 
