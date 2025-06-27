@@ -259,6 +259,10 @@ class content_updates_task_test extends abstract_testcase {
     }
 
     public function test_pre_course_module_delete_hsuforum(): void {
+        global $CFG;
+        if (!file_exists($CFG->dirroot.'/mod/hsuforum')) {
+            $this->markTestSkipped('mod_hsuforum is not installed');
+        }
         $this->pre_course_module_delete_forum('hsuforum');
     }
 

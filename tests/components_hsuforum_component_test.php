@@ -97,7 +97,16 @@ class components_hsuforum_component_test extends abstract_testcase {
      */
     private $component;
 
+    private function hsuforum_available() {
+        global $CFG;
+        return file_exists($CFG->dirroot.'/mod/hsuforum');
+    }
+
     public function setUp(): void {
+        if (!$this->hsuforum_available()) {
+            return;
+        }
+
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
@@ -139,6 +148,11 @@ class components_hsuforum_component_test extends abstract_testcase {
     private function assert_content_items_contain_discussion_post(array $items, $discussionid) {
         global $DB;
 
+        if (!$this->hsuforum_available()) {
+            $this->markTestSkipped();
+            return;
+        }
+
         $post = $DB->get_record($this->forumtype.'_posts', ['discussion' => $discussionid, 'parent' => 0]);
         $this->assert_content_items_contain_item($items,
             $post->id, $this->forumtype, $this->forumtype.'_posts', 'message');
@@ -147,12 +161,22 @@ class components_hsuforum_component_test extends abstract_testcase {
     private function assert_content_items_not_contain_discussion_post(array $items, $discussionid) {
         global $DB;
 
+        if (!$this->hsuforum_available()) {
+            $this->markTestSkipped();
+            return;
+        }
+
         $post = $DB->get_record($this->forumtype.'_posts', ['discussion' => $discussionid, 'parent' => 0]);
         $this->assert_content_items_not_contain_item($items,
             $post->id, $this->forumtype, $this->forumtype.'_posts', 'message');
     }
 
     public function test_get_discussion_html_content_items(): void {
+        if (!$this->hsuforum_available()) {
+            $this->markTestSkipped();
+            return;
+        }
+
         $contentitems = \phpunit_util::call_internal_method(
             $this->component, 'get_discussion_html_content_items', [
             $this->course->id, $this->forum->id,
@@ -165,6 +189,11 @@ class components_hsuforum_component_test extends abstract_testcase {
     }
 
     public function test_resolve_module_instance_id_from_forum(): void {
+        if (!$this->hsuforum_available()) {
+            $this->markTestSkipped();
+            return;
+        }
+
         $component = new hsuforum_component();
         $instanceid = $component->resolve_module_instance_id($this->forumtype, $this->forum->id);
         $this->assertEquals($this->forum->id, $instanceid);
@@ -172,6 +201,11 @@ class components_hsuforum_component_test extends abstract_testcase {
 
     public function test_resolve_module_instance_id_from_post(): void {
         global $DB;
+
+        if (!$this->hsuforum_available()) {
+            $this->markTestSkipped();
+            return;
+        }
 
         $discussion = $this->studentdiscussion;
         $post = $DB->get_record($this->forumtype.'_posts', ['discussion' => $discussion->id, 'parent' => 0]);
@@ -182,6 +216,11 @@ class components_hsuforum_component_test extends abstract_testcase {
 
     public function test_get_all_course_annotation_maps(): void {
         global $PAGE, $DB;
+
+        if (!$this->hsuforum_available()) {
+            $this->markTestSkipped();
+            return;
+        }
 
         $cis = $this->component->get_annotation_maps($this->course->id);
         $expectedannotation = $this->forumtype.':'.$this->forumtype.':intro:'.$this->forum->id;
@@ -206,6 +245,11 @@ class components_hsuforum_component_test extends abstract_testcase {
      * Test if file in use detection is working with this module.
      */
     public function test_check_file_in_use(): void {
+        if (!$this->hsuforum_available()) {
+            $this->markTestSkipped();
+            return;
+        }
+
         $context = \context_module::instance($this->forum->cmid);
 
         $usedfiles = [];
