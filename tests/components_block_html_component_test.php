@@ -86,7 +86,7 @@ class components_block_html_component_test extends abstract_testcase {
     private function add_block( array $data = null) : \block_html {
         global $USER;
 
-        $sctc = new search_content_test();
+        $sctc = new search_content_test('search_content_add_block');
 
         $block = \phpunit_util::call_internal_method($sctc, 'create_block',
             ['course' => $this->course], get_class($sctc));
@@ -139,7 +139,7 @@ class components_block_html_component_test extends abstract_testcase {
     }
 
     public function test_get_all_html_content(): void {
-        $sctc = new search_content_test();
+        $sctc = new search_content_test('search_content_get_all_html_content');
 
         // Create an empty unconfigured block.
         // Ensure this does not trigger an error and that content has empty format and text.
@@ -181,7 +181,7 @@ class components_block_html_component_test extends abstract_testcase {
     }
 
     public function test_get_course_html_content_items(): void {
-        $sctc = new search_content_test();
+        $sctc = new search_content_test('search_content_get_course_html_content_items');
 
         // Create an empty unconfigured block.
         // Ensure this does not trigger an error and that content has empty format and text.
