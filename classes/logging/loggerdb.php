@@ -21,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../../vendor/autoload.php');
 
 use Exception;
+use Psr\Log\InvalidArgumentException;
 
 /**
  * Define database logging class.
@@ -39,11 +40,11 @@ class loggerdb extends loggerbase {
      * @param array $context
      * @return null
      */
-    public function log($level, $message, array $context = []) {
+    public function log($level, string|\Stringable $message, array $context = []): void {
         global $DB;
 
         if (!$DB->get_manager()->table_exists('tool_ally_log')) {
-            return;
+            throw new InvalidArgumentException(sprintf('The table tool_ally_log does not exist.'));
         }
 
         $message = trim($message);
@@ -95,6 +96,6 @@ class loggerdb extends loggerbase {
             'data' => serialize($context),
             'exception' => $exception,
         ];
-        return $DB->insert_record('tool_ally_log', $record);
+        $DB->insert_record('tool_ally_log', $record);
     }
 }

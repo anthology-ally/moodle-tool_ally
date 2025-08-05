@@ -47,11 +47,9 @@ abstract class loggerbase implements LoggerInterface {
     /**
      * System is unusable.
      *
-     * @param string $message
-     * @param array $context
-     * @return null
+     * @param mixed[] $context
      */
-    public function emergency($message, array $context = []) {
+    public function emergency(string|\Stringable $message, array $context = []): void {
         // Only log if range is light or greater (Emergency|Alert|Critical).
         if ($this->logrange >= constants::RANGE_LIGHT) {
             $this->log(LogLevel::EMERGENCY, $message, $context);
@@ -63,11 +61,9 @@ abstract class loggerbase implements LoggerInterface {
      * Example: Entire website down, database unavailable, etc. This should
      * trigger the SMS alerts and wake you up.
      *
-     * @param string $message
-     * @param array $context
-     * @return null
+     * @param mixed[] $context
      */
-    public function alert($message, array $context = []) {
+    public function alert(string|\Stringable $message, array $context = []): void {
         // Only log if range is light or greater (Emergency|Alert|Critical).
         if ($this->logrange >= constants::RANGE_LIGHT) {
             $this->log(LogLevel::ALERT, $message, $context);
@@ -78,11 +74,9 @@ abstract class loggerbase implements LoggerInterface {
      *
      * Example: Application component unavailable, unexpected exception.
      *
-     * @param string $message
-     * @param array $context
-     * @return null
+     * @param mixed[] $context
      */
-    public function critical($message, array $context = []) {
+    public function critical(string|\Stringable $message, array $context = []): void {
         // Only log if range is light or greater (Emergency|Alert|Critical).
         if ($this->logrange >= constants::RANGE_LIGHT) {
             $this->log(LogLevel::CRITICAL, $message, $context);
@@ -92,11 +86,9 @@ abstract class loggerbase implements LoggerInterface {
      * Runtime errors that do not require immediate action but should typically
      * be logged and monitored.
      *
-     * @param string $message
-     * @param array $context
-     * @return null
+     * @param mixed[] $context
      */
-    public function error($message, array $context = []) {
+    public function error(string|\Stringable $message, array $context = []): void {
         // Only log if range is medium or greater (Emergency|Alert|Critical|Error|Warning).
         if ($this->logrange >= constants::RANGE_MEDIUM) {
             $this->log(LogLevel::ERROR, $message, $context);
@@ -108,11 +100,9 @@ abstract class loggerbase implements LoggerInterface {
      * Example: Use of deprecated APIs, poor use of an API, undesirable things
      * that are not necessarily wrong.
      *
-     * @param string $message
-     * @param array $context
-     * @return null
+     * @param mixed[] $context
      */
-    public function warning($message, array $context = []) {
+    public function warning(string|\Stringable $message, array $context = []): void {
         // Only log if range is medium (Emergency|Alert|Critical|Error|Warning).
         if ($this->logrange >= constants::RANGE_MEDIUM) {
             $this->log(LogLevel::WARNING, $message, $context);
@@ -121,11 +111,9 @@ abstract class loggerbase implements LoggerInterface {
     /**
      * Normal but significant events.
      *
-     * @param string $message
-     * @param array $context
-     * @return null
+     * @param mixed[] $context
      */
-    public function notice($message, array $context = []) {
+    public function notice(string|\Stringable $message, array $context = []): void {
         // Only log if range is all - every possible type of log.
         if ($this->logrange >= constants::RANGE_ALL) {
             $this->log(LogLevel::NOTICE, $message, $context);
@@ -136,11 +124,9 @@ abstract class loggerbase implements LoggerInterface {
      *
      * Example: User logs in, SQL logs.
      *
-     * @param string $message
-     * @param array $context
-     * @return null
+     * @param mixed[] $context
      */
-    public function info($message, array $context = []) {
+    public function info(string|\Stringable $message, array $context = []): void {
         // Only log if range is all - every possible type of log.
         if ($this->logrange >= constants::RANGE_ALL) {
             $this->log(LogLevel::INFO, $message, $context);
@@ -149,11 +135,9 @@ abstract class loggerbase implements LoggerInterface {
     /**
      * Detailed debug information.
      *
-     * @param string $message
-     * @param array $context
-     * @return null
+     * @param mixed[] $context
      */
-    public function debug($message, array $context = []) {
+    public function debug(string|\Stringable $message, array $context = []): void {
         // Only log if range is all - every possible type of log.
         if ($this->logrange >= constants::RANGE_ALL) {
             $this->log(LogLevel::DEBUG, $message, $context);
@@ -163,9 +147,7 @@ abstract class loggerbase implements LoggerInterface {
      * Logs with an arbitrary level.
      *
      * @param mixed $level
-     * @param string $message
-     * @param array $context
-     * @return null
+     * @param mixed[] $context
      */
-    abstract public function log($level, $message, array $context = []);
+    abstract public function log($level, string|\Stringable $message, array $context = []): void;
 }
