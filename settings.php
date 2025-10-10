@@ -79,8 +79,13 @@ if ($hassiteconfig) {
         constants::RANGE_MEDIUM => get_string('loglevel:medium', 'tool_ally'),
         constants::RANGE_ALL => get_string('loglevel:all', 'tool_ally'),
     ];
+    if (!PHPUNIT_TEST) {
+        $default = constants::RANGE_ALL;
+    } else {
+        $default = constants::RANGE_NONE;
+    }
     $settings->add(new admin_setting_configselect('tool_ally/logrange', new lang_string('logrange', 'tool_ally'),
-        null, constants::RANGE_ALL, $choices));
+        null, $default, $choices));
 
     $settings->add(new admin_setting_configtext('tool_ally/loglifetimedays', new lang_string('loglifetimedays', 'tool_ally'),
         new lang_string('loglifetimedaysdesc', 'tool_ally'), '14', PARAM_INT));
