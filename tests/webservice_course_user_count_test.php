@@ -39,8 +39,7 @@ use tool_ally\webservice\course_user_count;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class webservice_course_user_count_test extends \externallib_advanced_testcase {
-
+final class webservice_course_user_count_test extends \externallib_advanced_testcase {
     public function test_user_count(): void {
         global $DB;
 

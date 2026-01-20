@@ -23,24 +23,18 @@
 namespace tool_ally;
 
 use backup;
-
 use context_course;
-
 use core\event\base;
-
 use core\event\course_created;
 use core\event\course_updated;
 use core\event\course_deleted;
 use core\event\course_restored;
-
 use core\event\course_module_created;
 use core\event\course_module_updated;
 use core\event\course_module_deleted;
-
 use core\event\course_section_created;
 use core\event\course_section_updated;
 use core\event\course_section_deleted;
-
 use core\event\group_created;
 use core\event\group_deleted;
 use core\event\group_updated;
@@ -48,20 +42,16 @@ use mod_forum\event\discussion_created;
 use mod_forum\event\discussion_updated;
 use mod_forum\event\discussion_deleted;
 use mod_forum\event\post_updated;
-
 use mod_hsuforum\event\discussion_created as hsu_discussion_created;
 use mod_hsuforum\event\discussion_updated as hsu_discussion_updated;
 use mod_hsuforum\event\discussion_deleted as hsu_discussion_deleted;
 use mod_hsuforum\event\post_updated as hsu_post_updated;
-
 use mod_glossary\event\entry_created;
 use mod_glossary\event\entry_updated;
 use mod_glossary\event\entry_deleted;
-
 use mod_book\event\chapter_created;
 use mod_book\event\chapter_updated;
 use mod_book\event\chapter_deleted;
-
 use mod_lesson\event\page_created;
 use mod_lesson\event\page_updated;
 use mod_lesson\event\page_deleted;
@@ -76,7 +66,6 @@ use mod_lesson\event\page_deleted;
  */
 
 class event_handlers {
-
     const API_RICH_CNT_CREATED = 'rich_content_created';
     const API_RICH_CNT_UPDATED = 'rich_content_updated';
     const API_RICH_CNT_DELETED = 'rich_content_deleted';
@@ -96,7 +85,8 @@ class event_handlers {
         course_processor::push_course_event(
             self::API_COURSE_UPDATED,
             $event->timecreated,
-            $courseid);
+            $courseid
+        );
     }
 
     /**
@@ -111,7 +101,8 @@ class event_handlers {
         course_processor::push_course_event(
             self::API_COURSE_UPDATED,
             $event->timecreated,
-            $courseid);
+            $courseid
+        );
     }
 
     /**
@@ -123,7 +114,8 @@ class event_handlers {
         course_processor::push_course_event(
             self::API_COURSE_DELETED,
             $event->timecreated,
-            $courseid);
+            $courseid
+        );
         files_in_use::delete_course_records($courseid);
     }
 
@@ -143,7 +135,8 @@ class event_handlers {
                 self::API_COURSE_COPIED,
                 $event->timecreated,
                 $destcourseid,
-                $sourcecourseid);
+                $sourcecourseid
+            );
         }
 
         // Specifically catch course import events.
@@ -152,7 +145,8 @@ class event_handlers {
                 self::API_COURSE_IMPORTED,
                 $event->timecreated,
                 $destcourseid,
-                $sourcecourseid);
+                $sourcecourseid
+            );
         }
 
         // Can intercept more types of restores here if we want.
@@ -277,7 +271,6 @@ class event_handlers {
         foreach ($fields as $field) {
             local_content::queue_delete($event->courseid, $id, $module, $module, $field);
         }
-
     }
 
     /**
@@ -302,10 +295,10 @@ class event_handlers {
         }
 
         // Get the forum post id from the discussion without hitting the DB!
-        $recordsnapshot = $event->get_record_snapshot($forumtype.'_discussions', $event->objectid);
+        $recordsnapshot = $event->get_record_snapshot($forumtype . '_discussions', $event->objectid);
         $postid = $recordsnapshot->firstpost;
 
-        $table = $forumtype.'_posts';
+        $table = $forumtype . '_posts';
         if ($event instanceof discussion_deleted || $event instanceof hsu_discussion_deleted) {
             $content = local_content::get_html_content_deleted($postid, $module, $table, 'message', $event->courseid);
         } else {
@@ -362,10 +355,10 @@ class event_handlers {
         }
         $discussionid = $event->other['discussionid'];
         $postid = $event->objectid;
-        $table = $forumtype.'_posts';
+        $table = $forumtype . '_posts';
         files_in_use::set_context_needs_updating($event->get_context());
 
-        $recordsnapshot = $event->get_record_snapshot($forumtype.'_discussions', $discussionid);
+        $recordsnapshot = $event->get_record_snapshot($forumtype . '_discussions', $discussionid);
         if (intval($recordsnapshot->firstpost) === intval($postid)) {
             // This is a discussion post, let's go!
             $content = local_content::get_html_content($postid, $module, $table, 'message', $event->courseid);

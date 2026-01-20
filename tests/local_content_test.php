@@ -32,7 +32,7 @@ use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Tests for local content library.
@@ -43,19 +43,24 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_content_test extends abstract_testcase {
-
+final class local_content_test extends abstract_testcase {
     public function test_component_supports_html_content(): void {
 
         $supported = \phpunit_util::call_internal_method(
-                null, 'component_supports_html_content', ['label'],
-            \tool_ally\local_content::class);
+            null,
+            'component_supports_html_content',
+            ['label'],
+            \tool_ally\local_content::class
+        );
 
         $this->assertEquals(true, $supported);
 
         $supported = \phpunit_util::call_internal_method(
-            null, 'component_supports_html_content', ['unknowncomponent'],
-            \tool_ally\local_content::class);
+            null,
+            'component_supports_html_content',
+            ['unknowncomponent'],
+            \tool_ally\local_content::class
+        );
 
         $this->assertEquals(false, $supported);
     }
@@ -83,7 +88,8 @@ class local_content_test extends abstract_testcase {
 
         $coursesummary = '<p>My course summary</p>';
         $course = $this->getDataGenerator()->create_course(
-            ['summary' => $coursesummary, 'summaryformat' => FORMAT_HTML]);
+            ['summary' => $coursesummary, 'summaryformat' => FORMAT_HTML]
+        );
         $expectedcourse = new component(
             $course->id,
             'course',
@@ -97,7 +103,8 @@ class local_content_test extends abstract_testcase {
 
         $section0summary = '<p>First section summary</p>';
         $section = $this->getDataGenerator()->create_course_section(
-            ['section' => 0, 'course' => $course->id]);
+            ['section' => 0, 'course' => $course->id]
+        );
         $DB->update_record('course_sections', (object) [
             'id' => $section->id,
             'summary' => $section0summary,
@@ -116,8 +123,10 @@ class local_content_test extends abstract_testcase {
         );
 
         $labelintro = '<p>My original intro content</p>';
-        $label = $this->getDataGenerator()->create_module('label',
-            ['course' => $course->id, 'intro' => $labelintro, 'introformat' => FORMAT_HTML]);
+        $label = $this->getDataGenerator()->create_module(
+            'label',
+            ['course' => $course->id, 'intro' => $labelintro, 'introformat' => FORMAT_HTML]
+        );
         $expectedlabel = new component(
             $label->id,
             'label',
@@ -142,7 +151,8 @@ class local_content_test extends abstract_testcase {
         $this->assertEquals($expectedtitle, $contents->title);
 
         $section2 = $this->getDataGenerator()->create_course_section(
-            ['section' => 1, 'course' => $course->id]);
+            ['section' => 1, 'course' => $course->id]
+        );
         $DB->update_record('course_sections', (object) [
             'id' => $section2->id,
             'summary' => $section0summary,
@@ -174,7 +184,8 @@ class local_content_test extends abstract_testcase {
 
         $coursesummary = '<p>My course summary</p>';
         $course = $this->getDataGenerator()->create_course(
-            ['summary' => $coursesummary, 'summaryformat' => FORMAT_HTML]);
+            ['summary' => $coursesummary, 'summaryformat' => FORMAT_HTML]
+        );
         $expectedcourse = new component_content(
             $course->id,
             'course',
@@ -185,7 +196,7 @@ class local_content_test extends abstract_testcase {
             $course->summaryformat,
             $coursesummary,
             $course->fullname,
-            new \moodle_url('/course/edit.php?id='.$course->id).''
+            new \moodle_url('/course/edit.php?id=' . $course->id) . ''
         );
 
         $content = local_content::get_html_content($course->id, 'course', 'course', 'summary');
@@ -206,16 +217,19 @@ class local_content_test extends abstract_testcase {
 
         $coursesummary = '<p>My course summary</p>';
         $course = $this->getDataGenerator()->create_course(
-            ['summary' => $coursesummary, 'summaryformat' => FORMAT_HTML]);
+            ['summary' => $coursesummary, 'summaryformat' => FORMAT_HTML]
+        );
         $context = \context_course::instance($course->id);
         $annotation = local_content::get_annotation($context);
         $this->assertEmpty($annotation); // Course summaries / sections can't be annotated via php.
 
-        $label = $this->getDataGenerator()->create_module('label',
-            ['course' => $course->id]);
+        $label = $this->getDataGenerator()->create_module(
+            'label',
+            ['course' => $course->id]
+        );
         $context = \context_module::instance($label->cmid);
         $annotation = local_content::get_annotation($context);
-        $expected = 'label:label:intro:'.$label->id;
+        $expected = 'label:label:intro:' . $label->id;
         $this->assertEquals($expected, $annotation);
     }
 
@@ -299,5 +313,4 @@ class local_content_test extends abstract_testcase {
         $this->assertEquals('img', $tmpresults[$sampleurl]->tagname);
         $this->assertEquals('fullurl', $tmpresults[$sampleurl]->type);
     }
-
 }

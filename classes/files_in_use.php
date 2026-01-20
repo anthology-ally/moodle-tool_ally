@@ -38,7 +38,6 @@ use stored_file;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class files_in_use {
-
     protected static $instance = null;
 
     /**
@@ -268,8 +267,10 @@ class files_in_use {
         $cleancomponentstr = local::clean_component_string($componentstr);
         // For module components, we are going to check to see if there is a column with the filearea name that is
         // a text or varchar, and if so check the contents for the file.
-        if (strpos($componentstr, 'mod_') !== 0 || !($columns = $DB->get_columns($cleancomponentstr))
-            || !isset($columns[$filearea])) {
+        if (
+            strpos($componentstr, 'mod_') !== 0 || !($columns = $DB->get_columns($cleancomponentstr))
+            || !isset($columns[$filearea])
+        ) {
             debugging("Not from a module component {$cleancomponentstr}", DEBUG_DEVELOPER);
             return true;
         }
@@ -393,7 +394,6 @@ class files_in_use {
         $DB->update_record_raw('tool_ally_file_in_use', $record);
 
         $this->queue_file_update($file, $inuse);
-
     }
 
     /**

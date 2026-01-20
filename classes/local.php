@@ -38,7 +38,6 @@ require_once($CFG->dirroot . '/webservice/lib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class local {
-
     /**
      * Get list of role IDs from admin settings.
      *
@@ -79,7 +78,7 @@ class local {
 
         if (!empty($courseids)) {
             $result = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'cid');
-            $insql  = ' AND c.instanceid '.$result[0];
+            $insql  = ' AND c.instanceid ' . $result[0];
             $params = array_merge($params, $result[1]);
         }
         $rs = $DB->get_recordset_sql("SELECT $fields FROM {context} c WHERE c.contextlevel = :contextlevel$insql", $params);
@@ -143,7 +142,7 @@ class local {
     public static function get_component_class($component) {
         $component = self::clean_component_string($component);
         $componentclassname = $component . '_component';
-        $componentclassname = 'tool_ally\\componentsupport\\'.$componentclassname;
+        $componentclassname = 'tool_ally\\componentsupport\\' . $componentclassname;
         return $componentclassname;
     }
 
@@ -193,7 +192,12 @@ class local {
         global $DB;
 
         $capjoin = get_enrolled_with_capabilities_join(
-            $context, '', $withcapability, $groupid, $onlyactive);
+            $context,
+            '',
+            $withcapability,
+            $groupid,
+            $onlyactive
+        );
 
         $sql = "SELECT COUNT(*)
                   FROM (SELECT DISTINCT u.id
@@ -280,7 +284,7 @@ class local {
 
         try {
             // Sometimes this can get called before the module is available the core functions, I think due to transactions.
-            list($course, $cm) = get_course_and_cm_from_cmid($cmid);
+            [$course, $cm] = get_course_and_cm_from_cmid($cmid);
             $instanceid = $cm->instance;
         } catch (\Exception $e) {
             // Because of the above transaction issue, we may get here. Try to get it strait out of the DB.
@@ -294,6 +298,5 @@ class local {
             $staticcache[$cmid] = $instanceid;
         }
         return $instanceid;
-
     }
 }

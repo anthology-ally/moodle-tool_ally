@@ -28,10 +28,11 @@ use tool_ally\lti\launch_config;
  * @group     tool_ally
  * @group     ally
  */
-class launch_config_test extends \advanced_testcase {
+final class launch_config_test extends \advanced_testcase {
     public function setUp(): void {
         global $CFG;
-        require_once($CFG->dirroot.'/mod/lti/locallib.php');
+        require_once($CFG->dirroot . '/mod/lti/locallib.php');
+        parent::setUp();
     }
     public function test_not_configured_nothing(): void {
         $this->expectExceptionMessage(get_string('notconfigured', 'report_allylti'));

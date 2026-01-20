@@ -32,12 +32,10 @@ use tool_ally\local_file;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class hsuforum_component extends forum_component {
-
     protected $type = 'hsuforum';
 
     protected $tablefields = [
         'hsuforum' => ['intro'],
         'hsuforum_posts' => ['message'],
     ];
-
 }

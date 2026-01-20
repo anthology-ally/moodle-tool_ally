@@ -34,7 +34,6 @@ use tool_ally\models\component_content;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class traceable_processor {
-
     protected static $pushtrace = [];
 
     /**
@@ -56,7 +55,7 @@ abstract class traceable_processor {
                 return static::$pushtrace[$eventname];
             } else {
                 foreach (static::$pushtrace[$eventname] as &$pushtrace) {
-                    $pushtrace = array_filter($pushtrace, function($row) use($regex, $eventkey) {
+                    $pushtrace = array_filter($pushtrace, function ($row) use ($regex, $eventkey) {
                         return preg_match($regex, $row[$eventkey]) === 1;
                     });
                 }
@@ -118,5 +117,4 @@ abstract class traceable_processor {
         }
         return $config;
     }
-
 }

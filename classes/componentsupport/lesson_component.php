@@ -32,7 +32,6 @@ use tool_ally\local_file;
 use tool_ally\models\component;
 use tool_ally\webservice\content;
 use tool_ally\models\component_content;
-
 use moodle_url;
 
 /**
@@ -43,8 +42,7 @@ use moodle_url;
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class lesson_component extends file_component_base implements iface_html_content, annotation_map {
-
+class lesson_component extends file_component_base implements annotation_map, iface_html_content {
     use html_content;
     use embedded_file_map;
 
@@ -139,7 +137,6 @@ SQL;
         $rs = $DB->get_recordset_sql($sql, $params);
 
         foreach ($rs as $row) {
-
             $tmparr = explode('~', $row->id);
             $ident = $tmparr[0];
             $id = $tmparr[1];
@@ -171,11 +168,17 @@ SQL;
             }
 
             $array[$ident][$id] = new component(
-                $id, 'lesson', $table, $field, $courseid, $row->timemodified,
-                $row->format, $title);
+                $id,
+                'lesson',
+                $table,
+                $field,
+                $courseid,
+                $row->timemodified,
+                $row->format,
+                $title
+            );
 
             $array[$ident][$id]->meta->parentid = $row->parentid;
-
         }
         $rs->close();
         return $array;
@@ -197,10 +200,10 @@ SQL;
                 $prevparentid = $parentid;
                 $count++;
                 if ($ident === 'intros') {
-                    list($course, $cm) = get_course_and_cm_from_instance($content->id, 'lesson', $courseid);
+                    [$course, $cm] = get_course_and_cm_from_instance($content->id, 'lesson', $courseid);
                     $retarray[$ident][$cm->id] = $content->entity_id();
                 } else if ($ident === 'lesson_answers' || $ident === 'lesson_answers_response') {
-                    $retarray[$ident][$content->meta->parentid.'_'.$id.'_'.$count] = $content->entity_id();
+                    $retarray[$ident][$content->meta->parentid . '_' . $id . '_' . $count] = $content->entity_id();
                 } else {
                     $retarray[$ident][$id] = $content->entity_id();
                 }
@@ -229,12 +232,18 @@ SQL;
         $itemid = $file->get_itemid();
 
         if ($area === 'page_contents') {
-            local_file::update_filenames_in_html('contents', 'lesson_pages', ' id = ? ',
-                ['id' => $itemid], $this->oldfilename, $file->get_filename());
+            local_file::update_filenames_in_html(
+                'contents',
+                'lesson_pages',
+                ' id = ? ',
+                ['id' => $itemid],
+                $this->oldfilename,
+                $file->get_filename()
+            );
         }
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    public function get_html_content($id, $table, $field, $courseid = null): ?component_content {
         global $DB;
 
         $row = null;
@@ -307,7 +316,15 @@ SQL;
         $pages = [];
         foreach ($pagerows as $row) {
             $pages[] = $this->std_get_html_content(
-                $row->id, 'lesson_pages', 'contents', $lesson->courseid, 'title', 'timemodified', null, $row);
+                $row->id,
+                'lesson_pages',
+                'contents',
+                $lesson->courseid,
+                'title',
+                'timemodified',
+                null,
+                $row
+            );
         }
         return array_merge([$lesson], $pages);
     }
@@ -379,12 +396,11 @@ SQL;
         } else if ($table === 'lesson_pages') {
             $lessonid = $DB->get_field('lesson_pages', 'lessonid', ['id' => $id]);
             try {
-                list ($course, $cm) = get_course_and_cm_from_instance($lessonid, 'lesson', $courseid);
-                return new moodle_url('/mod/lesson/view.php', ['id' => $cm->id, 'pageid' => $id]).'';
+                 [$course, $cm] = get_course_and_cm_from_instance($lessonid, 'lesson', $courseid);
+                return new moodle_url('/mod/lesson/view.php', ['id' => $cm->id, 'pageid' => $id]) . '';
             } catch (\moodle_exception $ex) {
                 return null;
             }
-
         }
         return null;
     }
@@ -402,11 +418,27 @@ SQL;
             // For each answer row, we need to make content for both the answer and the response.
             if (!empty($row->answer) && $row->answerformat == FORMAT_HTML) {
                 $content[] = $this->std_get_html_content(
-                    $row->id, 'lesson_answers', 'answer', $lesson->courseid, null, 'timemodified', null, $row);
+                    $row->id,
+                    'lesson_answers',
+                    'answer',
+                    $lesson->courseid,
+                    null,
+                    'timemodified',
+                    null,
+                    $row
+                );
             }
             if (!empty($row->response) && $row->responseformat == FORMAT_HTML) {
                 $content[] = $this->std_get_html_content(
-                    $row->id, 'lesson_answers', 'response', $lesson->courseid, null, 'timemodified', null, $row);
+                    $row->id,
+                    'lesson_answers',
+                    'response',
+                    $lesson->courseid,
+                    null,
+                    'timemodified',
+                    null,
+                    $row
+                );
             }
         }
         $answerrows->close();

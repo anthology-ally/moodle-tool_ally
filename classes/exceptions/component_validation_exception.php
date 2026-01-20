@@ -25,5 +25,4 @@
 namespace tool_ally\exceptions;
 
 class component_validation_exception extends \Exception {
-
 }

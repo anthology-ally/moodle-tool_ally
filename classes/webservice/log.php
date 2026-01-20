@@ -28,7 +28,7 @@ use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
+require_once(__DIR__ . '/../../../../../lib/externallib.php');
 
 /**
  * Return log data.
@@ -145,13 +145,13 @@ class log extends \external_api {
         $total = $DB->count_records('tool_ally_log');
         $sort = '';
         if ($query->sort && $query->order) {
-            $sort = $query->sort.' '.$query->order;
+            $sort = $query->sort . ' ' . $query->order;
         }
         $rs = $DB->get_records('tool_ally_log', null, $sort, '*', $query->offset, $query->limit);
         $data = [];
         foreach ($rs as $row) {
             $row->time = userdate($row->time);
-            $details = new stdClass;
+            $details = new stdClass();
             $details->message = null;
             $details->data = null;
             $details->explanation = null;
@@ -161,7 +161,7 @@ class log extends \external_api {
             }
             if ($row->data) {
                 $rowdata = unserialize($row->data);
-                $details->data = '<pre>'.var_export($rowdata, true).'</pre>';
+                $details->data = '<pre>' . var_export($rowdata, true) . '</pre>';
             }
             $details->exception = !empty(trim($row->exception)) ? $row->exception : null;
             $details->explanation = !empty(trim($row->explanation)) ? $row->explanation : null;

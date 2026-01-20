@@ -24,12 +24,12 @@
 
 namespace tool_ally\componentsupport;
 
-defined ('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die();
 
 use tool_ally\local_file;
 use tool_ally\models\pluginfileurlprops;
 
-require_once($CFG->dirroot.'/question/engine/bank.php');
+require_once($CFG->dirroot . '/question/engine/bank.php');
 
 /**
  * Html file replacement support for core questions
@@ -39,7 +39,6 @@ require_once($CFG->dirroot.'/question/engine/bank.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class question_component extends file_component_base {
-
     public static function component_type() {
         return self::TYPE_CORE;
     }
@@ -135,44 +134,46 @@ class question_component extends file_component_base {
             $idfield = 'questionid';
 
             switch ($qtype) {
-                case 'ddimageortext' :
+                case 'ddimageortext':
                     $table = 'qtype_ddimageortext';
                     break;
-                case 'ddmarker' :
+                case 'ddmarker':
                     $table = 'qtype_ddmarker';
                     break;
-                case 'ddmatch' :
-                    if ($area === 'correctfeedback'
+                case 'ddmatch':
+                    if (
+                        $area === 'correctfeedback'
                         || $area === 'incorrectfeedback'
-                        || $area === 'partiallycorrectfeedback') {
+                        || $area === 'partiallycorrectfeedback'
+                    ) {
                         $table = 'qtype_ddmatch_options';
                         $idfield = 'questionid';
                     } else {
-                        debugging('Area of '.$area.' is not yet supported for qtype_ddmatch_html');
+                        debugging('Area of ' . $area . ' is not yet supported for qtype_ddmatch_html');
                         return;
                     }
                     break;
-                case 'ddwtos' :
+                case 'ddwtos':
                     $table = 'question_ddwtos';
                     break;
-                case 'gapfill' :
+                case 'gapfill':
                     $table = 'question_gapfill';
                     $idfield = 'question';
                     break;
-                case 'gapselect' :
+                case 'gapselect':
                     $table = 'question_gapselect';
                     break;
-                case 'match' :
+                case 'match':
                     $table = 'qtype_match_options';
                     break;
-                case 'multichoice' :
+                case 'multichoice':
                     $table = 'qtype_multichoice_options';
                     break;
-                case 'randomsamatch' :
+                case 'randomsamatch':
                     $table = 'qtype_randomsamatch_options';
                     break;
-                default :
-                    debugging('Question area of '.$area.' and question type '.$qtype.' is not yet supported');
+                default:
+                    debugging('Question area of ' . $area . ' and question type ' . $qtype . ' is not yet supported');
                     return;
             }
         }
@@ -180,12 +181,18 @@ class question_component extends file_component_base {
         if ($idfield === null || $table === null) {
             // We need this because questions are essentially plugins and new ones will be introduced to our code base
             // as and when customer demand necessitates them.
-            debugging('Question area of '.$area.' is not yet supported');
+            debugging('Question area of ' . $area . ' is not yet supported');
             return;
         }
 
-        local_file::update_filenames_in_html($field, $table, ' '.$idfield.' = ? ',
-            [$itemid], $this->oldfilename, $file->get_filename());
+        local_file::update_filenames_in_html(
+            $field,
+            $table,
+            ' ' . $idfield . ' = ? ',
+            [$itemid],
+            $this->oldfilename,
+            $file->get_filename()
+        );
 
         \question_finder::get_instance()->uncache_question($questionid);
     }

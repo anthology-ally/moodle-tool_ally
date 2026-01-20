@@ -38,7 +38,7 @@ require_once('abstract_testcase.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class components_course_component_test extends abstract_testcase {
+final class components_course_component_test extends abstract_testcase {
     /**
      * @var stdClass
      */
@@ -55,6 +55,7 @@ class components_course_component_test extends abstract_testcase {
     private $sections = [];
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
@@ -73,17 +74,27 @@ class components_course_component_test extends abstract_testcase {
         $unusedfiles = [];
 
         // Check the intro.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'course', $this->course->id,
-            'course', 'summary');
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'course',
+            $this->course->id,
+            'course',
+            'summary'
+        );
 
         // Add some course image files that are always in use.
-        list($file1, $file2) = $this->setup_check_files($context, 'course', 'overviewfiles', $this->course->id);
+        [$file1, $file2] = $this->setup_check_files($context, 'course', 'overviewfiles', $this->course->id);
         $usedfiles[] = $file1; // Silly workaround for PHP code checker.
         $usedfiles[] = $file2;
 
         // Now a course section summary.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'course', $this->sections[0]->id,
-            'course_sections', 'summary');
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'course',
+            $this->sections[0]->id,
+            'course_sections',
+            'summary'
+        );
 
         // This will double check that file iterator is working as expected.
         $this->check_file_iterator_exclusion($context, $usedfiles, $unusedfiles);

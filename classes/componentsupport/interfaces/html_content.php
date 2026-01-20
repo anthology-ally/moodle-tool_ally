@@ -27,7 +27,6 @@ use tool_ally\models\component;
 use tool_ally\models\component_content;
 
 interface html_content {
-
     /**
      * @param $courseid
      * @return component[];
@@ -42,7 +41,7 @@ interface html_content {
      * @param null|int $courseid
      * @return component_content
      */
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content;
+    public function get_html_content($id, $table, $field, $courseid = null): ?component_content;
 
     /**
      * Get all html content for instance ($id).

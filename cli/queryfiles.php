@@ -29,9 +29,9 @@ use tool_ally\local_file;
 use tool_ally\local;
 
 require(__DIR__ . '/../../../../config.php');
-require_once($CFG->libdir.'/clilib.php');
+require_once($CFG->libdir . '/clilib.php');
 
-list($options, $unrecognized) = cli_get_params(
+[$options, $unrecognized] = cli_get_params(
     [
         'help'        => false,
         'since'       => 0,

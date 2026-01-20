@@ -60,8 +60,18 @@ class component_content extends component {
      * @param null|string $title
      * @param null|string|moodle_url $url
      */
-    public function __construct($id, $component, $table, $field, $courseid, $timemodified, $contentformat, $content,
-                                $title = null, $url = null) {
+    public function __construct(
+        $id,
+        $component,
+        $table,
+        $field,
+        $courseid,
+        $timemodified,
+        $contentformat,
+        $content,
+        $title = null,
+        $url = null
+    ) {
         parent::__construct($id, $component, $table, $field, $courseid, $timemodified, $contentformat, $title);
         $this->content = $content;
         $this->contenthash = is_string($this->content) ? sha1($this->content) : '';

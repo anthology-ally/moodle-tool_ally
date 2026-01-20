@@ -30,20 +30,20 @@ use tool_ally\auto_config;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for file webservice.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_ally\webservice\loggable_external_api::service
  * @runTestsInSeparateProcesses
  */
-class webservice_file_test extends abstract_testcase {
-
+final class webservice_file_test extends abstract_testcase {
     /**
      * Test the web service when used to get a resource file.
      */
@@ -78,7 +78,7 @@ class webservice_file_test extends abstract_testcase {
         $this->assertEquals($expectedfile->get_timemodified(), $timemodified);
         $this->assertMatchesRegularExpression('/.*pluginfile\.php.*mod_resource.*/', $file['url']);
         $this->assertMatchesRegularExpression('/.*admin\/tool\/ally\/wspluginfile\.php\?pathnamehash=/', $file['downloadurl']);
-        $this->assertEquals($CFG->wwwroot.'/mod/resource/view.php?id='.$resource->cmid, $file['location']);
+        $this->assertEquals($CFG->wwwroot . '/mod/resource/view.php?id=' . $resource->cmid, $file['location']);
     }
 
     /**
@@ -145,7 +145,7 @@ class webservice_file_test extends abstract_testcase {
         $this->assertEquals($expectedfile->get_timemodified(), $timemodified);
         $this->assertMatchesRegularExpression('/.*pluginfile\.php.*mod_forum.*/', $file['url']);
         $this->assertMatchesRegularExpression('/.*admin\/tool\/ally\/wspluginfile\.php\?pathnamehash=/', $file['downloadurl']);
-        $this->assertEquals($CFG->wwwroot.'/mod/forum/discuss.php?d='.$discussion->id.'#p'.$post->id, $file['location']);
+        $this->assertEquals($CFG->wwwroot . '/mod/forum/discuss.php?d=' . $discussion->id . '#p' . $post->id, $file['location']);
     }
 
     /**
@@ -201,7 +201,7 @@ class webservice_file_test extends abstract_testcase {
         $this->assertEquals($expectedfile->get_timemodified(), $timemodified);
         $this->assertMatchesRegularExpression('/.*pluginfile\.php.*mod_forum.*/', $file['url']);
         $this->assertMatchesRegularExpression('/.*admin\/tool\/ally\/wspluginfile\.php\?pathnamehash=/', $file['downloadurl']);
-        $this->assertEquals($CFG->wwwroot.'/mod/forum/view.php?id='.$forum->cmid, $file['location']);
+        $this->assertEquals($CFG->wwwroot . '/mod/forum/view.php?id=' . $forum->cmid, $file['location']);
     }
 
     public function test_unwhitelisted_file_component(): void {
@@ -249,7 +249,8 @@ class webservice_file_test extends abstract_testcase {
         // First some setup.
         $gen = $this->getDataGenerator();
         $course = $gen->create_course();
-        $assign = $gen->create_module('assign',
+        $assign = $gen->create_module(
+            'assign',
             [
                 'course' => $course->id,
                 'introformat' => FORMAT_HTML,
@@ -259,7 +260,7 @@ class webservice_file_test extends abstract_testcase {
         $context = \context_module::instance($assign->cmid);
         $linkgen = $this->getDataGenerator()->get_plugin_generator('tool_ally');
 
-        list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_assign', 'intro', 0);
+        [$usedfile, $unusedfile] = $this->setup_check_files($context, 'mod_assign', 'intro', 0);
 
         // Update the intro with the link.
         $link = $linkgen->create_pluginfile_link_for_file($usedfile);
@@ -278,7 +279,6 @@ class webservice_file_test extends abstract_testcase {
         // Should be able to get both files.
         $this->assert_file_service_returns_file($usedfile);
         $this->assert_file_service_not_returns_file($unusedfile);
-
     }
 
     /**

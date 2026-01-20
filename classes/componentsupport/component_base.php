@@ -38,7 +38,6 @@ use tool_ally\exceptions\component_validation_exception;
  */
 
 abstract class component_base {
-
     const TYPE_CORE = 'core';
 
     const TYPE_MOD = 'mod';
@@ -82,12 +81,12 @@ abstract class component_base {
     protected function validate_component_table_field($table, $field) {
         if (empty($this->tablefields[$table]) || !is_array($this->tablefields)) {
             throw new component_validation_exception(
-                'Table '.$table.' is not allowed for the requested component content'
+                'Table ' . $table . ' is not allowed for the requested component content'
             );
         }
         if (!in_array($field, $this->tablefields[$table])) {
             throw new component_validation_exception(
-                'Field '.$field.' is not allowed for the table '.$table
+                'Field ' . $field . ' is not allowed for the table ' . $table
             );
         }
     }
@@ -101,7 +100,7 @@ abstract class component_base {
         $class = $reflect->getShortName();
         $matches = [];
         if (!preg_match('/(.*)_component/', $class, $matches) || count($matches) < 2) {
-            throw new \coding_exception('Invalid component class '.$class);
+            throw new \coding_exception('Invalid component class ' . $class);
         }
 
         return $matches[1];
@@ -116,7 +115,7 @@ abstract class component_base {
         $admins = local::get_adminids();
         $ra = new role_assignments(local::get_roleids());
         $userids = $ra->user_ids_for_context($context);
-        $userids = array_filter($userids, function($item) {
+        $userids = array_filter($userids, function ($item) {
             return !!$item;
         });
         $userids = array_keys($userids);
@@ -193,7 +192,7 @@ abstract class component_base {
         if (empty($colitems)) {
             return [];
         }
-        list($insql, $params) = $DB->get_in_or_equal(array_column($contentitems, 'id'), SQL_PARAMS_NAMED);
+        [$insql, $params] = $DB->get_in_or_equal(array_column($contentitems, 'id'), SQL_PARAMS_NAMED);
         $params['modulename'] = $table;
         $sql = "SELECT instance.id, cm.id AS cmid
                 FROM {{$table}} instance
@@ -230,8 +229,8 @@ MSG;
             return $id;
         } else {
             $record = $DB->get_record($table, ['id' => $id]);
-            if (!empty($record->{$component.'id'})) {
-                $instanceid = $record->{$component.'id'};
+            if (!empty($record->{$component . 'id'})) {
+                $instanceid = $record->{$component . 'id'};
             } else if (!empty($record->$component)) {
                 $instanceid = $record->$component;
             } else {

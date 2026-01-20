@@ -39,7 +39,6 @@ use core_component,
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class version_information {
-
     /**
      * @var bool|stdClass
      */
@@ -106,7 +105,7 @@ class version_information {
     private function get_component_version($component) {
         global $CFG;
 
-        list($type, $name) = core_component::normalize_component($component);
+        [$type, $name] = core_component::normalize_component($component);
 
         // Get Moodle core version.
         if ($type === 'core') {
@@ -152,7 +151,8 @@ class version_information {
     private function get_db_version() {
         global $CFG, $DB;
 
-        if (stripos($CFG->dbtype, 'mysql') !== false ||
+        if (
+            stripos($CFG->dbtype, 'mysql') !== false ||
             stripos($CFG->dbtype, 'pgsql') !== false
         ) {
             $row = (array) $DB->get_record_sql('SELECT version();');

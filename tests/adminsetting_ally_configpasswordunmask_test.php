@@ -27,7 +27,7 @@ use advanced_testcase;
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class adminsetting_ally_configpasswordunmask_test extends advanced_testcase {
+final class adminsetting_ally_configpasswordunmask_test extends advanced_testcase {
     /**
      * Test ally configpasswordunmask settings are trimmed.
      */
@@ -35,8 +35,12 @@ class adminsetting_ally_configpasswordunmask_test extends advanced_testcase {
         $this->resetAfterTest();
         $text = '    ABCDEFG1234    ';
 
-        $setting = new ally_configpasswordunmask('tool_ally/secret',
-            new \lang_string('secret', 'tool_ally'), new \lang_string('secretdesc', 'tool_ally'), '');
+        $setting = new ally_configpasswordunmask(
+            'tool_ally/secret',
+            new \lang_string('secret', 'tool_ally'),
+            new \lang_string('secretdesc', 'tool_ally'),
+            ''
+        );
 
         $setting->write_setting($text);
         $secret = get_config('tool_ally', 'secret');

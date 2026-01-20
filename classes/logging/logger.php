@@ -17,7 +17,6 @@
 namespace tool_ally\logging;
 
 class logger {
-
     /**
      * Get the logger instance.
      * This could be adapted to return a different logger type instance depending on a config.

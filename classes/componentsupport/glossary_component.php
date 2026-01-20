@@ -43,9 +43,7 @@ use tool_ally\models\component_content;
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class glossary_component extends file_component_base implements
-        iface_html_content, annotation_map, content_sub_tables {
-
+class glossary_component extends file_component_base implements annotation_map, content_sub_tables, iface_html_content {
     use html_content;
     use embedded_file_map;
 
@@ -64,7 +62,7 @@ class glossary_component extends file_component_base implements
 
         $area = $file->get_filearea();
         if ($area !== 'entry') {
-            debugging('Glossary area of '.$area.' is not yet supported');
+            debugging('Glossary area of ' . $area . ' is not yet supported');
             return;
         }
 
@@ -73,8 +71,14 @@ class glossary_component extends file_component_base implements
         $idfield = 'id';
         $repfield = 'definition';
 
-        local_file::update_filenames_in_html($repfield, $table, ' id = ? ',
-            [$idfield => $itemid], $this->oldfilename, $file->get_filename());
+        local_file::update_filenames_in_html(
+            $repfield,
+            $table,
+            ' id = ? ',
+            [$idfield => $itemid],
+            $this->oldfilename,
+            $file->get_filename()
+        );
     }
 
     public function resolve_course_id($id, $table, $field) {
@@ -85,7 +89,7 @@ class glossary_component extends file_component_base implements
             return $label->course;
         }
 
-        throw new \coding_exception('Invalid table used to recover course id '.$table);
+        throw new \coding_exception('Invalid table used to recover course id ' . $table);
     }
 
     /**
@@ -108,7 +112,7 @@ class glossary_component extends file_component_base implements
         // Faster than doing it per module instance.
         $userids = $this->get_approved_author_ids_for_context(\context_course::instance($courseid));
 
-        list($userinsql, $userparams) = $DB->get_in_or_equal($userids);
+        [$userinsql, $userparams] = $DB->get_in_or_equal($userids);
 
         $params = [$courseid, FORMAT_HTML];
 
@@ -133,8 +137,15 @@ SQL;
         $rs = $DB->get_recordset_sql($sql, $params);
         foreach ($rs as $row) {
             $array[] = new component(
-                $row->id, 'glossary', 'glossary_entries', 'definition', $courseid, $row->timemodified,
-                $row->definitionformat, $row->concept);
+                $row->id,
+                'glossary',
+                'glossary_entries',
+                'definition',
+                $courseid,
+                $row->timemodified,
+                $row->definitionformat,
+                $row->concept
+            );
         }
         $rs->close();
 
@@ -166,7 +177,7 @@ SQL;
      * @param null|int $courseid
      * @return component_content
      */
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    public function get_html_content($id, $table, $field, $courseid = null): ?component_content {
         if ($table === 'glossary') {
             return $this->std_get_html_content($id, $table, $field, $courseid);
         } else if ($table === 'glossary_entries') {
@@ -217,7 +228,7 @@ SQL;
             if (empty($cmid)) {
                 return [];
             }
-            list($course, $cm) = get_course_and_cm_from_cmid($cmid, 'glossary', $courseid);
+            [$course, $cm] = get_course_and_cm_from_cmid($cmid, 'glossary', $courseid);
             unset($course);
             $glossaryid = $cm->instance;
             if (!$glossaryid) {
@@ -235,7 +246,7 @@ SQL;
             if ($contentitem->table === 'glossary_entries') {
                 $entries[$contentitem->id] = $contentitem->entity_id();
             } else if ($contentitem->table === 'glossary') {
-                list($course, $cm) = get_course_and_cm_from_instance($contentitem->id, 'glossary', $courseid);
+                [$course, $cm] = get_course_and_cm_from_instance($contentitem->id, 'glossary', $courseid);
                 $intros[$cm->id] = $contentitem->entity_id();
             }
         }

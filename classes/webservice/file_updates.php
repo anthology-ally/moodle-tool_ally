@@ -35,7 +35,6 @@ use tool_ally\local_file;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class file_updates extends loggable_external_api {
-
     /**
      * @return \external_function_parameters
      */

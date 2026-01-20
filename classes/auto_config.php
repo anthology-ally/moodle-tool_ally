@@ -24,6 +24,7 @@
 namespace tool_ally;
 
 use tool_ally\logging\logger;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -32,9 +33,13 @@ require_once(__DIR__ . "/../../../../user/lib.php");
 require_once(__DIR__ . "/../../../../user/profile/lib.php");
 require_once(__DIR__ . "/../../../../lib/externallib.php");
 
-
+/**
+ * Web service auto configuration tool.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class auto_config {
-
     /**
      * @var \stdClass - web user
      */
@@ -100,7 +105,12 @@ class auto_config {
         $this->user = $user;
     }
 
-    private function load_user_profile($user) {
+    /**
+     * Load user profile fields.
+     * @param \stdClass $user User object.
+     * @return \stdClass User object
+     */
+    private function load_user_profile(stdClass $user) {
         if ($user->id) {
             $profilefilds = profile_get_user_fields_with_data($user->id);
         } else {
@@ -219,7 +229,7 @@ class auto_config {
     private function enable_ally_web_service() {
         global $DB;
 
-        $webservicemanager = new \webservice;
+        $webservicemanager = new \webservice();
 
         $servicedata = (object) [
             'name' => 'Ally integration services',
@@ -269,13 +279,16 @@ class auto_config {
                 'userid' => $this->user->id,
                 'externalserviceid' => $service->id,
                 'contextid' => $context->id,
-            ]
-        );
+            ]);
         if ($existing) {
             $this->token = $existing->token;
         } else {
-            $this->token = \external_generate_token(EXTERNAL_TOKEN_PERMANENT, $service->id,
-                $this->user->id, $context);
+            $this->token = \external_generate_token(
+                EXTERNAL_TOKEN_PERMANENT,
+                $service->id,
+                $this->user->id,
+                $context
+            );
         }
     }
 }

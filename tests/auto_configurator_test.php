@@ -32,7 +32,7 @@ use advanced_testcase;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
+require_once(__DIR__ . '/prophesize_deprecation_workaround_mixin.php');
 
 
 /**
@@ -45,10 +45,11 @@ require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class auto_configurator_test extends advanced_testcase {
+final class auto_configurator_test extends advanced_testcase {
     use prophesize_deprecation_workaround_mixin;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest(true);
     }
 

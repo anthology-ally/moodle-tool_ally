@@ -29,7 +29,7 @@ use tool_ally\models\component_content;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for content webservice.
@@ -41,8 +41,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class webservice_content_test extends abstract_testcase {
-
+final class webservice_content_test extends abstract_testcase {
     public function test_invalid_component(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
@@ -85,7 +84,7 @@ class webservice_content_test extends abstract_testcase {
         $coursesummary = '<p>My course summary</p>';
         $course = $this->getDataGenerator()->create_course(['summary' => $coursesummary]);
         $content = content::service($course->id, 'course', 'course', 'summary');
-        $expectedurl = (new \moodle_url('/course/edit.php?id='.$course->id))
+        $expectedurl = (new \moodle_url('/course/edit.php?id=' . $course->id))
             ->out(); // Directly converting to string, it should be the same result from the service.
         $expected = new component_content(
             $course->id,
@@ -117,7 +116,8 @@ class webservice_content_test extends abstract_testcase {
         // Test getting course section summary content.
         $section0summary = '<p>First section summary</p>';
         $section = $this->getDataGenerator()->create_course_section(
-            ['section' => 0, 'course' => $course->id]);
+            ['section' => 0, 'course' => $course->id]
+        );
         $DB->update_record('course_sections', (object) [
             'id' => $section->id,
             'summary' => $section0summary,
@@ -161,25 +161,27 @@ class webservice_content_test extends abstract_testcase {
 
         // Test getting mod content.
         $modintro = '<p>My original intro content</p>';
-        $mod = $this->getDataGenerator()->create_module($modname,
-            ['course' => $course->id, $field => $modintro]);
+        $mod = $this->getDataGenerator()->create_module(
+            $modname,
+            ['course' => $course->id, $field => $modintro]
+        );
 
         $context = \context_module::instance($mod->cmid);
         $filename = 'test image.png';
         $filenameanchor = 'test pdf.pdf';
         $filearea = $field;
-        $file = $this->create_test_file($context->id, 'mod_'.$modname, $filearea, 0, $filename);
-        $fileanchor = $this->create_test_file($context->id, 'mod_'.$modname, $filearea, 0, $filenameanchor);
+        $file = $this->create_test_file($context->id, 'mod_' . $modname, $filearea, 0, $filename);
+        $fileanchor = $this->create_test_file($context->id, 'mod_' . $modname, $filearea, 0, $filenameanchor);
         $modinst = $DB->get_record($table, ['id' => $mod->id]);
-        $modintro = $modinst->$field.' Modified with image file' .
-            '<a href="@@PLUGINFILE@@/'. rawurlencode($filenameanchor).'" alt="test alt anchor" />' . $filenameanchor.'</a>' .
-            '<img src="@@PLUGINFILE@@/'. rawurlencode($filename).'" alt="test alt" /></img>';
+        $modintro = $modinst->$field . ' Modified with image file' .
+            '<a href="@@PLUGINFILE@@/' . rawurlencode($filenameanchor) . '" alt="test alt anchor" />' . $filenameanchor . '</a>' .
+            '<img src="@@PLUGINFILE@@/' . rawurlencode($filename) . '" alt="test alt" /></img>';
         $modinst->$field = $modintro;
 
         $DB->update_record($table, $modinst);
 
         if ($modname === 'label') {
-            $expectedtitle = 'My original intro content'.chr(10).'Modified with image file';
+            $expectedtitle = 'My original intro content' . chr(10) . 'Modified with image file';
         } else {
             $expectedtitle = $modinst->$titlefield;
         }
@@ -244,7 +246,7 @@ class webservice_content_test extends abstract_testcase {
         $record->forum = $forum->id;
         $record->userid = $user->id;
         $record->course = $forum->course;
-        $discussion = self::getDataGenerator()->get_plugin_generator('mod_'.$forumtype)->create_discussion($record);
+        $discussion = self::getDataGenerator()->get_plugin_generator('mod_' . $forumtype)->create_discussion($record);
 
         // Add a reply.
         $posttitle = 'My post title';
@@ -255,16 +257,16 @@ class webservice_content_test extends abstract_testcase {
         $record->userid = $user->id;
         $record->subject = $posttitle;
         $record->message = $postmessage;
-        $post = self::getDataGenerator()->get_plugin_generator('mod_'.$forumtype)->create_post($record);
+        $post = self::getDataGenerator()->get_plugin_generator('mod_' . $forumtype)->create_post($record);
 
         $this->setAdminUser();
 
-        $content = content::service($post->id, $forumtype, $forumtype.'_posts', 'message');
+        $content = content::service($post->id, $forumtype, $forumtype . '_posts', 'message');
         $content->contenturl = null; // We don't want to compare this.
         $expected = new component_content(
             $post->id,
             $forumtype,
-            $forumtype.'_posts',
+            $forumtype . '_posts',
             'message',
             null,
             $post->modified,
@@ -277,7 +279,7 @@ class webservice_content_test extends abstract_testcase {
 
     public function test_service_hsuforum_content(): void {
         global $CFG;
-        if (file_exists($CFG->dirroot.'/mod/hsuforum')) {
+        if (file_exists($CFG->dirroot . '/mod/hsuforum')) {
             $this->test_service_forum_content('hsuforum');
         }
     }
@@ -366,8 +368,10 @@ class webservice_content_test extends abstract_testcase {
 
         // Test getting mod content.
         $modintro = '<p>My original intro content</p>';
-        $mod = $this->getDataGenerator()->create_module($modname,
-            ['course' => $course->id, $field => $modintro]);
+        $mod = $this->getDataGenerator()->create_module(
+            $modname,
+            ['course' => $course->id, $field => $modintro]
+        );
         $modinst = $DB->get_record($table, ['id' => $mod->id]);
         $expectedmessage = "Content not found for component={$modname}&table={$table}&field={$field}&id={$mod->id}";
 

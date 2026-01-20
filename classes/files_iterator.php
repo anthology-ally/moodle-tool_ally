@@ -44,7 +44,7 @@ class files_iterator implements \Iterator {
     private $validator;
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $retrievevalid = true;
 
@@ -99,7 +99,7 @@ class files_iterator implements \Iterator {
     private $mimetype;
 
     /**
-     * @var boolean
+     * @var bool
      */
     private $validfilter = true;
 
@@ -252,7 +252,7 @@ class files_iterator implements \Iterator {
         }
         if ($this->context instanceof \context) {
             $filtersql .= ' AND (c.path LIKE :path OR c.id = :ctxid)';
-            $params['path'] = $this->context->path.'/%';
+            $params['path'] = $this->context->path . '/%';
             $params['ctxid'] = $this->context->id;
         }
         if (!empty($this->component)) {
@@ -269,7 +269,7 @@ class files_iterator implements \Iterator {
         }
         if (!empty($this->mimetype)) {
             if (strpos($this->mimetype, '%') !== false) {
-                $filtersql .= ' AND '.$DB->sql_like('f.mimetype', ':mimetype').' ';
+                $filtersql .= ' AND ' . $DB->sql_like('f.mimetype', ':mimetype') . ' ';
             } else {
                 $filtersql .= 'AND f.mimetype = :mimetype ';
             }
@@ -366,7 +366,7 @@ class files_iterator implements \Iterator {
      * @return self
      */
     public function sort_by($field, $direction = SORT_ASC) {
-        $this->sort = 'ORDER BY f.'.$field.' ';
+        $this->sort = 'ORDER BY f.' . $field . ' ';
         $this->sort .= $direction === SORT_ASC ? 'ASC' : 'DESC';
 
         return $this;

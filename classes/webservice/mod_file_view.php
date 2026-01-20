@@ -26,8 +26,8 @@ namespace tool_ally\webservice;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
-require_once(__DIR__.'/../../../../../mod/resource/lib.php');
+require_once(__DIR__ . '/../../../../../lib/externallib.php');
+require_once(__DIR__ . '/../../../../../mod/resource/lib.php');
 
 /**
  * Trigger view event for file resource modules.
@@ -108,7 +108,7 @@ class mod_file_view extends loggable_external_api {
 
         if (!$cm->uservisible) {
             throw new \coding_exception(
-                'The user with id '.$userid.' is currently not allowed to view the requested resource'
+                'The user with id ' . $userid . ' is currently not allowed to view the requested resource'
             );
         }
 

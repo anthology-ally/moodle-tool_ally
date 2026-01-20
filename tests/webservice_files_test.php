@@ -28,7 +28,7 @@ use tool_ally\webservice\files;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for files webservice.
@@ -40,9 +40,11 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class webservice_files_test extends abstract_testcase {
+final class webservice_files_test extends abstract_testcase {
     /**
      * Test the web service.
+     *
+     * @covers \tool_ally\webservice\files::service
      */
     public function test_service(): void {
         $this->resetAfterTest();

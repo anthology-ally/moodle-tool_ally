@@ -29,7 +29,7 @@ use tool_ally\webservice\files;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for invalid files webservice.
@@ -115,6 +115,5 @@ class webservice_invalid_files extends abstract_testcase {
         $file = reset($files);
 
         $this->match_files($course2, $valid3, $file);
-
     }
 }

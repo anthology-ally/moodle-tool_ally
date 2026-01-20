@@ -29,7 +29,7 @@ use tool_ally\webservice\replace_file;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 require_once($CFG->dirroot . '/files/externallib.php');
 require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
 
@@ -43,8 +43,7 @@ require_once($CFG->dirroot . '/mod/assign/tests/base_test.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class webservice_replace_file_test extends abstract_testcase {
-
+final class webservice_replace_file_test extends abstract_testcase {
     /**
      * @var stdClass
      */
@@ -59,6 +58,7 @@ class webservice_replace_file_test extends abstract_testcase {
      * @throws dml_exception
      */
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $datagen = $this->getDataGenerator();
@@ -147,7 +147,7 @@ class webservice_replace_file_test extends abstract_testcase {
         $dobj = (object) [
             'id' => $label->id,
         ];
-        $dobj->intro = '<p>Test label text '.$this->std_img_html().'</p>';
+        $dobj->intro = '<p>Test label text ' . $this->std_img_html() . '</p>';
         $DB->update_record('label', $dobj);
 
         $draftfile = $this->create_draft_file();
@@ -180,8 +180,8 @@ class webservice_replace_file_test extends abstract_testcase {
         $dobj = (object) [
             'id' => $page->id,
         ];
-        $dobj->intro = '<p>Test intro text '.$this->std_img_html().'</p>';
-        $dobj->content = '<div>Test content text</div>'.$this->std_img_html();
+        $dobj->intro = '<p>Test intro text ' . $this->std_img_html() . '</p>';
+        $dobj->content = '<div>Test content text</div>' . $this->std_img_html();
         $DB->update_record('page', $dobj);
 
         $this->replace_file($introfile);
@@ -213,7 +213,7 @@ class webservice_replace_file_test extends abstract_testcase {
         $dobj = (object) [
             'id' => $this->course->id,
         ];
-        $dobj->summary = '<p>Course summary text '.$this->std_img_html().'</p>';
+        $dobj->summary = '<p>Course summary text ' . $this->std_img_html() . '</p>';
         $DB->update_record('course', $dobj);
 
         $draftfile = $this->create_draft_file();
@@ -246,7 +246,7 @@ class webservice_replace_file_test extends abstract_testcase {
         $file = $this->create_test_file($context->id, 'course', 'section');
 
         $section = $DB->get_record('course_sections', ['course' => $course->id, 'section' => 1]);
-        $section->summary = '<span>Course section text '.$this->std_img_html().'</span>';
+        $section->summary = '<span>Course section text ' . $this->std_img_html() . '</span>';
         $DB->update_record('course_sections', $section);
         $draftfile = $this->create_draft_file();
 
@@ -344,15 +344,15 @@ class webservice_replace_file_test extends abstract_testcase {
 
         $forum = $datagen->create_module($forumtype, ['course' => $this->course->id]);
         $context = \context_module::instance($forum->cmid);
-        $forumfile = $this->create_test_file($context->id, 'mod_'.$forumtype, 'intro');
+        $forumfile = $this->create_test_file($context->id, 'mod_' . $forumtype, 'intro');
         $dobj = (object) [
             'id' => $forum->id,
         ];
-        $dobj->intro = 'forum intro '.$this->std_img_html();
-        $dobj->content = '<p>Forum content '.$this->std_img_html().'</p>';
+        $dobj->intro = 'forum intro ' . $this->std_img_html();
+        $dobj->content = '<p>Forum content ' . $this->std_img_html() . '</p>';
         $DB->update_record($forumtype, $dobj);
 
-        $fdg = $datagen->get_plugin_generator('mod_'.$forumtype);
+        $fdg = $datagen->get_plugin_generator('mod_' . $forumtype);
 
         // Create discussion / post.
         $record = new \stdClass();
@@ -361,10 +361,10 @@ class webservice_replace_file_test extends abstract_testcase {
         $record->forum = $forum->id;
         // Add file to discussion post.
         $discussion = $fdg->create_discussion($record);
-        $discussionpost = $DB->get_record($forumtype.'_posts', ['discussion' => $discussion->id]);
-        $discussionfile = $this->create_test_file($context->id, 'mod_'.$forumtype, 'post', $discussionpost->id);
+        $discussionpost = $DB->get_record($forumtype . '_posts', ['discussion' => $discussion->id]);
+        $discussionfile = $this->create_test_file($context->id, 'mod_' . $forumtype, 'post', $discussionpost->id);
         $discussionpost->message = $this->std_img_html();
-        $DB->update_record($forumtype.'_posts', $discussionpost);
+        $DB->update_record($forumtype . '_posts', $discussionpost);
 
         // Create post replying to discussion.
         $record = new \stdClass();
@@ -373,9 +373,9 @@ class webservice_replace_file_test extends abstract_testcase {
         $record->userid = $this->teacher->id;
         $post = $fdg->create_post($record);
         // Add file to reply.
-        $postfile = $this->create_test_file($context->id, 'mod_'.$forumtype, 'post', $post->id);
-        $post->message = '<div>'.$this->std_img_html().'</div>';
-        $DB->update_record($forumtype.'_posts', $post);
+        $postfile = $this->create_test_file($context->id, 'mod_' . $forumtype, 'post', $post->id);
+        $post->message = '<div>' . $this->std_img_html() . '</div>';
+        $DB->update_record($forumtype . '_posts', $post);
 
         // Replace main forum file.
         $this->replace_file($forumfile);
@@ -386,8 +386,8 @@ class webservice_replace_file_test extends abstract_testcase {
         $this->assertStringContainsString('red%20dot.png', $forum->intro);
 
         // Ensure that both discussion post and reply post have NOT had file link replaced in HTML.
-        $discussionpost = $DB->get_record($forumtype.'_posts', ['id' => $discussionpost->id, 'parent' => 0]);
-        $post = $DB->get_record($forumtype.'_posts', ['id' => $post->id]);
+        $discussionpost = $DB->get_record($forumtype . '_posts', ['id' => $discussionpost->id, 'parent' => 0]);
+        $post = $DB->get_record($forumtype . '_posts', ['id' => $post->id]);
         $this->assertStringContainsString('gd%20logo.png', $discussionpost->message);
         $this->assertStringNotContainsString('red%20dot.png', $discussionpost->message);
         $this->assertStringContainsString('gd%20logo.png', $post->message);
@@ -397,8 +397,8 @@ class webservice_replace_file_test extends abstract_testcase {
         $this->replace_file($discussionfile);
 
         // Ensure that discussion post has had file link replaced but reply post has not.
-        $discussionpost = $DB->get_record($forumtype.'_posts', ['id' => $discussionpost->id, 'parent' => 0]);
-        $post = $DB->get_record($forumtype.'_posts', ['id' => $post->id]);
+        $discussionpost = $DB->get_record($forumtype . '_posts', ['id' => $discussionpost->id, 'parent' => 0]);
+        $post = $DB->get_record($forumtype . '_posts', ['id' => $post->id]);
         $this->assertStringNotContainsString('gd%20logo.png', $discussionpost->message);
         $this->assertStringContainsString('red%20dot.png', $discussionpost->message);
         $this->assertStringContainsString('gd%20logo.png', $post->message);
@@ -408,7 +408,7 @@ class webservice_replace_file_test extends abstract_testcase {
         $this->replace_file($postfile);
 
         // Ensure that reply post has had file links replaced.
-        $post = $DB->get_record($forumtype.'_posts', ['id' => $post->id]);
+        $post = $DB->get_record($forumtype . '_posts', ['id' => $post->id]);
         $this->assertStringNotContainsString('gd%20logo.png', $post->message);
         $this->assertStringContainsString('red%20dot.png', $post->message);
     }
@@ -418,7 +418,7 @@ class webservice_replace_file_test extends abstract_testcase {
      */
     public function test_service_hsuforum_html(): void {
         global $CFG;
-        if (file_exists($CFG->dirroot.'/mod/hsuforum')) {
+        if (file_exists($CFG->dirroot . '/mod/hsuforum')) {
             $this->test_service_forum_html('hsuforum');
         }
     }
@@ -441,7 +441,7 @@ class webservice_replace_file_test extends abstract_testcase {
         quiz_add_quiz_question($question->id, $quiz);
 
         $qfile = $this->create_test_file($context->id, 'question', 'questiontext', $question->id);
-        $questionrow->questiontext = 'Question text '.$this->std_img_html();
+        $questionrow->questiontext = 'Question text ' . $this->std_img_html();
         $DB->update_record('question', $questionrow);
 
         // Replace file.
@@ -514,11 +514,23 @@ class webservice_replace_file_test extends abstract_testcase {
         $DB->update_record('qtype_multichoice_options', $combinedfeedback);
 
         $correctfeedbackfile = $this->create_test_file(
-                $context->id, 'question', 'correctfeedback', $question->id);
+            $context->id,
+            'question',
+            'correctfeedback',
+            $question->id
+        );
         $partiallycorrectfeedbackfile = $this->create_test_file(
-            $context->id, 'question', 'partiallycorrectfeedback', $question->id);
+            $context->id,
+            'question',
+            'partiallycorrectfeedback',
+            $question->id
+        );
         $incorrectfeedbackfile = $this->create_test_file(
-                $context->id, 'question', 'incorrectfeedback', $question->id);
+            $context->id,
+            'question',
+            'incorrectfeedback',
+            $question->id
+        );
 
         $combinedfeedback = $DB->get_record('qtype_multichoice_options', ['id' => $cfid]);
         $this->assert_file_not_processed_in_text($combinedfeedback->correctfeedback);
@@ -556,13 +568,29 @@ class webservice_replace_file_test extends abstract_testcase {
         $ans1id = $DB->insert_record('question_answers', $ans);
         $ans2id = $DB->insert_record('question_answers', $ans);
         $ans1answerfile = $this->create_test_file(
-            $context->id, 'question', 'answer', $ans1id);
+            $context->id,
+            'question',
+            'answer',
+            $ans1id
+        );
         $ans1feedbackfile = $this->create_test_file(
-            $context->id, 'question', 'answerfeedback', $ans1id);
+            $context->id,
+            'question',
+            'answerfeedback',
+            $ans1id
+        );
         $ans2answerfile = $this->create_test_file(
-            $context->id, 'question', 'answer', $ans2id);
+            $context->id,
+            'question',
+            'answer',
+            $ans2id
+        );
         $ans2feedbackfile = $this->create_test_file(
-            $context->id, 'question', 'answerfeedback', $ans2id);
+            $context->id,
+            'question',
+            'answerfeedback',
+            $ans2id
+        );
 
         $ans1 = $DB->get_record('question_answers', ['id' => $ans1id]);
         $ans2 = $DB->get_record('question_answers', ['id' => $ans2id]);
@@ -607,7 +635,7 @@ class webservice_replace_file_test extends abstract_testcase {
     public function test_service_qtype_ddmatch_html(): void {
         global $CFG, $DB, $USER;
 
-        if (!file_exists($CFG->dirroot.'/question/type/ddmatch')) {
+        if (!file_exists($CFG->dirroot . '/question/type/ddmatch')) {
             return;
         }
 
@@ -626,9 +654,9 @@ class webservice_replace_file_test extends abstract_testcase {
             'category' => $cat->id,
             'parent' => 0,
             'name' => 'DD match test',
-            'questiontext' => 'Question text '.$this->std_img_html(),
+            'questiontext' => 'Question text ' . $this->std_img_html(),
             'questiontextformat' => FORMAT_HTML,
-            'generalfeedback' => 'General feedabck text '.$this->std_img_html(),
+            'generalfeedback' => 'General feedabck text ' . $this->std_img_html(),
             'generalfeedbackformat' => FORMAT_HTML,
             'defaultmark' => 1,
             'penalty' => 1,
@@ -668,31 +696,47 @@ class webservice_replace_file_test extends abstract_testcase {
         // Create sub questions.
         $subqa = (object) [
             'questionid' => $questionid,
-            'questiontext' => 'Subquestion A Question text'.$this->std_img_html(),
+            'questiontext' => 'Subquestion A Question text' . $this->std_img_html(),
             'questiontextformat' => FORMAT_HTML,
-            'answertext' => 'Subquestion A Answer text'.$this->std_img_html(),
+            'answertext' => 'Subquestion A Answer text' . $this->std_img_html(),
             'answertextformat' => FORMAT_HTML,
         ];
         $subqaid = $DB->insert_record('qtype_ddmatch_subquestions', $subqa);
         $subqarow = $DB->get_record('qtype_ddmatch_subquestions', ['id' => $subqaid]);
         $subqaquestionfile = $this->create_test_file(
-                $context->id, 'qtype_ddmatch', 'subquestion', $subqarow->id);
+            $context->id,
+            'qtype_ddmatch',
+            'subquestion',
+            $subqarow->id
+        );
         $subqaanswerfile = $this->create_test_file(
-                $context->id, 'qtype_ddmatch', 'subanswer', $subqarow->id);
+            $context->id,
+            'qtype_ddmatch',
+            'subanswer',
+            $subqarow->id
+        );
 
         $subqb = (object) [
             'questionid' => $questionid,
-            'questiontext' => 'Subquestion B '.$this->std_img_html(),
+            'questiontext' => 'Subquestion B ' . $this->std_img_html(),
             'questiontextformat' => FORMAT_HTML,
-            'answertext' => 'Subquestion B Answer text'.$this->std_img_html(),
+            'answertext' => 'Subquestion B Answer text' . $this->std_img_html(),
             'answertextformat' => FORMAT_HTML,
         ];
         $subqbid = $DB->insert_record('qtype_ddmatch_subquestions', $subqb);
         $subqbrow = $DB->get_record('qtype_ddmatch_subquestions', ['id' => $subqbid]);
         $subqbquestionfile = $this->create_test_file(
-            $context->id, 'qtype_ddmatch', 'subquestion', $subqbrow->id);
+            $context->id,
+            'qtype_ddmatch',
+            'subquestion',
+            $subqbrow->id
+        );
         $subqbanswerfile = $this->create_test_file(
-            $context->id, 'qtype_ddmatch', 'subanswer', $subqbrow->id);
+            $context->id,
+            'qtype_ddmatch',
+            'subanswer',
+            $subqbrow->id
+        );
 
         // Test replacing file in just one questions question field.
         $this->replace_file($subqaquestionfile);
@@ -726,19 +770,31 @@ class webservice_replace_file_test extends abstract_testcase {
         $options = (object) [
             'questionid' => $questionid,
             'suffleanswers' => 1,
-            'correctfeedback' => '<span>Correct feedback '.$this->std_img_html().'</span>',
-            'partiallycorrectfeedback' => '<p>Partially Correct feedback</p>'.$this->std_img_html(),
-            'incorrectfeedback' => '<div>Incorrect feedback</div>'.$this->std_img_html(),
+            'correctfeedback' => '<span>Correct feedback ' . $this->std_img_html() . '</span>',
+            'partiallycorrectfeedback' => '<p>Partially Correct feedback</p>' . $this->std_img_html(),
+            'incorrectfeedback' => '<div>Incorrect feedback</div>' . $this->std_img_html(),
         ];
         $optionsrowid = $DB->insert_record('qtype_ddmatch_options', $options);
         $optionsrow = $DB->get_record('qtype_ddmatch_options', ['id' => $optionsrowid]);
         // Create files for optionsrow.
         $correctfeedbackfile = $this->create_test_file(
-                $context->id, 'question', 'correctfeedback', $question->id);
+            $context->id,
+            'question',
+            'correctfeedback',
+            $question->id
+        );
         $partiallycorrectfeedbackfile = $this->create_test_file(
-                $context->id, 'question', 'partiallycorrectfeedback', $question->id);
+            $context->id,
+            'question',
+            'partiallycorrectfeedback',
+            $question->id
+        );
         $incorrectfeedbackfile = $this->create_test_file(
-                $context->id, 'question', 'incorrectfeedback', $question->id);
+            $context->id,
+            'question',
+            'incorrectfeedback',
+            $question->id
+        );
 
         // Test replacing file in correct feedback text.
         $this->replace_file($correctfeedbackfile);
@@ -871,8 +927,8 @@ class webservice_replace_file_test extends abstract_testcase {
         $dobj = (object) [
             'id' => $label->id,
         ];
-        $dobj->intro = '<img src="@@PLUGINFILE@@/'.rawurlencode($filename).'" alt="" width="100" height="100">'.
-                '<img src="@@PLUGINFILE@@/'.rawurlencode($filetoreplacename).'" alt="" width="100" height="100">';
+        $dobj->intro = '<img src="@@PLUGINFILE@@/' . rawurlencode($filename) . '" alt="" width="100" height="100">' .
+                '<img src="@@PLUGINFILE@@/' . rawurlencode($filetoreplacename) . '" alt="" width="100" height="100">';
         $DB->update_record('label', $dobj);
 
         // Draft file will have the same filename.

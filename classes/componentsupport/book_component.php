@@ -23,7 +23,6 @@
 namespace tool_ally\componentsupport;
 
 use cm_info;
-
 use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\content_sub_tables;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
@@ -31,7 +30,6 @@ use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
-
 use moodle_url;
 
 /**
@@ -39,9 +37,7 @@ use moodle_url;
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class book_component extends component_base implements
-        iface_html_content, annotation_map, content_sub_tables {
-
+class book_component extends component_base implements annotation_map, content_sub_tables, iface_html_content {
     use html_content;
     use embedded_file_map;
 
@@ -85,14 +81,28 @@ SQL;
             if ($row->bookid !== $prevbookid) {
                 $prevbookid = $row->bookid;
                 $array[] = new component(
-                    $row->bookid, 'book', 'book', 'intro', $courseid, $row->booktimemodified,
-                    $row->bookintroformat, $row->bookname);
+                    $row->bookid,
+                    'book',
+                    'book',
+                    'intro',
+                    $courseid,
+                    $row->booktimemodified,
+                    $row->bookintroformat,
+                    $row->bookname
+                );
             }
             // Add an entry for the book chapter if it's populated.
             if (!empty($row->chaptertimemodified)) {
                 $array[] = new component(
-                    $row->chapterid, 'book', 'book_chapters', 'content', $courseid, $row->chaptertimemodified,
-                    $row->chaptercontentformat, $row->chaptertitle);
+                    $row->chapterid,
+                    'book',
+                    'book_chapters',
+                    'content',
+                    $courseid,
+                    $row->chaptertimemodified,
+                    $row->chaptercontentformat,
+                    $row->chaptertitle
+                );
             }
         }
         $rs->close();
@@ -100,7 +110,7 @@ SQL;
         return $array;
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    public function get_html_content($id, $table, $field, $courseid = null): ?component_content {
         global $DB;
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
         if (empty($content)) {
@@ -136,14 +146,22 @@ SQL;
             return $content;
         }
 
-        list ($course, $cm) = get_course_and_cm_from_instance($bookid, 'book');
+         [$course, $cm] = get_course_and_cm_from_instance($bookid, 'book');
 
         foreach ($chapters as $chapter) {
             $url = new \moodle_url('/mod/book/view.php', ['id' => $cm->id, 'chapterid' => $chapter->id]);
-            $contentmodel = new component_content($chapter->id, 'book', 'book_chapters',
-                'content', $course->id,
-                $chapter->timemodified, 'contentformat',
-                $chapter->content, $chapter->title, $url);
+            $contentmodel = new component_content(
+                $chapter->id,
+                'book',
+                'book_chapters',
+                'content',
+                $course->id,
+                $chapter->timemodified,
+                'contentformat',
+                $chapter->content,
+                $chapter->title,
+                $url
+            );
             $content[] = $contentmodel;
         }
 
@@ -151,8 +169,10 @@ SQL;
     }
 
     public function get_all_html_content($id) {
-        return array_merge([$this->get_html_content($id, 'book', 'intro')],
-            $this->get_chapter_html_content($id));
+        return array_merge(
+            [$this->get_html_content($id, 'book', 'intro')],
+            $this->get_chapter_html_content($id)
+        );
     }
 
     public function replace_html_content($id, $table, $field, $content) {
@@ -167,7 +187,7 @@ SQL;
             return $course;
         }
 
-        throw new \coding_exception('Invalid table used to recover course id '.$table);
+        throw new \coding_exception('Invalid table used to recover course id ' . $table);
     }
 
     public function get_annotation_maps($courseid) {
@@ -182,7 +202,7 @@ SQL;
         $introcis = $this->get_intro_html_content_items($courseid, false);
         $bookids = [];
         foreach ($introcis as $introci) {
-            list($course, $cm) = get_course_and_cm_from_instance($introci->id, 'book', $courseid);
+            [$course, $cm] = get_course_and_cm_from_instance($introci->id, 'book', $courseid);
             $intros[$cm->id] = $introci->entity_id();
 
             if ($PAGE->pagetype !== 'mod-book-view') {
@@ -193,8 +213,14 @@ SQL;
         }
 
         if (!empty($bookids)) {
-            $contentcis = $this->get_selected_html_content_items($courseid, 'content',
-                    'book_chapters', 'bookid', $bookids, 'title');
+            $contentcis = $this->get_selected_html_content_items(
+                $courseid,
+                'content',
+                'book_chapters',
+                'bookid',
+                $bookids,
+                'title'
+            );
             foreach ($contentcis as $contentci) {
                 $content[$contentci->id] = $contentci->entity_id();
             }
@@ -222,9 +248,9 @@ SQL;
             return $this->make_module_instance_url($table, $id);
         } else if ($table === 'book_chapters') {
             $bookid = $DB->get_field('book_chapters', 'bookid', ['id' => $id]);
-            list ($course, $cm) = get_course_and_cm_from_instance($bookid, 'book', $courseid);
+             [$course, $cm] = get_course_and_cm_from_instance($bookid, 'book', $courseid);
             unset($course);
-            return new moodle_url('/mod/book/view.php', ['id' => $cm->id, 'chapterid' => $id]).'';
+            return new moodle_url('/mod/book/view.php', ['id' => $cm->id, 'chapterid' => $id]) . '';
         }
         return null;
     }

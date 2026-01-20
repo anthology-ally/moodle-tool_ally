@@ -53,10 +53,14 @@ class course_content extends loggable_external_api {
                 'id'           => new \external_value(PARAM_INT, 'Component id'),
                 'component'    => new \external_value(PARAM_ALPHANUMEXT, 'Component name'),
                 'title'        => new \external_value(PARAM_TEXT, 'Title'),
-                'table'        => new \external_value(PARAM_ALPHANUMEXT,
-                        'Where content not in main component table - e.g: forum_discussions, forum_posts, etc'),
-                'field'        => new \external_value(PARAM_ALPHANUMEXT,
-                        'Table field for storing content - e.g: description, message, etc'),
+                'table'        => new \external_value(
+                    PARAM_ALPHANUMEXT,
+                    'Where content not in main component table - e.g: forum_discussions, forum_posts, etc'
+                ),
+                'field'        => new \external_value(
+                    PARAM_ALPHANUMEXT,
+                    'Table field for storing content - e.g: description, message, etc'
+                ),
                 'courseid'     => new \external_value(PARAM_INT, 'Course ID of course housing content'),
                 'timemodified' => new \external_value(PARAM_TEXT, 'Last modified time of the content'),
             ])

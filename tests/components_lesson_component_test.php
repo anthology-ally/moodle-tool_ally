@@ -41,7 +41,7 @@ require_once('abstract_testcase.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class components_lesson_component_test extends abstract_testcase {
+final class components_lesson_component_test extends abstract_testcase {
     use component_assertions;
 
     /**
@@ -85,6 +85,7 @@ class components_lesson_component_test extends abstract_testcase {
     private $component;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
@@ -106,15 +107,29 @@ class components_lesson_component_test extends abstract_testcase {
     public function test_get_all_html_content_items(): void {
         $contentitems = $this->component->get_all_html_content($this->lesson->id);
 
-        $this->assert_content_items_contain_item($contentitems,
-            $this->lesson->id, 'lesson', 'lesson', 'intro');
+        $this->assert_content_items_contain_item(
+            $contentitems,
+            $this->lesson->id,
+            'lesson',
+            'lesson',
+            'intro'
+        );
 
-        $this->assert_content_items_contain_item($contentitems,
-            $this->lessonpage->id, 'lesson', 'lesson_pages', 'contents');
+        $this->assert_content_items_contain_item(
+            $contentitems,
+            $this->lessonpage->id,
+            'lesson',
+            'lesson_pages',
+            'contents'
+        );
 
-        $this->assert_content_items_contain_item($contentitems,
-            $this->lessonquestion->id, 'lesson', 'lesson_pages', 'contents');
-
+        $this->assert_content_items_contain_item(
+            $contentitems,
+            $this->lessonquestion->id,
+            'lesson',
+            'lesson_pages',
+            'contents'
+        );
     }
 
     public function test_resolve_module_instance_id_from_lesson(): void {
@@ -153,8 +168,8 @@ class components_lesson_component_test extends abstract_testcase {
         $a = 0;
         foreach ($answers as $answer) {
             $a++;
-            $key = $this->lessonquestion->id.'_'.$answer->id.'_'.$a;
-            $this->assertEquals('lesson:lesson_answers:answer:'.$answer->id, $cis['lesson_answers'][$key]);
+            $key = $this->lessonquestion->id . '_' . $answer->id . '_' . $a;
+            $this->assertEquals('lesson:lesson_answers:answer:' . $answer->id, $cis['lesson_answers'][$key]);
         }
     }
 
@@ -170,22 +185,52 @@ class components_lesson_component_test extends abstract_testcase {
         $unusedfiles = [];
 
         // Check the intro.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $this->lesson->id,
-            'lesson', 'intro', $this->teacher);
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_lesson',
+            $this->lesson->id,
+            'lesson',
+            'intro',
+            $this->teacher
+        );
 
         // Check both the standard page and the question page.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $this->lessonpage->id,
-            'lesson_pages', 'contents', $this->teacher);
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $this->lessonquestion->id,
-            'lesson_pages', 'contents', $this->teacher);
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_lesson',
+            $this->lessonpage->id,
+            'lesson_pages',
+            'contents',
+            $this->teacher
+        );
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_lesson',
+            $this->lessonquestion->id,
+            'lesson_pages',
+            'contents',
+            $this->teacher
+        );
 
         $answers = $DB->get_records('lesson_answers', ['pageid' => $this->lessonquestion->id]);
 
         foreach ($answers as $answer) {
-            list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $answer->id,
-                'lesson_answers', 'answer', $this->teacher);
-            list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $answer->id,
-                'lesson_answers', 'response', $this->teacher);
+            [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+                $context,
+                'mod_lesson',
+                $answer->id,
+                'lesson_answers',
+                'answer',
+                $this->teacher
+            );
+            [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+                $context,
+                'mod_lesson',
+                $answer->id,
+                'lesson_answers',
+                'response',
+                $this->teacher
+            );
         }
 
         // This will double check that file iterator is working as expected.

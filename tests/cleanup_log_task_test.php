@@ -30,7 +30,7 @@ use tool_ally\task\cleanup_log_task;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Tests for log cleanup task.
@@ -41,7 +41,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class cleanup_log_task_test extends abstract_testcase {
+final class cleanup_log_task_test extends abstract_testcase {
     /**
      * Test the general behavior of the task execution.
      */

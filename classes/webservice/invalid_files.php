@@ -27,7 +27,6 @@ use tool_ally\local;
 use tool_ally\local_file;
 
 class invalid_files extends loggable_external_api {
-
     /**
      * @return \external_function_parameters
      */
@@ -91,5 +90,4 @@ class invalid_files extends loggable_external_api {
 
         return $return;
     }
-
 }

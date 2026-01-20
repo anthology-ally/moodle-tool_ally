@@ -34,7 +34,6 @@ use tool_ally\componentsupport\traits\html_content;
 use tool_ally\local_file;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
-
 use moodle_url;
 
 /**
@@ -43,9 +42,7 @@ use moodle_url;
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class forum_component extends file_component_base implements
-    iface_html_content, annotation_map, content_sub_tables {
-
+class forum_component extends file_component_base implements annotation_map, content_sub_tables, iface_html_content {
     use html_content;
     use embedded_file_map;
 
@@ -70,8 +67,14 @@ class forum_component extends file_component_base implements
         $area = $file->get_filearea();
         $itemid = $file->get_itemid();
         if ($area === 'post') {
-            local_file::update_filenames_in_html('message', $this->type . '_posts', ' id = ? ',
-                ['id' => $itemid], $this->oldfilename, $file->get_filename());
+            local_file::update_filenames_in_html(
+                'message',
+                $this->type . '_posts',
+                ' id = ? ',
+                ['id' => $itemid],
+                $this->oldfilename,
+                $file->get_filename()
+            );
         }
     }
 
@@ -97,7 +100,7 @@ class forum_component extends file_component_base implements
         // Faster than doing it per module instance.
         $userids = $this->get_approved_author_ids_for_context(\context_course::instance($courseid));
 
-        list($userinsql, $userparams) = $DB->get_in_or_equal($userids);
+        [$userinsql, $userparams] = $DB->get_in_or_equal($userids);
 
         // Just get discussions - we aren't going to bother with posts.
         $discussions = '{' . $this->type . '_discussions}';
@@ -133,8 +136,15 @@ SQL;
         $rs = $DB->get_recordset_sql($sql, $params);
         foreach ($rs as $row) {
             $array[] = new component(
-                $row->id, $this->type, $this->type . '_posts', 'message', $courseid, $row->modified,
-                $row->messageformat, $row->subject);
+                $row->id,
+                $this->type,
+                $this->type . '_posts',
+                'message',
+                $courseid,
+                $row->modified,
+                $row->messageformat,
+                $row->subject
+            );
         }
         $rs->close();
 
@@ -175,7 +185,7 @@ SQL;
             if ($contentitem->table === $this->type . '_posts') {
                 $posts[$contentitem->id] = $contentitem->entity_id();
             } else if ($contentitem->table === $this->type) {
-                list($course, $cm) = get_course_and_cm_from_instance($contentitem->id, $this->type, $courseid);
+                [$course, $cm] = get_course_and_cm_from_instance($contentitem->id, $this->type, $courseid);
                 unset($course);
                 $forumintros[$cm->id] = $contentitem->entity_id();
             }
@@ -291,7 +301,6 @@ SQL;
              WHERE fp.id = ?
 SQL;
             return $DB->get_field_sql($sql, $params);
-
         }
         return parent::resolve_module_instance_id($table, $id);
     }
@@ -320,7 +329,7 @@ SQL;
             return null;
         }
         if ($table === $this->type) {
-            list ($course, $cm) = get_course_and_cm_from_instance($id, $this->type, $courseid);
+             [$course, $cm] = get_course_and_cm_from_instance($id, $this->type, $courseid);
             unset($course);
             return new moodle_url('/mod/' . $this->type . '/view.php?id=' . $cm->id) . '';
         } else if ($table === $this->type . '_posts') {
@@ -367,11 +376,11 @@ SQL;
             return [];
         }
 
-        list ($course, $cm) = get_course_and_cm_from_instance($id, $this->type);
+         [$course, $cm] = get_course_and_cm_from_instance($id, $this->type);
 
         // Limit to instructor userids.
         $userids = $this->get_approved_author_ids_for_context(\context_course::instance($course->id));
-        list($userinsql, $userparams) = $DB->get_in_or_equal($userids);
+        [$userinsql, $userparams] = $DB->get_in_or_equal($userids);
 
         $main = $this->get_html_content($id, $this->type, 'intro');
         $discussions = '{' . $this->type . '_discussions}';

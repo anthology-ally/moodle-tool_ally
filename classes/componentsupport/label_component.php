@@ -33,7 +33,6 @@ use tool_ally\models\component_content;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class label_component extends component_base implements iface_html_content {
-
     use html_content;
     use embedded_file_map;
 
@@ -54,7 +53,7 @@ class label_component extends component_base implements iface_html_content {
         return $this->std_get_course_html_content_items($courseid);
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    public function get_html_content($id, $table, $field, $courseid = null): ?component_content {
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
         if (empty($content)) {
             return $content;
@@ -72,7 +71,7 @@ class label_component extends component_base implements iface_html_content {
     }
 
     public function get_annotation($id) {
-        return $this->get_component_name().':'.$this->get_component_name().':intro:'.$id;
+        return $this->get_component_name() . ':' . $this->get_component_name() . ':intro:' . $id;
     }
 
     public function resolve_course_id($id, $table, $field) {
@@ -83,7 +82,7 @@ class label_component extends component_base implements iface_html_content {
             return $label->course;
         }
 
-        throw new \coding_exception('Invalid table used to recover course id '.$table);
+        throw new \coding_exception('Invalid table used to recover course id ' . $table);
     }
 
     /**

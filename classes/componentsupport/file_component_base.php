@@ -31,7 +31,6 @@ namespace tool_ally\componentsupport;
  */
 
 abstract class file_component_base extends component_base {
-
     /**
      * @var string
      */
@@ -49,7 +48,7 @@ abstract class file_component_base extends component_base {
     private function validate_file_component(\stored_file $file) {
         $class = get_class($this);
         $namespacedel = strrpos($class, '\\');
-        if ($namespacedel !== false ) {
+        if ($namespacedel !== false) {
             $class = substr($class, $namespacedel + 1);
         }
         if ($this->component_type() === self::TYPE_MOD) {
@@ -59,7 +58,7 @@ abstract class file_component_base extends component_base {
         }
         $modcheck .= substr($class, 0, strrpos($class, '_'));
         if ($modcheck !== $file->get_component()) {
-            throw new \coding_exception('Using incorrect module support class ('.$class.') for file with component '.
+            throw new \coding_exception('Using incorrect module support class (' . $class . ') for file with component ' .
                 $file->get_component());
         }
     }

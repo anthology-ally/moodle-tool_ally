@@ -28,7 +28,6 @@ use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\traits\embedded_file_map;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
-
 use moodle_url;
 
 /**
@@ -36,8 +35,7 @@ use moodle_url;
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class block_html_component extends component_base implements iface_html_content, annotation_map {
-
+class block_html_component extends component_base implements annotation_map, iface_html_content {
     use html_content;
     use embedded_file_map;
 
@@ -90,7 +88,7 @@ class block_html_component extends component_base implements iface_html_content,
         return $array;
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    public function get_html_content($id, $table, $field, $courseid = null): ?component_content {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -117,7 +115,7 @@ class block_html_component extends component_base implements iface_html_content,
             $contentobj->text ?? '',
             $contentobj->title ?? '',
             $url
-            );
+        );
 
         return $contentmodel;
     }
@@ -145,15 +143,15 @@ class block_html_component extends component_base implements iface_html_content,
             if ($context->contextlevel === CONTEXT_COURSE) {
                 return $context->instanceid;
             } else {
-                throw new \coding_exception('Failed to get courseid for block instance '.$id);
+                throw new \coding_exception('Failed to get courseid for block instance ' . $id);
             }
         }
 
-        throw new \coding_exception('Invalid table used to recover course id '.$table);
+        throw new \coding_exception('Invalid table used to recover course id ' . $table);
     }
 
     public function get_annotation($id) {
-        return $this->get_component_name().':'.$this->get_component_name().':configdata:'.$id;
+        return $this->get_component_name() . ':' . $this->get_component_name() . ':configdata:' . $id;
     }
 
     public function get_annotation_maps($courseid) {
@@ -190,6 +188,5 @@ class block_html_component extends component_base implements iface_html_content,
         }
 
         return null;
-
     }
 }

@@ -33,14 +33,14 @@ use advanced_testcase;
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class password_test extends advanced_testcase {
-
+final class password_test extends advanced_testcase {
     /**
      * @var string
      */
     protected $password;
 
     protected function setUp(): void {
+        parent::setUp();
         $this->password = new password();
     }
 
@@ -54,7 +54,7 @@ class password_test extends advanced_testcase {
             $prevchar = '';
             for ($c = 0; $c < count($chars); $c++) {
                 $char = $chars[$c];
-                $this->assertNotEquals($char, $prevchar, 'Concurrent strings found in '.$password);
+                $this->assertNotEquals($char, $prevchar, 'Concurrent strings found in ' . $password);
                 $prevchar = $char;
             }
         }

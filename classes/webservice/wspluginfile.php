@@ -36,7 +36,6 @@ require_once($CFG->dirroot . '/webservice/lib.php');
  */
 
 class wspluginfile {
-
     /**
      * Validate a ws pluginfile signature and return the authentication info array.
      * @param string $signature

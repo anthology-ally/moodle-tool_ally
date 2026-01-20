@@ -134,8 +134,14 @@ class replace_file extends loggable_external_api {
 
         $oldfile->delete();
 
-        $filename = $fs->get_unused_filename($filerecord->contextid, $filerecord->component, $filerecord->filearea,
-                $filerecord->itemid, $filerecord->filepath, $filerecord->filename);
+        $filename = $fs->get_unused_filename(
+            $filerecord->contextid,
+            $filerecord->component,
+            $filerecord->filearea,
+            $filerecord->itemid,
+            $filerecord->filepath,
+            $filerecord->filename
+        );
         $filerecord->filename = $filename;
 
         $file = $fs->create_file_from_storedfile($filerecord, $newfile);

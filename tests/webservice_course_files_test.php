@@ -30,7 +30,7 @@ use external_api;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for course files webservice.
@@ -42,8 +42,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class webservice_course_files_test extends abstract_testcase {
-
+final class webservice_course_files_test extends abstract_testcase {
     /**
      * @var stdClass
      */
@@ -60,10 +59,11 @@ class webservice_course_files_test extends abstract_testcase {
     private $resourcefile;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         global $CFG;
-        require_once($CFG->dirroot.'/lib/externallib.php');
+        require_once($CFG->dirroot . '/lib/externallib.php');
 
         $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
@@ -102,7 +102,8 @@ class webservice_course_files_test extends abstract_testcase {
         global $DB;
         // Add file to a soon to be deleted section.
         $section      = $this->getDataGenerator()->create_course_section(
-            ['section' => 1, 'course' => $this->course->id]);
+            ['section' => 1, 'course' => $this->course->id]
+        );
         $coursectx    = \context_course::instance($this->course->id);
         $filename     = 'shouldbeanimage.jpg';
         $filecontents = 'image contents (not really)';
@@ -166,7 +167,7 @@ class webservice_course_files_test extends abstract_testcase {
         $context = \context_module::instance($this->resource->cmid);
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
 
-        list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_resource', 'intro', 0);
+        [$usedfile, $unusedfile] = $this->setup_check_files($context, 'mod_resource', 'intro', 0);
 
         // Update the intro with the link.
         $link = $generator->create_pluginfile_link_for_file($usedfile);

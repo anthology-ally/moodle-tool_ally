@@ -34,7 +34,6 @@ use tool_ally\exceptions\component_validation_exception;
 use tool_ally\logging\logger;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
-
 use DOMDocument;
 
 /**
@@ -45,7 +44,6 @@ use DOMDocument;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class local_content {
-
     /**
      * @param string $component
      * @return component_base|bool;
@@ -112,7 +110,6 @@ class local_content {
                 }
                 $components[] = $fullcomponent;
             }
-
         }
 
         return $components;
@@ -146,7 +143,7 @@ class local_content {
                     $maps = array_merge($maps, [$component => $instance->get_annotation_maps($courseid)]);
                 } catch (\moodle_exception $ex) {
                     // Component not identified correctly.
-                    $msg = 'Component: '.$component.', Course ID: '.$courseid;
+                    $msg = 'Component: ' . $component . ', Course ID: ' . $courseid;
                     logger::get()->info('logger:annotationmoderror', [
                         'content' => $msg,
                         '_explanation' => 'logger:annotationmoderror_exp',
@@ -179,7 +176,7 @@ class local_content {
     public static function get_html_content_by_entity_id($entityid) {
         $parts = explode(':', $entityid);
         if (count($parts) < 4) {
-            throw new \coding_exception('Entitiy id does not have enough parts - '.$entityid);
+            throw new \coding_exception('Entitiy id does not have enough parts - ' . $entityid);
         }
 
         $args = [$parts[3], $parts[0], $parts[1], $parts[2]];
@@ -234,12 +231,18 @@ class local_content {
      * @return component_content|null
      * @throws component_validation_exception
      */
-    public static function get_html_content($id, $component, $table, $field,
-                                            $courseid = null, $includeembeddedfiles = false) : ?component_content {
+    public static function get_html_content(
+        $id,
+        $component,
+        $table,
+        $field,
+        $courseid = null,
+        $includeembeddedfiles = false
+    ): ?component_content {
         /** @var html_content $componentinstance */
         $componentinstance = self::component_instance($component);
         if (empty($component) || $componentinstance === false) {
-            throw new component_validation_exception('Component '.$component.' does not exist');
+            throw new component_validation_exception('Component ' . $component . ' does not exist');
         }
         /** @var component_content $content */
         $content = $componentinstance->get_html_content($id, $table, $field, $courseid);
@@ -258,7 +261,7 @@ class local_content {
      * @return string
      */
     public static function urlident($component, $table, $field, $id) {
-        return 'component='.$component.'&table='.$table.'&field='.$field.'&id='.$id;
+        return 'component=' . $component . '&table=' . $table . '&field=' . $field . '&id=' . $id;
     }
 
     /**
@@ -270,8 +273,14 @@ class local_content {
      * @param null|int $timemodified
      * @return component_content|bool
      */
-    public static function get_html_content_deleted($id, $component, $table, $field,
-                                                    $courseid = null, $timemodified = null) {
+    public static function get_html_content_deleted(
+        $id,
+        $component,
+        $table,
+        $field,
+        $courseid = null,
+        $timemodified = null
+    ) {
         $component = self::component_instance($component);
         if (empty($component)) {
             return false;
@@ -321,7 +330,7 @@ class local_content {
     public static function get_annotation($context) {
         if ($context->contextlevel === CONTEXT_MODULE) {
             try {
-                list($course, $cm) = get_course_and_cm_from_cmid($context->instanceid);
+                [$course, $cm] = get_course_and_cm_from_cmid($context->instanceid);
                 unset($course);
                 $component = self::component_instance($cm->modname);
                 if ($component && method_exists($component, 'get_annotation')) {
@@ -329,7 +338,7 @@ class local_content {
                 }
             } catch (\moodle_exception $ex) {
                 // Component not identified correctly.
-                $msg = 'Context: '.$context->path.', Instance ID: '.$context->instanceid;
+                $msg = 'Context: ' . $context->path . ', Instance ID: ' . $context->instanceid;
                 logger::get()->info('logger:annotationmoderror', [
                     'content' => $msg,
                     '_explanation' => 'logger:annotationmoderror_exp',

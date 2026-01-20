@@ -30,7 +30,6 @@ namespace tool_ally;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class password {
-
     /**
      * @var string
      */
@@ -49,11 +48,11 @@ class password {
         if ($CFG->maxconsecutiveidentchars > 0) {
             $c = 0;
             while (!check_consecutive_identical_characters($this->password, $CFG->maxconsecutiveidentchars)) {
-                $c ++;
+                $c++;
                 $this->password = generate_password($maxlength);
                 if ($c > 100) {
                     $msg = 'Failed to create a password satisfying the maximum consecutive characters site policy ';
-                    $msg .= '(' . $CFG->maxconsecutiveidentchars .') characters';
+                    $msg .= '(' . $CFG->maxconsecutiveidentchars . ') characters';
                     throw new \moodle_exception($msg);
                 }
             }

@@ -29,7 +29,6 @@ use tool_ally\local_file;
 use tool_ally\local_content;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
-
 use cache;
 use coding_exception;
 use context;
@@ -39,12 +38,11 @@ use file_storage;
 use stored_file;
 use moodle_url;
 
-defined ('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/lib/filestorage/file_storage.php');
+require_once($CFG->dirroot . '/lib/filestorage/file_storage.php');
 
 trait embedded_file_map {
-
     /**
      * General purpose function for applying embedded file map to component content.
      *
@@ -72,7 +70,7 @@ trait embedded_file_map {
         if ($componenttype === component_base::TYPE_MOD) {
             if ($content->table === $content->component) {
                 try {
-                    list($course, $cm) = get_course_and_cm_from_instance($content->id, $content->component);
+                    [$course, $cm] = get_course_and_cm_from_instance($content->id, $content->component);
                 } catch (\Throwable $e) {
                     // We couldn't get $cm, we will get it next time. Just send the embedded draft file if present.
                     $drafturl = new moodle_url('/draftfile.php');
@@ -94,11 +92,11 @@ trait embedded_file_map {
             } else {
                 // Sub table detected - e.g. forum discussion, book chapter, etc...
                 $moduleinstanceid = $component->resolve_module_instance_id($content->table, $content->id);
-                list($course, $cm) = get_course_and_cm_from_instance($moduleinstanceid, $content->component);
+                [$course, $cm] = get_course_and_cm_from_instance($moduleinstanceid, $content->component);
             }
             $context = $cm->context;
 
-            $compstr = 'mod_'.$content->component;
+            $compstr = 'mod_' . $content->component;
         } else if ($componenttype === component_base::TYPE_BLOCK) {
             $context = context_block::instance($content->id);
             $compstr = $content->component;
@@ -125,7 +123,7 @@ trait embedded_file_map {
                 $filename = $result->src;
                 $filearea = $component->get_file_area($content->table, $content->field);
                 if (!$filearea) {
-                    throw new coding_exception('Failed to get filearea for component_content '.
+                    throw new coding_exception('Failed to get filearea for component_content ' .
                         var_export($content, true));
                 }
                 $fileitem = $component->get_file_item($content->table, $content->field, $content->id);
@@ -186,8 +184,13 @@ trait embedded_file_map {
             foreach ($contents as $content) {
                 if ($content instanceof component) {
                     // For some reason, some components return component, instead of component_contents at times. Like glossary.
-                    $content = local_content::get_html_content($content->id, $content->component, $content->table, $content->field,
-                        $content->courseid);
+                    $content = local_content::get_html_content(
+                        $content->id,
+                        $content->component,
+                        $content->table,
+                        $content->field,
+                        $content->courseid
+                    );
                 }
                 if (!$content) {
                     // If the content is non-existent, then skip.
@@ -200,7 +203,6 @@ trait embedded_file_map {
                     $files[] = $embeddedfile['pathnamehash'];
                     $filescontenthash[] = $embeddedfile['contenthash'];
                 }
-
             }
 
             if (!local::duringtesting()) {

@@ -30,19 +30,21 @@ use tool_ally\task\file_updates_task;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
-require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
+require_once(__DIR__ . '/abstract_testcase.php');
+require_once(__DIR__ . '/prophesize_deprecation_workaround_mixin.php');
 
 /**
  * Tests for file updates task.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_ally\task\file_updates_task
+ * @covers    \tool_ally\push_config
  */
-class file_updates_task_test extends abstract_testcase {
+final class file_updates_task_test extends abstract_testcase {
     use prophesize_deprecation_workaround_mixin;
 
     /**
@@ -97,7 +99,7 @@ class file_updates_task_test extends abstract_testcase {
         $task->config  = new push_config('url', 'key', 'sceret');
         $updates = $this->createMock(push_file_updates::class);
         $updates->method('send')
-            ->with($this->isType('array')) // Expect an array as the argument
+            ->with($this->isType('array')) // Expect an array as the argument.
             ->willReturn(true);
         $task->updates = $updates;
 
@@ -122,7 +124,7 @@ class file_updates_task_test extends abstract_testcase {
 
         $updates = $this->createMock(push_file_updates::class);
         $updates->method('send')
-            ->with($this->isType('array')) // Ensure the argument is an array
+            ->with($this->isType('array')) // Ensure the argument is an array.
             ->willReturn(true);
 
         $updates->expects($this->exactly(3))
@@ -146,11 +148,11 @@ class file_updates_task_test extends abstract_testcase {
 
         set_config('push_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
 
-        $this->dataset_from_array(include(__DIR__.'/fixtures/deleted_files.php'))->to_database();
+        $this->dataset_from_array(include(__DIR__ . '/fixtures/deleted_files.php'))->to_database();
 
         $updates = $this->createMock(push_file_updates::class);
         $updates->method('send')
-            ->with($this->isType('array')) // Ensure the argument is an array
+            ->with($this->isType('array')) // Ensure the argument is an array.
             ->willReturn(true);
         $updates->expects($this->exactly(3))
             ->method('send');

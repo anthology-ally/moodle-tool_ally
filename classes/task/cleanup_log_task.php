@@ -56,5 +56,4 @@ class cleanup_log_task extends scheduled_task {
 
         $records = $DB->delete_records_select('tool_ally_log', 'time < ?', [$reftime]);
     }
-
 }

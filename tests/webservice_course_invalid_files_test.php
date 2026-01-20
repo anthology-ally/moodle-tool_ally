@@ -30,7 +30,7 @@ use tool_ally\webservice\course_files;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for course invalid files webservice.
@@ -42,12 +42,12 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class webservice_course_invalid_files_test extends abstract_testcase {
+final class webservice_course_invalid_files_test extends abstract_testcase {
     protected function setUp(): void {
         parent::setUp();
 
         global $CFG;
-        require_once($CFG->dirroot.'/lib/externallib.php');
+        require_once($CFG->dirroot . '/lib/externallib.php');
     }
 
     /**
@@ -113,6 +113,5 @@ class webservice_course_invalid_files_test extends abstract_testcase {
         $files = \external_api::clean_returnvalue(course_invalid_files::service_returns(), $files);
 
         $this->assertCount(1, $files);
-
     }
 }

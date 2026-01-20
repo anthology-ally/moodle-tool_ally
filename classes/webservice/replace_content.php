@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use tool_ally\local_content;
 
-require_once(__DIR__.'/../../../../../course/lib.php');
+require_once(__DIR__ . '/../../../../../course/lib.php');
 
 
 /**
@@ -87,7 +87,12 @@ class replace_content extends loggable_external_api {
         require_capability('moodle/course:viewhiddencourses', \context_system::instance());
 
         $success = local_content::replace_html_content(
-                $params['id'], $params['component'], $params['table'], $params['field'], $params['content']);
+            $params['id'],
+            $params['component'],
+            $params['table'],
+            $params['field'],
+            $params['content']
+        );
 
         return (['success' => $success]);
     }

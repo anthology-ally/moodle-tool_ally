@@ -40,9 +40,10 @@ require_once('abstract_testcase.php');
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @group     tool_ally
  * @group     ally
+ * @covers    \tool_ally\componentsupport\glossary_component
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class components_glossary_component_test extends abstract_testcase {
+final class components_glossary_component_test extends abstract_testcase {
     use component_assertions;
 
     /**
@@ -91,6 +92,7 @@ class components_glossary_component_test extends abstract_testcase {
     private $component;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
@@ -127,37 +129,61 @@ class components_glossary_component_test extends abstract_testcase {
 
     public function test_get_approved_author_ids_for_context(): void {
         $authorids = $this->component->get_approved_author_ids_for_context($this->coursecontext);
-        $this->assertTrue(in_array($this->teacher->id, $authorids),
-                'Teacher id '.$this->teacher->id.' should be in list of author ids.');
-        $this->assertTrue(in_array($this->admin->id, $authorids),
-                'Admin id '.$this->admin->id.' should be in list of author ids.');
-        $this->assertFalse(in_array($this->student->id, $authorids),
-                'Student id '.$this->student->id.' should NOT be in list of author ids.');
+        $this->assertTrue(
+            in_array($this->teacher->id, $authorids),
+            'Teacher id ' . $this->teacher->id . ' should be in list of author ids.'
+        );
+        $this->assertTrue(
+            in_array($this->admin->id, $authorids),
+            'Admin id ' . $this->admin->id . ' should be in list of author ids.'
+        );
+        $this->assertFalse(
+            in_array($this->student->id, $authorids),
+            'Student id ' . $this->student->id . ' should NOT be in list of author ids.'
+        );
     }
 
     public function test_user_is_approved_author_type(): void {
-        $this->assertFalse($this->component->user_is_approved_author_type($this->student->id, $this->coursecontext),
-            'Student should not be approved author type');
-        $this->assertTrue($this->component->user_is_approved_author_type($this->teacher->id, $this->coursecontext),
-            'Teacher should be approved author type');
-        $this->assertTrue($this->component->user_is_approved_author_type($this->admin->id, $this->coursecontext),
-            'Admin should be approved author type');
+        $this->assertFalse(
+            $this->component->user_is_approved_author_type($this->student->id, $this->coursecontext),
+            'Student should not be approved author type'
+        );
+        $this->assertTrue(
+            $this->component->user_is_approved_author_type($this->teacher->id, $this->coursecontext),
+            'Teacher should be approved author type'
+        );
+        $this->assertTrue(
+            $this->component->user_is_approved_author_type($this->admin->id, $this->coursecontext),
+            'Admin should be approved author type'
+        );
     }
 
 
     public function test_get_entry_html_content_items(): void {
         $contentitems = \phpunit_util::call_internal_method(
-            $this->component, 'get_entry_html_content_items', [
+            $this->component,
+            'get_entry_html_content_items',
+            [
                 $this->course->id, $this->glossary->id,
             ],
             get_class($this->component)
         );
 
-        $this->assert_content_items_contain_item($contentitems,
-            $this->teacherentry->id, 'glossary', 'glossary_entries', 'definition');
+        $this->assert_content_items_contain_item(
+            $contentitems,
+            $this->teacherentry->id,
+            'glossary',
+            'glossary_entries',
+            'definition'
+        );
 
-        $this->assert_content_items_not_contain_item($contentitems,
-            $this->studententry->id, 'glossary', 'glossary_entries', 'definition');
+        $this->assert_content_items_not_contain_item(
+            $contentitems,
+            $this->studententry->id,
+            'glossary',
+            'glossary_entries',
+            'definition'
+        );
     }
 
     public function test_resolve_module_instance_id_from_glossary(): void {
@@ -176,7 +202,7 @@ class components_glossary_component_test extends abstract_testcase {
         global $PAGE;
 
         $cis = $this->component->get_annotation_maps($this->course->id);
-        $this->assertEquals('glossary:glossary:intro:'.$this->glossary->id, reset($cis['intros']));
+        $this->assertEquals('glossary:glossary:intro:' . $this->glossary->id, reset($cis['intros']));
         $this->assertEmpty($cis['entries']);
 
         $cm = get_coursemodule_from_instance('glossary', $this->glossary->id, $this->course->id);
@@ -184,8 +210,7 @@ class components_glossary_component_test extends abstract_testcase {
         $PAGE->set_pagetype('mod-glossary-view');
         $cis = $this->component->get_annotation_maps($this->course->id);
 
-        $this->assertEquals('glossary:glossary_entries:definition:'.$this->teacherentry->id, reset($cis['entries']));
-
+        $this->assertEquals('glossary:glossary_entries:definition:' . $this->teacherentry->id, reset($cis['entries']));
     }
 
     /**
@@ -198,24 +223,50 @@ class components_glossary_component_test extends abstract_testcase {
         $unusedfiles = [];
 
         // Check the intro.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_glossary', $this->glossary->id,
-            'glossary', 'intro');
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_glossary',
+            $this->glossary->id,
+            'glossary',
+            'intro'
+        );
 
         // Check the defintion text.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_glossary', $this->teacherentry->id,
-            'glossary_entries', 'definition', $this->teacher);
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_glossary',
+            $this->teacherentry->id,
+            'glossary_entries',
+            'definition',
+            $this->teacher
+        );
 
         // Add some attachments.
-        list($file1, $file2) = $this->setup_check_files($context, 'mod_glossary', 'attachment',
-            $this->teacherentry->id, $this->teacher);
+        [$file1, $file2] = $this->setup_check_files(
+            $context,
+            'mod_glossary',
+            'attachment',
+            $this->teacherentry->id,
+            $this->teacher
+        );
         $usedfiles[] = $file1; // Silly workaround for PHP code checker.
         $usedfiles[] = $file2;
 
         // These student ones will never be included. We will confirm that below.
-        list($discard, $discard2) = $this->setup_check_files($context, 'mod_glossary', 'definition',
-            $this->studententry->id, $this->student);
-        list($discard, $discard2) = $this->setup_check_files($context, 'mod_glossary', 'attachment',
-            $this->studententry->id, $this->student);
+        [$discard, $discard2] = $this->setup_check_files(
+            $context,
+            'mod_glossary',
+            'definition',
+            $this->studententry->id,
+            $this->student
+        );
+        [$discard, $discard2] = $this->setup_check_files(
+            $context,
+            'mod_glossary',
+            'attachment',
+            $this->studententry->id,
+            $this->student
+        );
 
         // This will double check that file iterator is working as expected.
         $this->check_file_iterator_exclusion($context, $usedfiles, $unusedfiles);

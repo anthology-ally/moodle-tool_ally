@@ -32,7 +32,7 @@ use tool_ally\file_validator;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test files iterator.
@@ -43,7 +43,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class files_iterator_test extends abstract_testcase {
+final class files_iterator_test extends abstract_testcase {
     /**
      * Test get_files.
      */
@@ -142,7 +142,6 @@ class files_iterator_test extends abstract_testcase {
         $validator = new file_validator();
         $files = new files_iterator($validator);
         $this->assertEmpty(iterator_to_array($files));
-
     }
 
     /**
@@ -241,7 +240,7 @@ class files_iterator_test extends abstract_testcase {
         $resource = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
         $file     = $this->get_resource_file($resource);
         $this->assertEquals('content', $file->get_filearea());
-        $DB->update_record('files',  (object) ['id' => $file->get_id(), 'userid' => $user->id]);
+        $DB->update_record('files', (object) ['id' => $file->get_id(), 'userid' => $user->id]);
 
         $files = local_file::iterator();
         $files->since($now - DAYSECS);
@@ -453,7 +452,7 @@ class files_iterator_test extends abstract_testcase {
                 'userid' => $user->id,
                 'modified' => time(),
             ];
-            $file = $fs->create_file_from_string($filerecord, $teststring.$i);
+            $file = $fs->create_file_from_string($filerecord, $teststring . $i);
             $hashes[] = $file->get_pathnamehash();
         }
 
@@ -658,7 +657,7 @@ class files_iterator_test extends abstract_testcase {
                 'userid' => $user->id,
                 'modified' => time(),
             ];
-            $file = $fs->create_file_from_string($filerecord, $teststring.$i);
+            $file = $fs->create_file_from_string($filerecord, $teststring . $i);
             $hashes[] = $file->get_pathnamehash();
         }
 
@@ -738,5 +737,4 @@ class files_iterator_test extends abstract_testcase {
         $this->assertTrue(in_array($usedfile->get_id(), $fileids));
         $this->assertNotContains($unusedfile->get_id(), $fileids);
     }
-
 }

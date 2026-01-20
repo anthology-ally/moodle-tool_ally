@@ -38,7 +38,7 @@ use tool_ally\testing\traits\component_assertions;
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class components_component_base_test extends \advanced_testcase {
+final class components_component_base_test extends \advanced_testcase {
     use component_assertions;
 
     /**
@@ -72,6 +72,7 @@ class components_component_base_test extends \advanced_testcase {
     private $component;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
@@ -84,26 +85,46 @@ class components_component_base_test extends \advanced_testcase {
         $gen->enrol_user($this->teacher->id, $this->course->id, 'editingteacher');
 
         $this->component = local_content::component_instance('glossary');
-
     }
 
+    /**
+     * Test get approved author IDs for context.
+     *
+     * @covers \tool_ally\componentsupport\component_base::get_approved_author_ids_for_context
+     */
     public function test_get_approved_author_ids_for_context(): void {
         $authorids = $this->component->get_approved_author_ids_for_context($this->coursecontext);
-        $this->assertTrue(in_array($this->teacher->id, $authorids),
-                'Teacher id '.$this->teacher->id.' should be in list of author ids.');
-        $this->assertTrue(in_array($this->admin->id, $authorids),
-                'Admin id '.$this->admin->id.' should be in list of author ids.');
-        $this->assertFalse(in_array($this->student->id, $authorids),
-                'Student id '.$this->student->id.' should NOT be in list of author ids.');
+        $this->assertTrue(
+            in_array($this->teacher->id, $authorids),
+            'Teacher id ' . $this->teacher->id . ' should be in list of author ids.'
+        );
+        $this->assertTrue(
+            in_array($this->admin->id, $authorids),
+            'Admin id ' . $this->admin->id . ' should be in list of author ids.'
+        );
+        $this->assertFalse(
+            in_array($this->student->id, $authorids),
+            'Student id ' . $this->student->id . ' should NOT be in list of author ids.'
+        );
     }
 
+    /**
+     * Test user is approved author type.
+     *
+     * @covers \tool_ally\componentsupport\component_base::user_is_approved_author_type
+     */
     public function test_user_is_approved_author_type(): void {
-        $this->assertFalse($this->component->user_is_approved_author_type($this->student->id, $this->coursecontext),
-            'Student should not be approved author type');
-        $this->assertTrue($this->component->user_is_approved_author_type($this->teacher->id, $this->coursecontext),
-            'Teacher should be approved author type');
-        $this->assertTrue($this->component->user_is_approved_author_type($this->admin->id, $this->coursecontext),
-            'Admin should be approved author type');
+        $this->assertFalse(
+            $this->component->user_is_approved_author_type($this->student->id, $this->coursecontext),
+            'Student should not be approved author type'
+        );
+        $this->assertTrue(
+            $this->component->user_is_approved_author_type($this->teacher->id, $this->coursecontext),
+            'Teacher should be approved author type'
+        );
+        $this->assertTrue(
+            $this->component->user_is_approved_author_type($this->admin->id, $this->coursecontext),
+            'Admin should be approved author type'
+        );
     }
-
 }

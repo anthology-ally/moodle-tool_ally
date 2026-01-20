@@ -26,7 +26,6 @@ namespace tool_ally\models;
 
 
 class pluginfileurlprops {
-
     /**
      * @var int
      */
@@ -92,5 +91,4 @@ class pluginfileurlprops {
     public function to_list() {
         return [$this->contextid, $this->component, $this->filearea, $this->itemid, $this->filename];
     }
-
 }

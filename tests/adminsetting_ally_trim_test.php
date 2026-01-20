@@ -19,22 +19,30 @@ namespace tool_ally;
 use tool_ally\adminsetting\ally_trim;
 
 /**
+ * Tests for ally_trim admin setting.
+ *
  * @package   tool_ally
  * @author    Guy Thomas <dev@citri.city>
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_ally\adminsetting\ally_trim
  */
-class adminsetting_ally_trim_test extends \advanced_testcase {
+final class adminsetting_ally_trim_test extends \advanced_testcase {
     /**
      * Test settings are trimmed.
      */
     public function test_trim(): void {
         $this->resetAfterTest();
         $text = '    This should be trimmed    ';
-        $setting = new ally_trim('tool_ally/testtrim', new \lang_string('key', 'tool_ally'),
-            new \lang_string('keydesc', 'tool_ally'), '', PARAM_TEXT);
+        $setting = new ally_trim(
+            'tool_ally/testtrim',
+            new \lang_string('key', 'tool_ally'),
+            new \lang_string('keydesc', 'tool_ally'),
+            '',
+            PARAM_TEXT
+        );
         $setting->write_setting($text);
         $testtrimtext = get_config('tool_ally', 'testtrim');
         $this->assertEquals(trim($text), $testtrimtext);

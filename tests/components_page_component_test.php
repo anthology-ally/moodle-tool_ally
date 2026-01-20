@@ -46,7 +46,7 @@ require_once('abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class components_page_component_test extends abstract_testcase {
+final class components_page_component_test extends abstract_testcase {
     use component_assertions;
 
     /**
@@ -75,13 +75,15 @@ class components_page_component_test extends abstract_testcase {
     private $component;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
         $this->admin = get_admin();
         $this->course = $gen->create_course();
         $this->coursecontext = \context_course::instance($this->course->id);
-        $this->page = $gen->create_module('page',
+        $this->page = $gen->create_module(
+            'page',
             [
                 'course' => $this->course->id,
                 'introformat' => FORMAT_HTML,
@@ -94,6 +96,12 @@ class components_page_component_test extends abstract_testcase {
         $this->component = local_content::component_instance('page');
     }
 
+    /**
+     * Test list intro and content.
+     *
+     * @covers \tool_ally\webservice\course_content::service
+     * @covers \tool_ally\models\component
+     */
     public function test_list_intro_and_content(): void {
         $this->setAdminUser();
         $contentitems = course_content::service([$this->course->id]);
@@ -103,20 +111,44 @@ class components_page_component_test extends abstract_testcase {
         $this->assert_component_is_in_array($component, $contentitems);
     }
 
+    /**
+     * Test get all html content.
+     *
+     * @covers \tool_ally\local_content::get_all_html_content
+     * @covers \tool_ally\models\component_content
+     */
     public function test_get_all_html_content(): void {
         $items = local_content::get_all_html_content($this->page->id, 'page');
         $componentcontent = new component_content(
-                $this->page->id, 'page', 'page', 'intro', $this->course->id, 0,
-                FORMAT_HTML, $this->page->intro, $this->page->name);
+            $this->page->id,
+            'page',
+            'page',
+            'intro',
+            $this->course->id,
+            0,
+            FORMAT_HTML,
+            $this->page->intro,
+            $this->page->name
+        );
         $this->assertTrue($this->component_content_is_in_array($componentcontent, $items));
     }
 
+    /**
+     * Test resolve module instance id.
+     *
+     * @covers \tool_ally\componentsupport\component_base::resolve_module_instance_id
+     */
     public function test_resolve_module_instance_id(): void {
         $this->setAdminUser();
         $instanceid = $this->component->resolve_module_instance_id('page', $this->page->id);
         $this->assertEquals($this->page->id, $instanceid);
     }
 
+    /**
+     * Test get all course annotation maps.
+     *
+     * @covers \tool_ally\componentsupport\glossary_component::get_annotation_maps
+     */
     public function test_get_all_course_annotation_maps(): void {
         $cis = $this->component->get_annotation_maps($this->course->id);
         $this->assertEquals('page:page:intro:' . $this->page->id, reset($cis['intros']));
@@ -126,8 +158,9 @@ class components_page_component_test extends abstract_testcase {
         $this->admin = get_admin();
         $this->course = $gen->create_course();
         $this->coursecontext = \context_course::instance($this->course->id);
-        $this->page = $gen->create_module('page',
-                                          [
+        $this->page = $gen->create_module(
+            'page',
+            [
                                               'course' => $this->course->id,
                                           ]
         );
@@ -135,11 +168,12 @@ class components_page_component_test extends abstract_testcase {
         $cis = $this->component->get_annotation_maps($this->course->id);
         $this->assertEquals([], $cis['intros']);
         $this->assertEquals([], $cis['content']);
-
     }
 
     /**
      * Test if file in use detection is working with this module.
+     *
+     * @covers \local_content::component_instance
      */
     public function test_check_file_in_use(): void {
         $context = \context_module::instance($this->page->cmid);
@@ -148,12 +182,22 @@ class components_page_component_test extends abstract_testcase {
         $unusedfiles = [];
 
         // Check the intro.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_page', $this->page->id,
-            'page', 'intro');
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_page',
+            $this->page->id,
+            'page',
+            'intro'
+        );
 
         // Check the page content.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_page', $this->page->id,
-            'page', 'content');
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_page',
+            $this->page->id,
+            'page',
+            'content'
+        );
 
         // This will double check that file iterator is working as expected.
         $this->check_file_iterator_exclusion($context, $usedfiles, $unusedfiles);

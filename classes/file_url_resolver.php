@@ -97,12 +97,12 @@ class file_url_resolver {
             return null;
         }
         $plugin       = \core_component::normalize_component($file->get_component())[1];
-        $discussionid = $this->db->get_field($plugin.'_posts', 'discussion', ['id' => $file->get_itemid()]);
+        $discussionid = $this->db->get_field($plugin . '_posts', 'discussion', ['id' => $file->get_itemid()]);
         if (!$discussionid) {
             return null;
         }
-        $url = new \moodle_url('/mod/'.$plugin.'/discuss.php', ['d' => $discussionid]);
-        $url->set_anchor('p'.$file->get_itemid());
+        $url = new \moodle_url('/mod/' . $plugin . '/discuss.php', ['d' => $discussionid]);
+        $url->set_anchor('p' . $file->get_itemid());
 
         return $url;
     }

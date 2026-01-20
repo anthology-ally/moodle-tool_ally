@@ -98,7 +98,7 @@ class component {
         $this->timemodified = $timemodified;
         $this->contentformat = (string) $contentformat;
         $this->title = $title;
-        $this->meta = new stdClass;
+        $this->meta = new stdClass();
     }
 
     /**

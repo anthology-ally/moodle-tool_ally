@@ -30,7 +30,6 @@ use Exception;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class loggerdb extends loggerbase {
-
     /**
      * Logs with an arbitrary level.
      *
@@ -66,11 +65,11 @@ class loggerdb extends loggerbase {
                 $exline = $exception->getLine();
                 $extrace = $exception->getTraceAsString();
                 /** @var Exception $exception */
-                $exception = 'Message: '.$exmsg."\n\n";
-                $exception .= 'Code: '.$excode."\n\n";
-                $exception .= 'File: '.$exfile."\n\n";
-                $exception .= 'Line: '.$exline."\n\n";
-                $exception .= '====Trace===='."\n\n".$extrace;
+                $exception = 'Message: ' . $exmsg . "\n\n";
+                $exception .= 'Code: ' . $excode . "\n\n";
+                $exception .= 'File: ' . $exfile . "\n\n";
+                $exception .= 'Line: ' . $exline . "\n\n";
+                $exception .= '====Trace====' . "\n\n" . $extrace;
             } else if (is_array($exception) || is_object($exception)) {
                 $exception = serialize($exception);
             }

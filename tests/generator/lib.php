@@ -110,8 +110,14 @@ class tool_ally_generator extends component_generator_base {
         if ($useitemid) {
             $itemid = $file->get_itemid();
         }
-        $url = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
-                $itemid, $file->get_filepath(), $file->get_filename());
+        $url = moodle_url::make_pluginfile_url(
+            $file->get_contextid(),
+            $file->get_component(),
+            $file->get_filearea(),
+            $itemid,
+            $file->get_filepath(),
+            $file->get_filename()
+        );
         return '<a href="' . $url->out() . '">Link</a>';
     }
 
@@ -127,7 +133,7 @@ class tool_ally_generator extends component_generator_base {
      */
     protected function get_block_manager($regions, $context, $pagetype = 'page-type', $subpage = '') {
         global $CFG;
-        require_once($CFG->libdir.'/blocklib.php');
+        require_once($CFG->libdir . '/blocklib.php');
         $page = new moodle_page();
         $page->set_context($context);
         $page->set_pagetype($pagetype);
@@ -152,10 +158,13 @@ class tool_ally_generator extends component_generator_base {
      * @throws coding_exception
      * @throws dml_exception
      */
-    public function add_block(context $context,
-                              $title, $content,
-                              $region = 'side-pre',
-                              $pagetypepattern = 'course-view-*') {
+    public function add_block(
+        context $context,
+        $title,
+        $content,
+        $region = 'side-pre',
+        $pagetypepattern = 'course-view-*'
+    ) {
         global $DB;
 
         $bm = $this->get_block_manager([$region], $context);
@@ -218,6 +227,5 @@ class tool_ally_generator extends component_generator_base {
         }
 
         return $DB->get_record('tool_ally_log', ['id' => $logid]);
-
     }
 }

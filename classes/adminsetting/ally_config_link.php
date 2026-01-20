@@ -30,7 +30,6 @@ namespace tool_ally\adminsetting;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ally_config_link extends \admin_setting_heading {
-
     /**
      * @var \moodle_url
      */
@@ -52,7 +51,7 @@ class ally_config_link extends \admin_setting_heading {
      * Returns an HTML string
      * @return string Returns an HTML string
      */
-    public function output_html($data, $query='') {
+    public function output_html($data, $query = '') {
         global $OUTPUT;
         $context = (object) [
             'href' => $this->link,

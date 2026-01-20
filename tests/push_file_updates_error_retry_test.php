@@ -32,22 +32,26 @@ use tool_ally\push_file_updates;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
-require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
+require_once(__DIR__ . '/abstract_testcase.php');
+require_once(__DIR__ . '/prophesize_deprecation_workaround_mixin.php');
 
 /**
  * Tests for file push error retrying.
  *
- * @class     tool_ally_push_file_updates_error_retry_test
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class push_file_updates_error_retry_test extends abstract_testcase {
+final class push_file_updates_error_retry_test extends abstract_testcase {
     use prophesize_deprecation_workaround_mixin;
 
+    /**
+     * Test retry increase push disabled and task reset.
+     *
+     * @covers \tool_ally\file_processor::push_file_update
+     */
     public function test_retry_increase_push_disabled_task_reset(): void {
         $this->resetAfterTest();
         $this->setAdminUser();

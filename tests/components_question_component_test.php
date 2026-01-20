@@ -44,7 +44,7 @@ require_once('abstract_testcase.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class components_question_component_test extends abstract_testcase {
+final class components_question_component_test extends abstract_testcase {
     use component_assertions;
 
     /**
@@ -78,6 +78,7 @@ class components_question_component_test extends abstract_testcase {
     private object $quest1;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
@@ -89,8 +90,11 @@ class components_question_component_test extends abstract_testcase {
 
         $qcat1 = $generator->create_question_category([
             'name' => 'My category', 'sortorder' => 1, 'idnumber' => 'myqcat', ]);
-        $this->quest1 = $generator->create_question('shortanswer', null,
-            ['name' => 'sa1', 'category' => $qcat1->id, 'idnumber' => 'myquest_3']);
+        $this->quest1 = $generator->create_question(
+            'shortanswer',
+            null,
+            ['name' => 'sa1', 'category' => $qcat1->id, 'idnumber' => 'myquest_3']
+        );
 
         $this->component = local_content::component_instance('question');
     }

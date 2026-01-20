@@ -33,7 +33,6 @@ namespace tool_ally\adminsetting;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ally_pickroles extends \admin_setting_pickroles {
-
     /**
      * @inheritdoc
      */

@@ -34,7 +34,6 @@ use tool_ally\models\component_content;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class content_processor extends traceable_processor {
-
     protected static $pushtrace = [];
 
     protected static $updates;
@@ -122,5 +121,4 @@ class content_processor extends traceable_processor {
         }
         return $success;
     }
-
 }

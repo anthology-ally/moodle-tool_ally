@@ -24,7 +24,6 @@
 namespace tool_ally\componentsupport\interfaces;
 
 interface annotation_map {
-
     /**
      * @param int $courseid
      *

@@ -29,7 +29,7 @@ use tool_ally\local;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for file updates webservice.
@@ -41,7 +41,7 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class webservice_file_updates_test extends abstract_testcase {
+final class webservice_file_updates_test extends abstract_testcase {
     /**
      * Test the web service.
      */

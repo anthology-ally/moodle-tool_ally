@@ -36,8 +36,7 @@ require_once('abstract_testcase.php');
  * @group     tool_ally
  * @group     ally
  */
-class components_page_component_with_null_content_test extends abstract_testcase {
-
+final class components_page_component_with_null_content_test extends abstract_testcase {
     /**
      * @var stdClass
      */
@@ -49,11 +48,13 @@ class components_page_component_with_null_content_test extends abstract_testcase
     private $page;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
         $this->course = $gen->create_course();
-        $this->page = $gen->create_module('page',
+        $this->page = $gen->create_module(
+            'page',
             [
                 'course' => $this->course->id,
                 'contentformat' => FORMAT_HTML,
