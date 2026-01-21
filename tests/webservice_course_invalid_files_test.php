@@ -52,6 +52,8 @@ final class webservice_course_invalid_files_test extends abstract_testcase {
 
     /**
      * Test the web service.
+     *
+     * @covers \tool_ally\webservice\course_invalid_files::service
      */
     public function test_service(): void {
         $this->resetAfterTest();

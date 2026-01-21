@@ -46,13 +46,20 @@ class lesson_component extends file_component_base implements annotation_map, if
     use html_content;
     use embedded_file_map;
 
-    protected $tablefields = [
+    /**
+     * {@inheritdoc}
+     * @var array
+     */
+    protected array $tablefields = [
         'lesson'       => ['intro'],
         'lesson_pages' => ['contents'],
         'lesson_answers' => ['answer', 'response'],
     ];
 
-    public static function component_type() {
+    /**
+     * {@inheritdoc}
+     */
+    public static function component_type(): string {
         return self::TYPE_MOD;
     }
 
@@ -184,7 +191,10 @@ SQL;
         return $array;
     }
 
-    public function get_annotation_maps($courseid) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_annotation_maps(int $courseid): array {
         $retarray = [];
 
         $array = $this->content_by_identifier($courseid);
@@ -213,7 +223,10 @@ SQL;
         return $retarray;
     }
 
-    public function get_course_html_content_items($courseid) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_course_html_content_items(int $courseid): array {
 
         $retarray = [];
 
@@ -225,7 +238,10 @@ SQL;
         return $retarray;
     }
 
-    public function replace_file_links() {
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_file_links(): void {
         $file = $this->file;
 
         $area = $file->get_filearea();
@@ -243,7 +259,10 @@ SQL;
         }
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null): ?component_content {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_html_content(int $id, string $table, string $field, ?int $courseid = null): ?component_content {
         global $DB;
 
         $row = null;
@@ -305,12 +324,18 @@ SQL;
         return $this->std_get_html_content($id, $table, $field, $courseid, $titlefld, 'timemodified', $lambda, $row);
     }
 
+    /**
+     * Get pages for a lesson.
+     */
     private function get_lesson_pages($lessonid) {
         global $DB;
         return $DB->get_records('lesson_pages', ['lessonid' => $lessonid]);
     }
 
-    public function get_all_html_content($id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_all_html_content(int $id): array {
         $lesson = $this->get_html_content($id, 'lesson', 'intro');
         $pagerows = $this->get_lesson_pages($id);
         $pages = [];
@@ -329,11 +354,17 @@ SQL;
         return array_merge([$lesson], $pages);
     }
 
-    public function replace_html_content($id, $table, $field, $content) {
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_html_content(int $id, string $table, string $field, string $content): ?bool {
         return $this->std_replace_html_content($id, $table, $field, $content);
     }
 
-    public function resolve_course_id($id, $table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function resolve_course_id(int $id, string $table, string $field): int {
         global $DB;
 
         if ($table === 'lesson') {
@@ -348,9 +379,14 @@ SQL;
 
             return $DB->get_field_sql($sql, $params);
         }
+
+        throw new \coding_exception('Unsupported table used to recover course id ' . $table);
     }
 
-    public function get_file_area($table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_file_area(string $table, string $field): string {
         if ($table === 'lesson_pages' && $field === 'contents') {
             return 'page_contents';
         }
@@ -363,7 +399,10 @@ SQL;
         return parent::get_file_area($table, $field);
     }
 
-    public function get_file_item($table, $field, $id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_file_item(string $table, string $field, int $id): int {
         if ($table === 'lesson_pages' && $field === 'contents') {
             return $id;
         }
@@ -405,6 +444,9 @@ SQL;
         return null;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function get_all_files_search_html(int $id): ?array {
         global $DB;
 

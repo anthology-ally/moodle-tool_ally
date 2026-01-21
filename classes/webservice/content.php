@@ -27,10 +27,10 @@ namespace tool_ally\webservice;
 use tool_ally\exceptions\component_validation_exception;
 use tool_ally\local_content;
 use tool_ally\models\component_content;
-use external_value;
-use external_single_structure;
-use external_multiple_structure;
-use external_function_parameters;
+use core_external\external_value;
+use core_external\external_single_structure;
+use core_external\external_multiple_structure;
+use core_external\external_function_parameters;
 
 /**
  * Get content for single rich content item.
@@ -41,9 +41,9 @@ use external_function_parameters;
  */
 class content extends loggable_external_api {
     /**
-     * @return external_function_parameters
+     * {@inheritdoc}
      */
-    public static function service_parameters() {
+    public static function service_parameters(): external_function_parameters {
         return new external_function_parameters([
             'id'        => new external_value(PARAM_INT, 'Item id'),
             'component' => new external_value(PARAM_ALPHANUMEXT, 'Component'),
@@ -54,9 +54,9 @@ class content extends loggable_external_api {
     }
 
     /**
-     * @return external_single_structure
+     * {@inheritdoc}
      */
-    public static function service_returns() {
+    public static function service_returns(): external_single_structure | external_multiple_structure {
         return new external_single_structure([
             'id'            => new external_value(PARAM_INT, 'Component id'),
             'content'       => new external_value(PARAM_RAW, 'Content'),
@@ -89,6 +89,8 @@ class content extends loggable_external_api {
     }
 
     /**
+     * Get content for specified component table field and id.
+     *
      * @param int $id
      * @param string $component
      * @param string $table

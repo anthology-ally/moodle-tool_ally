@@ -34,7 +34,11 @@ use tool_ally\models\component_content;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class traceable_processor {
-    protected static $pushtrace = [];
+    /**
+     * Push trace for testing purposes.
+     * @var array
+     */
+    protected static array $pushtrace = [];
 
     /**
      * Get push trace for PHP unit testing.
@@ -65,11 +69,16 @@ abstract class traceable_processor {
         return false;
     }
 
+    /**
+     * Clear push traces.
+     */
     public static function clear_push_traces() {
         static::$pushtrace = [];
     }
 
     /**
+     * Build payload for event.
+     *
      * @param mixed $data
      * @param string $eventname
      * @return array

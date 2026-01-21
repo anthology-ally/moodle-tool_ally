@@ -44,6 +44,11 @@ require_once(__DIR__ . '/abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 final class local_content_test extends abstract_testcase {
+    /**
+     * Test component supports HTML content check.
+     *
+     * @covers \tool_ally\local_content::component_supports_html_content
+     */
     public function test_component_supports_html_content(): void {
 
         $supported = \phpunit_util::call_internal_method(
@@ -65,12 +70,22 @@ final class local_content_test extends abstract_testcase {
         $this->assertEquals(false, $supported);
     }
 
+    /**
+     * Test listing HTML content supported components.
+     *
+     * @covers \tool_ally\local_content::list_html_content_supported_components
+     */
     public function test_list_html_content_supported_components(): void {
         $list = local_content::list_html_content_supported_components();
         $this->assertContains('course', $list);
         $this->assertContains('mod_label', $list);
     }
 
+    /**
+     * Test component instance creation.
+     *
+     * @covers \tool_ally\local_content::component_instance
+     */
     public function test_component_instance(): void {
         $labelcomp = local_content::component_instance('label');
         $this->assertInstanceOf(label_component::class, $labelcomp);
@@ -79,6 +94,11 @@ final class local_content_test extends abstract_testcase {
         $this->assertInstanceOf(course_component::class, $coursecomp);
     }
 
+    /**
+     * Test getting course HTML content items.
+     *
+     * @covers \tool_ally\local_content::get_course_html_content_items
+     */
     public function test_get_course_html_content_items(): void {
         global $DB;
 
@@ -172,6 +192,11 @@ final class local_content_test extends abstract_testcase {
         $this->assertEquals($expectedtimemodified, $contents->timemodified);
     }
 
+    /**
+     * Test replacing HTML content.
+     *
+     * @covers \tool_ally\local_content::replace_html_content
+     */
     public function test_get_replace_html_content(): void {
 
         $this->resetAfterTest();
@@ -212,6 +237,11 @@ final class local_content_test extends abstract_testcase {
         $this->assertEquals($expectedcourse, $content);
     }
 
+    /**
+     * Test getting content annotation.
+     *
+     * @covers \tool_ally\local_content::get_annotation
+     */
     public function test_get_annotation(): void {
         $this->resetAfterTest();
 
@@ -233,6 +263,11 @@ final class local_content_test extends abstract_testcase {
         $this->assertEquals($expected, $annotation);
     }
 
+    /**
+     * Test getting null content.
+     *
+     * @covers \tool_ally\local_content::get_html_content
+     */
     public function test_get_null_content(): void {
         $this->resetAfterTest();
         // These components may add things to the generic html component_content object or null.
@@ -265,6 +300,11 @@ final class local_content_test extends abstract_testcase {
         }
     }
 
+    /**
+     * Test getting plugin files in HTML content.
+     *
+     * @covers \tool_ally\local_content::get_pluginfiles_in_html
+     */
     public function test_get_pluginfiles_in_html(): void {
         global $CFG;
 

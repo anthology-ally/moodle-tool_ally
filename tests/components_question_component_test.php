@@ -99,11 +99,21 @@ final class components_question_component_test extends abstract_testcase {
         $this->component = local_content::component_instance('question');
     }
 
+    /**
+     * Test question component type.
+     *
+     * @covers \tool_ally\componentsupport\question_component::component_type
+     */
     public function test_component_type(): void {
         $type = question_component::component_type();
         $this->assertEquals(component_base::TYPE_CORE, $type);
     }
 
+    /**
+     * Test file URL properties.
+     *
+     * @covers \tool_ally\componentsupport\question_component::replace_file_links
+     */
     public function test_fileurlproperties(): void {
         $pluginfileurl = 'http://moodle.test/pluginfile.php/16/question/questiontext/1/1/1/test.odt';
         $urlprops = question_component::fileurlproperties($pluginfileurl);
@@ -115,6 +125,11 @@ final class components_question_component_test extends abstract_testcase {
         $this->assertEquals('test.odt', $urlprops->filename);
     }
 
+    /**
+     * Test getting question data.
+     *
+     * @covers \tool_ally\componentsupport\question_component::get_question
+     */
     public function test_get_question(): void {
         $quest = \phpunit_util::call_internal_method(
             $this->component,
@@ -127,14 +142,29 @@ final class components_question_component_test extends abstract_testcase {
         $this->assertEquals($this->quest1->idnumber, $quest->idnumber);
     }
 
+    /**
+     * Test listing intro and content.
+     *
+     * @covers \tool_ally\componentsupport\question_component::list_intro_and_content
+     */
     public function test_list_intro_and_content(): void {
         $this->markTestSkipped('HTML content not yet supported');
     }
 
+    /**
+     * Test getting all HTML content.
+     *
+     * @covers \tool_ally\componentsupport\question_component::get_all_html_content
+     */
     public function test_get_all_html_content(): void {
         $this->markTestSkipped('HTML content not yet supported');
     }
 
+    /**
+     * Test getting all course annotation maps.
+     *
+     * @covers \tool_ally\componentsupport\question_component::get_all_course_annotation_maps
+     */
     public function test_get_all_course_annotation_maps(): void {
         $this->markTestSkipped('HTML content not yet supported');
     }

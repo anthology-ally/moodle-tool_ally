@@ -39,27 +39,47 @@ class block_html_component extends component_base implements annotation_map, ifa
     use html_content;
     use embedded_file_map;
 
-    protected $tablefields = [
+    /**
+     * {@inheritdoc}
+     * @var array
+     */
+    protected array $tablefields = [
         'block_instances' => ['configdata'],
     ];
 
+    /**
+     * Unpack config data.
+     */
     protected function unpack_configdata($configdata) {
         return unserialize(base64_decode($configdata));
     }
 
+    /**
+     * Pack config data.
+     */
     protected function pack_configdata(\stdClass $configdata) {
         return base64_encode(serialize($configdata));
     }
 
-    public static function component_type() {
+    /**
+     * {@inheritdoc}
+     */
+    public static function component_type(): string {
         return self::TYPE_BLOCK;
     }
 
-    public function get_file_area($table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_file_area(string $table, string $field): string {
+        parent::get_file_area($table, $field);
         return 'content'; // Always content for this component.
     }
 
-    public function get_course_html_content_items($courseid) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_course_html_content_items(int $courseid): array {
         global $DB;
 
         $array = [];
@@ -88,7 +108,10 @@ class block_html_component extends component_base implements annotation_map, ifa
         return $array;
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null): ?component_content {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_html_content(int $id, string $table, string $field, ?int $courseid = null): ?component_content {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -120,11 +143,17 @@ class block_html_component extends component_base implements annotation_map, ifa
         return $contentmodel;
     }
 
-    public function get_all_html_content($id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_all_html_content(int $id): array {
         return [$this->get_html_content($id, 'block_instances', 'configdata')];
     }
 
-    public function replace_html_content($id, $table, $field, $content) {
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_html_content(int $id, string $table, string $field, string $content): ?bool {
         global $DB;
 
         $row = $DB->get_record('block_instances', ['id' => $id]);
@@ -134,7 +163,10 @@ class block_html_component extends component_base implements annotation_map, ifa
         return $DB->update_record('block_instances', $row);
     }
 
-    public function resolve_course_id($id, $table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function resolve_course_id(int $id, string $table, string $field): int {
         global $DB;
 
         if ($table === 'block_instances') {
@@ -150,11 +182,17 @@ class block_html_component extends component_base implements annotation_map, ifa
         throw new \coding_exception('Invalid table used to recover course id ' . $table);
     }
 
-    public function get_annotation($id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_annotation(int $id): string {
         return $this->get_component_name() . ':' . $this->get_component_name() . ':configdata:' . $id;
     }
 
-    public function get_annotation_maps($courseid) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_annotation_maps(int $courseid): array {
         if (!$this->module_installed()) {
             return [];
         }

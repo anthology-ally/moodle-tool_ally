@@ -45,12 +45,21 @@ abstract class push_updates {
      */
     private $config;
 
-    public function __construct(push_config $config = null) {
+    /**
+     * Constructor.
+     */
+    public function __construct(?push_config $config = null) {
         $this->config = $config ?: new push_config();
     }
 
+    /**
+     * Handle send error.
+     */
     abstract public function handle_send_error(\Exception $e);
 
+    /**
+     * On send success callback log success.
+     */
     abstract protected function on_send_success(array $context);
 
     /**

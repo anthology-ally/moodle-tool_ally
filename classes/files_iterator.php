@@ -24,6 +24,11 @@
 
 namespace tool_ally;
 
+use context;
+use core\context_helper;
+use file_storage;
+use stdClass;
+
 /**
  * Files that are processed for accessibility.
  *
@@ -140,10 +145,12 @@ class files_iterator implements \Iterator {
     private $resultcount = 0;
 
     /**
+     * Constructor.
+     *
      * @param file_validator $validator
      * @param \file_storage|null $storage
      */
-    public function __construct(file_validator $validator, \file_storage $storage = null) {
+    public function __construct(file_validator $validator, file_storage $storage = null) {
         global $CFG;
         $this->validator = $validator;
         $this->storage   = $storage ?: get_file_storage();
@@ -152,17 +159,21 @@ class files_iterator implements \Iterator {
     }
 
     /**
-     * @param \stdClass $row
-     * @return \context
+     * Extract content.
+     *
+     * @param stdClass $row
+     * @return context
      */
-    private function extract_context($row) {
+    private function extract_context(stdClass $row): context {
         // This loads the context into cache and strips the context fields from the row.
-        \context_helper::preload_from_record($row);
+        context_helper::preload_from_record($row);
 
-        return \context::instance_by_id($row->contextid);
+        return context::instance_by_id($row->contextid);
     }
 
     /**
+     * Get current file
+     *
      * @return \stored_file
      */
     #[\ReturnTypeWillChange]
@@ -170,6 +181,9 @@ class files_iterator implements \Iterator {
         return $this->current;
     }
 
+    /**
+     * Get next file
+     */
     #[\ReturnTypeWillChange]
     public function next() {
         if ($this->reached_count_limit()) {
@@ -213,6 +227,9 @@ class files_iterator implements \Iterator {
         $this->current = null;
     }
 
+    /**
+     * Get key of current file
+     */
     #[\ReturnTypeWillChange]
     public function key() {
         if ($this->current instanceof \stored_file) {
@@ -222,11 +239,17 @@ class files_iterator implements \Iterator {
         return null;
     }
 
+    /**
+     * Check if current file is valid
+     */
     #[\ReturnTypeWillChange]
     public function valid() {
         return $this->current instanceof \stored_file;
     }
 
+    /**
+     * Rewind the iterator
+     */
     #[\ReturnTypeWillChange]
     public function rewind() {
         $this->page = 0;
@@ -236,6 +259,9 @@ class files_iterator implements \Iterator {
         $this->next();
     }
 
+    /**
+     * Load the next page of records.
+     */
     private function next_page() {
         global $DB, $CFG;
 
@@ -373,6 +399,8 @@ class files_iterator implements \Iterator {
     }
 
     /**
+     * Set page size.
+     *
      * @param int $pagesize
      */
     public function set_page_size($pagesize) {
@@ -428,9 +456,11 @@ class files_iterator implements \Iterator {
     }
 
     /**
+     * Check if the iterator has reached the result count limit.
+     *
      * @return bool
      */
-    private function reached_count_limit() {
+    private function reached_count_limit(): bool {
         if ($this->stopatcount === 0) {
             return false;
         } else {

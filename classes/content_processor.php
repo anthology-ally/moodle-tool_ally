@@ -34,9 +34,17 @@ use tool_ally\models\component_content;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class content_processor extends traceable_processor {
-    protected static $pushtrace = [];
+    /**
+     * {@inheritdoc}
+     *
+     * @var array
+     */
+    protected static array $pushtrace = [];
 
-    protected static $updates;
+    /**
+     * @var push_content_updates|null
+     */
+    protected static ?push_content_updates $updates = null;
 
     /**
      * Push content update to Ally without batching, etc.
@@ -66,6 +74,8 @@ class content_processor extends traceable_processor {
     }
 
     /**
+     * Add content to the content queue.
+     *
      * @param component_content[]|component_content $content
      * @param string $eventname
      */

@@ -33,8 +33,16 @@ use tool_ally\logging\logger;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_processor extends traceable_processor {
-    protected static $pushtrace = [];
+    /**
+     * {@inheritdoc}
+     *
+     * @var array
+     */
+    protected static array $pushtrace = [];
 
+    /**
+     * Build payload for course event.
+     */
     public static function build_payload($event, $eventname) {
         return [local_course::to_crud($event)];
     }

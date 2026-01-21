@@ -137,6 +137,8 @@ class file_validator {
     }
 
     /**
+     * Return whitelist of component~filearea combinations.
+     *
      * @return array
      */
     public static function whitelist() {
@@ -145,6 +147,7 @@ class file_validator {
 
     /**
      * Validates if the file should be pushed to Ally.
+     *
      * @param stored_file $file
      * @param context|null $context
      * @param bool $skipinusecheck Don't check files for being in use, even if the setting is on. Used during
@@ -237,6 +240,8 @@ class file_validator {
     }
 
     /**
+     * Check pathname is not in excluded paths (/gridimage/).
+     *
      * @param stored_file $file
      * @return bool
      */

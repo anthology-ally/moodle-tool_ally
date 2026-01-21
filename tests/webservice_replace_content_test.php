@@ -49,7 +49,9 @@ final class webservice_replace_content_test extends abstract_testcase {
     }
 
     /**
-     * Test the web service when used to replace a single content item.
+     * Test replacing course summary content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
      */
     public function test_service_course_summary(): void {
         global $DB;
@@ -69,6 +71,11 @@ final class webservice_replace_content_test extends abstract_testcase {
         $this->assertEquals($coursesummaryreplaced, $course->summary);
     }
 
+    /**
+     * Test replacing course section content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_course_section(): void {
         global $DB;
 
@@ -95,6 +102,8 @@ final class webservice_replace_content_test extends abstract_testcase {
     }
 
     /**
+     * Helper function to test replacing module content.
+     *
      * @param string $modname
      * @param string $table
      * @param string $field
@@ -128,10 +137,20 @@ final class webservice_replace_content_test extends abstract_testcase {
         return $generatedmod; // Sometimes the generated mod has more data than the db row - e.g. cmid.
     }
 
+    /**
+     * Test replacing assign content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_assign(): void {
         $this->module_replace_test('assign', 'assign');
     }
 
+    /**
+     * Test replacing book content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_book(): void {
         global $DB;
 
@@ -161,6 +180,11 @@ final class webservice_replace_content_test extends abstract_testcase {
         $this->assertEquals($contentreplaced, $chapter->content);
     }
 
+    /**
+     * Test replacing forum content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_forum(): void {
         global $USER, $DB;
 
@@ -199,6 +223,11 @@ final class webservice_replace_content_test extends abstract_testcase {
         $this->assertEquals($postmessagereplaced, $post->message);
     }
 
+    /**
+     * Test replacing glossary content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_glossary(): void {
         global $USER, $DB;
 
@@ -225,10 +254,20 @@ final class webservice_replace_content_test extends abstract_testcase {
         $this->assertEquals($definitionreplaced, $entry->definition);
     }
 
+    /**
+     * Test replacing label content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_label(): void {
         $this->module_replace_test('label', 'label');
     }
 
+    /**
+     * Test replacing lesson content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_lesson(): void {
         global $CFG, $DB;
 
@@ -256,11 +295,21 @@ final class webservice_replace_content_test extends abstract_testcase {
         $this->assertEquals($contentreplaced, $page->contents);
     }
 
+    /**
+     * Test replacing page content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_page(): void {
         $this->module_replace_test('page', 'page');
         $this->module_replace_test('page', 'page', 'content');
     }
 
+    /**
+     * Test replacing block HTML content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_block_html(): void {
         global $DB;
 

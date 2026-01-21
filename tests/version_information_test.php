@@ -19,8 +19,6 @@
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
- * @group     tool_ally
- * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 namespace tool_ally;
@@ -32,10 +30,21 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
+ * Test for version_information class.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
+ * @covers    \tool_ally\version_information
  */
 final class version_information_test extends abstract_testcase {
+    /**
+     * Test plugin not installed.
+     *
+     * @covers \tool_ally\version_information::plugin_enabled
+     */
     public function test_plugin_not_intsalled(): void {
         $versioninfo = new version_information();
 

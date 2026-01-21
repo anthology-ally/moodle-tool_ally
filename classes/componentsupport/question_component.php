@@ -39,7 +39,10 @@ require_once($CFG->dirroot . '/question/engine/bank.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class question_component extends file_component_base {
-    public static function component_type() {
+    /**
+     * {@inheritdoc}
+     */
+    public static function component_type(): string {
         return self::TYPE_CORE;
     }
 
@@ -97,7 +100,10 @@ class question_component extends file_component_base {
         return $DB->get_record_sql($sql, [$id]);
     }
 
-    public function replace_file_links() {
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_file_links(): void {
         global $DB;
 
         $file = $this->file;

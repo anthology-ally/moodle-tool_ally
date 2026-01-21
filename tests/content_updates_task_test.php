@@ -50,7 +50,10 @@ final class content_updates_task_test extends abstract_testcase {
     use prophesize_deprecation_workaround_mixin;
 
     /**
+     * Test initial run of content updates task.
      * First run should set the timestamp then exit.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
      */
     public function test_initial_run(): void {
         $this->resetAfterTest();
@@ -69,6 +72,8 @@ final class content_updates_task_test extends abstract_testcase {
 
     /**
      * Nothing should happen if config is invalid.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
      */
     public function test_invalid_config(): void {
         $task          = new content_updates_task();
@@ -81,6 +86,8 @@ final class content_updates_task_test extends abstract_testcase {
 
     /**
      * Ensure that basic execution and timestamp management is working.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
      */
     public function test_push_updates(): void {
         global $DB;
@@ -117,6 +124,8 @@ final class content_updates_task_test extends abstract_testcase {
 
     /**
      * Ensure that our batch looping is working as expected.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
      */
     public function test_push_updates_batching(): void {
         global $DB;
@@ -153,6 +162,8 @@ final class content_updates_task_test extends abstract_testcase {
 
     /**
      * Test pushing of content deletions.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
      */
     public function test_push_deletes(): void {
         global $DB;
@@ -184,6 +195,14 @@ final class content_updates_task_test extends abstract_testcase {
         $this->assertEmpty($DB->get_records('tool_ally_deleted_content'));
     }
 
+    /**
+     * Assert that the deletion queue contains a specific item.
+     *
+     * @param string $component
+     * @param string $table
+     * @param string $field
+     * @param int $id
+     */
     private function assert_deletion_queue_contains($component, $table, $field, $id) {
         global $DB;
 
@@ -201,6 +220,12 @@ final class content_updates_task_test extends abstract_testcase {
         }
     }
 
+    /**
+     * Helper function to prepare forum module deletion test scenario.
+     *
+     * @param string $forumtype
+     * @return stdClass
+     */
     public function pre_course_module_delete_forum($forumtype = 'forum') {
         global $DB, $USER;
 
@@ -260,10 +285,20 @@ final class content_updates_task_test extends abstract_testcase {
         $this->assertCount(0, $deleted);
     }
 
+    /**
+     * Test pre course module delete for forum.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
+     */
     public function test_pre_course_module_delete_forum(): void {
         $this->pre_course_module_delete_forum();
     }
 
+    /**
+     * Test pre course module delete for hsuforum.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
+     */
     public function test_pre_course_module_delete_hsuforum(): void {
         global $CFG;
         if (!file_exists($CFG->dirroot . '/mod/hsuforum')) {
@@ -272,6 +307,11 @@ final class content_updates_task_test extends abstract_testcase {
         $this->pre_course_module_delete_forum('hsuforum');
     }
 
+    /**
+     * Test pre course module delete for glossary.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
+     */
     public function test_pre_course_module_delete_glossary(): void {
         global $DB, $USER;
 
@@ -337,6 +377,11 @@ final class content_updates_task_test extends abstract_testcase {
         $this->assertCount(0, $deleted);
     }
 
+    /**
+     * Test performance of glossary deletion.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
+     */
     public function test_performance_delete_glossary(): void {
         global $DB, $USER;
 

@@ -47,16 +47,26 @@ class glossary_component extends file_component_base implements annotation_map, 
     use html_content;
     use embedded_file_map;
 
-    protected $tablefields = [
+    /**
+     * {@inheritdoc}
+     * @var array
+     */
+    protected array $tablefields = [
         'glossary' => ['intro'],
         'glossary_entries' => ['definition'],
     ];
 
-    public static function component_type() {
+    /**
+     * {@inheritdoc}
+     */
+    public static function component_type(): string {
         return self::TYPE_MOD;
     }
 
-    public function replace_file_links() {
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_file_links(): void {
 
         $file = $this->file;
 
@@ -81,7 +91,10 @@ class glossary_component extends file_component_base implements annotation_map, 
         );
     }
 
-    public function resolve_course_id($id, $table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function resolve_course_id(int $id, string $table, string $field): int {
         global $DB;
 
         if ($table === 'glossary') {
@@ -93,13 +106,15 @@ class glossary_component extends file_component_base implements annotation_map, 
     }
 
     /**
+     * Get glossary entry html content items.
+     *
      * @param int $courseid
-     * @param null $glossaryid
+     * @param null|int $glossaryid
      * @return component[]
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    private function get_entry_html_content_items($courseid, $glossaryid = null) {
+    private function get_entry_html_content_items(int $courseid, ?int $glossaryid = null) {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -153,10 +168,9 @@ SQL;
     }
 
     /**
-     * @param $courseid
-     * @return component[];
+     * {@inheritdoc}
      */
-    public function get_course_html_content_items($courseid) {
+    public function get_course_html_content_items(int $courseid): array {
         if (!$this->module_installed()) {
             return [];
         }
@@ -170,14 +184,9 @@ SQL;
     }
 
     /**
-     * Get the html content for a specific content item.
-     * @param int $id
-     * @param string $table
-     * @param string $field
-     * @param null|int $courseid
-     * @return component_content
+     * {@inheritdoc}
      */
-    public function get_html_content($id, $table, $field, $courseid = null): ?component_content {
+    public function get_html_content(int $id, string $table, string $field, ?int $courseid = null): ?component_content {
         if ($table === 'glossary') {
             return $this->std_get_html_content($id, $table, $field, $courseid);
         } else if ($table === 'glossary_entries') {
@@ -185,11 +194,14 @@ SQL;
         }
     }
 
-    public function get_all_html_content($id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_all_html_content($id): array {
         global $DB;
 
         if (!$this->module_installed()) {
-            return;
+            return [];
         }
 
         $pagetable = '{glossary}';
@@ -205,18 +217,16 @@ SQL;
     }
 
     /**
-     * Replaces the html content for a specific content item.
-     * @param int $id
-     * @param string $table
-     * @param string $field
-     * @param string $content
-     * @return string
+     * {@inheritdoc}
      */
-    public function replace_html_content($id, $table, $field, $content) {
+    public function replace_html_content(int $id, string $table, string $field, string $content): ?bool {
         return $this->std_replace_html_content($id, $table, $field, $content);
     }
 
-    public function get_annotation_maps($courseid) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_annotation_maps(int $courseid): array {
         global $PAGE;
 
         if (!$this->module_installed()) {
@@ -254,25 +264,37 @@ SQL;
         return ['entries' => $entries, 'intros' => $intros];
     }
 
-    public function queue_delete_sub_tables(cm_info $cm) {
+    /**
+     * {@inheritdoc}
+     */
+    public function queue_delete_sub_tables(cm_info $cm): void {
         $entries = $this->get_entry_html_content_items($cm->course, $cm->instance);
         $this->bulk_queue_delete_content($entries);
     }
 
-    public function get_file_area($table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_file_area(string $table, string $field): string {
         if ($table === 'glossary_entries' && $field === 'definition') {
             return 'entry';
         }
         return parent::get_file_area($table, $field);
     }
 
-    public function get_file_item($table, $field, $id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_file_item(string $table, string $field, int $id): int {
         if ($table === 'glossary_entries' && $field === 'definition') {
             return $id;
         }
         return parent::get_file_item($table, $field, $id);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function check_file_in_use(stored_file $file, ?context $context = null): bool {
         if ($file->get_filearea() == 'attachment') {
             // All attachments are in use.

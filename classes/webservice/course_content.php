@@ -24,6 +24,10 @@
 
 namespace tool_ally\webservice;
 
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
 use tool_ally\local;
 use tool_ally\local_content;
 
@@ -36,38 +40,40 @@ use tool_ally\local_content;
  */
 class course_content extends loggable_external_api {
     /**
-     * @return \external_function_parameters
+     * {@inheritdoc}
      */
-    public static function service_parameters() {
-        return new \external_function_parameters([
-            'ids' => new \external_multiple_structure(new \external_value(PARAM_INT, 'Course id'), 'List of course IDs'),
+    public static function service_parameters(): external_function_parameters {
+        return new external_function_parameters([
+            'ids' => new external_multiple_structure(new external_value(PARAM_INT, 'Course id'), 'List of course IDs'),
         ]);
     }
 
     /**
-     * @return \external_multiple_structure
+     * {@inheritdoc}
      */
-    public static function service_returns() {
-        return new \external_multiple_structure(
-            new \external_single_structure([
-                'id'           => new \external_value(PARAM_INT, 'Component id'),
-                'component'    => new \external_value(PARAM_ALPHANUMEXT, 'Component name'),
-                'title'        => new \external_value(PARAM_TEXT, 'Title'),
-                'table'        => new \external_value(
+    public static function service_returns(): external_single_structure | external_multiple_structure {
+        return new external_multiple_structure(
+            new external_single_structure([
+                'id'           => new external_value(PARAM_INT, 'Component id'),
+                'component'    => new external_value(PARAM_ALPHANUMEXT, 'Component name'),
+                'title'        => new external_value(PARAM_TEXT, 'Title'),
+                'table'        => new external_value(
                     PARAM_ALPHANUMEXT,
                     'Where content not in main component table - e.g: forum_discussions, forum_posts, etc'
                 ),
-                'field'        => new \external_value(
+                'field'        => new external_value(
                     PARAM_ALPHANUMEXT,
                     'Table field for storing content - e.g: description, message, etc'
                 ),
-                'courseid'     => new \external_value(PARAM_INT, 'Course ID of course housing content'),
-                'timemodified' => new \external_value(PARAM_TEXT, 'Last modified time of the content'),
+                'courseid'     => new external_value(PARAM_INT, 'Course ID of course housing content'),
+                'timemodified' => new external_value(PARAM_TEXT, 'Last modified time of the content'),
             ])
         );
     }
 
     /**
+     * Execute service.
+     *
      * @param array $ids List of course IDs
      * @return array
      */

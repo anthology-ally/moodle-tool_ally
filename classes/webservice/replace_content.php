@@ -26,6 +26,10 @@ namespace tool_ally\webservice;
 
 defined('MOODLE_INTERNAL') || die();
 
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
 use tool_ally\local_content;
 
 require_once(__DIR__ . '/../../../../../course/lib.php');
@@ -40,28 +44,30 @@ require_once(__DIR__ . '/../../../../../course/lib.php');
  */
 class replace_content extends loggable_external_api {
     /**
-     * @return \external_function_parameters
+     * {@inheritdoc}
      */
-    public static function service_parameters() {
-        return new \external_function_parameters([
-            'id' => new \external_value(PARAM_INT, 'Item id'),
-            'component' => new \external_value(PARAM_ALPHANUMEXT, 'Component'),
-            'table' => new \external_value(PARAM_ALPHANUMEXT, 'Table'),
-            'field' => new \external_value(PARAM_ALPHANUMEXT, 'Field'),
-            'content' => new \external_value(PARAM_RAW, 'HTML Content'),
+    public static function service_parameters(): external_function_parameters {
+        return new external_function_parameters([
+            'id' => new external_value(PARAM_INT, 'Item id'),
+            'component' => new external_value(PARAM_ALPHANUMEXT, 'Component'),
+            'table' => new external_value(PARAM_ALPHANUMEXT, 'Table'),
+            'field' => new external_value(PARAM_ALPHANUMEXT, 'Field'),
+            'content' => new external_value(PARAM_RAW, 'HTML Content'),
         ]);
     }
 
     /**
-     * @return \external_single_structure
+     * {@inheritdoc}
      */
-    public static function service_returns() {
-        return new \external_single_structure([
-            'success'    => new \external_value(PARAM_BOOL, 'Content replaced succesfully?'),
+    public static function service_returns(): external_single_structure | external_multiple_structure {
+        return new external_single_structure([
+            'success'    => new external_value(PARAM_BOOL, 'Content replaced succesfully?'),
         ]);
     }
 
     /**
+     * Execute service
+     *
      * @param int $id
      * @param string $component
      * @param string $table

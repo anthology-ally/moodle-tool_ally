@@ -35,6 +35,11 @@ class password {
      */
     private $password = '';
 
+    /**
+     * Constructor.
+     *
+     * @throws \moodle_exception
+     */
     public function __construct() {
         global $CFG;
         $originalminpasswordlength = $CFG->minpasswordlength;
@@ -60,6 +65,9 @@ class password {
         $CFG->minpasswordlength = $originalminpasswordlength;
     }
 
+    /**
+     * Get the generated password as a string.
+     */
     public function __toString() {
         return $this->password;
     }

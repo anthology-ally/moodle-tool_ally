@@ -89,6 +89,8 @@ final class components_label_component_test extends abstract_testcase {
 
     /**
      * Test if file in use detection is working with this module.
+     *
+     * @covers \tool_ally\componentsupport\label_component::check_file_in_use
      */
     public function test_check_file_in_use(): void {
         $context = \context_module::instance($this->label->cmid);

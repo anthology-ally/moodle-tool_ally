@@ -57,10 +57,16 @@ class content_updates_task extends scheduled_task {
      */
     public $updates;
 
+    /**
+     * {@inheritdoc}
+     */
     public function get_name() {
         return get_string('contentupdatestask', 'tool_ally');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function execute() {
         $config = $this->config ?: new push_config();
         if (!$config->is_valid()) {
@@ -163,6 +169,12 @@ class content_updates_task extends scheduled_task {
         $deletes->close();
     }
 
+    /**
+     * Get a string describing a failed attempt to get content.
+     *
+     * @param stdClass $queuerow
+     * @return string
+     */
     private function failed_attempt_string(stdClass $queuerow) {
         $str = $queuerow->component . ' table ' .
                 $queuerow->comptable . ' field ' . $queuerow->compfield . ' with id ' . $queuerow->comprowid .

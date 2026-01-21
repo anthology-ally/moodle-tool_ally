@@ -34,6 +34,12 @@ require_once($CFG->libdir . '/adminlib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ally_configpasswordunmask extends \admin_setting_configpasswordunmask {
+    /**
+     * Write setting value with trimming.
+     *
+     * @param mixed $data
+     * @return string
+     */
     public function write_setting($data) {
         if ($this->get_setting() === null) {
             // Use default during installation.

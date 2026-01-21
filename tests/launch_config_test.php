@@ -25,8 +25,12 @@ namespace tool_ally;
 use tool_ally\lti\launch_config;
 
 /**
- * @group     tool_ally
- * @group     ally
+ * Test class for launch config functionality.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_ally\lti\launch_config
  */
 final class launch_config_test extends \advanced_testcase {
     public function setUp(): void {

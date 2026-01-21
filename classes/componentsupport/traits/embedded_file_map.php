@@ -42,6 +42,12 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/lib/filestorage/file_storage.php');
 
+/**
+ * Trait for supporting embedded file mapping for html content.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 trait embedded_file_map {
     /**
      * General purpose function for applying embedded file map to component content.

@@ -23,13 +23,20 @@
 
 namespace tool_ally\componentsupport\interfaces;
 
+/**
+ * Interface for annotation mapping functionality.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 interface annotation_map {
     /**
+     * Get annotation maps for course.
+     *
      * @param int $courseid
-     *
      * @return array
-     *
      * @throws \moodle_exception
      */
-    public function get_annotation_maps($courseid);
+    public function get_annotation_maps(int $courseid): array;
 }

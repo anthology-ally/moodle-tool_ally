@@ -46,6 +46,7 @@ final class webservice_mod_file_view_test extends abstract_testcase {
     /**
      * Test the web service.
      *
+     * @covers \tool_ally\webservice\mod_file_view::service
      */
     public function test_service(): void {
         global $CFG, $DB;
@@ -86,6 +87,11 @@ final class webservice_mod_file_view_test extends abstract_testcase {
         $this->assertEquals('1', $viewed);
     }
 
+    /**
+     * Test service with user without access to resource.
+     *
+     * @covers \tool_ally\webservice\mod_file_view::service
+     */
     public function test_service_user_without_access_to_resource(): void {
         global $DB;
 
@@ -125,6 +131,11 @@ final class webservice_mod_file_view_test extends abstract_testcase {
         return $lastid;
     }
 
+    /**
+     * Test service with invalid user.
+     *
+     * @covers \tool_ally\webservice\mod_file_view::service
+     */
     public function test_service_invalid_user(): void {
         $this->resetAfterTest();
 
@@ -141,6 +152,11 @@ final class webservice_mod_file_view_test extends abstract_testcase {
         mod_file_view::service($file->get_pathnamehash(), $invaliduserid);
     }
 
+    /**
+     * Test service with invalid file.
+     *
+     * @covers \tool_ally\webservice\mod_file_view::service
+     */
     public function test_service_invalid_file(): void {
         global $DB;
 

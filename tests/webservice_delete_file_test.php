@@ -44,6 +44,7 @@ final class webservice_delete_file_test extends abstract_testcase {
     /**
      * Test the web service.
      *
+     * @covers \tool_ally\webservice\delete_file::service
      */
     public function test_service(): void {
         global $DB;
@@ -75,6 +76,11 @@ final class webservice_delete_file_test extends abstract_testcase {
         $this->get_resource_file($resource);
     }
 
+    /**
+     * Test service invalid user.
+     *
+     * @covers \tool_ally\webservice\delete_file::service
+     */
     public function test_service_invalid_user(): void {
         $this->resetAfterTest();
 
@@ -96,6 +102,11 @@ final class webservice_delete_file_test extends abstract_testcase {
         $this->assertInstanceOf(\stored_file, $this->get_resource_file($resource));
     }
 
+    /**
+     * Test service invalid file.
+     *
+     * @covers \tool_ally\webservice\delete_file::service
+     */
     public function test_service_invalid_file(): void {
         global $DB;
 

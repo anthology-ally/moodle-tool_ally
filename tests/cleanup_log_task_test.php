@@ -44,6 +44,8 @@ require_once(__DIR__ . '/abstract_testcase.php');
 final class cleanup_log_task_test extends abstract_testcase {
     /**
      * Test the general behavior of the task execution.
+     *
+     * @covers \tool_ally\task\cleanup_log_task::execute
      */
     public function test_execute(): void {
         global $DB;

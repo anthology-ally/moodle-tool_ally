@@ -45,6 +45,8 @@ use DOMDocument;
  */
 class local_content {
     /**
+     * Return component instance.
+     *
      * @param string $component
      * @return component_base|bool;
      */
@@ -116,10 +118,12 @@ class local_content {
     }
 
     /**
-     * @param $courseid
+     * Return annotation maps for course.
+     *
+     * @param int $courseid
      * @return array;
      */
-    public static function annotation_maps($courseid) {
+    public static function annotation_maps(int $courseid): array {
         $cache = cache::make('tool_ally', 'annotationmaps');
         $maps = [];
         $blocksonly = false;
@@ -205,6 +209,8 @@ class local_content {
     }
 
     /**
+     * Apply embedded file map to content.
+     *
      * @param component_content|null $content
      * @return component_content|null
      */
@@ -222,6 +228,8 @@ class local_content {
     }
 
     /**
+     * Get html content for component / table / field / id.
+     *
      * @param int $id
      * @param string $component
      * @param string $table
@@ -289,6 +297,8 @@ class local_content {
     }
 
     /**
+     * Get all html content for component instance.
+     *
      * @param int $id
      * @param string $component
      * @return bool|component_content[]
@@ -311,6 +321,8 @@ class local_content {
     }
 
     /**
+     * Replace html content for component instance.
+     *
      * @param int $id
      * @param string $component
      * @param string $table
@@ -318,12 +330,14 @@ class local_content {
      * @param string $content
      * @return bool|string
      */
-    public static function replace_html_content($id, $component, $table, $field, $content) {
+    public static function replace_html_content(int $id, string $component, string $table, string $field, string $content) {
         $component = self::component_instance($component);
         return $component->replace_html_content($id, $table, $field, $content);
     }
 
     /**
+     * Get annotation for context.
+     *
      * @param \context $context
      * @return string
      */
@@ -370,6 +384,8 @@ class local_content {
     }
 
     /**
+     * Queue deletion of content item.
+     *
      * @param int $courseid
      * @param int $id
      * @param string $component

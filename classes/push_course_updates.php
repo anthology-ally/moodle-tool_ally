@@ -40,6 +40,11 @@ require_once($CFG->libdir . '/filelib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class push_course_updates extends push_updates {
+    /**
+     * Handle send error.
+     *
+     * @param \Exception $e
+     */
     public function handle_send_error(\Exception $e) {
         $climode = get_config('tool_ally', 'push_cli_only');
         // Too many errors, ensure it only runs on cli.
@@ -57,6 +62,11 @@ class push_course_updates extends push_updates {
         logger::get()->error($msg, $context);
     }
 
+    /**
+     * Handle successful send.
+     *
+     * @param array $context
+     */
     public function on_send_success(array $context) {
         logger::get()->info('logger:pushcoursesuccess', $context);
     }

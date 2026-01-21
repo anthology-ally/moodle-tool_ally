@@ -52,10 +52,16 @@ class file_updates_task extends scheduled_task {
      */
     private $clionly;
 
+    /**
+     * {@inheritdoc}
+     */
     public function get_name() {
         return get_string('fileupdatestask', 'tool_ally');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function execute() {
         $config = $this->config ?: new push_config();
         if (!$config->is_valid()) {

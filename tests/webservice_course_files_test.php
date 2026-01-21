@@ -37,9 +37,9 @@ require_once(__DIR__ . '/abstract_testcase.php');
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
 final class webservice_course_files_test extends abstract_testcase {
@@ -81,6 +81,8 @@ final class webservice_course_files_test extends abstract_testcase {
 
     /**
      * Test the web service.
+     *
+     * @covers \tool_ally\webservice\course_files::service
      */
     public function test_service(): void {
 
@@ -98,6 +100,11 @@ final class webservice_course_files_test extends abstract_testcase {
         $this->assertEquals($expectedfile->get_timemodified(), local::iso_8601_to_timestamp($file['timemodified']));
     }
 
+    /**
+     * Test service with deleted section.
+     *
+     * @covers \tool_ally\webservice\course_files::service
+     */
     public function test_service_section_deleted(): void {
         global $DB;
         // Add file to a soon to be deleted section.
@@ -145,6 +152,11 @@ final class webservice_course_files_test extends abstract_testcase {
         $this->assertEquals($expectedfile->get_timemodified(), local::iso_8601_to_timestamp($file['timemodified']));
     }
 
+    /**
+     * Test service with soft deleted resource.
+     *
+     * @covers \tool_ally\webservice\course_files::service
+     */
     public function test_service_resource_soft_deleted(): void {
         global $DB;
 
@@ -159,6 +171,8 @@ final class webservice_course_files_test extends abstract_testcase {
 
     /**
      * Test that the files in use setting works with the course files service.
+     *
+     * @covers \tool_ally\webservice\course_files::service
      */
     public function test_files_in_use(): void {
         global $DB;

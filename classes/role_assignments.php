@@ -46,7 +46,10 @@ class role_assignments {
      */
     private $db;
 
-    public function __construct(array $roleids = [], \moodle_database $db = null) {
+    /**
+     * Constructor.
+     */
+    public function __construct(array $roleids = [], ?\moodle_database $db = null) {
         global $DB;
 
         $this->roleids = $roleids;

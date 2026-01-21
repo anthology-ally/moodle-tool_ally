@@ -15,15 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Interface for testing components.
+ * Trait for testing components.
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_ally\testing\traits;
 
+/**
+ * Trait for testing components.
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 trait component_assertions {
     /**
+     * Assert that content items list contains an item with given properties.
+     *
      * @param array $items
      * @param int $id
      * @param string $component
@@ -47,6 +54,8 @@ trait component_assertions {
     }
 
     /**
+     * Assert that content items list does not contain an item with given properties.
+     *
      * @param array $items
      * @param int $id
      * @param string $component

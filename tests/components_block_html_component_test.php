@@ -84,6 +84,12 @@ final class components_block_html_component_test extends abstract_testcase {
         $this->component = local_content::component_instance('block_html');
     }
 
+    /**
+     * Add an HTML block to the course for testing.
+     *
+     * @param array|null $data
+     * @return \block_html
+     */
     private function add_block(array $data = null): \block_html {
         global $USER;
 
@@ -127,6 +133,11 @@ final class components_block_html_component_test extends abstract_testcase {
         return end($blocks);
     }
 
+    /**
+     * Test listing content.
+     *
+     * @covers \tool_ally\componentsupport\block_html_component::list_content
+     */
     public function test_list_content(): void {
         $this->setAdminUser();
         $block = $this->add_block();
@@ -145,6 +156,11 @@ final class components_block_html_component_test extends abstract_testcase {
         $this->assert_component_is_in_array($component, $contentitems);
     }
 
+    /**
+     * Test getting all HTML content items.
+     *
+     * @covers \tool_ally\componentsupport\block_html_component::get_all_html_content
+     */
     public function test_get_all_html_content_items(): void {
         $block = $this->add_block();
         $contentitems = $this->component->get_all_html_content($block->context->instanceid);
@@ -158,6 +174,11 @@ final class components_block_html_component_test extends abstract_testcase {
         );
     }
 
+    /**
+     * Test getting all HTML content.
+     *
+     * @covers \tool_ally\componentsupport\block_html_component::get_all_html_content
+     */
     public function test_get_all_html_content(): void {
         $sctc = new search_content_test('search_content_get_all_html_content');
 
@@ -204,6 +225,11 @@ final class components_block_html_component_test extends abstract_testcase {
         $this->assertEquals($expectedformat, $content->contentformat);
     }
 
+    /**
+     * Test getting course HTML content items.
+     *
+     * @covers \tool_ally\componentsupport\block_html_component::get_course_html_content_items
+     */
     public function test_get_course_html_content_items(): void {
         $sctc = new search_content_test('search_content_get_course_html_content_items');
 
@@ -250,6 +276,8 @@ final class components_block_html_component_test extends abstract_testcase {
 
     /**
      * Test if file in use detection is working with this module.
+     *
+     * @covers \tool_ally\componentsupport\block_html_component::check_file_in_use
      */
     public function test_file_in_use(): void {
         global $USER;

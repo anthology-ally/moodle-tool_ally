@@ -24,6 +24,11 @@
 
 namespace tool_ally\webservice;
 
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
+
 /**
  * Delete a file.
  *
@@ -33,25 +38,27 @@ namespace tool_ally\webservice;
  */
 class delete_file extends loggable_external_api {
     /**
-     * @return \external_function_parameters
+     * {@inheritdoc}
      */
-    public static function service_parameters() {
-        return new \external_function_parameters([
-            'id' => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
-            'userid' => new \external_value(PARAM_INT, 'User id with access to file'),
+    public static function service_parameters(): external_function_parameters {
+        return new external_function_parameters([
+            'id' => new external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
+            'userid' => new external_value(PARAM_INT, 'User id with access to file'),
         ]);
     }
 
     /**
-     * @return \external_single_structure
+     * {@inheritdoc}
      */
-    public static function service_returns() {
-        return new \external_single_structure([
-            'success'      => new \external_value(PARAM_BOOL, 'File deleted succesfully?'),
+    public static function service_returns(): external_single_structure | external_multiple_structure {
+        return new external_single_structure([
+            'success'      => new external_value(PARAM_BOOL, 'File deleted succesfully?'),
         ]);
     }
 
     /**
+     * Execute service.
+     *
      * @param string $id The file path name hash
      * @param int $userid
      * @return array

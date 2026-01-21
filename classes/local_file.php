@@ -284,6 +284,8 @@ class local_file {
     }
 
     /**
+     * Replace course html link
+     *
      * @param string $oldfilename
      * @param stored_file $file
      */
@@ -313,6 +315,8 @@ class local_file {
     }
 
     /**
+     * Replace block html link.
+     *
      * @param string $oldfilename
      * @param stored_file $file
      */
@@ -522,6 +526,8 @@ class local_file {
     }
 
     /**
+     * Queue a file for deletion.
+     *
      * @param stored_file $file
      */
     public static function queue_file_for_deletion($file) {

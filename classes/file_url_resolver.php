@@ -24,6 +24,8 @@
 
 namespace tool_ally;
 
+use moodle_database;
+
 /**
  * Resolve the URL of a file to see it in context.
  *
@@ -33,14 +35,16 @@ namespace tool_ally;
  */
 class file_url_resolver {
     /**
-     * @var \moodle_database
+     * @var moodle_database
      */
     private $db;
 
     /**
-     * @param \moodle_database $db
+     * Constructor.
+     *
+     * @param moodle_database|null $db
      */
-    public function __construct(\moodle_database $db = null) {
+    public function __construct(?moodle_database $db = null) {
         global $DB;
 
         $this->db = $db ?: $DB;

@@ -38,6 +38,7 @@ use stored_file;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class files_in_use {
+    /** @var files_in_use|null */
     protected static $instance = null;
 
     /**
@@ -404,7 +405,7 @@ class files_in_use {
      */
     protected function queue_file_update(stored_file $file, bool $inuse) {
         if ($inuse) {
-            // TODO - need to queue this up and send with task.
+            // ALLY TODO - need to queue this up and send with task.
             file_processor::push_file_update($file, false);
             cache::instance()->invalidate_file_keys($file);
 

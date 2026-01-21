@@ -53,6 +53,11 @@ final class auto_configurator_test extends advanced_testcase {
         $this->resetAfterTest(true);
     }
 
+    /**
+     * Test configure settings.
+     *
+     * @covers \tool_ally\auto_configurator::configure_settings
+     */
     public function test_configure_settings(): void {
         $configs = [
             'secret' => 'password!',
@@ -75,6 +80,11 @@ final class auto_configurator_test extends advanced_testcase {
         }
     }
 
+    /**
+     * Test configure settings invalid setting.
+     *
+     * @covers \tool_ally\auto_configurator::configure_settings
+     */
     public function test_configure_settings_invalid_setting(): void {
         $configs = [
             'secret' => 'password!',
@@ -101,6 +111,11 @@ final class auto_configurator_test extends advanced_testcase {
         }
     }
 
+    /**
+     * Test configure webservices.
+     *
+     * @covers \tool_ally\auto_configurator::configure_webservices
+     */
     public function test_configure_webservices(): void {
         $wsconfig = new auto_config();
 

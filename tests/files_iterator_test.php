@@ -46,6 +46,8 @@ require_once(__DIR__ . '/abstract_testcase.php');
 final class files_iterator_test extends abstract_testcase {
     /**
      * Test get_files.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_get_files(): void {
         global $DB;
@@ -112,6 +114,11 @@ final class files_iterator_test extends abstract_testcase {
         }
     }
 
+    /**
+     * Test get files pathname.
+     *
+     * @covers \tool_ally\files_iterator
+     */
     public function test_get_files_pathname(): void {
         global $DB;
 
@@ -146,6 +153,8 @@ final class files_iterator_test extends abstract_testcase {
 
     /**
      * Test get_files when there are no files to fetch.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_get_no_files(): void {
         $this->resetAfterTest();
@@ -159,6 +168,8 @@ final class files_iterator_test extends abstract_testcase {
 
     /**
      * Test get_files using the since parameter.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_get_files_since(): void {
         global $DB;
@@ -225,6 +236,11 @@ final class files_iterator_test extends abstract_testcase {
         return true;
     }
 
+    /**
+     * Test white listing functionality.
+     *
+     * @covers \tool_ally\files_iterator
+     */
     public function test_white_listing(): void {
         global $DB;
 
@@ -268,6 +284,8 @@ final class files_iterator_test extends abstract_testcase {
     /**
      * Make sure a file created within a course of a whitelisted module is accessible when created by
      * someone with a teacher role but not when a student.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_role_validation(): void {
 
@@ -420,6 +438,8 @@ final class files_iterator_test extends abstract_testcase {
 
     /**
      * Test records paging.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_files_paging(): void {
         global $DB;
@@ -474,6 +494,8 @@ final class files_iterator_test extends abstract_testcase {
 
     /**
      * Test using the iterator with validation disabled.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_files_without_valid_filter(): void {
         $this->resetAfterTest();
@@ -533,6 +555,8 @@ final class files_iterator_test extends abstract_testcase {
 
     /**
      * Test comparing curent and previous validators.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_all_valid_files(): void {
         $this->resetAfterTest();
@@ -624,6 +648,8 @@ final class files_iterator_test extends abstract_testcase {
 
     /**
      * Test records paging using $CFG->tool_ally_optimize_iteration_for_db = true.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_files_paging_optimized_for_db(): void {
         global $DB, $CFG;
@@ -678,6 +704,8 @@ final class files_iterator_test extends abstract_testcase {
 
     /**
      * Basic testing of files being in use or not.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_unused_files(): void {
         global $DB;

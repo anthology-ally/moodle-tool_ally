@@ -24,5 +24,12 @@
 
 namespace tool_ally\exceptions;
 
+/**
+ * Component validation exception.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class component_validation_exception extends \Exception {
 }

@@ -66,6 +66,8 @@ final class components_course_component_test extends abstract_testcase {
 
     /**
      * Check that files are properly excluded or included based usage.
+     *
+     * @covers \tool_ally\componentsupport\course_component::check_file_in_use
      */
     public function test_file_in_use(): void {
         $context = $this->coursecontext;

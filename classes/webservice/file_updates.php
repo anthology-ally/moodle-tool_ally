@@ -24,6 +24,10 @@
  */
 namespace tool_ally\webservice;
 
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
 use tool_ally\local;
 use tool_ally\local_file;
 
@@ -36,31 +40,33 @@ use tool_ally\local_file;
  */
 class file_updates extends loggable_external_api {
     /**
-     * @return \external_function_parameters
+     * {@inheritdoc}
      */
-    public static function service_parameters() {
-        return new \external_function_parameters([
-            'since' => new \external_value(PARAM_TEXT, 'ISO 8601 timestamp from which to get updates since'),
+    public static function service_parameters(): external_function_parameters {
+        return new external_function_parameters([
+            'since' => new external_value(PARAM_TEXT, 'ISO 8601 timestamp from which to get updates since'),
         ]);
     }
 
     /**
-     * @return \external_multiple_structure
+     * {@inheritdoc}
      */
-    public static function service_returns() {
-        return new \external_multiple_structure(
-            new \external_single_structure([
-                'entity_id'    => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
-                'context_id'   => new \external_value(PARAM_INT, 'ID of the context of the file'),
-                'event_name'   => new \external_value(PARAM_ALPHAEXT, 'Name of the event'),
-                'event_time'   => new \external_value(PARAM_TEXT, 'ISO8601 timestamp for the event'),
-                'mime_type'    => new \external_value(PARAM_RAW, 'File mime type'),
-                'content_hash' => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
+    public static function service_returns(): external_single_structure | external_multiple_structure {
+        return new external_multiple_structure(
+            new external_single_structure([
+                'entity_id'    => new external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
+                'context_id'   => new external_value(PARAM_INT, 'ID of the context of the file'),
+                'event_name'   => new external_value(PARAM_ALPHAEXT, 'Name of the event'),
+                'event_time'   => new external_value(PARAM_TEXT, 'ISO8601 timestamp for the event'),
+                'mime_type'    => new external_value(PARAM_RAW, 'File mime type'),
+                'content_hash' => new external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
             ])
         );
     }
 
     /**
+     * Execute service.
+     *
      * @param string $since
      * @return array
      */

@@ -26,9 +26,12 @@ namespace tool_ally\webservice;
 
 defined('MOODLE_INTERNAL') || die();
 
+use core_external\external_function_parameters;
+use core_external\external_single_structure;
+use core_external\external_multiple_structure;
+use Exception;
 use external_api;
 use moodle_exception;
-use Exception;
 use tool_ally\logging\logger;
 
 global $CFG;
@@ -46,6 +49,22 @@ abstract class loggable_external_api extends external_api {
     use user_fill_from_context_error;
 
     /**
+     * Service parameters definition.
+     *
+     * @return external_function_parameters
+     */
+    abstract public static function service_parameters(): external_function_parameters;
+
+    /**
+     * Returns description of method return value.
+     *
+     * @return external_single_structure | external_multiple_structure
+     */
+    abstract public static function service_returns(): external_single_structure | external_multiple_structure;
+
+    /**
+     * Service entry point that logs exceptions.
+     *
      * @throws Exception
      */
     public static function service() {
@@ -67,6 +86,7 @@ abstract class loggable_external_api extends external_api {
 
     /**
      * Logs an exception in the Ally PSR log.
+     *
      * @param Exception $ex
      * @param string $classname
      * @param array $params

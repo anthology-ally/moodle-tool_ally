@@ -82,6 +82,8 @@ final class files_in_use_test extends abstract_testcase {
 
     /**
      * Test if file in use detection is working.
+     *
+     * @covers \tool_ally\files_in_use::check_file_in_use
      */
     public function test_check_file_in_use(): void {
         global $DB;

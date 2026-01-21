@@ -24,6 +24,10 @@
 
 namespace tool_ally\webservice;
 
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
 use tool_ally\local;
 use tool_ally\local_course;
 use tool_ally\local_file;
@@ -37,31 +41,33 @@ use tool_ally\local_file;
  */
 class course_files extends loggable_external_api {
     /**
-     * @return \external_function_parameters
+     * {@inheritdoc}
      */
-    public static function service_parameters() {
-        return new \external_function_parameters([
-            'ids' => new \external_multiple_structure(new \external_value(PARAM_INT, 'Course id'), 'List of course IDs'),
+    public static function service_parameters(): external_function_parameters {
+        return new external_function_parameters([
+            'ids' => new external_multiple_structure(new external_value(PARAM_INT, 'Course id'), 'List of course IDs'),
         ]);
     }
 
     /**
-     * @return \external_multiple_structure
+     * {@inheritdoc}
      */
-    public static function service_returns() {
-        return new \external_multiple_structure(
-            new \external_single_structure([
-                'id'           => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
-                'courseid'     => new \external_value(PARAM_INT, 'Course ID of the file'),
-                'name'         => new \external_value(PARAM_TEXT, 'File name'),
-                'mimetype'     => new \external_value(PARAM_RAW, 'File mime type'),
-                'contenthash'  => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
-                'timemodified' => new \external_value(PARAM_TEXT, 'Last modified time of the file'),
+    public static function service_returns(): external_single_structure | external_multiple_structure {
+        return new external_multiple_structure(
+            new external_single_structure([
+                'id'           => new external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
+                'courseid'     => new external_value(PARAM_INT, 'Course ID of the file'),
+                'name'         => new external_value(PARAM_TEXT, 'File name'),
+                'mimetype'     => new external_value(PARAM_RAW, 'File mime type'),
+                'contenthash'  => new external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
+                'timemodified' => new external_value(PARAM_TEXT, 'Last modified time of the file'),
             ])
         );
     }
 
     /**
+     * Execute service.
+     *
      * @param array $ids List of course IDs
      * @return array
      */

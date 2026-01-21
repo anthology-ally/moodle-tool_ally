@@ -104,6 +104,11 @@ final class components_lesson_component_test extends abstract_testcase {
     }
 
 
+    /**
+     * Test getting all HTML content items.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::get_all_html_content
+     */
     public function test_get_all_html_content_items(): void {
         $contentitems = $this->component->get_all_html_content($this->lesson->id);
 
@@ -132,21 +137,41 @@ final class components_lesson_component_test extends abstract_testcase {
         );
     }
 
+    /**
+     * Test resolving module instance ID from lesson.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::resolve_course_id
+     */
     public function test_resolve_module_instance_id_from_lesson(): void {
         $instanceid = $this->component->resolve_module_instance_id('lesson', $this->lesson->id);
         $this->assertEquals($this->lesson->id, $instanceid);
     }
 
+    /**
+     * Test resolving module instance ID from page.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::resolve_course_id
+     */
     public function test_resolve_module_instance_id_from_page(): void {
         $instanceid = $this->component->resolve_module_instance_id('lesson_pages', $this->lessonpage->id);
         $this->assertEquals($this->lesson->id, $instanceid);
     }
 
+    /**
+     * Test resolving module instance ID from question.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::resolve_course_id
+     */
     public function test_resolve_module_instance_id_from_question(): void {
         $instanceid = $this->component->resolve_module_instance_id('lesson_pages', $this->lessonquestion->id);
         $this->assertEquals($this->lesson->id, $instanceid);
     }
 
+    /**
+     * Test resolving module instance ID from answer.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::resolve_course_id
+     */
     public function test_resolve_module_instance_id_from_answer(): void {
         global $DB;
 
@@ -157,6 +182,11 @@ final class components_lesson_component_test extends abstract_testcase {
         }
     }
 
+    /**
+     * Test getting all course annotation maps.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::get_annotation_maps
+     */
     public function test_get_all_course_annotation_maps(): void {
         global $DB;
 
@@ -175,6 +205,8 @@ final class components_lesson_component_test extends abstract_testcase {
 
     /**
      * Test if file in use detection is working with this module.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::check_file_in_use
      */
     public function test_check_file_in_use(): void {
         global $DB;

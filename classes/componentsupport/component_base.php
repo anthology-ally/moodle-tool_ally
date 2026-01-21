@@ -37,26 +37,42 @@ use tool_ally\exceptions\component_validation_exception;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Base class for component support functionality.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 abstract class component_base {
+    /** @var string Core component type */
     const TYPE_CORE = 'core';
 
+    /** @var string Module component type */
     const TYPE_MOD = 'mod';
 
+    /** @var string Block component type */
     const TYPE_BLOCK = 'block';
 
-    protected $tablefields = [];
+    /**
+     * Array of fields for each table that this component supports.
+     * @var array
+     */
+    protected array $tablefields = [];
 
     /**
      * Return component type for this component - a class constant beginning with TYPE_
      *
-     * @return int
+     * @return string
      */
-    abstract public static function component_type();
+    abstract public static function component_type(): string;
 
     /**
+     * Is the module installed?
+     *
      * @return bool
      */
-    public function module_installed() {
+    public function module_installed(): bool {
         return \core_component::get_component_directory($this->get_component_name()) !== null;
     }
 
@@ -74,6 +90,8 @@ abstract class component_base {
     }
 
     /**
+     * Validate component table and field.
+     *
      * @param string $table
      * @param string $field
      * @throws \coding_exception
@@ -138,15 +156,16 @@ abstract class component_base {
      *
      * Override this in your component if you need something more complicated.
      *
-     * @param $table
-     * @param $field
-     * @return mixed
+     * @param string $table
+     * @param string $field
+     * @return string
      */
-    public function get_file_area($table, $field) {
+    public function get_file_area(string $table, string $field): string {
         // The default is simply to return the field, if it's part of the tablefields array.
         if (isset($this->tablefields[$table]) && in_array($field, $this->tablefields[$table])) {
             return $field;
         }
+        throw new \coding_exception('No file area mapping for table ' . $table . ' field ' . $field);
     }
 
     /**
@@ -159,7 +178,7 @@ abstract class component_base {
      * @param int $id
      * @return int
      */
-    public function get_file_item($table, $field, $id) {
+    public function get_file_item(string $table, string $field, int $id): int {
         return 0;
     }
 
@@ -209,10 +228,10 @@ abstract class component_base {
      *
      * @param $table
      * @param $id
-     * @return mixed
+     * @return int
      * @throws \dml_exception
      */
-    public function resolve_module_instance_id($table, $id) {
+    public function resolve_module_instance_id(string $table, int $id): int {
         global $DB;
 
         $component = $this->get_component_name();
@@ -227,23 +246,23 @@ MSG;
 
         if ($table === $component) {
             return $id;
+        }
+
+        $record = $DB->get_record($table, ['id' => $id]);
+        if (!empty($record->{$component . 'id'})) {
+            $instanceid = $record->{$component . 'id'};
+        } else if (!empty($record->$component)) {
+            $instanceid = $record->$component;
         } else {
-            $record = $DB->get_record($table, ['id' => $id]);
-            if (!empty($record->{$component . 'id'})) {
-                $instanceid = $record->{$component . 'id'};
-            } else if (!empty($record->$component)) {
-                $instanceid = $record->$component;
-            } else {
-                $method = __METHOD__;
-                $msg = <<<MSG
+            $method = __METHOD__;
+            $msg = <<<MSG
 Unable to resolve component from subtable "$table" with id $id. A developer needs to override the method "$method" in the
 component $component so that it can cope with the table "$table".
 MSG;
-                throw new \coding_exception($msg);
-            }
-            $componentrecord = $DB->get_record($component, ['id' => $instanceid]);
-            return $componentrecord->id;
+            throw new \coding_exception($msg);
         }
+        $componentrecord = $DB->get_record($component, ['id' => $instanceid]);
+        return $componentrecord->id;
     }
 
     /**

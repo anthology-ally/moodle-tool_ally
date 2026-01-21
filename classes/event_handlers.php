@@ -65,16 +65,32 @@ use mod_lesson\event\page_deleted;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Event handlers for Ally tool.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class event_handlers {
+    /** @var string Rich content created API constant */
     const API_RICH_CNT_CREATED = 'rich_content_created';
+    /** @var string Rich content updated API constant */
     const API_RICH_CNT_UPDATED = 'rich_content_updated';
+    /** @var string Rich content deleted API constant */
     const API_RICH_CNT_DELETED = 'rich_content_deleted';
+    /** @var string Course updated API constant */
     const API_COURSE_UPDATED = 'course_updated';
+    /** @var string Course deleted API constant */
     const API_COURSE_DELETED = 'course_deleted';
+    /** @var string Course copied API constant */
     const API_COURSE_COPIED = 'course_copied';
+    /** @var string Course imported API constant */
     const API_COURSE_IMPORTED = 'course_imported';
 
     /**
+     * Course created event handler.
+     *
      * @param course_created $event
      */
     public static function course_created(course_created $event) {
@@ -90,6 +106,8 @@ class event_handlers {
     }
 
     /**
+     * Course updated event handler.
+     *
      * @param course_updated $event
      */
     public static function course_updated(course_updated $event) {
@@ -106,6 +124,8 @@ class event_handlers {
     }
 
     /**
+     * Course deleted event handler.
+     *
      * @param course_deleted $event
      */
     public static function course_deleted(course_deleted $event) {
@@ -120,6 +140,8 @@ class event_handlers {
     }
 
     /**
+     * Course restored event handler.
+     *
      * @param course_restored $event
      */
     public static function course_restored(course_restored $event) {
@@ -153,6 +175,8 @@ class event_handlers {
     }
 
     /**
+     * Course section create/update/delete handler.
+     *
      * @param base $event
      * @param string $apieventname
      * @throws \dml_exception
@@ -173,6 +197,8 @@ class event_handlers {
     }
 
     /**
+     * Course section created event handler.
+     *
      * @param course_section_created $event
      */
     public static function course_section_created(course_section_created $event) {
@@ -180,6 +206,8 @@ class event_handlers {
     }
 
     /**
+     * Course section updated event handler.
+     *
      * @param course_section_updated $event
      * @throws \dml_exception
      */
@@ -189,6 +217,8 @@ class event_handlers {
     }
 
     /**
+     * Course section deleted event handler.
+     *
      * @param course_section_deleted $event
      * @throws \dml_exception
      */
@@ -198,6 +228,8 @@ class event_handlers {
     }
 
     /**
+     * Group created event handler.
+     *
      * @param group_created $event
      */
     public static function group_created(group_created $event) {
@@ -205,6 +237,8 @@ class event_handlers {
     }
 
     /**
+     * Group deleted event handler.
+     *
      * @param group_updated $event
      */
     public static function group_updated(group_updated $event) {
@@ -212,6 +246,8 @@ class event_handlers {
     }
 
     /**
+     * Course module crud.
+     *
      * @param base $event
      * @param $apieventname
      */
@@ -233,6 +269,8 @@ class event_handlers {
     }
 
     /**
+     * Course module created event handler.
+     *
      * @param course_module_created $event
      */
     public static function course_module_created(course_module_created $event) {
@@ -240,6 +278,8 @@ class event_handlers {
     }
 
     /**
+     * Course module updated event handler.
+     *
      * @param course_module_updated $event
      */
     public static function course_module_updated(course_module_updated $event) {
@@ -247,6 +287,8 @@ class event_handlers {
     }
 
     /**
+     * Course module deleted event handler.
+     *
      * @param course_module_deleted $event
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -274,6 +316,8 @@ class event_handlers {
     }
 
     /**
+     * Forum discussion crud.
+     *
      * @param base $event
      * @param string $eventname
      * @param string $forumtype
@@ -312,6 +356,8 @@ class event_handlers {
     }
 
     /**
+     * Forum discussion created event handler.
+     *
      * @param discussion_created $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -321,6 +367,8 @@ class event_handlers {
     }
 
     /**
+     * Forum discussion updated event handler.
+     *
      * @param discussion_updated $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -330,6 +378,8 @@ class event_handlers {
     }
 
     /**
+     * Forum discussion deleted event handler.
+     *
      * @param discussion_deleted $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -339,6 +389,8 @@ class event_handlers {
     }
 
     /**
+     * Forum post updated event handler.
+     *
      * Note - although we are only interested in discussions, if we alter a discussions message we are in fact altering
      * the corersponding post.
      * @param post_updated $event
@@ -371,6 +423,8 @@ class event_handlers {
     }
 
     /**
+     * Hsuforum discussion created event handler.
+     *
      * @param discussion_created $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -380,6 +434,8 @@ class event_handlers {
     }
 
     /**
+     * Hsuforum discussion updated event handler.
+     *
      * @param discussion_updated $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -389,6 +445,8 @@ class event_handlers {
     }
 
     /**
+     * Hsuforum discussion deleted event handler.
+     *
      * @param discussion_deleted $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -398,6 +456,8 @@ class event_handlers {
     }
 
     /**
+     * Hsuforum post updated event handler.
+     *
      * Note - although we are only interested in discussions, if we alter a discussions message we are in fact altering
      * the corersponding post.
      * @param post_updated $event
@@ -453,6 +513,8 @@ class event_handlers {
     }
 
     /**
+     * Glossary entry created event handler.
+     *
      * @param entry_created $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -462,6 +524,8 @@ class event_handlers {
     }
 
     /**
+     * Glossary entry updated event handler.
+     *
      * @param entry_updated $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -471,6 +535,8 @@ class event_handlers {
     }
 
     /**
+     * Glossary entry deleted event handler.
+     *
      * @param entry_deleted $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -480,6 +546,8 @@ class event_handlers {
     }
 
     /**
+     * Book chapter created event handler.
+     *
      * @param chapter_created $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -489,6 +557,8 @@ class event_handlers {
     }
 
     /**
+     * Book chapter updated event handler.
+     *
      * @param chapter_updated $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -498,6 +568,8 @@ class event_handlers {
     }
 
     /**
+     * Book chapter deleted event handler.
+     *
      * @param chapter_deleted $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -507,6 +579,8 @@ class event_handlers {
     }
 
     /**
+     * Lesson page crud.
+     *
      * @param base $event
      * @param $eventname
      * @throws \coding_exception
@@ -532,6 +606,8 @@ class event_handlers {
     }
 
     /**
+     * Lesson page created event handler.
+     *
      * @param page_created $event
      * @throws \coding_exception
      * @throws \dml_exception
@@ -542,6 +618,8 @@ class event_handlers {
     }
 
     /**
+     * Lesson page updated event handler.
+     *
      * @param page_updated $event
      * @throws \coding_exception
      * @throws \dml_exception
@@ -552,6 +630,8 @@ class event_handlers {
     }
 
     /**
+     * Lesson page deleted event handler.
+     *
      * @param page_deleted $event
      * @throws \coding_exception
      * @throws \dml_exception

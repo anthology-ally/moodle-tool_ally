@@ -36,18 +36,29 @@ require_once(__DIR__ . '/abstract_testcase.php');
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
 final class webservice_content_test extends abstract_testcase {
+    /**
+     * Test invalid component.
+     *
+     * @covers \tool_ally\webservice\content::service
+     */
     public function test_invalid_component(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
         $this->expectExceptionMessage('Invalid component identifier');
         content::service(1, 'aninvalidcomponent', 'anytable', 'anyfield');
     }
+
+    /**
+     * Test invalid table.
+     *
+     * @covers \tool_ally\webservice\content::service
+     */
     public function test_invalid_table(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
@@ -55,6 +66,11 @@ final class webservice_content_test extends abstract_testcase {
         $this->expectExceptionMessage('Invalid component identifier');
         content::service($course->id, 'course', 'invalidtable', 'summary');
     }
+    /**
+     * Test invalid field.
+     *
+     * @covers \tool_ally\webservice\content::service
+     */
     public function test_invalid_field(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
@@ -62,6 +78,11 @@ final class webservice_content_test extends abstract_testcase {
         $this->expectExceptionMessage('Invalid component identifier');
         content::service($course->id, 'course', 'course', 'invalidfield');
     }
+    /**
+     * Test invalid id.
+     *
+     * @covers \tool_ally\webservice\content::service
+     */
     public function test_invalid_id(): void {
         $this->resetAfterTest();
         $this->setAdminUser();
@@ -72,6 +93,8 @@ final class webservice_content_test extends abstract_testcase {
 
     /**
      * Test the web service when used to get a single course summary content item.
+     *
+     * @covers \tool_ally\webservice\content::service
      */
     public function test_service_course_summary(): void {
 
@@ -103,6 +126,8 @@ final class webservice_content_test extends abstract_testcase {
 
     /**
      * Test the web service when used to get a single course section content item.
+     *
+     * @covers \tool_ally\webservice\content::service
      */
     public function test_service_course_section(): void {
         global $DB;
@@ -141,6 +166,8 @@ final class webservice_content_test extends abstract_testcase {
     }
 
     /**
+     * Main content test helper for modules.
+     *
      * @param string $modname
      * @param string $table
      * @param string $field
@@ -220,6 +247,8 @@ final class webservice_content_test extends abstract_testcase {
 
     /**
      * Test the web service when used to get a label content item.
+     *
+     * @covers \tool_ally\webservice\content::service
      */
     public function test_service_label_content(): void {
         $this->main_module_content_test('label', 'label');
@@ -227,6 +256,8 @@ final class webservice_content_test extends abstract_testcase {
 
     /**
      * Test the web service when used to get an assign content item.
+     *
+     * @covers \tool_ally\webservice\content::service
      */
     public function test_service_assign_content(): void {
         $this->main_module_content_test('assign', 'assign');
@@ -234,6 +265,8 @@ final class webservice_content_test extends abstract_testcase {
 
     /**
      * Test the web service when used to get forum content items.
+     *
+     * @covers \tool_ally\webservice\content::service
      */
     public function test_service_forum_content($forumtype = 'forum'): void {
         $forum = $this->main_module_content_test($forumtype, $forumtype);
@@ -277,6 +310,11 @@ final class webservice_content_test extends abstract_testcase {
         $this->assertEquals($expected, $content);
     }
 
+    /**
+     * Test the web service when used to get an hsuforum content item.
+     *
+     * @covers \tool_ally\webservice\content::service
+     */
     public function test_service_hsuforum_content(): void {
         global $CFG;
         if (file_exists($CFG->dirroot . '/mod/hsuforum')) {
@@ -284,11 +322,21 @@ final class webservice_content_test extends abstract_testcase {
         }
     }
 
+    /**
+     * Test the web service when used to get a page content item.
+     *
+     * @covers \tool_ally\webservice\content::service
+     */
     public function test_service_page_content(): void {
         $this->main_module_content_test('page', 'page');
         $this->main_module_content_test('page', 'page', 'content');
     }
 
+    /**
+     * Test the web service when used to get a lesson content item.
+     *
+     * @covers \tool_ally\webservice\content::service
+     */
     public function test_service_lesson_content(): void {
         global $DB;
 
@@ -323,6 +371,11 @@ final class webservice_content_test extends abstract_testcase {
         $this->assertEquals($expected, $content);
     }
 
+    /**
+     * Test the web service when used to get a block_html content item.
+     *
+     * @covers \tool_ally\webservice\content::service
+     */
     public function test_service_block_html_content(): void {
         $this->resetAfterTest();
 
@@ -354,6 +407,11 @@ final class webservice_content_test extends abstract_testcase {
         $this->assertEquals($expected, $content);
     }
 
+    /**
+     * Test the web service when used to get a module content item but with the wrong course id.
+     *
+     * @covers \tool_ally\webservice\content::service
+     */
     public function test_service_module_wrong_course(): void {
         global $DB, $CFG;
         $this->resetAfterTest();

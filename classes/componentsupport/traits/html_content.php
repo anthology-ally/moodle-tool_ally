@@ -29,15 +29,21 @@ use tool_ally\models\component;
 use tool_ally\models\component_content;
 use stdClass;
 
+/**
+ * Trait for supporting html content.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 trait html_content {
     /**
      * Standard method for getting course html content items.
      *
-     * @param $courseid
+     * @param int $courseid
      * @return array
      * @throws \dml_exception
      */
-    protected function std_get_course_html_content_items($courseid) {
+    protected function std_get_course_html_content_items(int $courseid) {
         global $DB, $PAGE;
 
         $array = [];
@@ -209,7 +215,13 @@ trait html_content {
      * @param null|int $timemodified
      * @return component_content
      */
-    public function get_html_content_deleted($id, $table, $field, $courseid, $timemodified = null) {
+    public function get_html_content_deleted(
+        int $id,
+        string $table,
+        string $field,
+        int $courseid,
+        ?int $timemodified = null
+    ): ?component_content {
         if (!$this->module_installed()) {
             return null;
         }
@@ -239,7 +251,7 @@ trait html_content {
      * @return mixed
      * @throws \coding_exception
      */
-    protected function std_replace_html_content($id, $table, $field, $content) {
+    protected function std_replace_html_content(int $id, string $table, string $field, string $content): ?bool {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -267,6 +279,8 @@ trait html_content {
     }
 
     /**
+     * Get selected html content items.
+     *
      * @param int $courseid
      * @param string $contentfield
      * @param null|string $table
@@ -336,6 +350,7 @@ trait html_content {
 
     /**
      * Get introduction html content items.
+     *
      * @param int $courseid
      * @param boolean $includecontentcheck
      * @return array
@@ -356,6 +371,8 @@ trait html_content {
 
 
     /**
+     * Make module instance url.
+     *
      * @param string $module
      * @param int $id
      * @return string
@@ -373,6 +390,8 @@ trait html_content {
     }
 
     /**
+     * Bulk queue delete content items.
+     *
      * @param component[] $contents
      */
     protected function bulk_queue_delete_content(array $contents) {
@@ -399,7 +418,7 @@ trait html_content {
      * @param int $id
      * @return string
      */
-    public function get_annotation($id) {
+    public function get_annotation(int $id): string {
         return '';
     }
 }

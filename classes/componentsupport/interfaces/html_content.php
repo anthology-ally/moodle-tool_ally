@@ -26,47 +26,61 @@ namespace tool_ally\componentsupport\interfaces;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
 
+/**
+ * Interface for components that support HTML content.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 interface html_content {
     /**
-     * @param $courseid
+     * Get course html content items.
+     *
+     * @param int $courseid
      * @return component[];
      */
-    public function get_course_html_content_items($courseid);
+    public function get_course_html_content_items(int $courseid): array;
 
     /**
      * Get the html content for a specific content item.
+     *
      * @param int $id
      * @param string $table
      * @param string $field
      * @param null|int $courseid
      * @return component_content
      */
-    public function get_html_content($id, $table, $field, $courseid = null): ?component_content;
+    public function get_html_content(int $id, string $table, string $field, ?int $courseid = null): ?component_content;
 
     /**
      * Get all html content for instance ($id).
      * E.g, for a course it will give you the summary and all the section content.
      * For modules with multiple rich fields it will give you all the content for each field.
-     * @param $id
+     *
+     * @param int $id
      * @return component[];
      */
-    public function get_all_html_content($id);
+    public function get_all_html_content(int $id): array;
 
     /**
      * Replaces the html content for a specific content item.
+     *
      * @param int $id
      * @param string $table
      * @param string $field
      * @param string $content
-     * @return string
+     * @return ?bool
      */
-    public function replace_html_content($id, $table, $field, $content);
+    public function replace_html_content(int $id, string $table, string $field, string $content): ?bool;
 
     /**
+     * Resolve course id for a specific content item.
+     *
      * @param int $id
      * @param string $table
      * @param string $field
      * @return int
      */
-    public function resolve_course_id($id, $table, $field);
+    public function resolve_course_id(int $id, string $table, string $field): int;
 }

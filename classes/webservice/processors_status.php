@@ -24,6 +24,10 @@
 
 namespace tool_ally\webservice;
 
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
 use tool_ally\push_config;
 
 /**
@@ -35,29 +39,31 @@ use tool_ally\push_config;
  */
 class processors_status extends loggable_external_api {
     /**
-     * @return \external_function_parameters
+     * {@inheritdoc}
      */
-    public static function service_parameters() {
-        return new \external_function_parameters([]);
+    public static function service_parameters(): external_function_parameters {
+        return new external_function_parameters([]);
     }
 
     /**
-     * @return \external_single_structure
+     * {@inheritdoc}
      */
-    public static function service_returns() {
-        return new \external_single_structure([
-            'is_valid' => new \external_value(PARAM_BOOL, 'Is the configuration valid?'),
-            'is_cli_only' => new \external_value(PARAM_BOOL, 'is the processor set to push only?'),
-            'when_cli_only_on' => new \external_value(PARAM_INT, 'When the cli went On'),
-            'when_cli_only_off' => new \external_value(PARAM_INT, 'when the cli went Off'),
-            'content_events' => new \external_value(PARAM_INT, 'Amount of content events in the queue'),
-            'oldest_content_event' => new \external_value(PARAM_INT, 'timestamp for oldest content event queued'),
-            'course_events' => new \external_value(PARAM_INT, 'Amount of course events in the queue'),
-            'oldest_course_event' => new \external_value(PARAM_INT, 'timestamp for oldest course event queued'),
+    public static function service_returns(): external_single_structure | external_multiple_structure {
+        return new external_single_structure([
+            'is_valid' => new external_value(PARAM_BOOL, 'Is the configuration valid?'),
+            'is_cli_only' => new external_value(PARAM_BOOL, 'is the processor set to push only?'),
+            'when_cli_only_on' => new external_value(PARAM_INT, 'When the cli went On'),
+            'when_cli_only_off' => new external_value(PARAM_INT, 'when the cli went Off'),
+            'content_events' => new external_value(PARAM_INT, 'Amount of content events in the queue'),
+            'oldest_content_event' => new external_value(PARAM_INT, 'timestamp for oldest content event queued'),
+            'course_events' => new external_value(PARAM_INT, 'Amount of course events in the queue'),
+            'oldest_course_event' => new external_value(PARAM_INT, 'timestamp for oldest course event queued'),
         ]);
     }
 
     /**
+     * Execute service.
+     *
      * @param int $id Course id.
      * @return array
      */
@@ -90,6 +96,13 @@ class processors_status extends loggable_external_api {
             'oldest_course_event' => $coursequeue->oldest,
         ];
     }
+
+    /**
+     * Cast queue record fields to int.
+     *
+     * @param object $queue
+     * @return object
+     */
     public static function cast($queue) {
         $queue->amount = (int) $queue->amount;
         $queue->oldest = (int) $queue->oldest;

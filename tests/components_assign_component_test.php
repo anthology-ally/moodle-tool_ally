@@ -89,6 +89,8 @@ final class components_assign_component_test extends abstract_testcase {
 
     /**
      * Test if file in use detection is working with this module.
+     *
+     * @covers \tool_ally\componentsupport\assign_component::check_file_in_use
      */
     public function test_check_file_in_use(): void {
         $context = \context_module::instance($this->assign->cmid);

@@ -102,6 +102,8 @@ class local {
     }
 
     /**
+     * Convert iso8601 string to timestamp.
+     *
      * @param string $iso8601
      * @return int
      */

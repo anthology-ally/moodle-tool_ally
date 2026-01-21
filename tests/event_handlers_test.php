@@ -54,10 +54,11 @@ use tool_ally\task\content_updates_task;
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally_event_handlers
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_ally\event_handlers
  */
 final class event_handlers_test extends abstract_testcase {
     public function setUp(): void {
@@ -145,6 +146,8 @@ final class event_handlers_test extends abstract_testcase {
     }
 
     /**
+     * Assert that push trace contains a specific file ID.
+     *
      * @param $eventname
      * @param $fileid
      * @throws coding_exception
@@ -158,6 +161,8 @@ final class event_handlers_test extends abstract_testcase {
     }
 
     /**
+     * Assert that push trace does not contain a specific entity ID.
+     *
      * @param string $eventname
      * @param string $entityid
      * @throws coding_exception
@@ -171,6 +176,8 @@ final class event_handlers_test extends abstract_testcase {
     }
 
     /**
+     * Assert that push trace does not contain a specific file ID.
+     *
      * @param $eventname
      * @param $fileid
      * @throws coding_exception
@@ -183,6 +190,11 @@ final class event_handlers_test extends abstract_testcase {
         $this->assertFalse($contains, $msg);
     }
 
+    /**
+     * Assert that push trace does not contain entity IDs matching a regex pattern.
+     *
+     * @param string $regex
+     */
     private function assert_pushtrace_not_contains_entity_regex($regex) {
         $eventtypes = content_processor::get_push_traces();
         if (!$eventtypes) {
@@ -237,6 +249,8 @@ MSG;
 
     /**
      * Test pushes on course creation.
+     *
+     * @covers \tool_ally\event_handlers::course_created
      */
     public function test_course_created(): void {
         global $DB;
@@ -264,6 +278,11 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
     }
 
+    /**
+     * Test course updated.
+     *
+     * @covers \tool_ally\event_handlers::course_updated
+     */
     public function test_course_updated(): void {
         global $DB;
 
@@ -290,6 +309,8 @@ MSG;
 
     /**
      * Basic test to see if a message is sent for course copies.
+     *
+     * @covers \tool_ally\event_handlers::course_restored
      */
     public function test_course_restored(): void {
         global $DB, $CFG;
@@ -358,6 +379,9 @@ MSG;
 
     /**
      * Basic test to see if a message is sent for course import.
+     *
+     * @covers \tool_ally\event_handlers::course_section_created
+     * @covers \tool_ally\event_handlers::course_section_updated
      */
     public function test_course_imported(): void {
         global $CFG, $USER;
@@ -415,6 +439,11 @@ MSG;
         $this->assertTrue($contains, "Course push trace with source_context_id of {$course->id} not found.");
     }
 
+    /**
+     * Test course section created.
+     *
+     * @covers \tool_ally\event_handlers::course_section_created
+     */
     public function test_course_section_created(): void {
         global $DB;
 
@@ -431,6 +460,11 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
     }
 
+    /**
+     * Test course section updated.
+     *
+     * @covers \tool_ally\event_handlers::course_section_updated
+     */
     public function test_course_section_updated(): void {
         global $DB;
 
@@ -491,6 +525,8 @@ MSG;
 
 
     /**
+     * Check module created push traces for the given module type.
+     *
      * @param string $modname
      * @param string $modtable
      * @param string $modfield
@@ -523,6 +559,8 @@ MSG;
     }
 
     /**
+     * Check module updated push traces for the given module type.
+     *
      * @param string $modname
      * @param string $modtable
      * @param string $modfield
@@ -591,6 +629,13 @@ MSG;
         return $mod;
     }
 
+    /**
+     * Check module deleted push traces for the given module type.
+     *
+     * @param string $modname
+     * @param string $modtable
+     * @param string $modfield
+     */
     private function check_module_deleted_pushtraces($modname, $modtable, $modfield) {
         global $DB;
 
@@ -651,16 +696,27 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $entityid);
     }
 
+    /**
+     * Test assign created.
+     *
+     * @covers \tool_ally\event_handlers::course_module_created
+     */
     public function test_assign_created(): void {
         $this->check_module_created_pushtraces('assign', 'assign', 'intro');
     }
 
+    /**
+     * Test assign updated.
+     *
+     * @covers \tool_ally\event_handlers::course_module_updated
+     */
     public function test_assign_updated(): void {
         $this->check_module_updated_pushtraces('assign', 'assign', 'intro', 'intro');
     }
 
     /**
      * Returns true if test was marked as skipped due to Moodle version not supporting PHP Unit tests for create_file.
+     *
      * @return bool
      */
     private function skip_module_deleted_create_file_not_supported(): bool {
@@ -673,6 +729,11 @@ MSG;
         return false;
     }
 
+    /**
+     * Test assign deleted.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_assign_deleted(): void {
         if ($this->skip_module_deleted_create_file_not_supported()) {
             return;
@@ -680,10 +741,20 @@ MSG;
         $this->check_module_deleted_pushtraces('assign', 'assign', 'intro');
     }
 
+    /**
+     * Test book created.
+     *
+     * @covers \tool_ally\event_handlers::course_module_created
+     */
     public function test_book_created(): void {
         $this->check_module_created_pushtraces('book', 'book', 'intro');
     }
 
+    /**
+     * Test book updated.
+     *
+     * @covers \tool_ally\event_handlers::course_module_updated
+     */
     public function test_book_updated(): void {
         global $DB;
 
@@ -737,6 +808,11 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_UPDATED, $entityid);
     }
 
+    /**
+     * Test book deleted.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_book_deleted(): void {
         global $CFG;
 
@@ -794,14 +870,29 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $chapter1entityid);
     }
 
+    /**
+     * Test forum created.
+     *
+     * @covers \tool_ally\event_handlers::course_module_created
+     */
     public function test_forum_created(): void {
         $this->check_module_created_pushtraces('forum', 'forum', 'intro');
     }
 
+    /**
+     * Test forum updated.
+     *
+     * @covers \tool_ally\event_handlers::course_module_updated
+     */
     public function test_forum_updated(): void {
         $this->check_module_updated_pushtraces('forum', 'forum', 'intro', 'intro');
     }
 
+    /**
+     * Test forum deleted.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_forum_deleted(): void {
         if ($this->skip_module_deleted_create_file_not_supported()) {
             return;
@@ -809,14 +900,29 @@ MSG;
         $this->check_module_deleted_pushtraces('forum', 'forum', 'intro');
     }
 
+    /**
+     * Test label created.
+     *
+     * @covers \tool_ally\event_handlers::course_module_created
+     */
     public function test_label_created(): void {
         $this->check_module_created_pushtraces('label', 'label', 'intro');
     }
 
+    /**
+     * Test label updated.
+     *
+     * @covers \tool_ally\event_handlers::course_module_updated
+     */
     public function test_label_updated(): void {
         $this->check_module_updated_pushtraces('label', 'label', 'intro', 'intro');
     }
 
+    /**
+     * Test label deleted.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_label_deleted(): void {
         if ($this->skip_module_deleted_create_file_not_supported()) {
             return;
@@ -824,6 +930,11 @@ MSG;
         $this->check_module_deleted_pushtraces('label', 'label', 'intro');
     }
 
+    /**
+     * Test lesson created.
+     *
+     * @covers \tool_ally\event_handlers::course_module_created
+     */
     public function test_lesson_created(): void {
         global $DB;
 
@@ -847,6 +958,11 @@ MSG;
         }
     }
 
+    /**
+     * Test lesson updated.
+     *
+     * @covers \tool_ally\event_handlers::course_module_updated
+     */
     public function test_lesson_updated(): void {
         global $DB;
 
@@ -875,6 +991,11 @@ MSG;
         }
     }
 
+    /**
+     * Test lesson deleted.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_lesson_deleted(): void {
         if ($this->skip_module_deleted_create_file_not_supported()) {
             return;
@@ -882,16 +1003,31 @@ MSG;
         $this->check_module_deleted_pushtraces('lesson', 'lesson', 'intro');
     }
 
+    /**
+     * Test page created.
+     *
+     * @covers \tool_ally\event_handlers::course_module_created
+     */
     public function test_page_created(): void {
         $this->check_module_created_pushtraces('page', 'page', 'intro');
         $this->check_module_created_pushtraces('page', 'page', 'content');
     }
 
+    /**
+     * Test page updated.
+     *
+     * @covers \tool_ally\event_handlers::course_module_updated
+     */
     public function test_page_updated(): void {
         $this->check_module_updated_pushtraces('page', 'page', 'intro', 'intro');
         $this->check_module_updated_pushtraces('page', 'page', 'content', 'content');
     }
 
+    /**
+     * Test page deleted intro.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_page_deleted_intro(): void {
         if ($this->skip_module_deleted_create_file_not_supported()) {
             return;
@@ -899,6 +1035,11 @@ MSG;
         $this->check_module_deleted_pushtraces('page', 'page', 'intro');
     }
 
+    /**
+     * Test page deleted content.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_page_deleted_content(): void {
         if ($this->skip_module_deleted_create_file_not_supported()) {
             return;
@@ -906,6 +1047,11 @@ MSG;
         $this->check_module_deleted_pushtraces('page', 'page', 'content');
     }
 
+    /**
+     * Test forum discussion created.
+     *
+     * @covers \tool_ally\event_handlers::forum_discussion_created
+     */
     public function test_forum_discussion_created(): void {
         global $USER, $DB;
 
@@ -968,6 +1114,11 @@ MSG;
         post_updated::create($params);
     }
 
+    /**
+     * Test forum single discussion created.
+     *
+     * @covers \tool_ally\event_handlers::forum_discussion_created
+     */
     public function test_forum_single_discussion_created(): void {
         global $USER, $DB;
 
@@ -1001,6 +1152,14 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $postentityid);
     }
 
+    /**
+     * Test glossary events.
+     *
+     * @throws coding_exception
+     * @covers \tool_ally\event_handlers::glossary_entry_created
+     * @covers \tool_ally\event_handlers::glossary_entry_updated
+     * @covers \tool_ally\event_handlers::glossary_entry_deleted
+     */
     public function test_glossary_events(): void {
         global $USER;
 
@@ -1075,8 +1234,13 @@ MSG;
 
     /**
      * Verifies course event processing for the course event push handling.
+     *
      * @throws coding_exception
      * @throws moodle_exception
+     *
+     * @covers \tool_ally\event_handlers::course_created
+     * @covers \tool_ally\event_handlers::course_updated
+     * @covers \tool_ally\event_handlers::course_deleted
      */
     public function test_course_events(): void {
         $course = $this->getDataGenerator()->create_course();

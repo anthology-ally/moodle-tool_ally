@@ -35,6 +35,11 @@ use tool_ally\adminsetting\ally_configpasswordunmask;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class auto_configurator {
+    /**
+     * Valid configuration parameters and their expected types.
+     *
+     * @var array
+     */
     protected static $validconfigs = [
         'key' => PARAM_ALPHANUMEXT,
         'secret' => PARAM_RAW,

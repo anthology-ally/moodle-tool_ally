@@ -24,6 +24,10 @@
 
 namespace tool_ally\webservice;
 
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
 use tool_ally\local;
 
 /**
@@ -35,26 +39,28 @@ use tool_ally\local;
  */
 class course_user_count extends loggable_external_api {
     /**
-     * @return \external_function_parameters
+     * {@inheritdoc}
      */
-    public static function service_parameters() {
-        return new \external_function_parameters([
-            'id' => new \external_value(PARAM_INT, 'Course id'),
+    public static function service_parameters(): external_function_parameters {
+        return new external_function_parameters([
+            'id' => new external_value(PARAM_INT, 'Course id'),
         ]);
     }
 
     /**
-     * @return \external_single_structure
+     * {@inheritdoc}
      */
-    public static function service_returns() {
-        return new \external_single_structure([
-            'id' => new \external_value(PARAM_INT, 'Course id'),
-            'studentcount' => new \external_value(PARAM_INT, 'Student count.'),
-            'instructorcount' => new \external_value(PARAM_INT, 'Instructor count.'),
+    public static function service_returns(): external_single_structure | external_multiple_structure {
+        return new external_single_structure([
+            'id' => new external_value(PARAM_INT, 'Course id'),
+            'studentcount' => new external_value(PARAM_INT, 'Student count.'),
+            'instructorcount' => new external_value(PARAM_INT, 'Instructor count.'),
         ]);
     }
 
     /**
+     * Execute service.
+     *
      * @param int $id Course id.
      * @return array
      */

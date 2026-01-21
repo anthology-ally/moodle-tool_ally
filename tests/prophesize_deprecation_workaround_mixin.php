@@ -21,6 +21,13 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Prophecy\Prophet;
 use ReflectionMethod;
 
+/**
+ * Trait providing workaround for prophesize deprecation.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 trait prophesize_deprecation_workaround_mixin {
     /**
      * Workaround for prophesize() being deprecated in the version defined in Moodle's composer.json.
@@ -28,7 +35,8 @@ trait prophesize_deprecation_workaround_mixin {
      */
     public function prophesize_without_deprecation_warning(?string $classorinterface = null): ObjectProphecy {
         if (!class_exists(Prophet::class)) {
-            throw new Exception('This test uses TestCase::prophesize(), but phpspec/prophecy is not installed. Please run "composer require --dev phpspec/prophecy".');
+            throw new Exception('This test uses TestCase::prophesize(), but phpspec/prophecy is not installed. ' .
+                'Please run "composer require --dev phpspec/prophecy".');
         }
 
         if (is_string($classorinterface)) {

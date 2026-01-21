@@ -34,7 +34,7 @@ namespace tool_ally\adminsetting;
  */
 class ally_pickroles extends \admin_setting_pickroles {
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function load_choices() {
         if (during_initial_install()) {

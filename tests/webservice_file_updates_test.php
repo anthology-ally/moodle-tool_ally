@@ -45,6 +45,11 @@ final class webservice_file_updates_test extends abstract_testcase {
     /**
      * Test the web service.
      */
+    /**
+     * Test service method.
+     *
+     * @covers \tool_ally\webservice\file_updates::service
+     */
     public function test_service(): void {
         global $DB;
         $this->resetAfterTest();

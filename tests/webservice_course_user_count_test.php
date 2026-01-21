@@ -40,6 +40,11 @@ use tool_ally\webservice\course_user_count;
  * @runTestsInSeparateProcesses
  */
 final class webservice_course_user_count_test extends \externallib_advanced_testcase {
+    /**
+     * Test user count.
+     *
+     * @covers \tool_ally\webservice\course_user_count::service
+     */
     public function test_user_count(): void {
         global $DB;
 
