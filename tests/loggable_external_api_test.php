@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/abstract_testcase.php');
 
 use tool_ally\abstract_testcase;
+use tool_ally\logging\constants;
 use tool_ally\webservice\log;
 use tool_ally\webservice\version_info;
 use Psr\Log\LogLevel;
@@ -49,6 +50,8 @@ final class loggable_external_api_test extends abstract_testcase {
         parent::setUp();
         global $CFG;
         require_once($CFG->dirroot . '/lib/externallib.php');
+        // Log all log levels.
+        set_config('logrange', constants::RANGE_ALL, 'tool_ally');
     }
 
     /**
