@@ -32,32 +32,90 @@ jobs:
       ENDPOINT: https://moodle.org/webservice/rest/server.php
       TOKEN: ${{ secrets.MOODLE_ORG_TOKEN }}
       FUNCTION: local_plugins_add_version
+      INPUT_TAG: ${{ github.event.inputs.tag }}
 
     steps:
-      - name: Call the service function
-        id: add-version
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate and set tag name
+        id: validate-tag
         run: |
-          if [[ ! -z "${{ github.event.inputs.tag }}" ]]; then
-            TAGNAME="${{ github.event.inputs.tag }}"
+          if [[ ! -z "${INPUT_TAG}" ]]; then
+            TAGNAME="${INPUT_TAG}"
           elif [[ $GITHUB_REF = refs/tags/* ]]; then
             TAGNAME="${GITHUB_REF##*/}"
           fi
           if [[ -z "${TAGNAME}" ]]; then
-            echo "No tag name has been provided!"
+            echo "Error: No tag name has been provided!"
             exit 1
           fi
+          if [[ ! "${TAGNAME}" =~ ^AY ]]; then
+            echo "Error: Tag '${TAGNAME}' does not start with 'AY'"
+            exit 1
+          fi
+          
+          # Verify tag exists on a MOODLE_*_STABLE branch
+          if git rev-parse "${TAGNAME}" >/dev/null 2>&1; then
+            BRANCHES=$(git branch -r --contains "refs/tags/${TAGNAME}" 2>/dev/null | grep -E 'MOODLE_[0-9]+_STABLE' || true)
+            if [[ -z "${BRANCHES}" ]]; then
+              echo "Error: Tag '${TAGNAME}' not found on any MOODLE_*_STABLE branch"
+              exit 1
+            fi
+            echo "Tag found on branches: ${BRANCHES}"
+          else
+            echo "Warning: Could not verify tag location, proceeding anyway"
+          fi
+          
+          echo "tagname=${TAGNAME}" >> $GITHUB_OUTPUT
+          echo "Tag validated: ${TAGNAME}"
+
+      - name: Call the service function with retry
+        id: add-version
+        env:
+          TAGNAME: ${{ steps.validate-tag.outputs.tagname }}
+        run: |
+          MAX_ATTEMPTS=3
           ZIPURL="https://api.github.com/repos/${{ github.repository }}/zipball/${TAGNAME}"
-          RESPONSE=$(${CURL} ${ENDPOINT} --data-urlencode "wstoken=${TOKEN}" \
-                                         --data-urlencode "wsfunction=${FUNCTION}" \
-                                         --data-urlencode "moodlewsrestformat=json" \
-                                         --data-urlencode "frankenstyle=${PLUGIN}" \
-                                         --data-urlencode "zipurl=${ZIPURL}" \
-                                         --data-urlencode "vcssystem=git" \
-                                         --data-urlencode "vcsrepositoryurl=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
-                                         --data-urlencode "vcstag=${TAGNAME}" \
-                                         --data-urlencode "changelogurl=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commits/${TAGNAME}" \
-                                         --data-urlencode "altdownloadurl=${ZIPURL}")
-          echo "response=${RESPONSE}" >> $GITHUB_OUTPUT
+          
+          for ATTEMPT in $(seq 1 ${MAX_ATTEMPTS}); do
+            echo "Attempt ${ATTEMPT} of ${MAX_ATTEMPTS}"
+            
+            HTTP_CODE=$(curl -sSf -w "%{http_code}" -o response.json ${ENDPOINT} \
+              --data-urlencode "wstoken=${TOKEN}" \
+              --data-urlencode "wsfunction=${FUNCTION}" \
+              --data-urlencode "moodlewsrestformat=json" \
+              --data-urlencode "frankenstyle=${PLUGIN}" \
+              --data-urlencode "zipurl=${ZIPURL}" \
+              --data-urlencode "vcssystem=git" \
+              --data-urlencode "vcsrepositoryurl=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+              --data-urlencode "vcstag=${TAGNAME}" \
+              --data-urlencode "changelogurl=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commits/${TAGNAME}" \
+              --data-urlencode "altdownloadurl=${ZIPURL}" 2>&1 || echo "000")
+            
+            if [[ ${HTTP_CODE} -le 299 && ${HTTP_CODE} -ge 200 ]]; then
+              RESPONSE=$(cat response.json)
+              echo "response=${RESPONSE}" >> $GITHUB_OUTPUT
+              echo "Success on attempt ${ATTEMPT}"
+              exit 0
+            else
+              echo "Error: Attempt ${ATTEMPT} failed with HTTP code ${HTTP_CODE}"
+              if [[ -f response.json ]]; then
+                cat response.json
+              fi
+              
+              if [[ ${ATTEMPT} -lt ${MAX_ATTEMPTS} ]]; then
+                BACKOFF=$((2 ** (ATTEMPT - 1)))
+                echo "Retrying in ${BACKOFF} seconds..."
+                sleep ${BACKOFF}
+              fi
+            fi
+          done
+          
+          echo "Error: All ${MAX_ATTEMPTS} attempts failed"
+          exit 1
 
       - name: Evaluate the response
         id: evaluate-response
