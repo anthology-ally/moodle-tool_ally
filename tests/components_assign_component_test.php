@@ -41,7 +41,7 @@ require_once('abstract_testcase.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class components_assign_component_test extends abstract_testcase {
+final class components_assign_component_test extends abstract_testcase {
     /**
      * @var stdClass
      */
@@ -68,13 +68,15 @@ class components_assign_component_test extends abstract_testcase {
     private $component;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
         $this->admin = get_admin();
         $this->course = $gen->create_course();
         $this->coursecontext = \context_course::instance($this->course->id);
-        $this->assign = $gen->create_module('assign',
+        $this->assign = $gen->create_module(
+            'assign',
             [
                 'course' => $this->course->id,
                 'introformat' => FORMAT_HTML,
@@ -87,6 +89,8 @@ class components_assign_component_test extends abstract_testcase {
 
     /**
      * Test if file in use detection is working with this module.
+     *
+     * @covers \tool_ally\componentsupport\assign_component::check_file_in_use
      */
     public function test_check_file_in_use(): void {
         $context = \context_module::instance($this->assign->cmid);
@@ -95,10 +99,15 @@ class components_assign_component_test extends abstract_testcase {
         $unusedfiles = [];
 
         // Check the intro.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_assign', $this->assign->id,
-            'assign', 'intro');
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_assign',
+            $this->assign->id,
+            'assign',
+            'intro'
+        );
 
-        list($file1, $file2) = $this->setup_check_files($context, 'mod_assign', 'introattachment', 0);
+        [$file1, $file2] = $this->setup_check_files($context, 'mod_assign', 'introattachment', 0);
         $usedfiles[] = $file1; // Silly workaround for PHP code checker.
         $usedfiles[] = $file2;
 

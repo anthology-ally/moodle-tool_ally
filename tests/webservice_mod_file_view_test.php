@@ -29,7 +29,7 @@ use tool_ally\webservice\mod_file_view;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 require_once($CFG->dirroot . '/files/externallib.php');
 
 /**
@@ -42,10 +42,11 @@ require_once($CFG->dirroot . '/files/externallib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class webservice_mod_file_view_test extends abstract_testcase {
+final class webservice_mod_file_view_test extends abstract_testcase {
     /**
      * Test the web service.
      *
+     * @covers \tool_ally\webservice\mod_file_view::service
      */
     public function test_service(): void {
         global $CFG, $DB;
@@ -70,10 +71,13 @@ class webservice_mod_file_view_test extends abstract_testcase {
         $resource = $datagen->create_module('resource', [
                 'course' => $course->id,
                 'completion' => COMPLETION_TRACKING_AUTOMATIC,
-            ]
+            ]);
+        $DB->set_field(
+            'course_modules',
+            'completionview',
+            1,
+            ['id' => $resource->cmid]
         );
-        $DB->set_field('course_modules', 'completionview', 1,
-            ['id' => $resource->cmid]);
         $file = $this->get_resource_file($resource);
 
         $result = mod_file_view::service($file->get_pathnamehash(), $student->id);
@@ -83,6 +87,11 @@ class webservice_mod_file_view_test extends abstract_testcase {
         $this->assertEquals('1', $viewed);
     }
 
+    /**
+     * Test service with user without access to resource.
+     *
+     * @covers \tool_ally\webservice\mod_file_view::service
+     */
     public function test_service_user_without_access_to_resource(): void {
         global $DB;
 
@@ -122,6 +131,11 @@ class webservice_mod_file_view_test extends abstract_testcase {
         return $lastid;
     }
 
+    /**
+     * Test service with invalid user.
+     *
+     * @covers \tool_ally\webservice\mod_file_view::service
+     */
     public function test_service_invalid_user(): void {
         $this->resetAfterTest();
 
@@ -138,6 +152,11 @@ class webservice_mod_file_view_test extends abstract_testcase {
         mod_file_view::service($file->get_pathnamehash(), $invaliduserid);
     }
 
+    /**
+     * Test service with invalid file.
+     *
+     * @covers \tool_ally\webservice\mod_file_view::service
+     */
     public function test_service_invalid_file(): void {
         global $DB;
 

@@ -85,7 +85,7 @@ function tool_ally_after_file_updated($filerecord) {
  */
 function tool_ally_pre_course_module_delete(stdClass $cm) {
     try {
-        list ($course, $cm) = get_course_and_cm_from_cmid($cm->id, null, $cm->course);
+         [$course, $cm] = get_course_and_cm_from_cmid($cm->id, null, $cm->course);
         $component = local_content::component_instance($cm->modname);
         if (!$component || !$component instanceof content_sub_tables) {
             return;
@@ -97,7 +97,7 @@ function tool_ally_pre_course_module_delete(stdClass $cm) {
         if (!local::duringtesting()) {
             // Something is wrong with this module.
             $msg = 'logger:cmiderraticpremoddelete';
-            $context['_explanation'] = $msg.'_exp';
+            $context['_explanation'] = $msg . '_exp';
             $context['_exception'] = $mex;
             logger::get()->error($msg, $context);
         }
@@ -118,22 +118,22 @@ function tool_ally_pre_course_module_delete(stdClass $cm) {
  * @return bool
  */
 function tool_ally_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = []) {
-    $pluginpath = __DIR__.'/';
+    $pluginpath = __DIR__ . '/';
 
     if ($filearea === 'vendorjs') {
         // Typically CDN fall backs would go in vendorjs.
-        $path = $pluginpath.'vendorjs/'.implode('/', $args);
+        $path = $pluginpath . 'vendorjs/' . implode('/', $args);
         send_file($path, basename($path));
         return true;
     } else if ($filearea === 'vue') {
         // Vue components.
-        $jsfile = array_pop ($args);
+        $jsfile = array_pop($args);
         $compdir = basename($jsfile, '.js');
-        $umdfile = $compdir.'.umd.js';
+        $umdfile = $compdir . '.umd.js';
         $args[] = $compdir;
         $args[] = 'dist';
         $args[] = $umdfile;
-        $path = $pluginpath.'vue/'.implode('/', $args);
+        $path = $pluginpath . 'vue/' . implode('/', $args);
         send_file($path, basename($path));
         return true;
     } else {

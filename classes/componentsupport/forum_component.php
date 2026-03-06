@@ -34,7 +34,6 @@ use tool_ally\componentsupport\traits\html_content;
 use tool_ally\local_file;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
-
 use moodle_url;
 
 /**
@@ -43,24 +42,36 @@ use moodle_url;
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class forum_component extends file_component_base implements
-    iface_html_content, annotation_map, content_sub_tables {
-
+class forum_component extends file_component_base implements annotation_map, content_sub_tables, iface_html_content {
     use html_content;
     use embedded_file_map;
 
+    /**
+     * @var string
+     */
     protected $type = 'forum';
 
-    protected $tablefields = [
+    /**
+     * {@inheritdoc}
+     * @var array
+     */
+    protected array $tablefields = [
         'forum' => ['intro'],
         'forum_posts' => ['message'],
     ];
 
-    public static function component_type() {
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function component_type(): string {
         return self::TYPE_MOD;
     }
 
-    public function replace_file_links() {
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_file_links(): void {
         if (!$this->module_installed()) {
             return;
         }
@@ -70,8 +81,14 @@ class forum_component extends file_component_base implements
         $area = $file->get_filearea();
         $itemid = $file->get_itemid();
         if ($area === 'post') {
-            local_file::update_filenames_in_html('message', $this->type . '_posts', ' id = ? ',
-                ['id' => $itemid], $this->oldfilename, $file->get_filename());
+            local_file::update_filenames_in_html(
+                'message',
+                $this->type . '_posts',
+                ' id = ? ',
+                ['id' => $itemid],
+                $this->oldfilename,
+                $file->get_filename()
+            );
         }
     }
 
@@ -97,7 +114,7 @@ class forum_component extends file_component_base implements
         // Faster than doing it per module instance.
         $userids = $this->get_approved_author_ids_for_context(\context_course::instance($courseid));
 
-        list($userinsql, $userparams) = $DB->get_in_or_equal($userids);
+        [$userinsql, $userparams] = $DB->get_in_or_equal($userids);
 
         // Just get discussions - we aren't going to bother with posts.
         $discussions = '{' . $this->type . '_discussions}';
@@ -133,15 +150,25 @@ SQL;
         $rs = $DB->get_recordset_sql($sql, $params);
         foreach ($rs as $row) {
             $array[] = new component(
-                $row->id, $this->type, $this->type . '_posts', 'message', $courseid, $row->modified,
-                $row->messageformat, $row->subject);
+                $row->id,
+                $this->type,
+                $this->type . '_posts',
+                'message',
+                $courseid,
+                $row->modified,
+                $row->messageformat,
+                $row->subject
+            );
         }
         $rs->close();
 
         return $array;
     }
 
-    public function get_course_html_content_items($courseid) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_course_html_content_items(int $courseid): array {
         if (!$this->module_installed()) {
             return [];
         }
@@ -152,7 +179,10 @@ SQL;
         return array_merge($introarray, $discussionarray);
     }
 
-    public function get_annotation_maps($courseid) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_annotation_maps(int $courseid): array {
         global $PAGE;
 
         if (!$this->module_installed()) {
@@ -175,7 +205,7 @@ SQL;
             if ($contentitem->table === $this->type . '_posts') {
                 $posts[$contentitem->id] = $contentitem->entity_id();
             } else if ($contentitem->table === $this->type) {
-                list($course, $cm) = get_course_and_cm_from_instance($contentitem->id, $this->type, $courseid);
+                [$course, $cm] = get_course_and_cm_from_instance($contentitem->id, $this->type, $courseid);
                 unset($course);
                 $forumintros[$cm->id] = $contentitem->entity_id();
             }
@@ -184,7 +214,10 @@ SQL;
         return ['posts' => $posts, 'intros' => $forumintros];
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null): ?component_content {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_html_content(int $id, string $table, string $field, ?int $courseid = null): ?component_content {
         if (!$this->module_installed()) {
             return null;
         }
@@ -195,7 +228,10 @@ SQL;
         return $this->std_get_html_content($id, $table, $field);
     }
 
-    public function get_all_html_content($id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_all_html_content(int $id): array {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -236,7 +272,10 @@ SQL;
         return array_merge([$main], $posts);
     }
 
-    public function get_file_item($table, $field, $id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_file_item(string $table, string $field, int $id): int {
         if ($table !== $this->type) {
             return $id;
         }
@@ -244,7 +283,10 @@ SQL;
         return parent::get_file_item($table, $field, $id);
     }
 
-    public function get_file_area($table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_file_area(string $table, string $field): string {
         if ($field === 'message') {
             return 'post';
         }
@@ -252,11 +294,17 @@ SQL;
         return parent::get_file_area($table, $field);
     }
 
-    public function replace_html_content($id, $table, $field, $content) {
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_html_content(int $id, string $table, string $field, string $content): ?bool {
         return $this->std_replace_html_content($id, $table, $field, $content);
     }
 
-    public function resolve_course_id($id, $table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function resolve_course_id(int $id, string $table, string $field): int {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -271,7 +319,10 @@ SQL;
         throw new \coding_exception('Invalid table used to recover course id ' . $table);
     }
 
-    public function resolve_module_instance_id($table, $id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function resolve_module_instance_id(string $table, int $id): int {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -291,12 +342,13 @@ SQL;
              WHERE fp.id = ?
 SQL;
             return $DB->get_field_sql($sql, $params);
-
         }
         return parent::resolve_module_instance_id($table, $id);
     }
 
     /**
+     * Get discussion id from post id.
+     *
      * @param int $postid
      * @return int
      * @throws \dml_exception
@@ -309,6 +361,7 @@ SQL;
 
     /**
      * Attempt to make url for content.
+     *
      * @param int $id
      * @param string $table
      * @param string $field
@@ -320,7 +373,7 @@ SQL;
             return null;
         }
         if ($table === $this->type) {
-            list ($course, $cm) = get_course_and_cm_from_instance($id, $this->type, $courseid);
+             [$course, $cm] = get_course_and_cm_from_instance($id, $this->type, $courseid);
             unset($course);
             return new moodle_url('/mod/' . $this->type . '/view.php?id=' . $cm->id) . '';
         } else if ($table === $this->type . '_posts') {
@@ -330,11 +383,17 @@ SQL;
         return null;
     }
 
-    public function queue_delete_sub_tables(cm_info $cm) {
+    /**
+     * {@inheritdoc}
+     */
+    public function queue_delete_sub_tables(cm_info $cm): void {
         $discussions = $this->get_discussion_html_content_items($cm->course, $cm->instance);
         $this->bulk_queue_delete_content($discussions);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function check_file_in_use(stored_file $file, ?context $context = null): bool {
         if ($file->get_filearea() == 'attachment') {
             // All attachments are in use.
@@ -344,6 +403,9 @@ SQL;
         return $this->check_embedded_file_in_use($file, $context);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function get_all_files_search_html(int $id): ?array {
         global $DB;
 
@@ -367,11 +429,11 @@ SQL;
             return [];
         }
 
-        list ($course, $cm) = get_course_and_cm_from_instance($id, $this->type);
+         [$course, $cm] = get_course_and_cm_from_instance($id, $this->type);
 
         // Limit to instructor userids.
         $userids = $this->get_approved_author_ids_for_context(\context_course::instance($course->id));
-        list($userinsql, $userparams) = $DB->get_in_or_equal($userids);
+        [$userinsql, $userparams] = $DB->get_in_or_equal($userids);
 
         $main = $this->get_html_content($id, $this->type, 'intro');
         $discussions = '{' . $this->type . '_discussions}';

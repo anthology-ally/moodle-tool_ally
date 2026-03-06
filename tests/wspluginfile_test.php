@@ -31,20 +31,20 @@ use tool_ally\local;
 use tool_ally\auto_config;
 use tool_ally\webservice\wspluginfile;
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for wspluginfile service class.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_ally\webservice\wspluginfile
  * @runTestsInSeparateProcesses
  */
-class wspluginfile_test extends abstract_testcase {
-
+final class wspluginfile_test extends abstract_testcase {
     /**
      * @var webservice
      */
@@ -77,7 +77,6 @@ class wspluginfile_test extends abstract_testcase {
         $this->expectException(\webservice_access_exception::class);
         $this->expectExceptionMessage($msg);
         $this->wspluginfile->validate_wspluginfile_signature($signature, $iat, $pathnamehash);
-
     }
 
     /**
@@ -89,7 +88,8 @@ class wspluginfile_test extends abstract_testcase {
         $ac = new auto_config();
         $ac->configure();
 
-        $this->allywebuser = local::get_ally_web_user();;
+        $this->allywebuser = local::get_ally_web_user();
+        ;
     }
 
     public function test_validate_wspluginfile_signature_signature_invalid_exception(): void {
@@ -120,6 +120,9 @@ class wspluginfile_test extends abstract_testcase {
         $this->assertArrayHasKey('service', $authinfo);
     }
 
+    /**
+     * Prepare for get_file tests.
+     */
     private function prepare_get_file() {
         $this->auto_config();
 
@@ -140,7 +143,7 @@ class wspluginfile_test extends abstract_testcase {
     }
 
     public function test_get_file_by_signature(): void {
-        list ($wstoken, $iat, $pathnamehash, $file) = $this->prepare_get_file();
+         [$wstoken, $iat, $pathnamehash, $file] = $this->prepare_get_file();
 
         $signature = hash('sha256', $wstoken->token . ':' . $iat . ':' . $pathnamehash);
 
@@ -149,7 +152,7 @@ class wspluginfile_test extends abstract_testcase {
     }
 
     public function test_get_file_by_token(): void {
-        list ($wstoken, $iat, $pathnamehash, $file) = $this->prepare_get_file();
+         [$wstoken, $iat, $pathnamehash, $file] = $this->prepare_get_file();
 
         $recoveredfile = $this->wspluginfile->get_file($pathnamehash, $wstoken->token, null, null);
         $this->assertEquals($file, $recoveredfile);

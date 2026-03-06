@@ -34,9 +34,7 @@ require_once($CFG->dirroot . '/webservice/lib.php');
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class wspluginfile {
-
     /**
      * Validate a ws pluginfile signature and return the authentication info array.
      * @param string $signature

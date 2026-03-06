@@ -27,6 +27,13 @@ namespace tool_ally\models;
 use tool_ally\local_content;
 use stdClass;
 
+/**
+ * Component model.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class component {
     /**
      * @var int
@@ -98,10 +105,12 @@ class component {
         $this->timemodified = $timemodified;
         $this->contentformat = (string) $contentformat;
         $this->title = $title;
-        $this->meta = new stdClass;
+        $this->meta = new stdClass();
     }
 
     /**
+     * Generate entitity id from component properties.
+     *
      * @return string
      */
     public function entity_id() {
@@ -110,9 +119,11 @@ class component {
     }
 
     /**
+     * Get courseid.
+     *
      * @return int
      */
-    public function get_courseid() {
+    public function get_courseid(): int {
         if (!empty($this->courseid)) {
             return $this->courseid;
         }

@@ -25,6 +25,18 @@ namespace tool_ally\componentsupport\interfaces;
 
 use cm_info;
 
+/**
+ * Interface for supporting modules with content stored in sub tables.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 interface content_sub_tables {
-    public function queue_delete_sub_tables(cm_info $cm);
+    /**
+     * Queue deletion of sub table content for the given cm_info instance.
+     *
+     * @param cm_info $cm
+     * @return void
+     */
+    public function queue_delete_sub_tables(cm_info $cm): void;
 }

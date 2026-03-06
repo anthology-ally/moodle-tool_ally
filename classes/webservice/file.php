@@ -24,6 +24,10 @@
 
 namespace tool_ally\webservice;
 
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
 use tool_ally\file_url_resolver;
 use tool_ally\file_validator;
 use tool_ally\files_in_use;
@@ -39,37 +43,39 @@ use tool_ally\local_file;
  */
 class file extends loggable_external_api {
     /**
-     * @return \external_function_parameters
+     * {@inheritdoc}
      */
-    public static function service_parameters() {
-        return new \external_function_parameters([
-            'id' => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
+    public static function service_parameters(): external_function_parameters {
+        return new external_function_parameters([
+            'id' => new external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
         ]);
     }
 
     /**
-     * @return \external_single_structure
+     * {@inheritdoc}
      */
-    public static function service_returns() {
-        return new \external_single_structure([
-            'id'              => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
-            'courseid'        => new \external_value(PARAM_INT, 'Course ID of the file'),
-            'userid'          => new \external_value(PARAM_INT, 'User ID of the file owner'),
-            'name'            => new \external_value(PARAM_TEXT, 'File name'),
-            'mimetype'        => new \external_value(PARAM_RAW, 'File mime type'),
-            'contenthash'     => new \external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
-            'timemodified'    => new \external_value(PARAM_TEXT, 'Last modified time of the file'),
-            'url'             => new \external_value(PARAM_LOCALURL, 'File URL'),
-            'downloadurl'     => new \external_value(PARAM_LOCALURL, 'Web service download URL'),
-            'location'        => new \external_value(PARAM_LOCALURL, 'URL to view file in context'),
-            'contextid'       => new \external_value(PARAM_INT, 'File context id'),
-            'contextlevel'    => new \external_value(PARAM_INT, 'File context level'),
-            'contextpath'     => new \external_value(PARAM_TEXT, 'File context path'),
-            'contextcourseid' => new \external_value(PARAM_INT, 'File course context course id'),
+    public static function service_returns(): external_single_structure | external_multiple_structure {
+        return new external_single_structure([
+            'id'              => new external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
+            'courseid'        => new external_value(PARAM_INT, 'Course ID of the file'),
+            'userid'          => new external_value(PARAM_INT, 'User ID of the file owner'),
+            'name'            => new external_value(PARAM_TEXT, 'File name'),
+            'mimetype'        => new external_value(PARAM_RAW, 'File mime type'),
+            'contenthash'     => new external_value(PARAM_ALPHANUM, 'File content SHA1 hash'),
+            'timemodified'    => new external_value(PARAM_TEXT, 'Last modified time of the file'),
+            'url'             => new external_value(PARAM_LOCALURL, 'File URL'),
+            'downloadurl'     => new external_value(PARAM_LOCALURL, 'Web service download URL'),
+            'location'        => new external_value(PARAM_LOCALURL, 'URL to view file in context'),
+            'contextid'       => new external_value(PARAM_INT, 'File context id'),
+            'contextlevel'    => new external_value(PARAM_INT, 'File context level'),
+            'contextpath'     => new external_value(PARAM_TEXT, 'File context path'),
+            'contextcourseid' => new external_value(PARAM_INT, 'File course context course id'),
         ]);
     }
 
     /**
+     * Execute service.
+     *
      * @param string $id The file path name hash
      * @return array
      * @throws \WebserviceInvalidParameterException
@@ -98,7 +104,7 @@ class file extends loggable_external_api {
 
         $component = $file->get_component();
         $filearea = $file->get_filearea();
-        $wlkey = $component.'~'.$filearea;
+        $wlkey = $component . '~' . $filearea;
 
         if (!in_array($wlkey, file_validator::whitelist()) || !file_validator::check_pathname($file)) {
             throw new \moodle_exception('filenotfound', 'error');

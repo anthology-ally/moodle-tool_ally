@@ -41,7 +41,7 @@ require_once('abstract_testcase.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class components_label_component_test extends abstract_testcase {
+final class components_label_component_test extends abstract_testcase {
     /**
      * @var stdClass
      */
@@ -68,13 +68,15 @@ class components_label_component_test extends abstract_testcase {
     private $component;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
         $this->admin = get_admin();
         $this->course = $gen->create_course();
         $this->coursecontext = \context_course::instance($this->course->id);
-        $this->label = $gen->create_module('label',
+        $this->label = $gen->create_module(
+            'label',
             [
                 'course' => $this->course->id,
                 'introformat' => FORMAT_HTML,
@@ -87,6 +89,8 @@ class components_label_component_test extends abstract_testcase {
 
     /**
      * Test if file in use detection is working with this module.
+     *
+     * @covers \tool_ally\componentsupport\label_component::check_file_in_use
      */
     public function test_check_file_in_use(): void {
         $context = \context_module::instance($this->label->cmid);
@@ -95,8 +99,13 @@ class components_label_component_test extends abstract_testcase {
         $unusedfiles = [];
 
         // Check the intro.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_label', $this->label->id,
-            'label', 'intro');
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_label',
+            $this->label->id,
+            'label',
+            'intro'
+        );
 
         // This will double check that file iterator is working as expected.
         $this->check_file_iterator_exclusion($context, $usedfiles, $unusedfiles);

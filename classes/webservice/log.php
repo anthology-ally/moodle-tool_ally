@@ -24,11 +24,15 @@
 
 namespace tool_ally\webservice;
 
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
 use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/../../../../../lib/externallib.php');
+require_once(__DIR__ . '/../../../../../lib/externallib.php');
 
 /**
  * Return log data.
@@ -41,53 +45,55 @@ class log extends \external_api {
     use user_fill_from_context_error;
 
     /**
-     * @return \external_function_parameters
+     * {@inheritdoc}
      */
-    public static function service_parameters() {
-        return new \external_function_parameters([
-            'query'    => new \external_value(PARAM_TEXT, 'query', VALUE_DEFAULT, null),
+    public static function service_parameters(): external_function_parameters {
+        return new external_function_parameters([
+            'query'    => new external_value(PARAM_TEXT, 'query', VALUE_DEFAULT, null),
         ]);
     }
 
     /**
-     * @return \external_multiple_structure
+     * {@inheritdoc}
      */
-    public static function service_returns() {
-        return new \external_single_structure([
-            'columns' => new \external_multiple_structure(
-                new \external_single_structure([
-                    'field'        => new \external_value(PARAM_ALPHANUMEXT, 'Column field'),
-                    'title'        => new \external_value(PARAM_TEXT, 'Column title'),
-                    'sortable'     => new \external_value(PARAM_BOOL, 'Column sortable'),
-                    'tdComp'       => new \external_value(PARAM_ALPHANUMEXT, 'Row cell component', VALUE_OPTIONAL),
-                    'thComp'       => new \external_value(PARAM_ALPHANUMEXT, 'Header cell component', VALUE_OPTIONAL),
+    public static function service_returns(): external_single_structure | external_multiple_structure {
+        return new external_single_structure([
+            'columns' => new external_multiple_structure(
+                new external_single_structure([
+                    'field'        => new external_value(PARAM_ALPHANUMEXT, 'Column field'),
+                    'title'        => new external_value(PARAM_TEXT, 'Column title'),
+                    'sortable'     => new external_value(PARAM_BOOL, 'Column sortable'),
+                    'tdComp'       => new external_value(PARAM_ALPHANUMEXT, 'Row cell component', VALUE_OPTIONAL),
+                    'thComp'       => new external_value(PARAM_ALPHANUMEXT, 'Header cell component', VALUE_OPTIONAL),
                 ])
             ),
-            'data' => new \external_multiple_structure(
-                new \external_single_structure([
-                    'id'           => new \external_value(PARAM_INT, 'Log row id'),
-                    'time'         => new \external_value(PARAM_TEXT, 'Time of log entry'),
-                    'level'        => new \external_value(PARAM_ALPHA, 'Log level'),
-                    'code'         => new \external_value(PARAM_TEXT, 'Message code'),
-                    'details'      => new \external_single_structure([
-                        'message'      => new \external_value(PARAM_RAW, 'Log row message'),
-                        'explanation'  => new \external_value(PARAM_TEXT, 'Log row explanation'),
-                        'data'         => new \external_value(PARAM_RAW, 'Log row data'),
-                        'exception'    => new \external_value(PARAM_TEXT, 'Log row exception'),
+            'data' => new external_multiple_structure(
+                new external_single_structure([
+                    'id'           => new external_value(PARAM_INT, 'Log row id'),
+                    'time'         => new external_value(PARAM_TEXT, 'Time of log entry'),
+                    'level'        => new external_value(PARAM_ALPHA, 'Log level'),
+                    'code'         => new external_value(PARAM_TEXT, 'Message code'),
+                    'details'      => new external_single_structure([
+                        'message'      => new external_value(PARAM_RAW, 'Log row message'),
+                        'explanation'  => new external_value(PARAM_TEXT, 'Log row explanation'),
+                        'data'         => new external_value(PARAM_RAW, 'Log row data'),
+                        'exception'    => new external_value(PARAM_TEXT, 'Log row exception'),
                     ]),
                 ])
             ),
-            'query' => new \external_single_structure([
-                'limit'            => new \external_value(PARAM_INT, 'Records limit'),
-                'offset'           => new \external_value(PARAM_INT, 'Records offset'),
-                'sort'             => new \external_value(PARAM_ALPHANUMEXT, 'Field to sort on', VALUE_OPTIONAL),
-                'order'            => new \external_value(PARAM_ALPHA, 'Sort direction', VALUE_OPTIONAL),
+            'query' => new external_single_structure([
+                'limit'            => new external_value(PARAM_INT, 'Records limit'),
+                'offset'           => new external_value(PARAM_INT, 'Records offset'),
+                'sort'             => new external_value(PARAM_ALPHANUMEXT, 'Field to sort on', VALUE_OPTIONAL),
+                'order'            => new external_value(PARAM_ALPHA, 'Sort direction', VALUE_OPTIONAL),
             ]),
-            'total' => new \external_value(PARAM_INT, 'Total records'),
+            'total' => new external_value(PARAM_INT, 'Total records'),
         ]);
     }
 
     /**
+     * Execute service
+     *
      * @param int $page
      * @param int $perpage
      * @return array
@@ -145,13 +151,13 @@ class log extends \external_api {
         $total = $DB->count_records('tool_ally_log');
         $sort = '';
         if ($query->sort && $query->order) {
-            $sort = $query->sort.' '.$query->order;
+            $sort = $query->sort . ' ' . $query->order;
         }
         $rs = $DB->get_records('tool_ally_log', null, $sort, '*', $query->offset, $query->limit);
         $data = [];
         foreach ($rs as $row) {
             $row->time = userdate($row->time);
-            $details = new stdClass;
+            $details = new stdClass();
             $details->message = null;
             $details->data = null;
             $details->explanation = null;
@@ -161,7 +167,7 @@ class log extends \external_api {
             }
             if ($row->data) {
                 $rowdata = unserialize($row->data);
-                $details->data = '<pre>'.var_export($rowdata, true).'</pre>';
+                $details->data = '<pre>' . var_export($rowdata, true) . '</pre>';
             }
             $details->exception = !empty(trim($row->exception)) ? $row->exception : null;
             $details->explanation = !empty(trim($row->explanation)) ? $row->explanation : null;

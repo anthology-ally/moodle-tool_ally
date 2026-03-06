@@ -25,19 +25,23 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Tests for observer.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers   \tool_ally\files_in_use::delete_file_record
+ * @covers   \tool_ally\file_processor::push_file_update
+ * @covers   \tool_ally\local_file::queue_file_for_deletion
  */
-class lib_test extends abstract_testcase {
+final class lib_test extends abstract_testcase {
     protected function setUp(): void {
+        parent::setUp();
         // Prevent it from creating a backup of the deleted module.
         set_config('coursebinenable', 0, 'tool_recyclebin');
     }
@@ -84,7 +88,8 @@ class lib_test extends abstract_testcase {
 
         // Add file to a soon to be deleted section.
         $section = $this->getDataGenerator()->create_course_section(
-            ['section' => 1, 'course' => $course->id]);
+            ['section' => 1, 'course' => $course->id]
+        );
         $coursectx = \context_course::instance($course->id);
         $filename = 'shouldbeanimage.jpg';
         $filecontents = 'image contents (not really)';

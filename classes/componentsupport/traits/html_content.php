@@ -27,19 +27,23 @@ use tool_ally\local;
 use tool_ally\local_content;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
-
 use stdClass;
 
+/**
+ * Trait for supporting html content.
+ * @author    Guy Thomas <citricity@gmail.com>
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 trait html_content {
-
     /**
      * Standard method for getting course html content items.
      *
-     * @param $courseid
+     * @param int $courseid
      * @return array
      * @throws \dml_exception
      */
-    protected function std_get_course_html_content_items($courseid) {
+    protected function std_get_course_html_content_items(int $courseid) {
         global $DB, $PAGE;
 
         $array = [];
@@ -68,15 +72,22 @@ trait html_content {
         $rs = $DB->get_recordset_select($component, $select, $params);
         foreach ($rs as $row) {
             foreach ($fields as $field) {
-                $formatfield = $field.'format';
+                $formatfield = $field . 'format';
                 if (!empty($row->$field) && $row->$formatfield === FORMAT_HTML) {
                     if ($component == 'label' && !empty($row->intro)) {
                         $PAGE->set_context(\context_course::instance($courseid));
                         $row->name = strip_tags(format_string($row->intro, true));
                     }
                     $array[] = new component(
-                        $row->id, $component, $component, $field, $courseid, $row->timemodified,
-                        $row->$formatfield, $row->name);
+                        $row->id,
+                        $component,
+                        $component,
+                        $field,
+                        $courseid,
+                        $row->timemodified,
+                        $row->$formatfield,
+                        $row->name
+                    );
                 }
             }
         }
@@ -100,9 +111,16 @@ trait html_content {
      * @return component_content | null;
      * @throws \coding_exception
      */
-    protected function std_get_html_content($id, $table, $field, $courseid = null, $titlefield = 'name',
-                                            $modifiedfield = 'timemodified', $recordlambda = null,
-                                            $record = null) : ?component_content {
+    protected function std_get_html_content(
+        $id,
+        $table,
+        $field,
+        $courseid = null,
+        $titlefield = 'name',
+        $modifiedfield = 'timemodified',
+        $recordlambda = null,
+        $record = null
+    ): ?component_content {
         global $DB;
 
         static $prevrecord = null;
@@ -164,7 +182,7 @@ trait html_content {
             }
         }
         $content = $record->$field;
-        $formatfield = $field.'format';
+        $formatfield = $field . 'format';
         $contentformat = $record->$formatfield;
         $title = !empty($record->$titlefield) ? $record->$titlefield : null;
         $url = null;
@@ -172,8 +190,18 @@ trait html_content {
             $url = $this->make_url($id, $table, $field, $courseid);
         }
 
-        $contentmodel = new component_content($id, $component, $table, $field, $courseid, $timemodified, $contentformat,
-            $content, $title, $url);
+        $contentmodel = new component_content(
+            $id,
+            $component,
+            $table,
+            $field,
+            $courseid,
+            $timemodified,
+            $contentformat,
+            $content,
+            $title,
+            $url
+        );
 
         return $contentmodel;
     }
@@ -187,15 +215,30 @@ trait html_content {
      * @param null|int $timemodified
      * @return component_content
      */
-    public function get_html_content_deleted($id, $table, $field, $courseid, $timemodified = null) {
+    public function get_html_content_deleted(
+        int $id,
+        string $table,
+        string $field,
+        int $courseid,
+        ?int $timemodified = null
+    ): ?component_content {
         if (!$this->module_installed()) {
             return null;
         }
 
         $timemodified = $timemodified ? $timemodified : time();
         $component = $this->get_component_name();
-        $contentmodel = new component_content($id, $component, $table, $field, $courseid, $timemodified,
-            FORMAT_HTML, '', '');
+        $contentmodel = new component_content(
+            $id,
+            $component,
+            $table,
+            $field,
+            $courseid,
+            $timemodified,
+            FORMAT_HTML,
+            '',
+            ''
+        );
         return $contentmodel;
     }
 
@@ -208,7 +251,7 @@ trait html_content {
      * @return mixed
      * @throws \coding_exception
      */
-    protected function std_replace_html_content($id, $table, $field, $content) {
+    protected function std_replace_html_content(int $id, string $table, string $field, string $content): ?bool {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -226,7 +269,7 @@ trait html_content {
         }
 
         if ($this->component_type() === self::TYPE_MOD && $table === $this->get_component_name()) {
-            list ($course, $cm) = get_course_and_cm_from_instance($id, $table);
+             [$course, $cm] = get_course_and_cm_from_instance($id, $table);
             \core\event\course_module_updated::create_from_cm($cm, $cm->context)->trigger();
             // Course cache needs updating to show new module text.
             rebuild_course_cache($course->id, true);
@@ -236,6 +279,8 @@ trait html_content {
     }
 
     /**
+     * Get selected html content items.
+     *
      * @param int $courseid
      * @param string $contentfield
      * @param null|string $table
@@ -247,10 +292,16 @@ trait html_content {
      * @return component[]
      * @throws \dml_exception
      */
-    protected function get_selected_html_content_items($courseid, $contentfield,
-                                                       $table = null, $selectfield = null,
-                                                       $selectval = null, $titlefield = null,
-                                                       $compmetacallback = null, $includecontentcheck = true) {
+    protected function get_selected_html_content_items(
+        $courseid,
+        $contentfield,
+        $table = null,
+        $selectfield = null,
+        $selectval = null,
+        $titlefield = null,
+        $compmetacallback = null,
+        $includecontentcheck = true
+    ) {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -264,9 +315,9 @@ trait html_content {
         $selectfield = $selectfield === null ? 'course' : $selectfield;
         $selectval = $selectval === null ? $courseid : $selectval;
         $titlefield = $titlefield === null ? 'name' : $titlefield;
-        list($selectsql, $selectparams) = $DB->get_in_or_equal($selectval);
+        [$selectsql, $selectparams] = $DB->get_in_or_equal($selectval);
 
-        $formatfld = $contentfield.'format';
+        $formatfld = $contentfield . 'format';
 
         if ($includecontentcheck) {
             $select = "$selectfield $selectsql AND $formatfld = ? AND $contentfield != ''";
@@ -278,8 +329,15 @@ trait html_content {
         $rs = $DB->get_recordset_select($table, $select, $params);
         foreach ($rs as $row) {
             $comp = new component(
-                $row->id, $compname, $table, $contentfield, $courseid, $row->timemodified,
-                $row->$formatfld, $row->$titlefield);
+                $row->id,
+                $compname,
+                $table,
+                $contentfield,
+                $courseid,
+                $row->timemodified,
+                $row->$formatfld,
+                $row->$titlefield
+            );
             if (is_callable($compmetacallback)) {
                 $comp->meta = $compmetacallback($row);
             }
@@ -292,24 +350,29 @@ trait html_content {
 
     /**
      * Get introduction html content items.
+     *
      * @param int $courseid
      * @param boolean $includecontentcheck
      * @return array
      * @throws \dml_exception
      */
     protected function get_intro_html_content_items($courseid, $includecontentcheck = true) {
-        return $this->get_selected_html_content_items($courseid,
+        return $this->get_selected_html_content_items(
+            $courseid,
             'intro',
             null,
             null,
             null,
             null,
             null,
-            $includecontentcheck);
+            $includecontentcheck
+        );
     }
 
 
     /**
+     * Make module instance url.
+     *
      * @param string $module
      * @param int $id
      * @return string
@@ -317,7 +380,7 @@ trait html_content {
      */
     protected function make_module_instance_url($module, $id) {
         try {
-            list($course, $cm) = get_course_and_cm_from_instance($id, $module);
+            [$course, $cm] = get_course_and_cm_from_instance($id, $module);
         } catch (\moodle_exception $e) {
             // Sometimes this can get called before the module is in the core functions, so just return empty.
             return '';
@@ -327,6 +390,8 @@ trait html_content {
     }
 
     /**
+     * Bulk queue delete content items.
+     *
      * @param component[] $contents
      */
     protected function bulk_queue_delete_content(array $contents) {
@@ -335,8 +400,13 @@ trait html_content {
         $transaction = $DB->start_delegated_transaction();
 
         foreach ($contents as $content) {
-            local_content::queue_delete($content->courseid,
-                $content->id, $content->component, $content->table, $content->field);
+            local_content::queue_delete(
+                $content->courseid,
+                $content->id,
+                $content->component,
+                $content->table,
+                $content->field
+            );
         }
 
         $transaction->allow_commit();
@@ -348,7 +418,7 @@ trait html_content {
      * @param int $id
      * @return string
      */
-    public function get_annotation($id) {
+    public function get_annotation(int $id): string {
         return '';
     }
 }

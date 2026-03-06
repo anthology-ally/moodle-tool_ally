@@ -30,9 +30,9 @@ use tool_ally\auto_config_resolver;
 use tool_ally\auto_configurator;
 
 require(__DIR__ . '/../../../../config.php');
-require_once($CFG->libdir.'/clilib.php');
+require_once($CFG->libdir . '/clilib.php');
 
-list($options, $unrecognized) = cli_get_params(
+[$options, $unrecognized] = cli_get_params(
     [
         'help'      => false,
         'configs'   => '',
@@ -98,6 +98,3 @@ try {
 }
 !$quiet && cli_write('Web services successfully configured' . PHP_EOL);
 cli_write($CFG->wwwroot . ',' . $wsconfig->token . PHP_EOL);
-
-
-

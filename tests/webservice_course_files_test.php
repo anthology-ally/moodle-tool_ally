@@ -30,20 +30,19 @@ use external_api;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for course files webservice.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class webservice_course_files_test extends abstract_testcase {
-
+final class webservice_course_files_test extends abstract_testcase {
     /**
      * @var stdClass
      */
@@ -60,10 +59,11 @@ class webservice_course_files_test extends abstract_testcase {
     private $resourcefile;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         global $CFG;
-        require_once($CFG->dirroot.'/lib/externallib.php');
+        require_once($CFG->dirroot . '/lib/externallib.php');
 
         $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
@@ -81,6 +81,8 @@ class webservice_course_files_test extends abstract_testcase {
 
     /**
      * Test the web service.
+     *
+     * @covers \tool_ally\webservice\course_files::service
      */
     public function test_service(): void {
 
@@ -98,11 +100,17 @@ class webservice_course_files_test extends abstract_testcase {
         $this->assertEquals($expectedfile->get_timemodified(), local::iso_8601_to_timestamp($file['timemodified']));
     }
 
+    /**
+     * Test service with deleted section.
+     *
+     * @covers \tool_ally\webservice\course_files::service
+     */
     public function test_service_section_deleted(): void {
         global $DB;
         // Add file to a soon to be deleted section.
         $section      = $this->getDataGenerator()->create_course_section(
-            ['section' => 1, 'course' => $this->course->id]);
+            ['section' => 1, 'course' => $this->course->id]
+        );
         $coursectx    = \context_course::instance($this->course->id);
         $filename     = 'shouldbeanimage.jpg';
         $filecontents = 'image contents (not really)';
@@ -144,6 +152,11 @@ class webservice_course_files_test extends abstract_testcase {
         $this->assertEquals($expectedfile->get_timemodified(), local::iso_8601_to_timestamp($file['timemodified']));
     }
 
+    /**
+     * Test service with soft deleted resource.
+     *
+     * @covers \tool_ally\webservice\course_files::service
+     */
     public function test_service_resource_soft_deleted(): void {
         global $DB;
 
@@ -158,6 +171,8 @@ class webservice_course_files_test extends abstract_testcase {
 
     /**
      * Test that the files in use setting works with the course files service.
+     *
+     * @covers \tool_ally\webservice\course_files::service
      */
     public function test_files_in_use(): void {
         global $DB;
@@ -166,7 +181,7 @@ class webservice_course_files_test extends abstract_testcase {
         $context = \context_module::instance($this->resource->cmid);
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
 
-        list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_resource', 'intro', 0);
+        [$usedfile, $unusedfile] = $this->setup_check_files($context, 'mod_resource', 'intro', 0);
 
         // Update the intro with the link.
         $link = $generator->create_pluginfile_link_for_file($usedfile);

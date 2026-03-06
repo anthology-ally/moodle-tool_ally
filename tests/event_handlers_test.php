@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 require_once($CFG->dirroot . '/backup/util/includes/backup_includes.php');
 require_once($CFG->dirroot . '/backup/util/includes/restore_includes.php');
 
@@ -54,20 +54,21 @@ use tool_ally\task\content_updates_task;
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally_event_handlers
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_ally\event_handlers
  */
-class event_handlers_test extends abstract_testcase {
-
+final class event_handlers_test extends abstract_testcase {
     public function setUp(): void {
         global $CFG;
+        parent::setUp();
 
         $this->resetAfterTest();
 
-        require_once($CFG->dirroot.'/mod/lesson/locallib.php');
-        require_once($CFG->dirroot.'/mod/lesson/pagetypes/multichoice.php');
+        require_once($CFG->dirroot . '/mod/lesson/locallib.php');
+        require_once($CFG->dirroot . '/mod/lesson/pagetypes/multichoice.php');
 
         set_config('pushurl', 'url', 'tool_ally');
         set_config('key', 'key', 'tool_ally');
@@ -139,12 +140,14 @@ class event_handlers_test extends abstract_testcase {
     private function assert_pushtrace_contains_entity_id($eventname, $entityid) {
         $pushtraces = content_processor::get_push_traces($eventname);
         $contains = $this->check_pushtrace_contains_entity_id($eventname, $entityid);
-        $msg = 'Push trace does not contain an entity id of '.$entityid."\n\n".
+        $msg = 'Push trace does not contain an entity id of ' . $entityid . "\n\n" .
                 var_export($pushtraces, true);
         $this->assertTrue($contains, $msg);
     }
 
     /**
+     * Assert that push trace contains a specific file ID.
+     *
      * @param $eventname
      * @param $fileid
      * @throws coding_exception
@@ -152,12 +155,14 @@ class event_handlers_test extends abstract_testcase {
     private function assert_pushtrace_contains_file_id($eventname, $fileid) {
         $pushtraces = file_processor::get_push_traces($eventname);
         $contains = $this->check_pushtrace_contains_file_id($eventname, $fileid);
-        $msg = 'Push trace does not contain an file id of ' . $fileid . "\n\n".
+        $msg = 'Push trace does not contain an file id of ' . $fileid . "\n\n" .
             var_export($pushtraces, true);
         $this->assertTrue($contains, $msg);
     }
 
     /**
+     * Assert that push trace does not contain a specific entity ID.
+     *
      * @param string $eventname
      * @param string $entityid
      * @throws coding_exception
@@ -165,12 +170,14 @@ class event_handlers_test extends abstract_testcase {
     private function assert_pushtrace_not_contains_entity_id($eventname, $entityid) {
         $pushtraces = content_processor::get_push_traces($eventname);
         $contains = $this->check_pushtrace_contains_entity_id($eventname, $entityid);
-        $msg = 'Push trace does not contain an entity id of '.$entityid."\n\n".
+        $msg = 'Push trace does not contain an entity id of ' . $entityid . "\n\n" .
             var_export($pushtraces, true);
         $this->assertFalse($contains, $msg);
     }
 
     /**
+     * Assert that push trace does not contain a specific file ID.
+     *
      * @param $eventname
      * @param $fileid
      * @throws coding_exception
@@ -178,11 +185,16 @@ class event_handlers_test extends abstract_testcase {
     private function assert_pushtrace_not_contains_file_id($eventname, $fileid) {
         $pushtraces = content_processor::get_push_traces($eventname);
         $contains = $this->check_pushtrace_contains_file_id($eventname, $fileid);
-        $msg = 'Push trace does not contain an entity id of ' . $fileid . "\n\n".
+        $msg = 'Push trace does not contain an entity id of ' . $fileid . "\n\n" .
             var_export($pushtraces, true);
         $this->assertFalse($contains, $msg);
     }
 
+    /**
+     * Assert that push trace does not contain entity IDs matching a regex pattern.
+     *
+     * @param string $regex
+     */
     private function assert_pushtrace_not_contains_entity_regex($regex) {
         $eventtypes = content_processor::get_push_traces();
         if (!$eventtypes) {
@@ -230,13 +242,15 @@ MSG;
     private function assert_pushtrace_contains_context_id($eventname, $contextid) {
         $pushtraces = course_processor::get_push_traces($eventname);
         $contains = $this->check_pushtrace_contains_context_id($eventname, $contextid);
-        $msg = 'Push trace does not contain a context id (course id) of '.$contextid."\n\n".
+        $msg = 'Push trace does not contain a context id (course id) of ' . $contextid . "\n\n" .
             var_export($pushtraces, true);
         $this->assertTrue($contains, $msg);
     }
 
     /**
      * Test pushes on course creation.
+     *
+     * @covers \tool_ally\event_handlers::course_created
      */
     public function test_course_created(): void {
         global $DB;
@@ -260,10 +274,15 @@ MSG;
             ],
         ])->trigger();
 
-        $entityid = 'course:course:summary:'.$course->id;
+        $entityid = 'course:course:summary:' . $course->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
     }
 
+    /**
+     * Test course updated.
+     *
+     * @covers \tool_ally\event_handlers::course_updated
+     */
     public function test_course_updated(): void {
         global $DB;
 
@@ -281,7 +300,7 @@ MSG;
             'other' => ['shortname' => $course->shortname],
         ])->trigger();
 
-        $entityid = 'course:course:summary:'.$course->id;
+        $entityid = 'course:course:summary:' . $course->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_UPDATED, $entityid);
 
         // Ensure section information is not included.
@@ -290,6 +309,8 @@ MSG;
 
     /**
      * Basic test to see if a message is sent for course copies.
+     *
+     * @covers \tool_ally\event_handlers::course_restored
      */
     public function test_course_restored(): void {
         global $DB, $CFG;
@@ -308,7 +329,7 @@ MSG;
 
         // Test setup based on course_copy_test.
         // Mock up the form data.
-        $formdata = new \stdClass;
+        $formdata = new \stdClass();
         $formdata->courseid = $course->id;
         $formdata->fullname = 'copy course';
         $formdata->shortname = 'copy course short';
@@ -339,17 +360,28 @@ MSG;
         $newcourseid = $DB->get_field_sql('SELECT MAX(id) FROM {course}');
 
         // Now make sure the pushtrace contains the event.
-        $contains = $this->check_pushtrace_contains_key_value('course_processor', event_handlers::API_COURSE_COPIED,
-            'context_id', $newcourseid);
+        $contains = $this->check_pushtrace_contains_key_value(
+            'course_processor',
+            event_handlers::API_COURSE_COPIED,
+            'context_id',
+            $newcourseid
+        );
         $this->assertTrue($contains, "Course push trace with context_id of {$newcourseid} not found.");
 
-        $contains = $this->check_pushtrace_contains_key_value('course_processor', event_handlers::API_COURSE_COPIED,
-            'source_context_id', $course->id);
+        $contains = $this->check_pushtrace_contains_key_value(
+            'course_processor',
+            event_handlers::API_COURSE_COPIED,
+            'source_context_id',
+            $course->id
+        );
         $this->assertTrue($contains, "Course push trace with source_context_id of {$course->id} not found.");
     }
 
     /**
      * Basic test to see if a message is sent for course import.
+     *
+     * @covers \tool_ally\event_handlers::course_section_created
+     * @covers \tool_ally\event_handlers::course_section_updated
      */
     public function test_course_imported(): void {
         global $CFG, $USER;
@@ -368,25 +400,50 @@ MSG;
         $this->setAdminUser();
 
         // Import creates a backup for the samesite so includes course id on the back up.
-        $bc = new \backup_controller(\backup::TYPE_1COURSE, $course->id, \backup::FORMAT_MOODLE,
-            \backup::INTERACTIVE_NO, \backup::MODE_IMPORT, $USER->id);
+        $bc = new \backup_controller(
+            \backup::TYPE_1COURSE,
+            $course->id,
+            \backup::FORMAT_MOODLE,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_IMPORT,
+            $USER->id
+        );
         $bc->execute_plan();
         $bcid = $bc->get_backupid();
 
-        $bcrestore = new \restore_controller($bcid, $courseimport->id, \backup::INTERACTIVE_NO, \backup::MODE_IMPORT, $USER->id,
-            \backup::TARGET_EXISTING_ADDING);
+        $bcrestore = new \restore_controller(
+            $bcid,
+            $courseimport->id,
+            \backup::INTERACTIVE_NO,
+            \backup::MODE_IMPORT,
+            $USER->id,
+            \backup::TARGET_EXISTING_ADDING
+        );
         $bcrestore->execute_precheck();
         $bcrestore->execute_plan();
 
-        $contains = $this->check_pushtrace_contains_key_value('course_processor', event_handlers::API_COURSE_IMPORTED,
-            'context_id', $courseimport->id);
+        $contains = $this->check_pushtrace_contains_key_value(
+            'course_processor',
+            event_handlers::API_COURSE_IMPORTED,
+            'context_id',
+            $courseimport->id
+        );
         $this->assertTrue($contains, "Course push trace with context_id of {$courseimport->id} not found.");
 
-        $contains = $this->check_pushtrace_contains_key_value('course_processor', event_handlers::API_COURSE_IMPORTED,
-            'source_context_id', $course->id);
+        $contains = $this->check_pushtrace_contains_key_value(
+            'course_processor',
+            event_handlers::API_COURSE_IMPORTED,
+            'source_context_id',
+            $course->id
+        );
         $this->assertTrue($contains, "Course push trace with source_context_id of {$course->id} not found.");
     }
 
+    /**
+     * Test course section created.
+     *
+     * @covers \tool_ally\event_handlers::course_section_created
+     */
     public function test_course_section_created(): void {
         global $DB;
 
@@ -399,10 +456,15 @@ MSG;
         $section = $DB->get_Record('course_sections', ['id' => $section->id]);
         course_section_created::create_from_section($section)->trigger();
 
-        $entityid = 'course:course_sections:summary:'.$section->id;
+        $entityid = 'course:course_sections:summary:' . $section->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
     }
 
+    /**
+     * Test course section updated.
+     *
+     * @covers \tool_ally\event_handlers::course_section_updated
+     */
     public function test_course_section_updated(): void {
         global $DB;
 
@@ -422,11 +484,11 @@ MSG;
             ],
         ])->trigger();
 
-        $entityid0 = 'course:course_sections:summary:'.$section0->id;
+        $entityid0 = 'course:course_sections:summary:' . $section0->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_UPDATED, $entityid0);
 
         // Make sure section 1 isn't in push trace as we haven't updated it.
-        $entityid1 = 'course:course_sections:summary:'.$section1->id;
+        $entityid1 = 'course:course_sections:summary:' . $section1->id;
         $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_RICH_CNT_UPDATED, $entityid1);
 
         // Get content for section 0 and check it contains default section name 'General' as title for intro section.
@@ -463,6 +525,8 @@ MSG;
 
 
     /**
+     * Check module created push traces for the given module type.
+     *
      * @param string $modname
      * @param string $modtable
      * @param string $modfield
@@ -476,16 +540,18 @@ MSG;
         $course = $this->getDataGenerator()->create_course();
         // Assert that label with non FORMAT_HTML intro does not push.
         $mod = $this->getDataGenerator()->create_module($modname, ['course' => $course->id]);
-        $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
-        list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
+        $entityid = $modname . ':' . $modtable . ':' . $modfield . ':' . $mod->id;
+         [$course, $cm] = get_course_and_cm_from_cmid($mod->cmid);
         course_module_created::create_from_cm($cm)->trigger();
         $this->assert_pushtrace_not_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
 
         // Assert that module with FORMAT_HTML intro pushes.
-        $mod = $this->getDataGenerator()->create_module($modname,
-            ['course' => $course->id, $modfield.'format' => FORMAT_HTML]);
-        $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
-        list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
+        $mod = $this->getDataGenerator()->create_module(
+            $modname,
+            ['course' => $course->id, $modfield . 'format' => FORMAT_HTML]
+        );
+        $entityid = $modname . ':' . $modtable . ':' . $modfield . ':' . $mod->id;
+         [$course, $cm] = get_course_and_cm_from_cmid($mod->cmid);
         course_module_created::create_from_cm($cm)->trigger();
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
 
@@ -493,6 +559,8 @@ MSG;
     }
 
     /**
+     * Check module updated push traces for the given module type.
+     *
      * @param string $modname
      * @param string $modtable
      * @param string $modfield
@@ -511,13 +579,15 @@ MSG;
 
         $course = $this->getDataGenerator()->create_course();
 
-        $mod = $this->getDataGenerator()->create_module($modname,
-            ['course' => $course->id, $modfield.'format' => FORMAT_HTML]);
-        list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
+        $mod = $this->getDataGenerator()->create_module(
+            $modname,
+            ['course' => $course->id, $modfield . 'format' => FORMAT_HTML]
+        );
+         [$course, $cm] = get_course_and_cm_from_cmid($mod->cmid);
 
         $context = \context_module::instance($mod->cmid);
         // Make two files to use.
-        list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_'.$modname, $filearea, 0);
+        [$usedfile, $unusedfile] = $this->setup_check_files($context, 'mod_' . $modname, $filearea, 0);
 
         // Confirm they didn't get sent yet.
         $this->assert_pushtrace_not_contains_file_id("file_created", $usedfile->get_pathnamehash());
@@ -553,24 +623,33 @@ MSG;
         $this->assert_pushtrace_not_contains_file_id("file_created", $unusedfile->get_pathnamehash());
 
         // Finally, check that the content update also got sent.
-        $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
+        $entityid = $modname . ':' . $modtable . ':' . $modfield . ':' . $mod->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_UPDATED, $entityid);
 
         return $mod;
     }
 
+    /**
+     * Check module deleted push traces for the given module type.
+     *
+     * @param string $modname
+     * @param string $modtable
+     * @param string $modfield
+     */
     private function check_module_deleted_pushtraces($modname, $modtable, $modfield) {
         global $DB;
 
         $this->setAdminUser();
 
         $course = $this->getDataGenerator()->create_course();
-        $mod = $this->getDataGenerator()->create_module($modname,
-            ['course' => $course->id, $modfield.'format' => FORMAT_HTML, $modfield => 'Some content']);
+        $mod = $this->getDataGenerator()->create_module(
+            $modname,
+            ['course' => $course->id, $modfield . 'format' => FORMAT_HTML, $modfield => 'Some content']
+        );
 
         // Setup some files.
         $context = \context_module::instance($mod->cmid);
-        list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_'.$modname, $modfield, 0);
+        [$usedfile, $unusedfile] = $this->setup_check_files($context, 'mod_' . $modname, $modfield, 0);
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
         $link = $generator->create_pluginfile_link_for_file($usedfile);
         $mod->$modfield = 'Updated ' . $modfield . ' with some a link ' . $link;
@@ -579,8 +658,8 @@ MSG;
         // Now make sure that records exist.
         $this->assertCount(2, $DB->get_records('tool_ally_file_in_use', ['contextid' => $context->id]));
 
-        $entityid = $modname.':'.$modtable.':'.$modfield.':'.$mod->id;
-        list ($course, $cm) = get_course_and_cm_from_cmid($mod->cmid);
+        $entityid = $modname . ':' . $modtable . ':' . $modfield . ':' . $mod->id;
+         [$course, $cm] = get_course_and_cm_from_cmid($mod->cmid);
         course_delete_module($cm->id);
 
         // Make sure the records were deleted.
@@ -617,16 +696,27 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $entityid);
     }
 
+    /**
+     * Test assign created.
+     *
+     * @covers \tool_ally\event_handlers::course_module_created
+     */
     public function test_assign_created(): void {
         $this->check_module_created_pushtraces('assign', 'assign', 'intro');
     }
 
+    /**
+     * Test assign updated.
+     *
+     * @covers \tool_ally\event_handlers::course_module_updated
+     */
     public function test_assign_updated(): void {
         $this->check_module_updated_pushtraces('assign', 'assign', 'intro', 'intro');
     }
 
     /**
      * Returns true if test was marked as skipped due to Moodle version not supporting PHP Unit tests for create_file.
+     *
      * @return bool
      */
     private function skip_module_deleted_create_file_not_supported(): bool {
@@ -639,6 +729,11 @@ MSG;
         return false;
     }
 
+    /**
+     * Test assign deleted.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_assign_deleted(): void {
         if ($this->skip_module_deleted_create_file_not_supported()) {
             return;
@@ -646,10 +741,20 @@ MSG;
         $this->check_module_deleted_pushtraces('assign', 'assign', 'intro');
     }
 
+    /**
+     * Test book created.
+     *
+     * @covers \tool_ally\event_handlers::course_module_created
+     */
     public function test_book_created(): void {
         $this->check_module_created_pushtraces('book', 'book', 'intro');
     }
 
+    /**
+     * Test book updated.
+     *
+     * @covers \tool_ally\event_handlers::course_module_updated
+     */
     public function test_book_updated(): void {
         global $DB;
 
@@ -667,7 +772,7 @@ MSG;
         ];
 
         $chapter = $bookgenerator->create_chapter($data);
-        $entityid = 'book:book_chapters:content:'.$chapter->id;
+        $entityid = 'book:book_chapters:content:' . $chapter->id;
 
         $params = [
             'context' => $context,
@@ -686,7 +791,7 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
 
         // Modify chapter.
-        $chapter->content = 'Updated chapter '.$chapter->id.' with some text';
+        $chapter->content = 'Updated chapter ' . $chapter->id . ' with some text';
         $DB->update_record('book_chapters', $chapter);
         $params = [
             'context' => $context,
@@ -701,9 +806,13 @@ MSG;
 
         // Assert pushtrace contains updated chapter.
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_UPDATED, $entityid);
-
     }
 
+    /**
+     * Test book deleted.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_book_deleted(): void {
         global $CFG;
 
@@ -718,11 +827,13 @@ MSG;
         // Now the more complicated testing. Specifically we are going to confirm that when a book is deleted,
         // any chapters within it are also marked for deletion.
         $course = $this->getDataGenerator()->create_course();
-        $book = $this->getDataGenerator()->create_module('book',
-            ['course' => $course->id, 'introformat' => FORMAT_HTML, 'intro' => 'Some intro']);
-        $bookentityid = 'book:book:intro:'.$book->id;
+        $book = $this->getDataGenerator()->create_module(
+            'book',
+            ['course' => $course->id, 'introformat' => FORMAT_HTML, 'intro' => 'Some intro']
+        );
+        $bookentityid = 'book:book:intro:' . $book->id;
 
-        list($course, $cm) = get_course_and_cm_from_cmid($book->cmid);
+        [$course, $cm] = get_course_and_cm_from_cmid($book->cmid);
 
         // The course module generator does fire the course_module_created event, so it should be there.
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $bookentityid);
@@ -731,8 +842,8 @@ MSG;
         $chapter1 = $bookgenerator->create_content($book, ['contentformat' => FORMAT_HTML]);
         $chapter2 = $bookgenerator->create_content($book, ['contentformat' => FORMAT_HTML]);
 
-        $chapter1entityid = 'book:book_chapters:content:'.$chapter1->id;
-        $chapter2entityid = 'book:book_chapters:content:'.$chapter2->id;
+        $chapter1entityid = 'book:book_chapters:content:' . $chapter1->id;
+        $chapter2entityid = 'book:book_chapters:content:' . $chapter2->id;
 
         // The chapter generator doesn't fire the chapter created event, so we need to do it.
         chapter_created::create_from_chapter($book, $cm->context, $chapter1)->trigger();
@@ -759,14 +870,29 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_DELETED, $chapter1entityid);
     }
 
+    /**
+     * Test forum created.
+     *
+     * @covers \tool_ally\event_handlers::course_module_created
+     */
     public function test_forum_created(): void {
         $this->check_module_created_pushtraces('forum', 'forum', 'intro');
     }
 
+    /**
+     * Test forum updated.
+     *
+     * @covers \tool_ally\event_handlers::course_module_updated
+     */
     public function test_forum_updated(): void {
         $this->check_module_updated_pushtraces('forum', 'forum', 'intro', 'intro');
     }
 
+    /**
+     * Test forum deleted.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_forum_deleted(): void {
         if ($this->skip_module_deleted_create_file_not_supported()) {
             return;
@@ -774,14 +900,29 @@ MSG;
         $this->check_module_deleted_pushtraces('forum', 'forum', 'intro');
     }
 
+    /**
+     * Test label created.
+     *
+     * @covers \tool_ally\event_handlers::course_module_created
+     */
     public function test_label_created(): void {
         $this->check_module_created_pushtraces('label', 'label', 'intro');
     }
 
+    /**
+     * Test label updated.
+     *
+     * @covers \tool_ally\event_handlers::course_module_updated
+     */
     public function test_label_updated(): void {
         $this->check_module_updated_pushtraces('label', 'label', 'intro', 'intro');
     }
 
+    /**
+     * Test label deleted.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_label_deleted(): void {
         if ($this->skip_module_deleted_create_file_not_supported()) {
             return;
@@ -789,6 +930,11 @@ MSG;
         $this->check_module_deleted_pushtraces('label', 'label', 'intro');
     }
 
+    /**
+     * Test lesson created.
+     *
+     * @covers \tool_ally\event_handlers::course_module_created
+     */
     public function test_lesson_created(): void {
         global $DB;
 
@@ -800,18 +946,23 @@ MSG;
 
         // Test that question page results in push to ally.
         $questionpage = $pdg->create_question_multichoice($lesson);
-        $entityid = 'lesson:lesson_pages:contents:'.$questionpage->id;
+        $entityid = 'lesson:lesson_pages:contents:' . $questionpage->id;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
 
         $answers = $DB->get_records('lesson_answers', ['pageid' => $questionpage->id]);
         $this->assertNotEmpty($answers);
 
         foreach ($answers as $answer) {
-            $entityid = 'lesson:lesson_answers:answer:'.$answer->id;
+            $entityid = 'lesson:lesson_answers:answer:' . $answer->id;
             $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
         }
     }
 
+    /**
+     * Test lesson updated.
+     *
+     * @covers \tool_ally\event_handlers::course_module_updated
+     */
     public function test_lesson_updated(): void {
         global $DB;
 
@@ -835,11 +986,16 @@ MSG;
         $this->assertNotEmpty($answers);
 
         foreach ($answers as $answer) {
-            $entityid = 'lesson:lesson_answers:answer:'.$answer->id;
+            $entityid = 'lesson:lesson_answers:answer:' . $answer->id;
             $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_UPDATED, $entityid);
         }
     }
 
+    /**
+     * Test lesson deleted.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_lesson_deleted(): void {
         if ($this->skip_module_deleted_create_file_not_supported()) {
             return;
@@ -847,16 +1003,31 @@ MSG;
         $this->check_module_deleted_pushtraces('lesson', 'lesson', 'intro');
     }
 
+    /**
+     * Test page created.
+     *
+     * @covers \tool_ally\event_handlers::course_module_created
+     */
     public function test_page_created(): void {
         $this->check_module_created_pushtraces('page', 'page', 'intro');
         $this->check_module_created_pushtraces('page', 'page', 'content');
     }
 
+    /**
+     * Test page updated.
+     *
+     * @covers \tool_ally\event_handlers::course_module_updated
+     */
     public function test_page_updated(): void {
         $this->check_module_updated_pushtraces('page', 'page', 'intro', 'intro');
         $this->check_module_updated_pushtraces('page', 'page', 'content', 'content');
     }
 
+    /**
+     * Test page deleted intro.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_page_deleted_intro(): void {
         if ($this->skip_module_deleted_create_file_not_supported()) {
             return;
@@ -864,6 +1035,11 @@ MSG;
         $this->check_module_deleted_pushtraces('page', 'page', 'intro');
     }
 
+    /**
+     * Test page deleted content.
+     *
+     * @covers \tool_ally\event_handlers::course_module_deleted
+     */
     public function test_page_deleted_content(): void {
         if ($this->skip_module_deleted_create_file_not_supported()) {
             return;
@@ -871,6 +1047,11 @@ MSG;
         $this->check_module_deleted_pushtraces('page', 'page', 'content');
     }
 
+    /**
+     * Test forum discussion created.
+     *
+     * @covers \tool_ally\event_handlers::forum_discussion_created
+     */
     public function test_forum_discussion_created(): void {
         global $USER, $DB;
 
@@ -878,10 +1059,12 @@ MSG;
 
         $course = $this->getDataGenerator()->create_course();
 
-        $forum = $this->getDataGenerator()->create_module('forum',
-            ['course' => $course->id, 'introformat' => FORMAT_HTML]);
-        $entityid = 'forum:forum:intro:'.$forum->id;
-        list ($course, $cm) = get_course_and_cm_from_cmid($forum->cmid);
+        $forum = $this->getDataGenerator()->create_module(
+            'forum',
+            ['course' => $course->id, 'introformat' => FORMAT_HTML]
+        );
+        $entityid = 'forum:forum:intro:' . $forum->id;
+         [$course, $cm] = get_course_and_cm_from_cmid($forum->cmid);
         course_module_created::create_from_cm($cm)->trigger();
 
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
@@ -906,7 +1089,7 @@ MSG;
 
         // Get discussion post.
         $post = $DB->get_record('forum_posts', ['discussion' => $discussion->id]);
-        $entityid = 'forum:forum_posts:message:'.$post->id;
+        $entityid = 'forum:forum_posts:message:' . $post->id;
 
         // Assert pushtrace contains discussion post.
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
@@ -931,6 +1114,11 @@ MSG;
         post_updated::create($params);
     }
 
+    /**
+     * Test forum single discussion created.
+     *
+     * @covers \tool_ally\event_handlers::forum_discussion_created
+     */
     public function test_forum_single_discussion_created(): void {
         global $USER, $DB;
 
@@ -939,9 +1127,11 @@ MSG;
         $course = $this->getDataGenerator()->create_course();
 
         // Create forum.
-        $forum = $this->getDataGenerator()->create_module('forum',
-            ['course' => $course->id, 'introformat' => FORMAT_HTML]);
-        $introentityid = 'forum:forum:intro:'.$forum->id;
+        $forum = $this->getDataGenerator()->create_module(
+            'forum',
+            ['course' => $course->id, 'introformat' => FORMAT_HTML]
+        );
+        $introentityid = 'forum:forum:intro:' . $forum->id;
 
         // Add a discussion.
         $record = new \stdClass();
@@ -952,9 +1142,9 @@ MSG;
 
         // Get discussion post.
         $post = $DB->get_record('forum_posts', ['discussion' => $discussion->id]);
-        $postentityid = 'forum:forum_posts:message:'.$post->id;
+        $postentityid = 'forum:forum_posts:message:' . $post->id;
 
-        list ($course, $cm) = get_course_and_cm_from_cmid($forum->cmid);
+         [$course, $cm] = get_course_and_cm_from_cmid($forum->cmid);
         course_module_created::create_from_cm($cm)->trigger();
 
         // Both entities should be traced.
@@ -962,6 +1152,14 @@ MSG;
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $postentityid);
     }
 
+    /**
+     * Test glossary events.
+     *
+     * @throws coding_exception
+     * @covers \tool_ally\event_handlers::glossary_entry_created
+     * @covers \tool_ally\event_handlers::glossary_entry_updated
+     * @covers \tool_ally\event_handlers::glossary_entry_deleted
+     */
     public function test_glossary_events(): void {
         global $USER;
 
@@ -969,10 +1167,12 @@ MSG;
 
         $course = $this->getDataGenerator()->create_course();
 
-        $glossary = $this->getDataGenerator()->create_module('glossary',
-            ['course' => $course->id, 'introformat' => FORMAT_HTML]);
-        $glossaryentityid = 'glossary:glossary:intro:'.$glossary->id;
-        list ($course, $cm) = get_course_and_cm_from_cmid($glossary->cmid);
+        $glossary = $this->getDataGenerator()->create_module(
+            'glossary',
+            ['course' => $course->id, 'introformat' => FORMAT_HTML]
+        );
+        $glossaryentityid = 'glossary:glossary:intro:' . $glossary->id;
+         [$course, $cm] = get_course_and_cm_from_cmid($glossary->cmid);
         course_module_created::create_from_cm($cm)->trigger();
 
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $glossaryentityid);
@@ -996,7 +1196,7 @@ MSG;
         $event->add_record_snapshot('glossary_entries', $entry);
         $event->trigger();
 
-        $entityid = 'glossary:glossary_entries:definition:'.$entry->id;
+        $entityid = 'glossary:glossary_entries:definition:' . $entry->id;
 
         // Assert pushtrace contains entry.
         $this->assert_pushtrace_contains_entity_id(event_handlers::API_RICH_CNT_CREATED, $entityid);
@@ -1034,8 +1234,13 @@ MSG;
 
     /**
      * Verifies course event processing for the course event push handling.
+     *
      * @throws coding_exception
      * @throws moodle_exception
+     *
+     * @covers \tool_ally\event_handlers::course_created
+     * @covers \tool_ally\event_handlers::course_updated
+     * @covers \tool_ally\event_handlers::course_deleted
      */
     public function test_course_events(): void {
         $course = $this->getDataGenerator()->create_course();

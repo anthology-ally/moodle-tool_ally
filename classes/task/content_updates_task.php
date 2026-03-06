@@ -32,7 +32,6 @@ use tool_ally\push_config;
 use tool_ally\event_handlers;
 use tool_ally\push_content_updates;
 use moodle_exception;
-
 use stdClass;
 
 /**
@@ -58,10 +57,16 @@ class content_updates_task extends scheduled_task {
      */
     public $updates;
 
+    /**
+     * {@inheritdoc}
+     */
     public function get_name() {
         return get_string('contentupdatestask', 'tool_ally');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function execute() {
         $config = $this->config ?: new push_config();
         if (!$config->is_valid()) {
@@ -116,8 +121,15 @@ class content_updates_task extends scheduled_task {
             // Note - always use FORMAT_HMTL for deletes. Once something is deleted we have no idea what it's format
             // is, so just go with FORMAT_HTML.
             $content = new component_content(
-                    $todelete->comprowid, $todelete->component, $todelete->comptable, $todelete->compfield,
-                    $todelete->courseid, $todelete->timedeleted, FORMAT_HTML, '');
+                $todelete->comprowid,
+                $todelete->component,
+                $todelete->comptable,
+                $todelete->compfield,
+                $todelete->courseid,
+                $todelete->timedeleted,
+                FORMAT_HTML,
+                ''
+            );
             $payload[] = $content;
 
             // Check to see if we have our batch size or if we are at the last file.
@@ -142,7 +154,7 @@ class content_updates_task extends scheduled_task {
                 }
 
                 // Successfully sent, update deleted content.
-                list ($insql, $params) = $DB->get_in_or_equal($ids);
+                 [$insql, $params] = $DB->get_in_or_equal($ids);
                 $params = array_merge([time()], $params);
                 $updatesql = "UPDATE {tool_ally_deleted_content}
                                  SET timeprocessed = ?
@@ -157,10 +169,16 @@ class content_updates_task extends scheduled_task {
         $deletes->close();
     }
 
+    /**
+     * Get a string describing a failed attempt to get content.
+     *
+     * @param stdClass $queuerow
+     * @return string
+     */
     private function failed_attempt_string(stdClass $queuerow) {
-        $str = $queuerow->component.' table '.
-                $queuerow->comptable.' field '.$queuerow->compfield.' with id '.$queuerow->comprowid.
-                ' attempt number '.$queuerow->attempts;
+        $str = $queuerow->component . ' table ' .
+                $queuerow->comptable . ' field ' . $queuerow->compfield . ' with id ' . $queuerow->comprowid .
+                ' attempt number ' . $queuerow->attempts;
         return $str;
     }
 
@@ -179,7 +197,7 @@ class content_updates_task extends scheduled_task {
         // 100,000 records = 47mb approx.
         // http://sandbox.onlinephpfunctions.com/code/7b2fd36221a01f59507cbf0a67867454a82bbc74 < link to test mb.
         if ($DB->count_records('tool_ally_deleted_content') < 100000) {
-            $sql = "SELECT ".$DB->sql_concat_join("'_'", ['comptable', 'compfield', 'comprowid'])."
+            $sql = "SELECT " . $DB->sql_concat_join("'_'", ['comptable', 'compfield', 'comprowid']) . "
                   FROM {tool_ally_deleted_content}";
             $deleted = $DB->get_records_sql($sql);
         } else {
@@ -193,8 +211,12 @@ class content_updates_task extends scheduled_task {
 
             try {
                 $content = local_content::get_html_content(
-                    $queuerow->comprowid, $queuerow->component, $queuerow->comptable, $queuerow->compfield,
-                    $queuerow->courseid);
+                    $queuerow->comprowid,
+                    $queuerow->component,
+                    $queuerow->comptable,
+                    $queuerow->compfield,
+                    $queuerow->courseid
+                );
             } catch (moodle_exception $e) {
                 $content = null;
             }
@@ -204,11 +226,13 @@ class content_updates_task extends scheduled_task {
                     // records to check for deletion. This isn't great for performance but we should only need this when
                     // a) we fail to get content because it's been deleted and b) there are too many deletion records to
                     // use an array.
-                    if ($DB->get_record('tool_ally_deleted_content', [
+                    if (
+                        $DB->get_record('tool_ally_deleted_content', [
                         'comptable' => $queuerow->comptable,
                         'compfield' => $queuerow->compfield,
                         'comprowid' => $queuerow->comprowid,
-                    ])) {
+                        ])
+                    ) {
                         // Content definitely deleted.
                         $DB->delete_records('tool_ally_content_queue', ['id' => $queuerow->id]);
                         continue;
@@ -220,7 +244,7 @@ class content_updates_task extends scheduled_task {
                 }
                 // Content likely to be deleted and purged from deletion queue.
                 $queuerow->attempts++;
-                $msg = 'Failed to get content for component '.$this->failed_attempt_string($queuerow);
+                $msg = 'Failed to get content for component ' . $this->failed_attempt_string($queuerow);
                 mtrace($msg);
                 if ($queuerow->attempts > 10) {
                     // Tried 10 times to process this, let's call it a day and delete the record.

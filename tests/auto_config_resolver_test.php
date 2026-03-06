@@ -31,12 +31,14 @@ use tool_ally\auto_config_resolver;
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_ally\auto_config_resolver
  */
-class auto_config_resolver_test extends \advanced_testcase {
+final class auto_config_resolver_test extends \advanced_testcase {
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest(true);
     }
 

@@ -28,7 +28,7 @@ use tool_ally\webservice\replace_content;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for replace content webservice.
@@ -40,50 +40,70 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class webservice_replace_content_test extends abstract_testcase {
-
+final class webservice_replace_content_test extends abstract_testcase {
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
         $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
     }
 
     /**
-     * Test the web service when used to replace a single content item.
+     * Test replacing course summary content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
      */
     public function test_service_course_summary(): void {
         global $DB;
 
         $coursesummary = '<p>My course summary</p>';
         $course = $this->getDataGenerator()->create_course(['summary' => $coursesummary]);
-        $coursesummaryreplaced = $coursesummary.'<p>REPLACED!</p>';
+        $coursesummaryreplaced = $coursesummary . '<p>REPLACED!</p>';
         $result = replace_content::service(
-                $course->id, 'course', 'course', 'summary', $coursesummaryreplaced);
+            $course->id,
+            'course',
+            'course',
+            'summary',
+            $coursesummaryreplaced
+        );
         $this->assertTrue($result['success']);
         $course = $DB->get_record('course', ['id' => $course->id]);
         $this->assertEquals($coursesummaryreplaced, $course->summary);
     }
 
+    /**
+     * Test replacing course section content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_course_section(): void {
         global $DB;
 
         $course = $this->getDataGenerator()->create_course();
         $section0summary = '<p>First section summary</p>';
         $section = $this->getDataGenerator()->create_course_section(
-            ['section' => 0, 'course' => $course->id]);
+            ['section' => 0, 'course' => $course->id]
+        );
         $DB->update_record('course_sections', (object) [
             'id' => $section->id,
             'summary' => $section0summary,
         ]);
-        $section0summaryreplaced = $section0summary.'</p>REPLACED!</p>';
+        $section0summaryreplaced = $section0summary . '</p>REPLACED!</p>';
         $result = replace_content::service(
-            $section->id, 'course', 'course_sections', 'summary', $section0summaryreplaced);
+            $section->id,
+            'course',
+            'course_sections',
+            'summary',
+            $section0summaryreplaced
+        );
         $this->assertTrue($result['success']);
         $section = $DB->get_record('course_sections', ['id' => $section->id]);
         $this->assertEquals($section0summaryreplaced, $section->summary);
     }
 
     /**
+     * Helper function to test replacing module content.
+     *
      * @param string $modname
      * @param string $table
      * @param string $field
@@ -98,12 +118,18 @@ class webservice_replace_content_test extends abstract_testcase {
 
         $course = $this->getDataGenerator()->create_course();
         $modintro = '<p>My original intro content</p>';
-        $mod = $this->getDataGenerator()->create_module($modname,
-            ['course' => $course->id, $field => $modintro]);
+        $mod = $this->getDataGenerator()->create_module(
+            $modname,
+            ['course' => $course->id, $field => $modintro]
+        );
         $generatedmod = $mod;
-        $modintroreplaced = $modintro.'</p>REPLACED</p>';
+        $modintroreplaced = $modintro . '</p>REPLACED</p>';
         $result = replace_content::service(
-            $mod->id, $modname, $table, $field, $modintroreplaced
+            $mod->id,
+            $modname,
+            $table,
+            $field,
+            $modintroreplaced
         );
         $this->assertTrue($result['success']);
         $mod = $DB->get_record($table, ['id' => $mod->id]);
@@ -111,10 +137,20 @@ class webservice_replace_content_test extends abstract_testcase {
         return $generatedmod; // Sometimes the generated mod has more data than the db row - e.g. cmid.
     }
 
+    /**
+     * Test replacing assign content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_assign(): void {
         $this->module_replace_test('assign', 'assign');
     }
 
+    /**
+     * Test replacing book content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_book(): void {
         global $DB;
 
@@ -132,7 +168,11 @@ class webservice_replace_content_test extends abstract_testcase {
         $chapter = $bookgenerator->create_chapter($data);
         $contentreplaced = '<p>Content replaced!</p>';
         $result = replace_content::service(
-            $chapter->id, 'book', 'book_chapters', 'content', $contentreplaced
+            $chapter->id,
+            'book',
+            'book_chapters',
+            'content',
+            $contentreplaced
         );
         $this->assertTrue($result['success']);
 
@@ -140,6 +180,11 @@ class webservice_replace_content_test extends abstract_testcase {
         $this->assertEquals($contentreplaced, $chapter->content);
     }
 
+    /**
+     * Test replacing forum content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_forum(): void {
         global $USER, $DB;
 
@@ -164,9 +209,13 @@ class webservice_replace_content_test extends abstract_testcase {
         $post = self::getDataGenerator()->get_plugin_generator('mod_forum')->create_post($record);
 
         // Test post replace.
-        $postmessagereplaced = $postmessage.'<span>Replaced</span>';
+        $postmessagereplaced = $postmessage . '<span>Replaced</span>';
         $result = replace_content::service(
-            $post->id, 'forum', 'forum_posts', 'message', $postmessagereplaced
+            $post->id,
+            'forum',
+            'forum_posts',
+            'message',
+            $postmessagereplaced
         );
         $this->assertTrue($result['success']);
 
@@ -174,6 +223,11 @@ class webservice_replace_content_test extends abstract_testcase {
         $this->assertEquals($postmessagereplaced, $post->message);
     }
 
+    /**
+     * Test replacing glossary content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_glossary(): void {
         global $USER, $DB;
 
@@ -188,7 +242,11 @@ class webservice_replace_content_test extends abstract_testcase {
         $entry = self::getDataGenerator()->get_plugin_generator('mod_glossary')->create_content($glossary, (array) $record);
         $definitionreplaced = '<p>Content replaced!</p>';
         $result = replace_content::service(
-            $entry->id, 'glossary', 'glossary_entries', 'definition', $definitionreplaced
+            $entry->id,
+            'glossary',
+            'glossary_entries',
+            'definition',
+            $definitionreplaced
         );
         $this->assertTrue($result['success']);
 
@@ -196,14 +254,24 @@ class webservice_replace_content_test extends abstract_testcase {
         $this->assertEquals($definitionreplaced, $entry->definition);
     }
 
+    /**
+     * Test replacing label content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_label(): void {
         $this->module_replace_test('label', 'label');
     }
 
+    /**
+     * Test replacing lesson content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_lesson(): void {
         global $CFG, $DB;
 
-        require_once($CFG->dirroot.'/mod/lesson/locallib.php');
+        require_once($CFG->dirroot . '/mod/lesson/locallib.php');
 
         $lesson = $this->module_replace_test('lesson', 'lesson');
 
@@ -215,7 +283,11 @@ class webservice_replace_content_test extends abstract_testcase {
         $page = $lessongenerator->create_question_truefalse($lessonobj);
         $contentreplaced = '<p>Content replaced!</p>';
         $result = replace_content::service(
-            $page->id, 'lesson', 'lesson_pages', 'contents', $contentreplaced
+            $page->id,
+            'lesson',
+            'lesson_pages',
+            'contents',
+            $contentreplaced
         );
         $this->assertTrue($result['success']);
 
@@ -223,11 +295,21 @@ class webservice_replace_content_test extends abstract_testcase {
         $this->assertEquals($contentreplaced, $page->contents);
     }
 
+    /**
+     * Test replacing page content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_page(): void {
         $this->module_replace_test('page', 'page');
         $this->module_replace_test('page', 'page', 'content');
     }
 
+    /**
+     * Test replacing block HTML content.
+     *
+     * @covers \tool_ally\webservice\replace_content::service
+     */
     public function test_service_block_html(): void {
         global $DB;
 
@@ -248,7 +330,11 @@ class webservice_replace_content_test extends abstract_testcase {
         $contentreplaced = '<p>Content replaced!</p>';
 
         $result = replace_content::service(
-            $block->id, 'block_html', 'block_instances', 'configdata', $contentreplaced
+            $block->id,
+            'block_html',
+            'block_instances',
+            'configdata',
+            $contentreplaced
         );
         $this->assertTrue($result['success']);
 

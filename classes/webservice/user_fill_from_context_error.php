@@ -28,6 +28,9 @@ use tool_ally\password;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 trait user_fill_from_context_error {
+    /**
+     * Validate context, creating the web service user if needed.
+     */
     public static function validate_context($context) {
         try {
             parent::validate_context($context);

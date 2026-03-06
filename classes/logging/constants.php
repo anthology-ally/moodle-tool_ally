@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 namespace tool_ally\logging;
 
 /**
@@ -23,16 +24,28 @@ namespace tool_ally\logging;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class constants {
+    /**@var int No range */
     const RANGE_NONE = 0;
+    /**@var int Light range */
     const RANGE_LIGHT = 1;
+    /**@var int Medium range */
     const RANGE_MEDIUM = 2;
+    /**@var int All range */
     const RANGE_ALL = 3;
+    /**@var int Emergency severity */
     const SEV_EMERGENCY = 1000;
+    /**@var int Alert severity */
     const SEV_ALERT = 1001;
+    /**@var int Critical severity */
     const SEV_CRITICAL = 1002;
+    /**@var int Error severity */
     const SEV_ERROR = 1003;
+    /**@var int Warning severity */
     const SEV_WARNING = 1004;
+    /**@var int Notice severity */
     const SEV_NOTICE = 1005;
+    /**@var int Info severity */
     const SEV_INFO = 1006;
+    /**@var int Debug severity */
     const SEV_DEBUG = 1007;
 }

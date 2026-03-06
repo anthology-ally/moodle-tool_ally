@@ -24,13 +24,16 @@
 
 namespace tool_ally;
 
+use core_course\cm_info;
+use core\exception\moodle_exception;
+use coding_exception;
+use context;
+use context_course;
+use moodle_url;
 use stored_file;
 use tool_ally\componentsupport\component_base;
 use tool_ally\componentsupport\file_component_base;
-use tool_ally\componentsupport\interfaces\file_replacement;
 use tool_ally\models\pluginfileurlprops;
-
-use moodle_url;
 
 /**
  * File library.
@@ -70,16 +73,16 @@ class local_file {
     /**
      * Get a file's course context if it exists.
      *
-     * @param \stored_file $file
+     * @param stored_file $file
      * @param int $strictness Throw an exception if set to MUST_EXIST
-     * @return \context_course|null
+     * @return context_course|null
      */
-    public static function course_context(\stored_file $file, $strictness = MUST_EXIST) {
-        $context       = \context::instance_by_id($file->get_contextid());
+    public static function course_context(stored_file $file, $strictness = MUST_EXIST) {
+        $context       = context::instance_by_id($file->get_contextid());
         $coursecontext = $context->get_course_context(false);
-        if (!$coursecontext instanceof \context_course) {
+        if (!$coursecontext instanceof context_course) {
             if ($strictness === MUST_EXIST) {
-                throw new \moodle_exception('filecoursenotfound', 'tool_ally');
+                throw new moodle_exception('filecoursenotfound', 'tool_ally');
             }
             return null;
         }
@@ -90,13 +93,13 @@ class local_file {
     /**
      * Resolve course module from file
      *
-     * @param \stored_file $file
-     * @return \cm_info | false
-     * @throws \coding_exception
-     * @throws \moodle_exception
+     * @param stored_file $file
+     * @return cm_info | false
+     * @throws coding_exception
+     * @throws moodle_exception
      */
-    public static function resolve_cm_from_file(\stored_file $file) {
-        $context = \context::instance_by_id($file->get_contextid());
+    public static function resolve_cm_from_file(stored_file $file): cm_info|false {
+        $context = context::instance_by_id($file->get_contextid());
         if ($context->contextlevel !== CONTEXT_MODULE) {
             return false;
         }
@@ -110,41 +113,47 @@ class local_file {
     /**
      * Get a file's course ID if it exists.
      *
-     * @param \stored_file $file
+     * @param stored_file $file
      * @param int $strictness Throw an exception if set to MUST_EXIST
      * @return int|null
      */
-    public static function courseid(\stored_file $file, $strictness = MUST_EXIST) {
+    public static function courseid(stored_file $file, $strictness = MUST_EXIST) {
         $context = self::course_context($file, $strictness);
 
-        return ($context instanceof \context_course) ? $context->instanceid : null;
+        return ($context instanceof context_course) ? $context->instanceid : null;
     }
 
     /**
      * Plugin file URL from stored file.
      *
-     * @param \stored_file $file
-     * @return \moodle_url
+     * @param stored_file $file
+     * @return moodle_url
      */
-    public static function url(\stored_file $file) {
+    public static function url(stored_file $file) {
         global $CFG;
 
         if ($file->get_component() === 'question') {
-            return new \moodle_url($CFG->wwwroot.'/admin/tool/ally/pluginfile.php', ['pathnamehash' => $file->get_pathnamehash()]);
+            return new moodle_url($CFG->wwwroot . '/admin/tool/ally/pluginfile.php', ['pathnamehash' => $file->get_pathnamehash()]);
         }
 
         $itemid = self::preprocess_stored_file_itemid($file);
-        return \moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
-            $itemid, $file->get_filepath(), $file->get_filename());
+        return moodle_url::make_pluginfile_url(
+            $file->get_contextid(),
+            $file->get_component(),
+            $file->get_filearea(),
+            $itemid,
+            $file->get_filepath(),
+            $file->get_filename()
+        );
     }
 
     /**
      * Pre process stored file for getting a plugin or webservice url.
      * This fixes an issue with some modules that have a root page, so they use an item id = 0 when there should be no id.
-     * @param \stored_file $file
+     * @param stored_file $file
      * @return mixed null if fixing, item's id otherwise
      */
-    private static function preprocess_stored_file_itemid(\stored_file $file) {
+    private static function preprocess_stored_file_itemid(stored_file $file) {
         $itemid = $file->get_itemid();
 
         // Some plugins do not like an itemid of 0 in the web service download path.
@@ -155,7 +164,7 @@ class local_file {
         ];
         if ($file->get_filearea() === 'intro' && $itemid == 0) {
             $itemid = null;
-        } else if (in_array($file->get_component().'~'.$file->get_filearea(), $compareas) && $itemid == 0) {
+        } else if (in_array($file->get_component() . '~' . $file->get_filearea(), $compareas) && $itemid == 0) {
             $itemid = null;
         }
         return $itemid;
@@ -172,29 +181,30 @@ class local_file {
         $iat = $iat === null ? time() : $iat;
         $tokenobj = local::get_ws_token();
         if (!$tokenobj) {
-            throw new \coding_exception('Failed to get Ally web service token object');
+            throw new coding_exception('Failed to get Ally web service token object');
         }
         $token = $tokenobj->token;
         return (object) [
             'pathnamehash' => $pathnamehash,
             'iat' => $iat,
-            'signature' => hash('sha256', $token.':'.$iat.':'.$pathnamehash),
+            'signature' => hash('sha256', $token . ':' . $iat . ':' . $pathnamehash),
         ];
     }
 
     /**
      * Webservice plugin file URL from stored file.
      *
-     * @param \stored_file $file
-     * @return \moodle_url
+     * @param stored_file $file
+     * @return moodle_url
      */
-    public static function webservice_url(\stored_file $file) {
+    public static function webservice_url(stored_file $file) {
         global $CFG;
 
         $signature = self::generate_wspluginfile_signature($file->get_pathnamehash());
 
-        return new \moodle_url($CFG->wwwroot.'/admin/tool/ally/wspluginfile.php',
-                [
+        return new moodle_url(
+            $CFG->wwwroot . '/admin/tool/ally/wspluginfile.php',
+            [
                     'pathnamehash' => $signature->pathnamehash,
                     'signature' => $signature->signature,
                     'iat' => $signature->iat,
@@ -208,12 +218,12 @@ class local_file {
      * Warning: be very careful about editing this message.  It's used
      * for webservices and for pushed updates.
      *
-     * @param \stored_file|\stdClass $file
+     * @param stored_file|\stdClass $file
      * @return array
      */
     public static function to_crud($file) {
 
-        if ($file instanceof \stored_file) {
+        if ($file instanceof stored_file) {
             $newfile = ($file->get_timecreated() + 2 >= $file->get_timemodified());
 
             return [
@@ -237,7 +247,7 @@ class local_file {
             ];
         }
 
-        throw new \coding_exception('Unexpected parameter type passed, not stored_file or stdClass');
+        throw new coding_exception('Unexpected parameter type passed, not stored_file or stdClass');
     }
 
     /**
@@ -256,15 +266,15 @@ class local_file {
             return;
         }
 
-        $search = '@@PLUGINFILE@@/'.rawurlencode($oldfname);
-        $replace = '@@PLUGINFILE@@/'.rawurlencode($newfname);
+        $search = '@@PLUGINFILE@@/' . rawurlencode($oldfname);
+        $replace = '@@PLUGINFILE@@/' . rawurlencode($newfname);
 
         $params = [$search, $replace];
 
         $fieldsql = "\n $field = REPLACE($field, ?, ?)";
         $fieldwhere = " $field IS NOT NULL";
 
-        $sql = "UPDATE {".$table."}
+        $sql = "UPDATE {" . $table . "}
                    SET $fieldsql
                  WHERE $fieldwhere AND $filter";
 
@@ -274,15 +284,16 @@ class local_file {
     }
 
     /**
+     * Replace course html link
+     *
      * @param string $oldfilename
-     * @param \stored_file $file
+     * @param stored_file $file
      */
-    public static function replace_course_html_link($oldfilename, \stored_file $file) {
+    public static function replace_course_html_link($oldfilename, stored_file $file) {
 
         $coursecontext = self::course_context($file);
 
         if ($file->get_filearea() === 'section') {
-
             self::update_filenames_in_html(
                 'summary',
                 'course_sections',
@@ -291,9 +302,7 @@ class local_file {
                 $oldfilename,
                 $file->get_filename()
             );
-
         } else if ($file->get_filearea() === 'summary') {
-
             self::update_filenames_in_html(
                 'summary',
                 'course',
@@ -306,14 +315,16 @@ class local_file {
     }
 
     /**
+     * Replace block html link.
+     *
      * @param string $oldfilename
-     * @param \stored_file $file
+     * @param stored_file $file
      */
-    public static function replace_block_html_link($oldfilename, \stored_file $file) {
+    public static function replace_block_html_link($oldfilename, stored_file $file) {
         global $DB;
 
-        $search = '@@PLUGINFILE@@/'.$oldfilename;
-        $replace = '@@PLUGINFILE@@/'.$file->get_filename();
+        $search = '@@PLUGINFILE@@/' . $oldfilename;
+        $replace = '@@PLUGINFILE@@/' . $file->get_filename();
 
         $contextid = $file->get_contextid();
         $blockcontext = \context::instance_by_id($contextid);
@@ -390,20 +401,26 @@ class local_file {
     /**
      * Get file from pluginfileurlprops
      * @param pluginfileurlprops $props
-     * @return bool|\stored_file
+     * @return bool|stored_file
      */
     public static function get_file_fromprops(pluginfileurlprops $props) {
         $fs = new \file_storage();
-        return $fs->get_file($props->contextid, $props->component, $props->filearea, $props->itemid,
-            $props->filepath, basename($props->filename));
+        return $fs->get_file(
+            $props->contextid,
+            $props->component,
+            $props->filearea,
+            $props->itemid,
+            $props->filepath,
+            basename($props->filename)
+        );
     }
 
     /**
      * Replace any references to file in component html fields.
      * @param string $oldfilename
-     * @param \stored_file
+     * @param stored_file
      */
-    public static function replace_html_links($oldfilename, \stored_file $file) {
+    public static function replace_html_links($oldfilename, stored_file $file) {
         global $DB;
 
         $component = $file->get_component();
@@ -481,7 +498,6 @@ class local_file {
 
         foreach ($dir as $fileinfo) {
             if (!$fileinfo->isDot()) {
-
                 $regex = '/(.*)(?:_component.php)$/';
 
                 $matches = [];
@@ -510,7 +526,9 @@ class local_file {
     }
 
     /**
-     * @param \stored_file $file
+     * Queue a file for deletion.
+     *
+     * @param stored_file $file
      */
     public static function queue_file_for_deletion($file) {
         global $DB;
@@ -544,6 +562,5 @@ class local_file {
             'pathnamehash' => $file->get_pathnamehash(),
             'contenthash'  => $file->get_contenthash(),
         ]);
-
     }
 }

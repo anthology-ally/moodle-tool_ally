@@ -33,7 +33,6 @@ namespace tool_ally;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class auto_config_resolver {
-
     /**
      * @var string
      */
@@ -44,12 +43,17 @@ class auto_config_resolver {
      */
     protected $clioption;
 
-    public function __construct($clioption) {
+    /**
+     * Constructor.
+     */
+    public function __construct(string $clioption) {
         $this->clioption = $clioption;
         $this->env = getenv('MOODLE_TOOL_ALLY_AUTO_CONFIGS');
     }
 
     /**
+     * Resolve config.
+     *
      * @return array|\stdClass
      * @throws \coding_exception
      */

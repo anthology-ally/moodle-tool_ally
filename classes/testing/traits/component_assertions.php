@@ -15,16 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Interface for testing components.
+ * Trait for testing components.
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 namespace tool_ally\testing\traits;
 
+/**
+ * Trait for testing components.
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 trait component_assertions {
-
     /**
+     * Assert that content items list contains an item with given properties.
+     *
      * @param array $items
      * @param int $id
      * @param string $component
@@ -36,16 +42,20 @@ trait component_assertions {
             $this->fail('Content items list is empty!');
         }
         foreach ($items as $item) {
-            if (intval($item->id) === intval($id) && $item->component === $component &&
-                $item->table === $table && $item->field === $field) {
+            if (
+                intval($item->id) === intval($id) && $item->component === $component &&
+                $item->table === $table && $item->field === $field
+            ) {
                 return;
             }
         }
-        $compref = 'id "'.$id.'" component "'.$component. '" table "'.$table.'" and field "'.$field.'"';
-        $this->fail('Content items list does not contain item with '.$compref);
+        $compref = 'id "' . $id . '" component "' . $component . '" table "' . $table . '" and field "' . $field . '"';
+        $this->fail('Content items list does not contain item with ' . $compref);
     }
 
     /**
+     * Assert that content items list does not contain an item with given properties.
+     *
      * @param array $items
      * @param int $id
      * @param string $component
@@ -54,10 +64,12 @@ trait component_assertions {
      */
     protected function assert_content_items_not_contain_item(array $items, $id, $component, $table, $field) {
         foreach ($items as $item) {
-            if (intval($item->id) === intval($id) && $item->component === $component &&
-                $item->table === $table && $item->field === $field) {
-                $compref = 'id "'.$id.'" component "'.$component. '" table "'.$table.'" and field "'.$field.'"';
-                $this->fail('Content items list should not contain item with '.$compref);
+            if (
+                intval($item->id) === intval($id) && $item->component === $component &&
+                $item->table === $table && $item->field === $field
+            ) {
+                $compref = 'id "' . $id . '" component "' . $component . '" table "' . $table . '" and field "' . $field . '"';
+                $this->fail('Content items list should not contain item with ' . $compref);
             }
         }
     }

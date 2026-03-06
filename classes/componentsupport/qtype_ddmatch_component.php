@@ -23,11 +23,11 @@
  */
 namespace tool_ally\componentsupport;
 
-defined ('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die();
 
 use tool_ally\local_file;
 
-require_once($CFG->dirroot.'/question/engine/bank.php');
+require_once($CFG->dirroot . '/question/engine/bank.php');
 
 /**
  * Html file replacement support for sub question type qtype_ddmatch
@@ -37,8 +37,10 @@ require_once($CFG->dirroot.'/question/engine/bank.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_ddmatch_component extends question_component {
-
-    public function replace_file_links() {
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_file_links(): void {
         global $DB;
 
         $file = $this->file;
@@ -53,14 +55,20 @@ class qtype_ddmatch_component extends question_component {
         } else if ($area === 'subanswer') {
             $field = 'answertext';
         } else {
-            debugging('Area of '.$area.' is not yet supported for qtype_ddmatch_component');
+            debugging('Area of ' . $area . ' is not yet supported for qtype_ddmatch_component');
             return;
         }
 
         $table = 'qtype_ddmatch_subquestions';
 
-        local_file::update_filenames_in_html($field, $table, ' id = ? ',
-            ['id' => $itemid], $this->oldfilename, $file->get_filename());
+        local_file::update_filenames_in_html(
+            $field,
+            $table,
+            ' id = ? ',
+            ['id' => $itemid],
+            $this->oldfilename,
+            $file->get_filename()
+        );
 
         \question_finder::get_instance()->uncache_question($subquestion->questionid);
     }

@@ -50,7 +50,6 @@ function xmldb_tool_ally_upgrade($oldversion) {
     }
 
     if ($oldversion < 2016121900) {
-
         // Define table tool_ally_deleted_files to be created.
         $table = new xmldb_table('tool_ally_deleted_files');
 
@@ -87,7 +86,6 @@ function xmldb_tool_ally_upgrade($oldversion) {
     }
 
     if ($oldversion < 2017120811) {
-
         // Define table tool_ally_deleted_content to be created.
         $table = new xmldb_table('tool_ally_deleted_content');
 
@@ -113,7 +111,6 @@ function xmldb_tool_ally_upgrade($oldversion) {
     }
 
     if ($oldversion < 2017120822) {
-
         // Define table tool_ally_content_queue to be created.
         $table = new xmldb_table('tool_ally_content_queue');
 
@@ -145,7 +142,6 @@ function xmldb_tool_ally_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018080200) {
-
         // Define field attempts to be added to tool_ally_content_queue.
         $table = new xmldb_table('tool_ally_content_queue');
 
@@ -194,19 +190,18 @@ function xmldb_tool_ally_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018080814) {
-
         // Define table tool_ally_log to be created.
         $table = new xmldb_table('tool_ally_log');
 
         // Adding fields to table tool_ally_log.
-        $table->add_field('id',          XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('time',        XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('level',       XMLDB_TYPE_CHAR, '12', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('code',        XMLDB_TYPE_CHAR, '255', null, null, null, null);
-        $table->add_field('message',     XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('time', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('level', XMLDB_TYPE_CHAR, '12', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('code', XMLDB_TYPE_CHAR, '255', null, null, null, null);
+        $table->add_field('message', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('explanation', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('data',        XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('exception',   XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('data', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('exception', XMLDB_TYPE_TEXT, null, null, null, null, null);
 
         // Adding keys to table tool_ally_log.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
@@ -225,14 +220,13 @@ function xmldb_tool_ally_upgrade($oldversion) {
     }
 
     if ($oldversion < 2018080815) {
-
         // Define table tool_ally_course_event to be created.
         $table = new xmldb_table('tool_ally_course_event');
 
         // Adding fields to table tool_ally_course_event.
-        $table->add_field('id',        XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
-        $table->add_field('name',      XMLDB_TYPE_CHAR, '15', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('time',      XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('name', XMLDB_TYPE_CHAR, '15', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('time', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('courseid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
 
         // Adding keys to table tool_ally_course_event.
@@ -248,11 +242,9 @@ function xmldb_tool_ally_upgrade($oldversion) {
     }
 
     if ($oldversion < 2019061200) {
-
         $user = $DB->get_record('user', ['username' => 'ally_webuser']);
         // If the user exists we will update its capabilites.
         if ($user) {
-
             $contextid = \context_system::instance()->id;
             // The two new capabilites.
             $caps = [
@@ -297,7 +289,6 @@ function xmldb_tool_ally_upgrade($oldversion) {
     }
 
     if ($oldversion < 2020061104) {
-
         // Define table tool_ally_file_in_use to be created.
         $table = new xmldb_table('tool_ally_file_in_use');
 
@@ -325,7 +316,6 @@ function xmldb_tool_ally_upgrade($oldversion) {
     }
 
     if ($oldversion < 2020061105) {
-
         // Define index needsupdate (not unique) to be added to tool_ally_file_in_use.
         $table = new xmldb_table('tool_ally_file_in_use');
         $index = new xmldb_index('needsupdate', XMLDB_INDEX_NOTUNIQUE, ['needsupdate']);

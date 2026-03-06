@@ -23,37 +23,44 @@
  */
 namespace tool_ally;
 
+use stdClass;
 use tool_ally\abstract_testcase;
 use tool_ally\webservice\course_content;
 use tool_ally\models\component;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for course content webservice.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_ally\webservice\loggable_external_api::service
  * @runTestsInSeparateProcesses
  */
-class webservice_course_content_test extends abstract_testcase {
+final class webservice_course_content_test extends abstract_testcase {
     protected function setUp(): void {
         parent::setUp();
         global $CFG;
-        require_once($CFG->dirroot.'/lib/externallib.php');
+        require_once($CFG->dirroot . '/lib/externallib.php');
     }
 
-    private function get_forum_expectations($course, $forumtype = 'forum') {
+    /**
+     * Get forum expectations.
+     */
+    private function get_forum_expectations(stdClass $course, $forumtype = 'forum') {
         global $USER;
 
         $forumintro = '<p>My original intro content</p>';
-        $forum = $this->getDataGenerator()->create_module($forumtype,
-            ['course' => $course->id, 'intro' => $forumintro, 'introformat' => FORMAT_HTML]);
+        $forum = $this->getDataGenerator()->create_module(
+            $forumtype,
+            ['course' => $course->id, 'intro' => $forumintro, 'introformat' => FORMAT_HTML]
+        );
         $expectedforum = new component(
             $forum->id,
             $forumtype,
@@ -74,7 +81,7 @@ class webservice_course_content_test extends abstract_testcase {
         $record->forum = $forum->id;
         $record->userid = $user->id;
         $record->course = $course->id;
-        $discussion = self::getDataGenerator()->get_plugin_generator('mod_'.$forumtype)->create_discussion($record);
+        $discussion = self::getDataGenerator()->get_plugin_generator('mod_' . $forumtype)->create_discussion($record);
 
         // Add a reply by regular user.
         $posttitle = 'My post title';
@@ -85,12 +92,12 @@ class webservice_course_content_test extends abstract_testcase {
         $record->subject = $posttitle;
         $record->message = $postmessage;
         $record->messageformat = FORMAT_HTML;
-        $post = self::getDataGenerator()->get_plugin_generator('mod_'.$forumtype)->create_post($record);
+        $post = self::getDataGenerator()->get_plugin_generator('mod_' . $forumtype)->create_post($record);
 
         $unexpectedpost = new component(
             $post->id,
             $forumtype,
-            $forumtype.'_posts',
+            $forumtype . '_posts',
             'message',
             $course->id,
             $post->modified,
@@ -104,7 +111,7 @@ class webservice_course_content_test extends abstract_testcase {
         $record->course = $course->id;
         $record->forum = $forum->id;
         $record->userid = $USER->id;
-        $discussion = self::getDataGenerator()->get_plugin_generator('mod_'.$forumtype)->create_discussion($record);
+        $discussion = self::getDataGenerator()->get_plugin_generator('mod_' . $forumtype)->create_discussion($record);
 
         $posttitle = 'My post title';
         $postmessage = 'My post message';
@@ -114,12 +121,12 @@ class webservice_course_content_test extends abstract_testcase {
         $record->subject = $posttitle;
         $record->message = $postmessage;
         $record->messageformat = FORMAT_HTML;
-        $post = self::getDataGenerator()->get_plugin_generator('mod_'.$forumtype)->create_post($record);
+        $post = self::getDataGenerator()->get_plugin_generator('mod_' . $forumtype)->create_post($record);
 
         $expectedpost = new component(
             $post->id,
             $forumtype,
-            $forumtype.'_posts',
+            $forumtype . '_posts',
             'message',
             $course->id,
             $post->modified,
@@ -142,7 +149,8 @@ class webservice_course_content_test extends abstract_testcase {
 
         $coursesummary = '<p>My course summary</p>';
         $course = $this->getDataGenerator()->create_course(
-                ['summary' => $coursesummary, 'summaryformat' => FORMAT_HTML]);
+            ['summary' => $coursesummary, 'summaryformat' => FORMAT_HTML]
+        );
         $expectedcourse = new component(
             $course->id,
             'course',
@@ -156,7 +164,8 @@ class webservice_course_content_test extends abstract_testcase {
 
         $section0summary = '<p>First section summary</p>';
         $section = $this->getDataGenerator()->create_course_section(
-                ['section' => 0, 'course' => $course->id]);
+            ['section' => 0, 'course' => $course->id]
+        );
         $DB->update_record('course_sections', (object) [
             'id' => $section->id,
             'summary' => $section0summary,
@@ -175,8 +184,10 @@ class webservice_course_content_test extends abstract_testcase {
         );
 
         $labelintro = '<p>My original intro content</p>';
-        $label = $this->getDataGenerator()->create_module('label',
-            ['course' => $course->id, 'intro' => $labelintro, 'introformat' => FORMAT_HTML]);
+        $label = $this->getDataGenerator()->create_module(
+            'label',
+            ['course' => $course->id, 'intro' => $labelintro, 'introformat' => FORMAT_HTML]
+        );
         $expectedlabel = new component(
             $label->id,
             'label',
@@ -189,8 +200,10 @@ class webservice_course_content_test extends abstract_testcase {
         );
 
         $assignintro = '<p>My assign original intro content</p>';
-        $assign = $this->getDataGenerator()->create_module('assign',
-            ['course' => $course->id, 'intro' => $assignintro, 'introformat' => FORMAT_HTML]);
+        $assign = $this->getDataGenerator()->create_module(
+            'assign',
+            ['course' => $course->id, 'intro' => $assignintro, 'introformat' => FORMAT_HTML]
+        );
         $expectedassign = new component(
             $assign->id,
             'assign',
@@ -202,10 +215,10 @@ class webservice_course_content_test extends abstract_testcase {
             $assign->name
         );
 
-        list ($expectedforum, $expectedpost, $unexpectedpost) = $this->get_forum_expectations($course);
+         [$expectedforum, $expectedpost, $unexpectedpost] = $this->get_forum_expectations($course);
 
-        if (file_exists($CFG->dirroot.'/mod/hsuforum')) {
-            list ($hsuexpectedforum, $hsuexpectedpost, $hsuunexpectedpost) = $this->get_forum_expectations($course);
+        if (file_exists($CFG->dirroot . '/mod/hsuforum')) {
+             [$hsuexpectedforum, $hsuexpectedpost, $hsuunexpectedpost] = $this->get_forum_expectations($course);
         }
 
         $contents = course_content::service([$course->id]);
@@ -217,7 +230,7 @@ class webservice_course_content_test extends abstract_testcase {
         $this->assertTrue(in_array($expectedforum, $contents));
         $this->assertTrue(in_array($expectedpost, $contents));
         $this->assertFalse(in_array($unexpectedpost, $contents));
-        if (file_exists($CFG->dirroot.'/mod/hsuforum')) {
+        if (file_exists($CFG->dirroot . '/mod/hsuforum')) {
             $this->assertTrue(in_array($hsuexpectedforum, $contents));
             $this->assertTrue(in_array($hsuexpectedpost, $contents));
             $this->assertFalse(in_array($hsuunexpectedpost, $contents));

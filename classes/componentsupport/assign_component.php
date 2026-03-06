@@ -28,7 +28,6 @@ use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
-
 use context;
 use stored_file;
 
@@ -38,23 +37,35 @@ use stored_file;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class assign_component extends component_base implements iface_html_content {
-
     use html_content;
     use embedded_file_map;
 
-    protected $tablefields = [
+    /**
+     * {@inheritdoc}
+     * @var array
+     */
+    protected array $tablefields = [
         'assign' => ['intro'],
     ];
 
-    public static function component_type() {
+    /**
+     * {@inheritdoc}
+     */
+    public static function component_type(): string {
         return self::TYPE_MOD;
     }
 
-    public function get_course_html_content_items($courseid) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_course_html_content_items(int $courseid): array {
         return $this->std_get_course_html_content_items($courseid);
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_html_content(int $id, string $table, string $field, ?int $courseid = null): ?component_content {
         global $DB;
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
         if (empty($content)) {
@@ -67,19 +78,30 @@ class assign_component extends component_base implements iface_html_content {
         return ($content);
     }
 
-    public function get_all_html_content($id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_all_html_content(int $id): array {
         return [$this->get_html_content($id, 'assign', 'intro')];
     }
 
-    public function replace_html_content($id, $table, $field, $content) {
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_html_content(int $id, string $table, string $field, string $content): ?bool {
         return $this->std_replace_html_content($id, $table, $field, $content);
     }
 
-    public function get_annotation($id) {
-        return $this->get_component_name().':'.$this->get_component_name().':intro:'.$id;
+    /**
+     * {@inheritdoc}
+     */
+    public function get_annotation(int $id): string {
+        return $this->get_component_name() . ':' . $this->get_component_name() . ':intro:' . $id;
     }
-
-    public function resolve_course_id($id, $table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function resolve_course_id(int $id, string $table, string $field): int {
         global $DB;
 
         if ($table === 'assign') {
@@ -87,7 +109,7 @@ class assign_component extends component_base implements iface_html_content {
             return $label->course;
         }
 
-        throw new \coding_exception('Invalid table used to recover course id '.$table);
+        throw new \coding_exception('Invalid table used to recover course id ' . $table);
     }
 
     /**
@@ -104,6 +126,9 @@ class assign_component extends component_base implements iface_html_content {
         return $this->make_module_instance_url($table, $id);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function check_file_in_use(stored_file $file, ?context $context = null): bool {
         if ($file->get_filearea() == 'introattachment') {
             // All intro attachments are in use.
@@ -112,5 +137,4 @@ class assign_component extends component_base implements iface_html_content {
 
         return $this->check_embedded_file_in_use($file, $context);
     }
-
 }

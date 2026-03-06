@@ -34,10 +34,16 @@ use core\task\scheduled_task;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class cleanup_log_task extends scheduled_task {
+    /**
+     * {@inheritdoc}
+     */
     public function get_name() {
         return get_string('logcleanuptask', 'tool_ally');
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function execute() {
         global $DB;
         $logdays = get_config('tool_ally', 'loglifetimedays');
@@ -56,5 +62,4 @@ class cleanup_log_task extends scheduled_task {
 
         $records = $DB->delete_records_select('tool_ally_log', 'time < ?', [$reftime]);
     }
-
 }

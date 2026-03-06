@@ -25,12 +25,14 @@ namespace tool_ally;
 use tool_ally\auto_config;
 
 /**
+ * Auto config tests.
+ *
  * @runTestsInSeparateProcesses
  * @group     tool_ally
  * @group     ally
+ * @covers   \tool_ally\auto_config
  */
-class auto_config_test extends \advanced_testcase {
-
+final class auto_config_test extends \advanced_testcase {
     public function test_auto_config(): void {
         global $DB;
 
@@ -63,13 +65,16 @@ class auto_config_test extends \advanced_testcase {
         $this->assertCount(1, $dataprofile);
     }
 
+    /**
+     * Create a profile field for testing.
+     */
     private function create_profile_field() {
         global $CFG, $DB;
 
         $datatype = 'text';
-        require_once($CFG->dirroot.'/user/profile/definelib.php');
-        require_once($CFG->dirroot.'/user/profile/field/'.$datatype.'/define.class.php');
-        $newfield = 'profile_define_'.$datatype;
+        require_once($CFG->dirroot . '/user/profile/definelib.php');
+        require_once($CFG->dirroot . '/user/profile/field/' . $datatype . '/define.class.php');
+        $newfield = 'profile_define_' . $datatype;
         $formfield = new $newfield();
 
         $data = [

@@ -22,7 +22,7 @@
 
 namespace tool_ally\componentsupport;
 
-defined ('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die();
 
 use context;
 use moodle_url;
@@ -34,7 +34,7 @@ use tool_ally\logging\logger;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
 
-require_once($CFG->dirroot.'/course/lib.php');
+require_once($CFG->dirroot . '/course/lib.php');
 
 /**
  * Html content support for courses.
@@ -42,20 +42,28 @@ require_once($CFG->dirroot.'/course/lib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class course_component extends component_base implements iface_html_content {
-
     use html_content;
     use embedded_file_map;
 
-    protected $tablefields = [
+    /**
+     * {@inheritdoc}
+     * @var array
+     */
+    protected array $tablefields = [
         'course' => ['summary'],
         'course_sections' => ['summary'],
     ];
 
-    public static function component_type() {
+    /**
+     * {@inheritdoc}
+     */
+    public static function component_type(): string {
         return self::TYPE_CORE;
     }
 
     /**
+     * Get course section summary rows.
+     *
      * @param int $courseid
      * @return \moodle_recordset
      * @throws \dml_exception
@@ -85,8 +93,10 @@ class course_component extends component_base implements iface_html_content {
             $sectionnum = $section;
         }
 
-        if (!empty($course->format)
-            && get_string_manager()->string_exists('sectionname', 'format_' . $course->format)) {
+        if (
+            !empty($course->format)
+            && get_string_manager()->string_exists('sectionname', 'format_' . $course->format)
+        ) {
             return get_string('sectionname', 'format_' . $course->format) . ' ' . $sectionnum;
         }
 
@@ -94,7 +104,10 @@ class course_component extends component_base implements iface_html_content {
         return get_string('section', 'tool_ally', $sectionnum);
     }
 
-    public function get_course_html_content_items($courseid) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_course_html_content_items(int $courseid): array {
         global $DB;
 
         $array = [];
@@ -104,8 +117,15 @@ class course_component extends component_base implements iface_html_content {
         $row = $DB->get_record_select('course', $select, [$courseid, FORMAT_HTML]);
         if ($row) {
             $array[] = new component(
-                    $row->id, 'course', 'course', 'summary', $courseid, $row->timemodified,
-                    $row->summaryformat, $row->fullname);
+                $row->id,
+                'course',
+                'course',
+                'summary',
+                $courseid,
+                $row->timemodified,
+                $row->summaryformat,
+                $row->fullname
+            );
         }
 
         // Add course sections.
@@ -113,19 +133,29 @@ class course_component extends component_base implements iface_html_content {
         foreach ($rs as $row) {
             $sectionname = !empty($row->name) ? $row->name : $this->get_section_name($courseid, $row);
             $array[] = new component(
-                    $row->id, 'course', 'course_sections', 'summary', $courseid, $row->timemodified,
-                    $row->summaryformat, $sectionname);
+                $row->id,
+                'course',
+                'course_sections',
+                'summary',
+                $courseid,
+                $row->timemodified,
+                $row->summaryformat,
+                $sectionname
+            );
         }
         $rs->close();
 
         return $array;
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_html_content(int $id, string $table, string $field, ?int $courseid = null): ?component_content {
         $titlefield = $table === 'course' ? 'fullname' : 'name';
         $recordlambda = null;
         if ($table === 'course_sections') {
-            $recordlambda = function($record) {
+            $recordlambda = function ($record) {
                 if (empty($record->timemodified)) {
                     $course = get_course($record->course);
                     $record->timemodified = $course->timecreated;
@@ -140,7 +170,7 @@ class course_component extends component_base implements iface_html_content {
                 } catch (\Exception $ex) {
                     // Somehow the section is course-less or the course format could not be retrieved.
                     // The section name remains unchanged.
-                    $msg = '<br> Course ID: '.$record->course;
+                    $msg = '<br> Course ID: ' . $record->course;
 
                     logger::get()->info('logger:failedtogetcoursesectionname', [
                         'content' => $msg,
@@ -178,18 +208,21 @@ class course_component extends component_base implements iface_html_content {
         global $DB;
 
         if ($table === 'course') {
-            return new moodle_url('/course/edit.php?id='.$id).'';
+            return new moodle_url('/course/edit.php?id=' . $id) . '';
         } else if ($table === 'course_sections') {
             $sectionnumber = $this->get_section_number($id);
             if (empty($courseid)) {
                 $courseid = $DB->get_field('course_sections', 'course', ['id' => $id]);
             }
-            return new moodle_url('/course/view.php?id='.$courseid.'#section-'.$sectionnumber).'';
+            return new moodle_url('/course/view.php?id=' . $courseid . '#section-' . $sectionnumber) . '';
         }
         return null;
     }
 
-    public function get_all_html_content($id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_all_html_content(int $id): array {
         global $DB;
         $content = [];
         $content[] = $this->get_html_content($id, 'course', 'summary');
@@ -200,7 +233,10 @@ class course_component extends component_base implements iface_html_content {
         return $content;
     }
 
-    public function replace_html_content($id, $table, $field, $content) {
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_html_content(int $id, string $table, string $field, string $content): ?bool {
         global $DB;
 
         if ($table === 'course_sections') {
@@ -212,12 +248,14 @@ class course_component extends component_base implements iface_html_content {
             }
             return false;
         } else {
-
             return $this->std_replace_html_content($id, $table, $field, $content);
         }
     }
 
-    public function resolve_course_id($id, $table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function resolve_course_id(int $id, string $table, string $field): int {
         global $DB;
 
         if ($table === 'course') {
@@ -227,18 +265,13 @@ class course_component extends component_base implements iface_html_content {
             return $section->course;
         }
 
-        throw new \coding_exception('Invalid table used to recover course id '.$table);
+        throw new \coding_exception('Invalid table used to recover course id ' . $table);
     }
 
     /**
-     * Get a file item id for a specific table / field / id.
-     *
-     * @param string $table
-     * @param string $field
-     * @param int $id
-     * @return int
+     * {@inheritdoc}
      */
-    public function get_file_item($table, $field, $id) {
+    public function get_file_item(string $table, string $field, int $id): int {
         if ($table === 'course_sections') {
             return $id;
         }
@@ -246,19 +279,18 @@ class course_component extends component_base implements iface_html_content {
     }
 
     /**
-     * Get a file area for a specific table / field.
-     *
-     * @param $table
-     * @param $field
-     * @return mixed
+     * {@inheritdoc}
      */
-    public function get_file_area($table, $field) {
+    public function get_file_area(string $table, string $field): string {
         if ($table === 'course_sections') {
             return 'section';
         }
         return parent::get_file_area($table, $field);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function check_file_in_use(stored_file $file, ?context $context = null): bool {
         if ($file->get_filearea() == 'overviewfiles') {
             // Overview files is the area for the course image.

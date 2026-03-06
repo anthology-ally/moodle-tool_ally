@@ -46,7 +46,10 @@ class role_assignments {
      */
     private $db;
 
-    public function __construct(array $roleids = [], \moodle_database $db = null) {
+    /**
+     * Constructor.
+     */
+    public function __construct(array $roleids = [], ?\moodle_database $db = null) {
         global $DB;
 
         $this->roleids = $roleids;
@@ -106,7 +109,7 @@ class role_assignments {
             $this->data = [];
         }
 
-        list($insql, $params) = $this->db->get_in_or_equal($this->roleids, SQL_PARAMS_NAMED);
+        [$insql, $params] = $this->db->get_in_or_equal($this->roleids, SQL_PARAMS_NAMED);
 
         $query = <<<SQL
             SELECT id, contextid, userid

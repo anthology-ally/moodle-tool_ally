@@ -30,9 +30,14 @@ namespace tool_ally\adminsetting;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class ally_trim extends \admin_setting_configtext {
-
+    /**
+     * Write setting value.
+     *
+     * @param mixed $data
+     * @return string
+     */
     public function write_setting($data) {
-        if ($this->paramtype === PARAM_INT and $data === '') {
+        if ($this->paramtype === PARAM_INT && $data === '') {
             // Do not complain if '' used instead of 0.
             $data = 0;
         }

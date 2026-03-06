@@ -24,22 +24,29 @@
 namespace tool_ally;
 
 use tool_ally\file_url_resolver;
+use context_course;
+use context_module;
+use moodle_url;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test file URL resolver.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2016 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_ally\file_url_resolver
  */
-class file_url_resolver_test extends abstract_testcase {
-
+final class file_url_resolver_test extends abstract_testcase {
+    /**
+     * @var stdClass
+     */
     private $course;
 
     /**
@@ -48,6 +55,7 @@ class file_url_resolver_test extends abstract_testcase {
     private $generator;
 
     protected function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
         $this->setUser($this->getDataGenerator()->create_user());
 
@@ -67,8 +75,8 @@ class file_url_resolver_test extends abstract_testcase {
         $resolver = new file_url_resolver();
         $url      = $resolver->resolve_url($file);
 
-        $this->assertInstanceOf(\moodle_url::class, $url);
-        $this->assertEquals($CFG->wwwroot.'/mod/resource/view.php?id='.$resource->cmid, $url->out());
+        $this->assertInstanceOf(moodle_url::class, $url);
+        $this->assertEquals($CFG->wwwroot . '/mod/resource/view.php?id=' . $resource->cmid, $url->out());
     }
 
     /**
@@ -78,7 +86,7 @@ class file_url_resolver_test extends abstract_testcase {
         global $USER, $DB;
 
         $forum      = $this->getDataGenerator()->create_module('forum', ['course' => $this->course->id]);
-        $modcontext = \context_module::instance($forum->cmid);
+        $modcontext = context_module::instance($forum->cmid);
         $draft      = $this->generator->create_draft_file();
 
         /** @var \mod_forum_generator $generator */
@@ -91,15 +99,21 @@ class file_url_resolver_test extends abstract_testcase {
         ]);
 
         $post = $DB->get_record('forum_posts', ['discussion' => $discussion->id]);
-        $file = get_file_storage()->get_file($modcontext->id, 'mod_forum', 'post',
-            $post->id, $draft->get_filepath(), $draft->get_filename());
+        $file = get_file_storage()->get_file(
+            $modcontext->id,
+            'mod_forum',
+            'post',
+            $post->id,
+            $draft->get_filepath(),
+            $draft->get_filename()
+        );
 
         $resolver = new file_url_resolver();
         $url      = $resolver->resolve_url($file);
 
-        $this->assertInstanceOf(\moodle_url::class, $url);
+        $this->assertInstanceOf(moodle_url::class, $url);
         $this->assertTrue($url->compare(
-            new \moodle_url('/mod/forum/discuss.php', ['d' => $discussion->id], 'p'.$post->id)
+            new moodle_url('/mod/forum/discuss.php', ['d' => $discussion->id], 'p' . $post->id)
         ));
     }
 
@@ -114,7 +128,7 @@ class file_url_resolver_test extends abstract_testcase {
      */
     public function test_resolve_question(): void {
         $this->markTestSkipped('Not relevant from Moodle 5.0+: draft file promotion during question creation no longer occurs.');
-        $context = \context_course::instance($this->course->id);
+        $context = context_course::instance($this->course->id);
 
         /** @var core_question_generator $generator */
         $generator = $this->getDataGenerator()->get_plugin_generator('core_question');
@@ -123,7 +137,7 @@ class file_url_resolver_test extends abstract_testcase {
             'category'     => $cat->id,
             'questiontext' => [
                 'text'   => 'Text.',
-                'format' => FORMAT_HTML
+                'format' => FORMAT_HTML,
             ],
         ]);
 
@@ -144,9 +158,9 @@ class file_url_resolver_test extends abstract_testcase {
         $resolver = new file_url_resolver();
         $url      = $resolver->resolve_url($file);
 
-        $this->assertInstanceOf(\moodle_url::class, $url);
+        $this->assertInstanceOf(moodle_url::class, $url);
         $this->assertTrue($url->compare(
-            new \moodle_url('/question/question.php', ['courseid' => $this->course->id, 'id' => $question->id])
+            new moodle_url('/question/question.php', ['courseid' => $this->course->id, 'id' => $question->id])
         ));
     }
 }

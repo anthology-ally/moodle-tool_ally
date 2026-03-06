@@ -24,7 +24,7 @@
 use tool_ally\auto_config;
 use tool_ally\local;
 
-require(__DIR__.'/../../../config.php');
+require(__DIR__ . '/../../../config.php');
 
 $PAGE->set_url(new moodle_url('/admin/tool/ally/autoconfigws.php'));
 $PAGE->set_context(context_system::instance());
@@ -49,8 +49,8 @@ if ($action === 'confirm' || $action === 'view') {
         throw new moodle_exception('generalexceptionmessage', 'error', '', get_string('error:wstokenmissing', 'tool_ally'));
     }
     $token = $wstoken->token;
-    $sampleapicall = $CFG->wwwroot.'/webservice/rest/server.php?wstoken='.$token.
-            '&wsfunction=tool_ally_version_info&'.'moodlewsrestformat=json';
+    $sampleapicall = $CFG->wwwroot . '/webservice/rest/server.php?wstoken=' . $token .
+            '&wsfunction=tool_ally_version_info&' . 'moodlewsrestformat=json';
     $context = (object) ['token' => $token, 'sampleapicall' => $sampleapicall];
     echo $OUTPUT->render_from_template('tool_ally/auto_conf_result', $context);
     echo $OUTPUT->continue_button(new moodle_url('/admin/settings.php', ['section' => 'tool_ally']));

@@ -23,24 +23,18 @@
 namespace tool_ally;
 
 use backup;
-
 use context_course;
-
 use core\event\base;
-
 use core\event\course_created;
 use core\event\course_updated;
 use core\event\course_deleted;
 use core\event\course_restored;
-
 use core\event\course_module_created;
 use core\event\course_module_updated;
 use core\event\course_module_deleted;
-
 use core\event\course_section_created;
 use core\event\course_section_updated;
 use core\event\course_section_deleted;
-
 use core\event\group_created;
 use core\event\group_deleted;
 use core\event\group_updated;
@@ -48,20 +42,16 @@ use mod_forum\event\discussion_created;
 use mod_forum\event\discussion_updated;
 use mod_forum\event\discussion_deleted;
 use mod_forum\event\post_updated;
-
 use mod_hsuforum\event\discussion_created as hsu_discussion_created;
 use mod_hsuforum\event\discussion_updated as hsu_discussion_updated;
 use mod_hsuforum\event\discussion_deleted as hsu_discussion_deleted;
 use mod_hsuforum\event\post_updated as hsu_post_updated;
-
 use mod_glossary\event\entry_created;
 use mod_glossary\event\entry_updated;
 use mod_glossary\event\entry_deleted;
-
 use mod_book\event\chapter_created;
 use mod_book\event\chapter_updated;
 use mod_book\event\chapter_deleted;
-
 use mod_lesson\event\page_created;
 use mod_lesson\event\page_updated;
 use mod_lesson\event\page_deleted;
@@ -75,17 +65,32 @@ use mod_lesson\event\page_deleted;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+/**
+ * Event handlers for Ally tool.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class event_handlers {
-
+    /** @var string Rich content created API constant */
     const API_RICH_CNT_CREATED = 'rich_content_created';
+    /** @var string Rich content updated API constant */
     const API_RICH_CNT_UPDATED = 'rich_content_updated';
+    /** @var string Rich content deleted API constant */
     const API_RICH_CNT_DELETED = 'rich_content_deleted';
+    /** @var string Course updated API constant */
     const API_COURSE_UPDATED = 'course_updated';
+    /** @var string Course deleted API constant */
     const API_COURSE_DELETED = 'course_deleted';
+    /** @var string Course copied API constant */
     const API_COURSE_COPIED = 'course_copied';
+    /** @var string Course imported API constant */
     const API_COURSE_IMPORTED = 'course_imported';
 
     /**
+     * Course created event handler.
+     *
      * @param course_created $event
      */
     public static function course_created(course_created $event) {
@@ -96,10 +101,13 @@ class event_handlers {
         course_processor::push_course_event(
             self::API_COURSE_UPDATED,
             $event->timecreated,
-            $courseid);
+            $courseid
+        );
     }
 
     /**
+     * Course updated event handler.
+     *
      * @param course_updated $event
      */
     public static function course_updated(course_updated $event) {
@@ -111,10 +119,13 @@ class event_handlers {
         course_processor::push_course_event(
             self::API_COURSE_UPDATED,
             $event->timecreated,
-            $courseid);
+            $courseid
+        );
     }
 
     /**
+     * Course deleted event handler.
+     *
      * @param course_deleted $event
      */
     public static function course_deleted(course_deleted $event) {
@@ -123,11 +134,14 @@ class event_handlers {
         course_processor::push_course_event(
             self::API_COURSE_DELETED,
             $event->timecreated,
-            $courseid);
+            $courseid
+        );
         files_in_use::delete_course_records($courseid);
     }
 
     /**
+     * Course restored event handler.
+     *
      * @param course_restored $event
      */
     public static function course_restored(course_restored $event) {
@@ -143,7 +157,8 @@ class event_handlers {
                 self::API_COURSE_COPIED,
                 $event->timecreated,
                 $destcourseid,
-                $sourcecourseid);
+                $sourcecourseid
+            );
         }
 
         // Specifically catch course import events.
@@ -152,13 +167,16 @@ class event_handlers {
                 self::API_COURSE_IMPORTED,
                 $event->timecreated,
                 $destcourseid,
-                $sourcecourseid);
+                $sourcecourseid
+            );
         }
 
         // Can intercept more types of restores here if we want.
     }
 
     /**
+     * Course section create/update/delete handler.
+     *
      * @param base $event
      * @param string $apieventname
      * @throws \dml_exception
@@ -179,6 +197,8 @@ class event_handlers {
     }
 
     /**
+     * Course section created event handler.
+     *
      * @param course_section_created $event
      */
     public static function course_section_created(course_section_created $event) {
@@ -186,6 +206,8 @@ class event_handlers {
     }
 
     /**
+     * Course section updated event handler.
+     *
      * @param course_section_updated $event
      * @throws \dml_exception
      */
@@ -195,6 +217,8 @@ class event_handlers {
     }
 
     /**
+     * Course section deleted event handler.
+     *
      * @param course_section_deleted $event
      * @throws \dml_exception
      */
@@ -204,6 +228,8 @@ class event_handlers {
     }
 
     /**
+     * Group created event handler.
+     *
      * @param group_created $event
      */
     public static function group_created(group_created $event) {
@@ -211,6 +237,8 @@ class event_handlers {
     }
 
     /**
+     * Group deleted event handler.
+     *
      * @param group_updated $event
      */
     public static function group_updated(group_updated $event) {
@@ -218,6 +246,8 @@ class event_handlers {
     }
 
     /**
+     * Course module crud.
+     *
      * @param base $event
      * @param $apieventname
      */
@@ -239,6 +269,8 @@ class event_handlers {
     }
 
     /**
+     * Course module created event handler.
+     *
      * @param course_module_created $event
      */
     public static function course_module_created(course_module_created $event) {
@@ -246,6 +278,8 @@ class event_handlers {
     }
 
     /**
+     * Course module updated event handler.
+     *
      * @param course_module_updated $event
      */
     public static function course_module_updated(course_module_updated $event) {
@@ -253,6 +287,8 @@ class event_handlers {
     }
 
     /**
+     * Course module deleted event handler.
+     *
      * @param course_module_deleted $event
      * @throws \dml_exception
      * @throws \moodle_exception
@@ -277,10 +313,11 @@ class event_handlers {
         foreach ($fields as $field) {
             local_content::queue_delete($event->courseid, $id, $module, $module, $field);
         }
-
     }
 
     /**
+     * Forum discussion crud.
+     *
      * @param base $event
      * @param string $eventname
      * @param string $forumtype
@@ -302,10 +339,10 @@ class event_handlers {
         }
 
         // Get the forum post id from the discussion without hitting the DB!
-        $recordsnapshot = $event->get_record_snapshot($forumtype.'_discussions', $event->objectid);
+        $recordsnapshot = $event->get_record_snapshot($forumtype . '_discussions', $event->objectid);
         $postid = $recordsnapshot->firstpost;
 
-        $table = $forumtype.'_posts';
+        $table = $forumtype . '_posts';
         if ($event instanceof discussion_deleted || $event instanceof hsu_discussion_deleted) {
             $content = local_content::get_html_content_deleted($postid, $module, $table, 'message', $event->courseid);
         } else {
@@ -319,6 +356,8 @@ class event_handlers {
     }
 
     /**
+     * Forum discussion created event handler.
+     *
      * @param discussion_created $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -328,6 +367,8 @@ class event_handlers {
     }
 
     /**
+     * Forum discussion updated event handler.
+     *
      * @param discussion_updated $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -337,6 +378,8 @@ class event_handlers {
     }
 
     /**
+     * Forum discussion deleted event handler.
+     *
      * @param discussion_deleted $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -346,6 +389,8 @@ class event_handlers {
     }
 
     /**
+     * Forum post updated event handler.
+     *
      * Note - although we are only interested in discussions, if we alter a discussions message we are in fact altering
      * the corersponding post.
      * @param post_updated $event
@@ -362,10 +407,10 @@ class event_handlers {
         }
         $discussionid = $event->other['discussionid'];
         $postid = $event->objectid;
-        $table = $forumtype.'_posts';
+        $table = $forumtype . '_posts';
         files_in_use::set_context_needs_updating($event->get_context());
 
-        $recordsnapshot = $event->get_record_snapshot($forumtype.'_discussions', $discussionid);
+        $recordsnapshot = $event->get_record_snapshot($forumtype . '_discussions', $discussionid);
         if (intval($recordsnapshot->firstpost) === intval($postid)) {
             // This is a discussion post, let's go!
             $content = local_content::get_html_content($postid, $module, $table, 'message', $event->courseid);
@@ -378,6 +423,8 @@ class event_handlers {
     }
 
     /**
+     * Hsuforum discussion created event handler.
+     *
      * @param discussion_created $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -387,6 +434,8 @@ class event_handlers {
     }
 
     /**
+     * Hsuforum discussion updated event handler.
+     *
      * @param discussion_updated $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -396,6 +445,8 @@ class event_handlers {
     }
 
     /**
+     * Hsuforum discussion deleted event handler.
+     *
      * @param discussion_deleted $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -405,6 +456,8 @@ class event_handlers {
     }
 
     /**
+     * Hsuforum post updated event handler.
+     *
      * Note - although we are only interested in discussions, if we alter a discussions message we are in fact altering
      * the corersponding post.
      * @param post_updated $event
@@ -460,6 +513,8 @@ class event_handlers {
     }
 
     /**
+     * Glossary entry created event handler.
+     *
      * @param entry_created $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -469,6 +524,8 @@ class event_handlers {
     }
 
     /**
+     * Glossary entry updated event handler.
+     *
      * @param entry_updated $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -478,6 +535,8 @@ class event_handlers {
     }
 
     /**
+     * Glossary entry deleted event handler.
+     *
      * @param entry_deleted $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -487,6 +546,8 @@ class event_handlers {
     }
 
     /**
+     * Book chapter created event handler.
+     *
      * @param chapter_created $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -496,6 +557,8 @@ class event_handlers {
     }
 
     /**
+     * Book chapter updated event handler.
+     *
      * @param chapter_updated $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -505,6 +568,8 @@ class event_handlers {
     }
 
     /**
+     * Book chapter deleted event handler.
+     *
      * @param chapter_deleted $event
      * @throws \coding_exception
      * @throws \moodle_exception
@@ -514,6 +579,8 @@ class event_handlers {
     }
 
     /**
+     * Lesson page crud.
+     *
      * @param base $event
      * @param $eventname
      * @throws \coding_exception
@@ -539,6 +606,8 @@ class event_handlers {
     }
 
     /**
+     * Lesson page created event handler.
+     *
      * @param page_created $event
      * @throws \coding_exception
      * @throws \dml_exception
@@ -549,6 +618,8 @@ class event_handlers {
     }
 
     /**
+     * Lesson page updated event handler.
+     *
      * @param page_updated $event
      * @throws \coding_exception
      * @throws \dml_exception
@@ -559,6 +630,8 @@ class event_handlers {
     }
 
     /**
+     * Lesson page deleted event handler.
+     *
      * @param page_deleted $event
      * @throws \coding_exception
      * @throws \dml_exception

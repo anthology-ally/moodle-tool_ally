@@ -25,8 +25,14 @@
 namespace tool_ally\models;
 
 
+/**
+ * Plugin file URL properties model.
+ *
+ * @package   tool_ally
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class pluginfileurlprops {
-
     /**
      * @var int
      */
@@ -75,6 +81,9 @@ class pluginfileurlprops {
         $this->process_props();
     }
 
+    /**
+     * Process properties - removing query from filename / filearea.
+     */
     private function process_props() {
         // Strip params from end of the url .e.g. file.pdf?forcedownload=1.
         // No need to worry about & symbol as it always comes after ? symbol.
@@ -89,8 +98,12 @@ class pluginfileurlprops {
         $this->filepath = $filepath == '.' ? '/' : '/' . $filepath . '/';
     }
 
+    /**
+     * Return properties as list.
+     *
+     * @return array
+     */
     public function to_list() {
         return [$this->contextid, $this->component, $this->filearea, $this->itemid, $this->filename];
     }
-
 }

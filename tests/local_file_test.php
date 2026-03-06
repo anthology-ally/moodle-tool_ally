@@ -32,14 +32,13 @@ use advanced_testcase;
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_ally\local_file
  * @runTestsInSeparateProcesses
  */
-class local_file_test extends advanced_testcase {
-
-
+final class local_file_test extends advanced_testcase {
     public function test_generate_wspluginfile_signature_invalid_config(): void {
         // Test failure without ally_webuser / valid configuration.
         $expectedmsg = 'Access control exception (Ally web user (ally_webuser) does not exist.';

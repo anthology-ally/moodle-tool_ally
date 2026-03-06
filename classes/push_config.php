@@ -32,7 +32,6 @@ namespace tool_ally;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class push_config {
-
     /**
      * Timeout to be used if config for tasks.
      */
@@ -95,6 +94,8 @@ class push_config {
     private $maxpushattempts = 3;
 
     /**
+     * Constructor.
+     *
      * @param string|null $url
      * @param string|null $key
      * @param string|null $secret
@@ -109,6 +110,9 @@ class push_config {
         $this->apply_default_configs();
     }
 
+    /**
+     * Apply default configs from tool_ally config if not already set.
+     */
     private function apply_default_configs() {
         $config = get_config('tool_ally');
         if (empty($config)) {
@@ -159,6 +163,8 @@ class push_config {
     }
 
     /**
+     * Get url.
+     *
      * @return string
      */
     public function get_url() {
@@ -166,6 +172,8 @@ class push_config {
     }
 
     /**
+     * Get key.
+     *
      * @return string
      */
     public function get_key() {
@@ -173,6 +181,8 @@ class push_config {
     }
 
     /**
+     * Get secret.
+     *
      * @return string
      */
     public function get_secret() {
@@ -180,6 +190,8 @@ class push_config {
     }
 
     /**
+     * Get batch size.
+     *
      * @return int
      */
     public function get_batch_size() {
@@ -187,6 +199,8 @@ class push_config {
     }
 
     /**
+     * Get timeout.
+     *
      * @return int
      */
     public function get_timeout() {
@@ -194,6 +208,8 @@ class push_config {
     }
 
     /**
+     * Get connect timeout.
+     *
      * @return int
      */
     public function get_connect_timeout() {
@@ -201,6 +217,8 @@ class push_config {
     }
 
     /**
+     * Get debug.
+     *
      * @return bool
      */
     public function get_debug() {
@@ -208,6 +226,8 @@ class push_config {
     }
 
     /**
+     * Get cli only.
+     *
      * @return bool
      */
     public function is_cli_only() {
@@ -215,6 +235,8 @@ class push_config {
     }
 
     /**
+     * Get max push attempts.
+     *
      * @return int
      */
     public function get_max_push_attempts() {

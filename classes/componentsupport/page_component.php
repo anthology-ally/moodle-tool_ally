@@ -26,7 +26,6 @@ use tool_ally\componentsupport\interfaces\annotation_map;
 use tool_ally\componentsupport\interfaces\html_content as iface_html_content;
 use tool_ally\componentsupport\traits\html_content;
 use tool_ally\componentsupport\traits\embedded_file_map;
-
 use tool_ally\models\component_content;
 
 /**
@@ -34,24 +33,36 @@ use tool_ally\models\component_content;
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class page_component extends component_base implements iface_html_content, annotation_map {
-
+class page_component extends component_base implements annotation_map, iface_html_content {
     use html_content;
     use embedded_file_map;
 
-    protected $tablefields = [
+    /**
+     * @var array Table fields to process
+     */
+    protected array $tablefields = [
         'page' => ['intro', 'content'],
     ];
 
-    public static function component_type() {
+    /**
+     * {@inheritdoc}
+     */
+    public static function component_type(): string {
         return self::TYPE_MOD;
     }
 
-    public function get_course_html_content_items($courseid) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_course_html_content_items(int $courseid): array {
         return $this->std_get_course_html_content_items($courseid);
     }
 
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+
+    /**
+     * {@inheritdoc}
+     */
+    public function get_html_content(int $id, string $table, string $field, ?int $courseid = null): ?component_content {
         global $DB;
         $content = $this->std_get_html_content($id, $table, $field, $courseid);
         if (empty($content)) {
@@ -64,18 +75,27 @@ class page_component extends component_base implements iface_html_content, annot
         return ($content);
     }
 
-    public function get_all_html_content($id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_all_html_content(int $id): array {
         return [
             $this->get_html_content($id, 'page', 'intro'),
             $this->get_html_content($id, 'page', 'content'),
         ];
     }
 
-    public function replace_html_content($id, $table, $field, $content) {
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_html_content(int $id, string $table, string $field, string $content): ?bool {
         return $this->std_replace_html_content($id, $table, $field, $content);
     }
 
-    public function resolve_course_id($id, $table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function resolve_course_id(int $id, string $table, string $field): int {
         global $DB;
 
         if ($table === 'page') {
@@ -83,10 +103,13 @@ class page_component extends component_base implements iface_html_content, annot
             return $course;
         }
 
-        throw new \coding_exception('Invalid table used to recover course id '.$table);
+        throw new \coding_exception('Invalid table used to recover course id ' . $table);
     }
 
-    public function get_annotation_maps($courseid) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_annotation_maps(int $courseid): array {
         if (!$this->module_installed()) {
             return [];
         }

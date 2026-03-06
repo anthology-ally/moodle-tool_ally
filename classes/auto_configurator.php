@@ -35,8 +35,12 @@ use tool_ally\adminsetting\ally_configpasswordunmask;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class auto_configurator {
-
-    static protected $validconfigs = [
+    /**
+     * Valid configuration parameters and their expected types.
+     *
+     * @var array
+     */
+    protected static $validconfigs = [
         'key' => PARAM_ALPHANUMEXT,
         'secret' => PARAM_RAW,
         'clientid' => PARAM_INT,
@@ -45,6 +49,8 @@ class auto_configurator {
     ];
 
     /**
+     * Configure settings.
+     *
      * @param auto_config_resolver $resolver
      */
     public function configure_settings(auto_config_resolver $resolver) {
@@ -65,6 +71,8 @@ class auto_configurator {
     }
 
     /**
+     * Configure web services.
+     *
      * @param auto_config $wsconfig
      * @throws \Exception
      */

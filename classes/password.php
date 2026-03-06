@@ -30,12 +30,16 @@ namespace tool_ally;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class password {
-
     /**
      * @var string
      */
     private $password = '';
 
+    /**
+     * Constructor.
+     *
+     * @throws \moodle_exception
+     */
     public function __construct() {
         global $CFG;
         $originalminpasswordlength = $CFG->minpasswordlength;
@@ -49,11 +53,11 @@ class password {
         if ($CFG->maxconsecutiveidentchars > 0) {
             $c = 0;
             while (!check_consecutive_identical_characters($this->password, $CFG->maxconsecutiveidentchars)) {
-                $c ++;
+                $c++;
                 $this->password = generate_password($maxlength);
                 if ($c > 100) {
                     $msg = 'Failed to create a password satisfying the maximum consecutive characters site policy ';
-                    $msg .= '(' . $CFG->maxconsecutiveidentchars .') characters';
+                    $msg .= '(' . $CFG->maxconsecutiveidentchars . ') characters';
                     throw new \moodle_exception($msg);
                 }
             }
@@ -61,6 +65,9 @@ class password {
         $CFG->minpasswordlength = $originalminpasswordlength;
     }
 
+    /**
+     * Get the generated password as a string.
+     */
     public function __toString() {
         return $this->password;
     }

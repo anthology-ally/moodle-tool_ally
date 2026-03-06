@@ -37,12 +37,17 @@ require_once(__DIR__ . '/abstract_testcase.php');
  * @package   tool_ally
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group     tool_ally
+ * @group     ally
+ * @covers    \tool_ally\webservice\invalid_files
+ * @covers    \tool_ally\webservice\files
+ * @runTestsInSeparateProcesses
  */
-class webservice_invalid_files extends abstract_testcase {
+final class webservice_invalid_files_test extends abstract_testcase {
     /**
      * Test the web service.
      */
-    public function test_service() {
+    public function test_service(): void {
         $this->resetAfterTest();
         $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);

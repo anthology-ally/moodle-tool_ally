@@ -37,9 +37,14 @@ use tool_ally\privacy\provider;
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class privacy_provider_test extends provider_testcase {
+final class privacy_provider_test extends provider_testcase {
     /**
      * Test for provider::get_metadata().
+     */
+    /**
+     * Test get metadata.
+     *
+     * @covers \tool_ally\privacy\provider::get_metadata
      */
     public function test_get_metadata(): void {
         if (!method_exists(collection::class, 'add_external_location_link')) {

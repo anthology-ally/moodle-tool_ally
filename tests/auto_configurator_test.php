@@ -32,7 +32,7 @@ use advanced_testcase;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
+require_once(__DIR__ . '/prophesize_deprecation_workaround_mixin.php');
 
 
 /**
@@ -45,13 +45,19 @@ require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class auto_configurator_test extends advanced_testcase {
+final class auto_configurator_test extends advanced_testcase {
     use prophesize_deprecation_workaround_mixin;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest(true);
     }
 
+    /**
+     * Test configure settings.
+     *
+     * @covers \tool_ally\auto_configurator::configure_settings
+     */
     public function test_configure_settings(): void {
         $configs = [
             'secret' => 'password!',
@@ -74,6 +80,11 @@ class auto_configurator_test extends advanced_testcase {
         }
     }
 
+    /**
+     * Test configure settings invalid setting.
+     *
+     * @covers \tool_ally\auto_configurator::configure_settings
+     */
     public function test_configure_settings_invalid_setting(): void {
         $configs = [
             'secret' => 'password!',
@@ -100,6 +111,11 @@ class auto_configurator_test extends advanced_testcase {
         }
     }
 
+    /**
+     * Test configure webservices.
+     *
+     * @covers \tool_ally\auto_configurator::configure_webservices
+     */
     public function test_configure_webservices(): void {
         $wsconfig = new auto_config();
 

@@ -30,7 +30,7 @@ use tool_ally\logging\logger;
 
 global $CFG;
 
-require_once($CFG->libdir.'/filelib.php');
+require_once($CFG->libdir . '/filelib.php');
 
 /**
  * Push file updates.
@@ -40,7 +40,9 @@ require_once($CFG->libdir.'/filelib.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class push_content_updates extends push_updates {
-
+    /**
+     * Handle send error.
+     */
     public function handle_send_error(\Exception $e) {
         $climode = get_config('tool_ally', 'push_cli_only');
         // Too many errors, ensure it only runs on cli.
@@ -53,11 +55,16 @@ class push_content_updates extends push_updates {
             $msg = 'logger:pushcontenterror';
         }
 
-        $context['_explanation'] = $msg.'_exp';
+        $context['_explanation'] = $msg . '_exp';
         $context['_exception'] = $e;
         logger::get()->error($msg, $context);
     }
 
+    /**
+     * On send success.
+     *
+     * @param array $context Context information.
+     */
     public function on_send_success(array $context) {
         logger::get()->info('logger:pushcontentsuccess', $context);
     }

@@ -33,11 +33,17 @@ defined('MOODLE_INTERNAL') || die();
 require_once('abstract_testcase.php');
 
 /**
+ * Testcase class for the tool_ally\componentsupport\page_component class,
+ * for cases where the content can be null.
+ *
+ * @package   tool_ally
+ * @author    Julian Tovar <julian.tovar@openlms.net>
+ * @copyright Copyright (c) 2021 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
  */
-class components_page_component_with_null_content_test extends abstract_testcase {
-
+final class components_page_component_with_null_content_test extends abstract_testcase {
     /**
      * @var stdClass
      */
@@ -49,11 +55,13 @@ class components_page_component_with_null_content_test extends abstract_testcase
     private $page;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
         $this->course = $gen->create_course();
-        $this->page = $gen->create_module('page',
+        $this->page = $gen->create_module(
+            'page',
             [
                 'course' => $this->course->id,
                 'contentformat' => FORMAT_HTML,
@@ -62,6 +70,11 @@ class components_page_component_with_null_content_test extends abstract_testcase
         );
     }
 
+    /**
+     * Test get all html content when null content.
+     *
+     * @covers \tool_ally\local_content::get_all_html_content
+     */
     public function test_get_all_html_content_when_null_content(): void {
         $items = local_content::get_all_html_content($this->page->id, 'page', true);
         $this->assertEmpty($items[1]->content);

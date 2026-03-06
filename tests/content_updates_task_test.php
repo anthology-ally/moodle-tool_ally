@@ -34,8 +34,8 @@ use tool_ally\prophesize_deprecation_workaround_mixin;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
-require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
+require_once(__DIR__ . '/abstract_testcase.php');
+require_once(__DIR__ . '/prophesize_deprecation_workaround_mixin.php');
 
 /**
  * Tests for content updates task.
@@ -46,11 +46,14 @@ require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class content_updates_task_test extends abstract_testcase {
+final class content_updates_task_test extends abstract_testcase {
     use prophesize_deprecation_workaround_mixin;
 
     /**
+     * Test initial run of content updates task.
      * First run should set the timestamp then exit.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
      */
     public function test_initial_run(): void {
         $this->resetAfterTest();
@@ -69,6 +72,8 @@ class content_updates_task_test extends abstract_testcase {
 
     /**
      * Nothing should happen if config is invalid.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
      */
     public function test_invalid_config(): void {
         $task          = new content_updates_task();
@@ -81,6 +86,8 @@ class content_updates_task_test extends abstract_testcase {
 
     /**
      * Ensure that basic execution and timestamp management is working.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
      */
     public function test_push_updates(): void {
         global $DB;
@@ -93,13 +100,15 @@ class content_updates_task_test extends abstract_testcase {
         set_config('push_content_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
 
         $course      = $this->getDataGenerator()->create_course();
-        $label    = $this->getDataGenerator()->create_module('label',
-                ['introformat' => FORMAT_HTML, 'course' => $course->id]);
+        $label    = $this->getDataGenerator()->create_module(
+            'label',
+            ['introformat' => FORMAT_HTML, 'course' => $course->id]
+        );
 
         // Wipe out content queue - it will already have been populated by events triggered whilst creating course, etc.
         $DB->delete_records('tool_ally_content_queue');
 
-        list ($course, $cm) = get_course_and_cm_from_cmid($label->cmid);
+         [$course, $cm] = get_course_and_cm_from_cmid($label->cmid);
         course_module_updated::create_from_cm($cm)->trigger();
 
         $task          = new content_updates_task();
@@ -115,6 +124,8 @@ class content_updates_task_test extends abstract_testcase {
 
     /**
      * Ensure that our batch looping is working as expected.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
      */
     public function test_push_updates_batching(): void {
         global $DB;
@@ -131,8 +142,10 @@ class content_updates_task_test extends abstract_testcase {
 
         // Create 5 supported components.
         for ($i = 0; $i < 5; $i++) {
-            $this->getDataGenerator()->create_module('label',
-                    ['introformat' => FORMAT_HTML, 'course' => $course->id]);
+            $this->getDataGenerator()->create_module(
+                'label',
+                ['introformat' => FORMAT_HTML, 'course' => $course->id]
+            );
         }
 
         $updates = $this->createMock(push_content_updates::class);
@@ -149,6 +162,8 @@ class content_updates_task_test extends abstract_testcase {
 
     /**
      * Test pushing of content deletions.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
      */
     public function test_push_deletes(): void {
         global $DB;
@@ -158,7 +173,7 @@ class content_updates_task_test extends abstract_testcase {
 
         set_config('push_content_timestamp', time() - (WEEKSECS * 2), 'tool_ally');
 
-        $this->dataset_from_array(include(__DIR__.'/fixtures/deleted_content.php'))->to_database();
+        $this->dataset_from_array(include(__DIR__ . '/fixtures/deleted_content.php'))->to_database();
 
         $updates = $this->createMock(push_content_updates::class);
         $updates->expects($this->exactly(3))
@@ -180,21 +195,37 @@ class content_updates_task_test extends abstract_testcase {
         $this->assertEmpty($DB->get_records('tool_ally_deleted_content'));
     }
 
+    /**
+     * Assert that the deletion queue contains a specific item.
+     *
+     * @param string $component
+     * @param string $table
+     * @param string $field
+     * @param int $id
+     */
     private function assert_deletion_queue_contains($component, $table, $field, $id) {
         global $DB;
 
-        if (!$DB->get_record('tool_ally_deleted_content', [
+        if (
+            !$DB->get_record('tool_ally_deleted_content', [
             'component' => $component,
             'comptable' => $table,
             'compfield' => $field,
             'comprowid' => $id,
-        ])) {
-            $msg = 'Searched deletion queue, failed to find component "'.$component.
-                    '" table "'.$table.'" field "'.$field.'" id "'.$id.'"';
+            ])
+        ) {
+            $msg = 'Searched deletion queue, failed to find component "' . $component .
+                    '" table "' . $table . '" field "' . $field . '" id "' . $id . '"';
             $this->fail($msg);
         }
     }
 
+    /**
+     * Helper function to prepare forum module deletion test scenario.
+     *
+     * @param string $forumtype
+     * @return stdClass
+     */
     public function pre_course_module_delete_forum($forumtype = 'forum') {
         global $DB, $USER;
 
@@ -213,10 +244,10 @@ class content_updates_task_test extends abstract_testcase {
         $record->course = $course->id;
         $record->forum = $forum->id;
         $record->userid = $USER->id;
-        $discussion = self::getDataGenerator()->get_plugin_generator('mod_'.$forumtype)->create_discussion($record);
+        $discussion = self::getDataGenerator()->get_plugin_generator('mod_' . $forumtype)->create_discussion($record);
 
         // A post is automatically created when a discussion is created.
-        $post = $DB->get_record($forumtype.'_posts', ['discussion' => $discussion->id]);
+        $post = $DB->get_record($forumtype . '_posts', ['discussion' => $discussion->id]);
 
         course_delete_module($forum->cmid);
 
@@ -231,7 +262,7 @@ class content_updates_task_test extends abstract_testcase {
         $task->execute();
 
         $this->assert_deletion_queue_contains($forumtype, $forumtype, 'intro', $forum->id);
-        $this->assert_deletion_queue_contains($forumtype, $forumtype.'_posts', 'message', $post->id);
+        $this->assert_deletion_queue_contains($forumtype, $forumtype . '_posts', 'message', $post->id);
 
         // Make sure we have some deletion queue records but that none of them are processed.
         $deleted = $DB->get_records_select('tool_ally_deleted_content', 'timeprocessed IS NULL');
@@ -254,18 +285,33 @@ class content_updates_task_test extends abstract_testcase {
         $this->assertCount(0, $deleted);
     }
 
+    /**
+     * Test pre course module delete for forum.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
+     */
     public function test_pre_course_module_delete_forum(): void {
         $this->pre_course_module_delete_forum();
     }
 
+    /**
+     * Test pre course module delete for hsuforum.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
+     */
     public function test_pre_course_module_delete_hsuforum(): void {
         global $CFG;
-        if (!file_exists($CFG->dirroot.'/mod/hsuforum')) {
+        if (!file_exists($CFG->dirroot . '/mod/hsuforum')) {
             $this->markTestSkipped('mod_hsuforum is not installed');
         }
         $this->pre_course_module_delete_forum('hsuforum');
     }
 
+    /**
+     * Test pre course module delete for glossary.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
+     */
     public function test_pre_course_module_delete_glossary(): void {
         global $DB, $USER;
 
@@ -276,7 +322,8 @@ class content_updates_task_test extends abstract_testcase {
         $this->setAdminUser();
 
         $course   = $this->getDataGenerator()->create_course();
-        $glossary = $this->getDataGenerator()->create_module('glossary',
+        $glossary = $this->getDataGenerator()->create_module(
+            'glossary',
             [
                 'course' => $course->id,
                 'introformat' => FORMAT_HTML,
@@ -291,7 +338,8 @@ class content_updates_task_test extends abstract_testcase {
         ];
         $this->setAdminUser();
         $entry = self::getDataGenerator()->get_plugin_generator(
-            'mod_glossary')->create_content($glossary, $record);
+            'mod_glossary'
+        )->create_content($glossary, $record);
 
         course_delete_module($glossary->cmid);
 
@@ -329,6 +377,11 @@ class content_updates_task_test extends abstract_testcase {
         $this->assertCount(0, $deleted);
     }
 
+    /**
+     * Test performance of glossary deletion.
+     *
+     * @covers \tool_ally\task\content_updates_task::execute
+     */
     public function test_performance_delete_glossary(): void {
         global $DB, $USER;
 
@@ -339,7 +392,8 @@ class content_updates_task_test extends abstract_testcase {
         $this->setAdminUser();
 
         $course   = $this->getDataGenerator()->create_course();
-        $glossary = $this->getDataGenerator()->create_module('glossary',
+        $glossary = $this->getDataGenerator()->create_module(
+            'glossary',
             [
                 'course' => $course->id,
                 'introformat' => FORMAT_HTML,
@@ -358,9 +412,10 @@ class content_updates_task_test extends abstract_testcase {
         $pushcount = $entries + 1; // Includes the module itself.
 
         // Create 1001 glossary entries for performance testing.
-        for ($e = 0; $e < $entries; $e ++) {
+        for ($e = 0; $e < $entries; $e++) {
             $entry = self::getDataGenerator()->get_plugin_generator(
-                'mod_glossary')->create_content($glossary, $record);
+                'mod_glossary'
+            )->create_content($glossary, $record);
         }
         $start = microtime(true);
         course_delete_module($glossary->cmid);
@@ -407,5 +462,4 @@ class content_updates_task_test extends abstract_testcase {
         $deleted = $DB->get_records('tool_ally_deleted_content');
         $this->assertCount(0, $deleted);
     }
-
 }

@@ -32,8 +32,8 @@ use tool_ally\prophesize_deprecation_workaround_mixin;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
-require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
+require_once(__DIR__ . '/abstract_testcase.php');
+require_once(__DIR__ . '/prophesize_deprecation_workaround_mixin.php');
 
 /**
  * Tests for course updates task.
@@ -44,11 +44,14 @@ require_once(__DIR__.'/prophesize_deprecation_workaround_mixin.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class course_updates_task_test extends abstract_testcase {
+final class course_updates_task_test extends abstract_testcase {
     use prophesize_deprecation_workaround_mixin;
 
     /**
      * Ensure that basic execution and timestamp management is working.
+     *
+     * @covers \tool_ally\task\course_updates_task::execute
+     * @covers \tool_ally\push_config
      */
     public function test_push_updates(): void {
         $this->resetAfterTest();
@@ -72,6 +75,9 @@ class course_updates_task_test extends abstract_testcase {
 
     /**
      * Ensure that our batch looping is working as expected.
+     *
+     * @covers \tool_ally\task\course_updates_task::execute
+     * @covers \tool_ally\push_config
      */
     public function test_push_updates_batching(): void {
         $this->resetAfterTest();
@@ -99,6 +105,9 @@ class course_updates_task_test extends abstract_testcase {
 
     /**
      * Test pushing of content deletions.
+     *
+     * @covers \tool_ally\task\course_updates_task::execute
+     * @covers \tool_ally\push_config
      */
     public function test_push_deletes(): void {
         global $DB;
@@ -145,5 +154,4 @@ class course_updates_task_test extends abstract_testcase {
         // The deleted content queue should still be populated at this point.
         $this->assertNotEmpty($DB->get_records('tool_ally_course_event'));
     }
-
 }

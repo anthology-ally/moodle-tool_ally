@@ -43,28 +43,36 @@ use tool_ally\models\component_content;
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class glossary_component extends file_component_base implements
-        iface_html_content, annotation_map, content_sub_tables {
-
+class glossary_component extends file_component_base implements annotation_map, content_sub_tables, iface_html_content {
     use html_content;
     use embedded_file_map;
 
-    protected $tablefields = [
+    /**
+     * {@inheritdoc}
+     * @var array
+     */
+    protected array $tablefields = [
         'glossary' => ['intro'],
         'glossary_entries' => ['definition'],
     ];
 
-    public static function component_type() {
+    /**
+     * {@inheritdoc}
+     */
+    public static function component_type(): string {
         return self::TYPE_MOD;
     }
 
-    public function replace_file_links() {
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_file_links(): void {
 
         $file = $this->file;
 
         $area = $file->get_filearea();
         if ($area !== 'entry') {
-            debugging('Glossary area of '.$area.' is not yet supported');
+            debugging('Glossary area of ' . $area . ' is not yet supported');
             return;
         }
 
@@ -73,11 +81,20 @@ class glossary_component extends file_component_base implements
         $idfield = 'id';
         $repfield = 'definition';
 
-        local_file::update_filenames_in_html($repfield, $table, ' id = ? ',
-            [$idfield => $itemid], $this->oldfilename, $file->get_filename());
+        local_file::update_filenames_in_html(
+            $repfield,
+            $table,
+            ' id = ? ',
+            [$idfield => $itemid],
+            $this->oldfilename,
+            $file->get_filename()
+        );
     }
 
-    public function resolve_course_id($id, $table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function resolve_course_id(int $id, string $table, string $field): int {
         global $DB;
 
         if ($table === 'glossary') {
@@ -85,17 +102,19 @@ class glossary_component extends file_component_base implements
             return $label->course;
         }
 
-        throw new \coding_exception('Invalid table used to recover course id '.$table);
+        throw new \coding_exception('Invalid table used to recover course id ' . $table);
     }
 
     /**
+     * Get glossary entry html content items.
+     *
      * @param int $courseid
-     * @param null $glossaryid
+     * @param null|int $glossaryid
      * @return component[]
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    private function get_entry_html_content_items($courseid, $glossaryid = null) {
+    private function get_entry_html_content_items(int $courseid, ?int $glossaryid = null) {
         global $DB;
 
         if (!$this->module_installed()) {
@@ -108,7 +127,7 @@ class glossary_component extends file_component_base implements
         // Faster than doing it per module instance.
         $userids = $this->get_approved_author_ids_for_context(\context_course::instance($courseid));
 
-        list($userinsql, $userparams) = $DB->get_in_or_equal($userids);
+        [$userinsql, $userparams] = $DB->get_in_or_equal($userids);
 
         $params = [$courseid, FORMAT_HTML];
 
@@ -133,8 +152,15 @@ SQL;
         $rs = $DB->get_recordset_sql($sql, $params);
         foreach ($rs as $row) {
             $array[] = new component(
-                $row->id, 'glossary', 'glossary_entries', 'definition', $courseid, $row->timemodified,
-                $row->definitionformat, $row->concept);
+                $row->id,
+                'glossary',
+                'glossary_entries',
+                'definition',
+                $courseid,
+                $row->timemodified,
+                $row->definitionformat,
+                $row->concept
+            );
         }
         $rs->close();
 
@@ -142,10 +168,9 @@ SQL;
     }
 
     /**
-     * @param $courseid
-     * @return component[];
+     * {@inheritdoc}
      */
-    public function get_course_html_content_items($courseid) {
+    public function get_course_html_content_items(int $courseid): array {
         if (!$this->module_installed()) {
             return [];
         }
@@ -159,14 +184,9 @@ SQL;
     }
 
     /**
-     * Get the html content for a specific content item.
-     * @param int $id
-     * @param string $table
-     * @param string $field
-     * @param null|int $courseid
-     * @return component_content
+     * {@inheritdoc}
      */
-    public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
+    public function get_html_content(int $id, string $table, string $field, ?int $courseid = null): ?component_content {
         if ($table === 'glossary') {
             return $this->std_get_html_content($id, $table, $field, $courseid);
         } else if ($table === 'glossary_entries') {
@@ -174,11 +194,14 @@ SQL;
         }
     }
 
-    public function get_all_html_content($id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_all_html_content($id): array {
         global $DB;
 
         if (!$this->module_installed()) {
-            return;
+            return [];
         }
 
         $pagetable = '{glossary}';
@@ -194,18 +217,16 @@ SQL;
     }
 
     /**
-     * Replaces the html content for a specific content item.
-     * @param int $id
-     * @param string $table
-     * @param string $field
-     * @param string $content
-     * @return string
+     * {@inheritdoc}
      */
-    public function replace_html_content($id, $table, $field, $content) {
+    public function replace_html_content(int $id, string $table, string $field, string $content): ?bool {
         return $this->std_replace_html_content($id, $table, $field, $content);
     }
 
-    public function get_annotation_maps($courseid) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_annotation_maps(int $courseid): array {
         global $PAGE;
 
         if (!$this->module_installed()) {
@@ -217,7 +238,7 @@ SQL;
             if (empty($cmid)) {
                 return [];
             }
-            list($course, $cm) = get_course_and_cm_from_cmid($cmid, 'glossary', $courseid);
+            [$course, $cm] = get_course_and_cm_from_cmid($cmid, 'glossary', $courseid);
             unset($course);
             $glossaryid = $cm->instance;
             if (!$glossaryid) {
@@ -235,7 +256,7 @@ SQL;
             if ($contentitem->table === 'glossary_entries') {
                 $entries[$contentitem->id] = $contentitem->entity_id();
             } else if ($contentitem->table === 'glossary') {
-                list($course, $cm) = get_course_and_cm_from_instance($contentitem->id, 'glossary', $courseid);
+                [$course, $cm] = get_course_and_cm_from_instance($contentitem->id, 'glossary', $courseid);
                 $intros[$cm->id] = $contentitem->entity_id();
             }
         }
@@ -243,25 +264,37 @@ SQL;
         return ['entries' => $entries, 'intros' => $intros];
     }
 
-    public function queue_delete_sub_tables(cm_info $cm) {
+    /**
+     * {@inheritdoc}
+     */
+    public function queue_delete_sub_tables(cm_info $cm): void {
         $entries = $this->get_entry_html_content_items($cm->course, $cm->instance);
         $this->bulk_queue_delete_content($entries);
     }
 
-    public function get_file_area($table, $field) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_file_area(string $table, string $field): string {
         if ($table === 'glossary_entries' && $field === 'definition') {
             return 'entry';
         }
         return parent::get_file_area($table, $field);
     }
 
-    public function get_file_item($table, $field, $id) {
+    /**
+     * {@inheritdoc}
+     */
+    public function get_file_item(string $table, string $field, int $id): int {
         if ($table === 'glossary_entries' && $field === 'definition') {
             return $id;
         }
         return parent::get_file_item($table, $field, $id);
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function check_file_in_use(stored_file $file, ?context $context = null): bool {
         if ($file->get_filearea() == 'attachment') {
             // All attachments are in use.

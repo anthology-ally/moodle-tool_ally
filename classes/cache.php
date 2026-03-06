@@ -26,7 +26,7 @@ namespace tool_ally;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->libdir.'/filelib.php');
+require_once($CFG->libdir . '/filelib.php');
 
 /**
  * Class cache

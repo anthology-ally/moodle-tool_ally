@@ -37,11 +37,14 @@ use core_privacy\local\request\userlist;
  * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class provider implements \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\core_userlist_provider {
-
-    public static function get_metadata(collection $collection) : collection {
+class provider implements
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\request\plugin\provider {
+    /**
+     * {@inheritdoc}
+     */
+    public static function get_metadata(collection $collection): collection {
         $collection->add_external_location_link('files', [
             'courseid'     => 'privacy:metadata:files:courseid',
             'action'       => 'privacy:metadata:files:action',
@@ -55,22 +58,40 @@ class provider implements \core_privacy\local\metadata\provider,
         return $collection;
     }
 
-    public static function get_contexts_for_userid(int $userid) : contextlist {
+    /**
+     * {@inheritdoc}
+     */
+    public static function get_contexts_for_userid(int $userid): contextlist {
         return new contextlist();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function export_user_data(approved_contextlist $contextlist) {
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function delete_data_for_all_users_in_context(\context $context) {
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function get_users_in_context(userlist $userlist) {
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function delete_data_for_users(approved_userlist $userlist) {
     }
 }

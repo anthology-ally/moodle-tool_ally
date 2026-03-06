@@ -24,6 +24,10 @@
 
 namespace tool_ally\webservice;
 
+use core_external\external_function_parameters;
+use core_external\external_multiple_structure;
+use core_external\external_single_structure;
+use core_external\external_value;
 use tool_ally\local_file;
 
 /**
@@ -35,27 +39,29 @@ use tool_ally\local_file;
  */
 class replace_file extends loggable_external_api {
     /**
-     * @return \external_function_parameters
+     * {@inheritdoc}
      */
-    public static function service_parameters() {
-        return new \external_function_parameters([
-            'id' => new \external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
-            'userid' => new \external_value(PARAM_INT, 'User id with access to file'),
-            'draftitemid' => new \external_value(PARAM_INT, 'itemid of new file uploaded'),
+    public static function service_parameters(): external_function_parameters {
+        return new external_function_parameters([
+            'id' => new external_value(PARAM_ALPHANUM, 'File path name SHA1 hash'),
+            'userid' => new external_value(PARAM_INT, 'User id with access to file'),
+            'draftitemid' => new external_value(PARAM_INT, 'itemid of new file uploaded'),
         ]);
     }
 
     /**
-     * @return \external_single_structure
+     * {@inheritdoc}
      */
-    public static function service_returns() {
-        return new \external_single_structure([
-            'success'    => new \external_value(PARAM_BOOL, 'File replaced succesfully?'),
-            'newid'      => new \external_value(PARAM_ALPHANUM, 'New file path name hash'),
+    public static function service_returns(): external_single_structure | external_multiple_structure {
+        return new external_single_structure([
+            'success'    => new external_value(PARAM_BOOL, 'File replaced succesfully?'),
+            'newid'      => new external_value(PARAM_ALPHANUM, 'New file path name hash'),
         ]);
     }
 
     /**
+     * Execute service.
+     *
      * @param $id
      * @param $userid
      * @param $draftitemid
@@ -134,8 +140,14 @@ class replace_file extends loggable_external_api {
 
         $oldfile->delete();
 
-        $filename = $fs->get_unused_filename($filerecord->contextid, $filerecord->component, $filerecord->filearea,
-                $filerecord->itemid, $filerecord->filepath, $filerecord->filename);
+        $filename = $fs->get_unused_filename(
+            $filerecord->contextid,
+            $filerecord->component,
+            $filerecord->filearea,
+            $filerecord->itemid,
+            $filerecord->filepath,
+            $filerecord->filename
+        );
         $filerecord->filename = $filename;
 
         $file = $fs->create_file_from_storedfile($filerecord, $newfile);

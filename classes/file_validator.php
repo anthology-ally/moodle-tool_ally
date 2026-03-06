@@ -38,7 +38,6 @@ use tool_ally\local_content;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class file_validator {
-
     /**
      * Ally whitelisted components.
      * NOTE: These are component areas where ONLY teachers and admins can create files.
@@ -133,10 +132,13 @@ class file_validator {
      */
     public function __construct(array $userids = [], role_assignments $assignments = null) {
         $this->userids        = $userids;
-        $this->assignments    = $assignments ?: new role_assignments();;
+        $this->assignments    = $assignments ?: new role_assignments();
+        ;
     }
 
     /**
+     * Return whitelist of component~filearea combinations.
+     *
      * @return array
      */
     public static function whitelist() {
@@ -145,6 +147,7 @@ class file_validator {
 
     /**
      * Validates if the file should be pushed to Ally.
+     *
      * @param stored_file $file
      * @param context|null $context
      * @param bool $skipinusecheck Don't check files for being in use, even if the setting is on. Used during
@@ -176,8 +179,10 @@ class file_validator {
 
         // Check if the file is in a teacher whitelist area, or if in a valid area with a creator that is
         // an editing teacher/admin/manager/etc.
-        if ($this->check_component_area_teacher_whitelist($component, $area) ||
-                $this->check_component_area_whitelist_and_user_type($component, $area, $file, $context)) {
+        if (
+            $this->check_component_area_teacher_whitelist($component, $area) ||
+                $this->check_component_area_whitelist_and_user_type($component, $area, $file, $context)
+        ) {
             // At this point we do not need to check that the user is still an editing teacher / manager / admin / etc.
             // That is because we know that the file belongs to a context that is whitelisted as teacher only.
             // E.g. the file was created as resource content, or a forum intro.
@@ -205,7 +210,7 @@ class file_validator {
      * @return bool
      */
     private function check_component_area_teacher_whitelist($component, $filearea) {
-        $key = $component.'~'.$filearea;
+        $key = $component . '~' . $filearea;
         return in_array($key, self::TEACHER_WHITELIST);
     }
 
@@ -219,9 +224,13 @@ class file_validator {
      * @param context $context
      * @return bool
      */
-    private function check_component_area_whitelist_and_user_type($component, $filearea,
-                                                                  stored_file $file, context $context) {
-        $key = $component.'~'.$filearea;
+    private function check_component_area_whitelist_and_user_type(
+        $component,
+        $filearea,
+        stored_file $file,
+        context $context
+    ) {
+        $key = $component . '~' . $filearea;
         if (!in_array($key, self::CHECKROLE_WHITELIST)) {
             return false;
         }
@@ -231,6 +240,8 @@ class file_validator {
     }
 
     /**
+     * Check pathname is not in excluded paths (/gridimage/).
+     *
      * @param stored_file $file
      * @return bool
      */

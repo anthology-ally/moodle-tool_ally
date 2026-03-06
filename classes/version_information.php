@@ -39,7 +39,6 @@ use core_component,
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class version_information {
-
     /**
      * @var bool|stdClass
      */
@@ -86,11 +85,11 @@ class version_information {
         global $CFG, $USER;
         $manager = new \core_privacy\local\sitepolicy\manager();
         // Check that the user has agreed to a site policy if there is one - do not test in case of admins.
-        if (empty($USER->policyagreed) and !is_siteadmin()) {
-            if ($manager->is_defined() and !isguestuser()) {
+        if (empty($USER->policyagreed) && !is_siteadmin()) {
+            if ($manager->is_defined() && !isguestuser()) {
                 $url = $manager->get_embed_url();
                 throw new moodle_exception('sitepolicynotagreed', 'error', '', $url->get_path());
-            } else if ($manager->is_defined(true) and isguestuser()) {
+            } else if ($manager->is_defined(true) && isguestuser()) {
                 $guesturl = $manager->get_embed_url(true);
                 throw new moodle_exception('sitepolicynotagreed', 'error', '', $guesturl->get_path());
             }
@@ -106,7 +105,7 @@ class version_information {
     private function get_component_version($component) {
         global $CFG;
 
-        list($type, $name) = core_component::normalize_component($component);
+        [$type, $name] = core_component::normalize_component($component);
 
         // Get Moodle core version.
         if ($type === 'core') {
@@ -145,14 +144,21 @@ class version_information {
         return $plugin;
     }
 
+    /**
+     * Check if the Ally filter is active.
+     */
     protected function check_filter_active() {
         return !empty(filter_get_global_states()['ally']);
     }
 
+    /**
+     * Get the database version.
+     */
     private function get_db_version() {
         global $CFG, $DB;
 
-        if (stripos($CFG->dbtype, 'mysql') !== false ||
+        if (
+            stripos($CFG->dbtype, 'mysql') !== false ||
             stripos($CFG->dbtype, 'pgsql') !== false
         ) {
             $row = (array) $DB->get_record_sql('SELECT version();');
@@ -166,6 +172,9 @@ class version_information {
         return 'unknown';
     }
 
+    /**
+     * Get system information.
+     */
     private function get_system_info() {
         global $CFG;
 

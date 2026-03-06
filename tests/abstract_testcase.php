@@ -35,7 +35,7 @@ use tool_ally\local_content;
 use tool_ally\models\component;
 use tool_ally\models\component_content;
 
-require_once($CFG->dirroot.'/webservice/tests/helpers.php');
+require_once($CFG->dirroot . '/webservice/tests/helpers.php');
 
 /**
  * Base test case.
@@ -73,7 +73,6 @@ abstract class abstract_testcase extends \externallib_advanced_testcase {
      */
     protected function create_whitelisted_assign_file($module, $name = '') {
         return $this->create_assign_file($module, 'introattachment', $name);
-
     }
 
     /**
@@ -113,7 +112,6 @@ abstract class abstract_testcase extends \externallib_advanced_testcase {
 
         // Create file containing text 'hello world'.
         return $fs->create_file_from_string($fileinfo, 'hello world');
-
     }
 
     /**
@@ -143,7 +141,7 @@ abstract class abstract_testcase extends \externallib_advanced_testcase {
      */
     protected function create_test_file($contextid, $component, $filearea, $itemid = 0, $filename = 'gd logo.png') {
         global $CFG;
-        $filepath = $CFG->libdir.'/tests/fixtures/gd-logo.png';
+        $filepath = $CFG->libdir . '/tests/fixtures/gd-logo.png';
         $filerecord = [
             'contextid' => $contextid,
             'component' => $component,
@@ -198,7 +196,7 @@ abstract class abstract_testcase extends \externallib_advanced_testcase {
             $expected = count($fields);
             foreach ($fields as $field) {
                 if ($item->$field === $component->$field) {
-                    $fcount ++;
+                    $fcount++;
                 }
             }
             if ($found = $found || ($fcount === $expected)) {
@@ -263,11 +261,13 @@ abstract class abstract_testcase extends \externallib_advanced_testcase {
      * @param stdClass|null $user
      * @return stored_file[]
      */
-    protected function setup_check_files(\context $context,
-                                         string $componentstr,
-                                         string $filearea,
-                                         int $itemid,
-                                         \stdClass $user = null): array {
+    protected function setup_check_files(
+        \context $context,
+        string $componentstr,
+        string $filearea,
+        int $itemid,
+        ?\stdClass $user = null
+    ): array {
 
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
 
@@ -300,19 +300,26 @@ abstract class abstract_testcase extends \externallib_advanced_testcase {
      * @param stdClass|null $user
      * @return stored_file[] First file is the used file, second is unused.
      */
-    protected function check_html_files_in_use(\context $context,
-                                               string $componentstr,
-                                               int $id,
-                                               string $table,
-                                               string $field,
-                                               \stdClass $user = null): array {
+    protected function check_html_files_in_use(
+        \context $context,
+        string $componentstr,
+        int $id,
+        string $table,
+        string $field,
+        ?\stdClass $user = null
+    ): array {
         global $DB;
 
         $component = local_content::component_instance($componentstr);
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
 
-        list($usedfile, $unusedfile) = $this->setup_check_files($context, $componentstr, $component->get_file_area($table, $field),
-            $component->get_file_item($table, $field, $id), $user);
+        [$usedfile, $unusedfile] = $this->setup_check_files(
+            $context,
+            $componentstr,
+            $component->get_file_area($table, $field),
+            $component->get_file_item($table, $field, $id),
+            $user
+        );
 
         // Update the intro with the link.
         $link = $generator->create_pluginfile_link_for_file($usedfile);

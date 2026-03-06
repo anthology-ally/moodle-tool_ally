@@ -41,7 +41,7 @@ require_once('abstract_testcase.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class components_lesson_component_test extends abstract_testcase {
+final class components_lesson_component_test extends abstract_testcase {
     use component_assertions;
 
     /**
@@ -85,6 +85,7 @@ class components_lesson_component_test extends abstract_testcase {
     private $component;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
@@ -103,35 +104,74 @@ class components_lesson_component_test extends abstract_testcase {
     }
 
 
+    /**
+     * Test getting all HTML content items.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::get_all_html_content
+     */
     public function test_get_all_html_content_items(): void {
         $contentitems = $this->component->get_all_html_content($this->lesson->id);
 
-        $this->assert_content_items_contain_item($contentitems,
-            $this->lesson->id, 'lesson', 'lesson', 'intro');
+        $this->assert_content_items_contain_item(
+            $contentitems,
+            $this->lesson->id,
+            'lesson',
+            'lesson',
+            'intro'
+        );
 
-        $this->assert_content_items_contain_item($contentitems,
-            $this->lessonpage->id, 'lesson', 'lesson_pages', 'contents');
+        $this->assert_content_items_contain_item(
+            $contentitems,
+            $this->lessonpage->id,
+            'lesson',
+            'lesson_pages',
+            'contents'
+        );
 
-        $this->assert_content_items_contain_item($contentitems,
-            $this->lessonquestion->id, 'lesson', 'lesson_pages', 'contents');
-
+        $this->assert_content_items_contain_item(
+            $contentitems,
+            $this->lessonquestion->id,
+            'lesson',
+            'lesson_pages',
+            'contents'
+        );
     }
 
+    /**
+     * Test resolving module instance ID from lesson.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::resolve_course_id
+     */
     public function test_resolve_module_instance_id_from_lesson(): void {
         $instanceid = $this->component->resolve_module_instance_id('lesson', $this->lesson->id);
         $this->assertEquals($this->lesson->id, $instanceid);
     }
 
+    /**
+     * Test resolving module instance ID from page.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::resolve_course_id
+     */
     public function test_resolve_module_instance_id_from_page(): void {
         $instanceid = $this->component->resolve_module_instance_id('lesson_pages', $this->lessonpage->id);
         $this->assertEquals($this->lesson->id, $instanceid);
     }
 
+    /**
+     * Test resolving module instance ID from question.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::resolve_course_id
+     */
     public function test_resolve_module_instance_id_from_question(): void {
         $instanceid = $this->component->resolve_module_instance_id('lesson_pages', $this->lessonquestion->id);
         $this->assertEquals($this->lesson->id, $instanceid);
     }
 
+    /**
+     * Test resolving module instance ID from answer.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::resolve_course_id
+     */
     public function test_resolve_module_instance_id_from_answer(): void {
         global $DB;
 
@@ -142,6 +182,11 @@ class components_lesson_component_test extends abstract_testcase {
         }
     }
 
+    /**
+     * Test getting all course annotation maps.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::get_annotation_maps
+     */
     public function test_get_all_course_annotation_maps(): void {
         global $DB;
 
@@ -153,13 +198,15 @@ class components_lesson_component_test extends abstract_testcase {
         $a = 0;
         foreach ($answers as $answer) {
             $a++;
-            $key = $this->lessonquestion->id.'_'.$answer->id.'_'.$a;
-            $this->assertEquals('lesson:lesson_answers:answer:'.$answer->id, $cis['lesson_answers'][$key]);
+            $key = $this->lessonquestion->id . '_' . $answer->id . '_' . $a;
+            $this->assertEquals('lesson:lesson_answers:answer:' . $answer->id, $cis['lesson_answers'][$key]);
         }
     }
 
     /**
      * Test if file in use detection is working with this module.
+     *
+     * @covers \tool_ally\componentsupport\lesson_component::check_file_in_use
      */
     public function test_check_file_in_use(): void {
         global $DB;
@@ -170,22 +217,52 @@ class components_lesson_component_test extends abstract_testcase {
         $unusedfiles = [];
 
         // Check the intro.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $this->lesson->id,
-            'lesson', 'intro', $this->teacher);
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_lesson',
+            $this->lesson->id,
+            'lesson',
+            'intro',
+            $this->teacher
+        );
 
         // Check both the standard page and the question page.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $this->lessonpage->id,
-            'lesson_pages', 'contents', $this->teacher);
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $this->lessonquestion->id,
-            'lesson_pages', 'contents', $this->teacher);
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_lesson',
+            $this->lessonpage->id,
+            'lesson_pages',
+            'contents',
+            $this->teacher
+        );
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_lesson',
+            $this->lessonquestion->id,
+            'lesson_pages',
+            'contents',
+            $this->teacher
+        );
 
         $answers = $DB->get_records('lesson_answers', ['pageid' => $this->lessonquestion->id]);
 
         foreach ($answers as $answer) {
-            list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $answer->id,
-                'lesson_answers', 'answer', $this->teacher);
-            list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_lesson', $answer->id,
-                'lesson_answers', 'response', $this->teacher);
+            [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+                $context,
+                'mod_lesson',
+                $answer->id,
+                'lesson_answers',
+                'answer',
+                $this->teacher
+            );
+            [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+                $context,
+                'mod_lesson',
+                $answer->id,
+                'lesson_answers',
+                'response',
+                $this->teacher
+            );
         }
 
         // This will double check that file iterator is working as expected.

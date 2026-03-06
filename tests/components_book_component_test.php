@@ -43,7 +43,7 @@ require_once('abstract_testcase.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class components_book_component_test extends abstract_testcase {
+final class components_book_component_test extends abstract_testcase {
     use component_assertions;
 
     /**
@@ -82,6 +82,7 @@ class components_book_component_test extends abstract_testcase {
     private $component;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
@@ -94,6 +95,14 @@ class components_book_component_test extends abstract_testcase {
         $this->component = local_content::component_instance('book');
     }
 
+    /**
+     * Set up book modules and chapters for testing.
+     *
+     * @param array $books
+     * @param array $chapters
+     * @param int $amount
+     * @param bool $emptyintro
+     */
     private function setup_books($books = [], $chapters = [], $amount = 1, $emptyintro = false) {
         global $DB;
         $gen = $this->getDataGenerator();
@@ -117,29 +126,59 @@ class components_book_component_test extends abstract_testcase {
         }
     }
 
+    /**
+     * Test getting all HTML content items.
+     *
+     * @covers \tool_ally\componentsupport\book_component::get_all_html_content
+     */
     public function test_get_all_html_content_items(): void {
         $this->setup_books();
         $contentitems = $this->component->get_all_html_content($this->books[0]->id);
 
-        $this->assert_content_items_contain_item($contentitems,
-            $this->books[0]->id, 'book', 'book', 'intro');
+        $this->assert_content_items_contain_item(
+            $contentitems,
+            $this->books[0]->id,
+            'book',
+            'book',
+            'intro'
+        );
 
-        $this->assert_content_items_contain_item($contentitems,
-            $this->chapters[0]->id, 'book', 'book_chapters', 'content');
+        $this->assert_content_items_contain_item(
+            $contentitems,
+            $this->chapters[0]->id,
+            'book',
+            'book_chapters',
+            'content'
+        );
     }
 
+    /**
+     * Test resolving module instance ID from book.
+     *
+     * @covers \tool_ally\componentsupport\book_component::resolve_course_id
+     */
     public function test_resolve_module_instance_id_from_book(): void {
         $this->setup_books();
         $instanceid = $this->component->resolve_module_instance_id('book', $this->books[0]->id);
         $this->assertEquals($this->books[0]->id, $instanceid);
     }
 
+    /**
+     * Test resolving module instance ID from chapter.
+     *
+     * @covers \tool_ally\componentsupport\book_component::resolve_course_id
+     */
     public function test_resolve_module_instance_id_from_chapter(): void {
         $this->setup_books();
         $instanceid = $this->component->resolve_module_instance_id('book_chapters', $this->chapters[0]->id);
         $this->assertEquals($this->books[0]->id, $instanceid);
     }
 
+    /**
+     * Test getting all course annotation maps.
+     *
+     * @covers \tool_ally\componentsupport\book_component::get_annotation_maps
+     */
     public function test_get_all_course_annotation_maps(): void {
         global $PAGE;
         $PAGE->set_pagetype('mod-book-view');
@@ -166,6 +205,8 @@ class components_book_component_test extends abstract_testcase {
 
     /**
      * Test if file in use detection is working with this block.
+     *
+     * @covers \tool_ally\componentsupport\book_component::check_file_in_use
      */
     public function test_files_in_use(): void {
         global $DB;
@@ -178,12 +219,22 @@ class components_book_component_test extends abstract_testcase {
         $unusedfiles = [];
 
         // Check the intro.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_book', $this->books[0]->id,
-            'book', 'intro');
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_book',
+            $this->books[0]->id,
+            'book',
+            'intro'
+        );
 
         // Check some chapter content.
-        list($usedfiles[], $unusedfiles[]) = $this->check_html_files_in_use($context, 'mod_book', $this->chapters[0]->id,
-            'book_chapters', 'content');
+        [$usedfiles[], $unusedfiles[]] = $this->check_html_files_in_use(
+            $context,
+            'mod_book',
+            $this->chapters[0]->id,
+            'book_chapters',
+            'content'
+        );
 
         // This will double check that file iterator is working as expected.
         $this->check_file_iterator_exclusion($context, $usedfiles, $unusedfiles);
@@ -197,5 +248,4 @@ class components_book_component_test extends abstract_testcase {
         $fileids = $this->get_file_ids_in_context($context);
         $this->assertCount(1, $fileids);
     }
-
 }

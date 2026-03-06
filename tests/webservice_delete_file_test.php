@@ -28,7 +28,7 @@ use tool_ally\webservice\delete_file;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for file delete webservice.
@@ -40,10 +40,11 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @runTestsInSeparateProcesses
  */
-class webservice_delete_file_test extends abstract_testcase {
+final class webservice_delete_file_test extends abstract_testcase {
     /**
      * Test the web service.
      *
+     * @covers \tool_ally\webservice\delete_file::service
      */
     public function test_service(): void {
         global $DB;
@@ -75,6 +76,11 @@ class webservice_delete_file_test extends abstract_testcase {
         $this->get_resource_file($resource);
     }
 
+    /**
+     * Test service invalid user.
+     *
+     * @covers \tool_ally\webservice\delete_file::service
+     */
     public function test_service_invalid_user(): void {
         $this->resetAfterTest();
 
@@ -96,6 +102,11 @@ class webservice_delete_file_test extends abstract_testcase {
         $this->assertInstanceOf(\stored_file, $this->get_resource_file($resource));
     }
 
+    /**
+     * Test service invalid file.
+     *
+     * @covers \tool_ally\webservice\delete_file::service
+     */
     public function test_service_invalid_file(): void {
         global $DB;
 

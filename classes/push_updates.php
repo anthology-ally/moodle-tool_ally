@@ -30,7 +30,7 @@ use tool_ally\logging\logger;
 
 global $CFG;
 
-require_once($CFG->libdir.'/filelib.php');
+require_once($CFG->libdir . '/filelib.php');
 
 /**
  * Abstract push updates.
@@ -45,12 +45,21 @@ abstract class push_updates {
      */
     private $config;
 
-    public function __construct(push_config $config = null) {
+    /**
+     * Constructor.
+     */
+    public function __construct(?push_config $config = null) {
         $this->config = $config ?: new push_config();
     }
 
+    /**
+     * Handle send error.
+     */
     abstract public function handle_send_error(\Exception $e);
 
+    /**
+     * On send success callback log success.
+     */
     abstract protected function on_send_success(array $context);
 
     /**
@@ -65,9 +74,9 @@ abstract class push_updates {
         $content = json_encode(['key' => $this->config->get_key(), 'data' => $payload]);
 
         $curl = $curl ?: new \curl(['debug' => $this->config->get_debug()]);
-        $curl->setHeader('Authorization: Bearer '.$this->config->get_secret());
+        $curl->setHeader('Authorization: Bearer ' . $this->config->get_secret());
         $curl->setHeader('Content-Type: application/json');
-        $curl->setHeader('Content-Length: '.strlen($content));
+        $curl->setHeader('Content-Length: ' . strlen($content));
 
         $senderrors = false;
 
@@ -117,7 +126,7 @@ abstract class push_updates {
         }
         $error = $curl->errno;
         if (!empty($curl->error)) {
-            $error .= ' - '.$curl->error;
+            $error .= ' - ' . $curl->error;
         }
         throw new \moodle_exception('curlerror', 'tool_ally', '', $error);
     }

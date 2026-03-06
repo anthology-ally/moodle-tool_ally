@@ -41,7 +41,7 @@ require_once('abstract_testcase.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class files_in_use_test extends abstract_testcase {
+final class files_in_use_test extends abstract_testcase {
     /**
      * @var stdClass
      */
@@ -63,13 +63,15 @@ class files_in_use_test extends abstract_testcase {
     private $assign;
 
     public function setUp(): void {
+        parent::setUp();
         $this->resetAfterTest();
 
         $gen = $this->getDataGenerator();
         $this->admin = get_admin();
         $this->course = $gen->create_course();
         $this->coursecontext = \context_course::instance($this->course->id);
-        $this->assign = $gen->create_module('assign',
+        $this->assign = $gen->create_module(
+            'assign',
             [
                 'course' => $this->course->id,
                 'introformat' => FORMAT_HTML,
@@ -80,6 +82,8 @@ class files_in_use_test extends abstract_testcase {
 
     /**
      * Test if file in use detection is working.
+     *
+     * @covers \tool_ally\files_in_use::check_file_in_use
      */
     public function test_check_file_in_use(): void {
         global $DB;
@@ -88,7 +92,7 @@ class files_in_use_test extends abstract_testcase {
         $context = \context_module::instance($this->assign->cmid);
         $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
 
-        list($usedfile, $unusedfile) = $this->setup_check_files($context, 'mod_assign', 'intro', 0);
+        [$usedfile, $unusedfile] = $this->setup_check_files($context, 'mod_assign', 'intro', 0);
 
         // Update the intro with the link.
         $link = $generator->create_pluginfile_link_for_file($usedfile);
@@ -121,7 +125,7 @@ class files_in_use_test extends abstract_testcase {
 
         // Last thing, check that 'always used' files are not stored.
         $this->assertCount(2, $DB->get_records('tool_ally_file_in_use'));
-        list($attachfile1, $attachfile2) = $this->setup_check_files($context, 'mod_assign', 'introattachment', 0);
+        [$attachfile1, $attachfile2] = $this->setup_check_files($context, 'mod_assign', 'introattachment', 0);
 
         $this->assertTrue(files_in_use::check_file_in_use($attachfile1));
         $this->assertTrue(files_in_use::check_file_in_use($attachfile2));

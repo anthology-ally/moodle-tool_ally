@@ -33,9 +33,16 @@ namespace tool_ally;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class file_processor extends traceable_processor {
+    /**
+     * {@inheritdoc}
+     *
+     * @var array
+     */
+    protected static array $pushtrace = [];
 
-    protected static $pushtrace = [];
-
+    /**
+     * {@inheritdoc}
+     */
     public static function build_payload($event, $eventname) {
         return [local_file::to_crud($event)];
     }

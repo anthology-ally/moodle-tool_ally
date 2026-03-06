@@ -32,7 +32,7 @@ use tool_ally\file_validator;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test files iterator.
@@ -43,9 +43,11 @@ require_once(__DIR__.'/abstract_testcase.php');
  * @group     ally
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class files_iterator_test extends abstract_testcase {
+final class files_iterator_test extends abstract_testcase {
     /**
      * Test get_files.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_get_files(): void {
         global $DB;
@@ -112,6 +114,11 @@ class files_iterator_test extends abstract_testcase {
         }
     }
 
+    /**
+     * Test get files pathname.
+     *
+     * @covers \tool_ally\files_iterator
+     */
     public function test_get_files_pathname(): void {
         global $DB;
 
@@ -142,11 +149,12 @@ class files_iterator_test extends abstract_testcase {
         $validator = new file_validator();
         $files = new files_iterator($validator);
         $this->assertEmpty(iterator_to_array($files));
-
     }
 
     /**
      * Test get_files when there are no files to fetch.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_get_no_files(): void {
         $this->resetAfterTest();
@@ -160,6 +168,8 @@ class files_iterator_test extends abstract_testcase {
 
     /**
      * Test get_files using the since parameter.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_get_files_since(): void {
         global $DB;
@@ -226,6 +236,11 @@ class files_iterator_test extends abstract_testcase {
         return true;
     }
 
+    /**
+     * Test white listing functionality.
+     *
+     * @covers \tool_ally\files_iterator
+     */
     public function test_white_listing(): void {
         global $DB;
 
@@ -241,7 +256,7 @@ class files_iterator_test extends abstract_testcase {
         $resource = $this->getDataGenerator()->create_module('resource', ['course' => $course->id]);
         $file     = $this->get_resource_file($resource);
         $this->assertEquals('content', $file->get_filearea());
-        $DB->update_record('files',  (object) ['id' => $file->get_id(), 'userid' => $user->id]);
+        $DB->update_record('files', (object) ['id' => $file->get_id(), 'userid' => $user->id]);
 
         $files = local_file::iterator();
         $files->since($now - DAYSECS);
@@ -269,6 +284,8 @@ class files_iterator_test extends abstract_testcase {
     /**
      * Make sure a file created within a course of a whitelisted module is accessible when created by
      * someone with a teacher role but not when a student.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_role_validation(): void {
 
@@ -421,6 +438,8 @@ class files_iterator_test extends abstract_testcase {
 
     /**
      * Test records paging.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_files_paging(): void {
         global $DB;
@@ -453,7 +472,7 @@ class files_iterator_test extends abstract_testcase {
                 'userid' => $user->id,
                 'modified' => time(),
             ];
-            $file = $fs->create_file_from_string($filerecord, $teststring.$i);
+            $file = $fs->create_file_from_string($filerecord, $teststring . $i);
             $hashes[] = $file->get_pathnamehash();
         }
 
@@ -475,6 +494,8 @@ class files_iterator_test extends abstract_testcase {
 
     /**
      * Test using the iterator with validation disabled.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_files_without_valid_filter(): void {
         $this->resetAfterTest();
@@ -534,6 +555,8 @@ class files_iterator_test extends abstract_testcase {
 
     /**
      * Test comparing curent and previous validators.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_all_valid_files(): void {
         $this->resetAfterTest();
@@ -625,6 +648,8 @@ class files_iterator_test extends abstract_testcase {
 
     /**
      * Test records paging using $CFG->tool_ally_optimize_iteration_for_db = true.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_files_paging_optimized_for_db(): void {
         global $DB, $CFG;
@@ -658,7 +683,7 @@ class files_iterator_test extends abstract_testcase {
                 'userid' => $user->id,
                 'modified' => time(),
             ];
-            $file = $fs->create_file_from_string($filerecord, $teststring.$i);
+            $file = $fs->create_file_from_string($filerecord, $teststring . $i);
             $hashes[] = $file->get_pathnamehash();
         }
 
@@ -679,6 +704,8 @@ class files_iterator_test extends abstract_testcase {
 
     /**
      * Basic testing of files being in use or not.
+     *
+     * @covers \tool_ally\files_iterator
      */
     public function test_unused_files(): void {
         global $DB;
@@ -738,5 +765,4 @@ class files_iterator_test extends abstract_testcase {
         $this->assertTrue(in_array($usedfile->get_id(), $fileids));
         $this->assertNotContains($unusedfile->get_id(), $fileids);
     }
-
 }

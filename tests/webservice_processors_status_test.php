@@ -28,24 +28,25 @@ use tool_ally\webservice\processors_status;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__.'/abstract_testcase.php');
+require_once(__DIR__ . '/abstract_testcase.php');
 
 /**
  * Test for content webservice.
  *
  * @package   tool_ally
  * @copyright Copyright (c) 2019 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group     tool_ally
  * @group     ally
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @covers    \tool_ally\webservice\processors_status
  * @runTestsInSeparateProcesses
  */
-class webservice_processors_status extends abstract_testcase {
-    public function test_service_return() {
+final class webservice_processors_status_test extends abstract_testcase {
+    public function test_service_return(): void {
         $returns = processors_status::service_returns();
         $this->assertTrue($returns instanceof \external_single_structure);
     }
-    public function test_service() {
+    public function test_service(): void {
 
         // Save timestamp to compare to oldest event created.
         $basetime = time();
@@ -59,7 +60,8 @@ class webservice_processors_status extends abstract_testcase {
         $this->getDataGenerator()->create_course();
         $this->getDataGenerator()->create_course();
         $section = $this->getDataGenerator()->create_course_section(
-            ['section' => 1, 'course' => $course]);
+            ['section' => 1, 'course' => $course]
+        );
         // Trigger 3 content event.
         course_update_section($course, $section, ['summary' => 'test string']);
         $contenttime = time();
@@ -67,19 +69,19 @@ class webservice_processors_status extends abstract_testcase {
         course_update_section($course, $section, ['summary' => 'test string2']);
 
         $returns = processors_status::execute_service();
-        $this->assertObjectHasAttribute('is_valid', $returns);
+        $this->assertObjectHasProperty('is_valid', $returns);
         $this->assertTrue($returns->is_valid == false);
-        $this->assertObjectHasAttribute('is_cli_only', $returns);
+        $this->assertObjectHasProperty('is_cli_only', $returns);
         $this->assertTrue($returns->is_cli_only == 1);
-        $this->assertObjectHasAttribute('when_cli_only_on', $returns);
-        $this->assertObjectHasAttribute('when_cli_only_off', $returns);
-        $this->assertObjectHasAttribute('content_events', $returns);
+        $this->assertObjectHasProperty('when_cli_only_on', $returns);
+        $this->assertObjectHasProperty('when_cli_only_off', $returns);
+        $this->assertObjectHasProperty('content_events', $returns);
         $this->assertEquals(3, $returns->content_events);
-        $this->assertObjectHasAttribute('oldest_content_event', $returns);
+        $this->assertObjectHasProperty('oldest_content_event', $returns);
         $this->assertTrue(($basetime <= $returns->oldest_content_event) &&  ($returns->oldest_content_event <= $contenttime));
-        $this->assertObjectHasAttribute('course_events', $returns);
+        $this->assertObjectHasProperty('course_events', $returns);
         $this->assertEquals(3, $returns->course_events);
-        $this->assertObjectHasAttribute('oldest_course_event', $returns);
+        $this->assertObjectHasProperty('oldest_course_event', $returns);
         $this->assertTrue(($basetime <= $returns->oldest_course_event) && ($returns->oldest_course_event <= $coursetime));
     }
 }

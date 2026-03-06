@@ -16,8 +16,14 @@
 
 namespace tool_ally\logging;
 
+/**
+ * Logger class.
+ *
+ * @package   tool_logger
+ * @copyright Copyright (c) 2018 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class logger {
-
     /**
      * Get the logger instance.
      * This could be adapted to return a different logger type instance depending on a config.

@@ -29,9 +29,7 @@ namespace tool_ally\componentsupport;
  * @copyright Copyright (c) 2017 Open LMS (https://www.openlms.net) / 2023 Anthology Inc. and its affiliates
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 abstract class file_component_base extends component_base {
-
     /**
      * @var string
      */
@@ -43,13 +41,15 @@ abstract class file_component_base extends component_base {
     protected $file;
 
     /**
+     * Validate that the file belongs to this component.
+     *
      * @param \stored_file $file
      * @throws \coding_exception
      */
     private function validate_file_component(\stored_file $file) {
         $class = get_class($this);
         $namespacedel = strrpos($class, '\\');
-        if ($namespacedel !== false ) {
+        if ($namespacedel !== false) {
             $class = substr($class, $namespacedel + 1);
         }
         if ($this->component_type() === self::TYPE_MOD) {
@@ -59,12 +59,14 @@ abstract class file_component_base extends component_base {
         }
         $modcheck .= substr($class, 0, strrpos($class, '_'));
         if ($modcheck !== $file->get_component()) {
-            throw new \coding_exception('Using incorrect module support class ('.$class.') for file with component '.
+            throw new \coding_exception('Using incorrect module support class (' . $class . ') for file with component ' .
                 $file->get_component());
         }
     }
 
     /**
+     * Setup file and validate.
+     *
      * @param string $oldfilename
      * @param \stored_file $file
      * @return void
@@ -78,5 +80,5 @@ abstract class file_component_base extends component_base {
     /**
      * Replace file links.
      */
-    abstract public function replace_file_links();
+    abstract public function replace_file_links(): void;
 }

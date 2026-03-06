@@ -36,7 +36,6 @@ use stdClass;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class launch_config extends base_launch_config {
-
     /**
      * launch_config constructor.
      * @param stdClass|bool $pluginconfig
@@ -62,5 +61,4 @@ class launch_config extends base_launch_config {
 
         $this->launchcontainer = LTI_LAUNCH_CONTAINER_EMBED;
     }
-
 }

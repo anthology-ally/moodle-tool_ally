@@ -27,11 +27,10 @@ namespace tool_ally\webservice;
 use tool_ally\exceptions\component_validation_exception;
 use tool_ally\local_content;
 use tool_ally\models\component_content;
-
-use external_value;
-use external_single_structure;
-use external_multiple_structure;
-use external_function_parameters;
+use core_external\external_value;
+use core_external\external_single_structure;
+use core_external\external_multiple_structure;
+use core_external\external_function_parameters;
 
 /**
  * Get content for single rich content item.
@@ -42,9 +41,9 @@ use external_function_parameters;
  */
 class content extends loggable_external_api {
     /**
-     * @return external_function_parameters
+     * {@inheritdoc}
      */
-    public static function service_parameters() {
+    public static function service_parameters(): external_function_parameters {
         return new external_function_parameters([
             'id'        => new external_value(PARAM_INT, 'Item id'),
             'component' => new external_value(PARAM_ALPHANUMEXT, 'Component'),
@@ -55,35 +54,43 @@ class content extends loggable_external_api {
     }
 
     /**
-     * @return external_single_structure
+     * {@inheritdoc}
      */
-    public static function service_returns() {
+    public static function service_returns(): external_single_structure | external_multiple_structure {
         return new external_single_structure([
             'id'            => new external_value(PARAM_INT, 'Component id'),
             'content'       => new external_value(PARAM_RAW, 'Content'),
             'embeddedfiles' => new external_multiple_structure(
-                new external_single_structure([
+                new external_single_structure(
+                    [
                         'filename'     => new external_value(PARAM_TEXT, 'File name'),
                         'pathnamehash' => new external_value(PARAM_TEXT, 'File path name hash'),
                         'tag'          => new external_value(PARAM_TEXT, 'File dom tag'),
                     ],
                     'Embedded file information'
-                ), 'Embedded files information'
+                ),
+                'Embedded files information'
             ),
             'title'         => new external_value(PARAM_TEXT, 'Title'),
             'contenturl'    => new external_value(PARAM_URL, 'URL'),
             'contenthash'   => new external_value(PARAM_ALPHANUM, 'Content hash'),
             'component'     => new external_value(PARAM_ALPHANUMEXT, 'Component name'),
-            'table'         => new external_value(PARAM_ALPHANUMEXT,
-                    'Where content not in main component table - e.g: forum_discussions, forum_posts, etc'),
-            'field'         => new external_value(PARAM_ALPHANUMEXT,
-                    'Table field for storing content - e.g: description, message, etc'),
+            'table'         => new external_value(
+                PARAM_ALPHANUMEXT,
+                'Where content not in main component table - e.g: forum_discussions, forum_posts, etc'
+            ),
+            'field'         => new external_value(
+                PARAM_ALPHANUMEXT,
+                'Table field for storing content - e.g: description, message, etc'
+            ),
             'courseid'      => new external_value(PARAM_INT, 'Course ID of course housing content'),
             'timemodified'  => new external_value(PARAM_TEXT, 'Last modified time of the content'),
         ]);
     }
 
     /**
+     * Get content for specified component table field and id.
+     *
      * @param int $id
      * @param string $component
      * @param string $table
@@ -109,7 +116,13 @@ class content extends loggable_external_api {
 
         try {
             $content = local_content::get_html_content(
-                $params['id'], $params['component'], $params['table'], $params['field'], $params['courseid'], true);
+                $params['id'],
+                $params['component'],
+                $params['table'],
+                $params['field'],
+                $params['courseid'],
+                true
+            );
             $content = $content ?? null;
             if ($content === null) {
                 $ident = local_content::urlident($component, $table, $field, $id);
