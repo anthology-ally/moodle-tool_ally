@@ -1,0 +1,136 @@
+#
+# Whenever a new tag starting with "AY" is pushed, add the tagged version
+# to the Moodle Plugins directory at https://moodle.org/plugins
+#
+# revision: 2021070201
+#
+name: Releasing in the Plugins directory
+
+on:
+  push:
+    tags:
+      - 'AY*'
+
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to be released'
+        required: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  release-at-moodle-org:
+    runs-on: ubuntu-latest
+    env:
+      PLUGIN: 'tool_ally'
+      CURL: curl -sS
+      ENDPOINT: https://moodle.org/webservice/rest/server.php
+      TOKEN: ${{ secrets.MOODLE_ORG_TOKEN }}
+      FUNCTION: local_plugins_add_version
+      INPUT_TAG: ${{ github.event.inputs.tag }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate and set tag name
+        id: validate-tag
+        run: |
+          if [[ ! -z "${INPUT_TAG}" ]]; then
+            TAGNAME="${INPUT_TAG}"
+          elif [[ $GITHUB_REF = refs/tags/* ]]; then
+            TAGNAME="${GITHUB_REF##*/}"
+          fi
+          if [[ -z "${TAGNAME}" ]]; then
+            echo "Error: No tag name has been provided!"
+            exit 1
+          fi
+          if [[ ! "${TAGNAME}" =~ ^AY ]]; then
+            echo "Error: Tag '${TAGNAME}' does not start with 'AY'"
+            exit 1
+          fi
+          
+          # Verify tag exists on a MOODLE_*_STABLE branch
+          if git rev-parse "${TAGNAME}" >/dev/null 2>&1; then
+            BRANCHES=$(git branch -r --contains "refs/tags/${TAGNAME}" 2>/dev/null | grep -E 'MOODLE_[0-9]+_STABLE' || true)
+            if [[ -z "${BRANCHES}" ]]; then
+              echo "Error: Tag '${TAGNAME}' not found on any MOODLE_*_STABLE branch"
+              exit 1
+            fi
+            echo "Tag found on branches: ${BRANCHES}"
+          else
+            echo "Warning: Could not verify tag location, proceeding anyway"
+          fi
+          
+          echo "tagname=${TAGNAME}" >> $GITHUB_OUTPUT
+          echo "Tag validated: ${TAGNAME}"
+
+      - name: Validate branch
+        if: github.event_name == 'push'
+        run: |
+          BRANCH="${{ github.event.base_ref }}"
+          if [[ -z "${BRANCH}" ]]; then
+            BRANCH=$(git branch -r --contains ${{ github.sha }} | grep -oP 'origin/MOODLE_[0-9]+_STABLE' | head -1)
+          fi
+          if [[ ! "${BRANCH}" =~ MOODLE_[0-9]+_STABLE ]]; then
+            echo "Tag must be pushed from a MOODLE_[0-9]+_STABLE branch"
+            exit 1
+          fi
+          echo "Tag validated on branch: ${BRANCH}"
+          
+      - name: Call the service function with retry
+        id: add-version
+        env:
+          TAGNAME: ${{ steps.validate-tag.outputs.tagname }}
+        run: |
+          ZIPURL="https://api.github.com/repos/${{ github.repository }}/zipball/${TAGNAME}"
+          
+          for ATTEMPT in {1..3}; do
+            echo "Attempt ${ATTEMPT} of 3"
+            
+            HTTP_CODE=$(curl -sSf -w "%{http_code}" -o response.json ${ENDPOINT} \
+              --data-urlencode "wstoken=${TOKEN}" \
+              --data-urlencode "wsfunction=${FUNCTION}" \
+              --data-urlencode "moodlewsrestformat=json" \
+              --data-urlencode "frankenstyle=${PLUGIN}" \
+              --data-urlencode "zipurl=${ZIPURL}" \
+              --data-urlencode "vcssystem=git" \
+              --data-urlencode "vcsrepositoryurl=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+              --data-urlencode "vcstag=${TAGNAME}" \
+              --data-urlencode "changelogurl=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/commits/${TAGNAME}" \
+              --data-urlencode "altdownloadurl=${ZIPURL}" 2>&1 || echo "000")
+            
+            if [[ ${HTTP_CODE} -le 299 && ${HTTP_CODE} -ge 200 ]]; then
+              RESPONSE=$(cat response.json)
+              echo "response=${RESPONSE}" >> $GITHUB_OUTPUT
+              echo "Success on attempt ${ATTEMPT}"
+              exit 0
+            else
+              echo "Error: Attempt ${ATTEMPT} failed with HTTP code ${HTTP_CODE}"
+              if [[ -f response.json ]]; then
+                cat response.json
+              fi
+              
+              if [[ ${ATTEMPT} -lt 3 ]]; then
+                BACKOFF=$((2 ** (ATTEMPT - 1)))
+                echo "Retrying in ${BACKOFF} seconds..."
+                sleep ${BACKOFF}
+              fi
+            fi
+          done
+          
+          echo "Error: All 3 attempts failed"
+          exit 1
+
+      - name: Evaluate the response
+        id: evaluate-response
+        env:
+          RESPONSE: ${{ steps.add-version.outputs.response }}
+        run: |
+          jq <<< "${RESPONSE}"
+          jq --exit-status ".id" <<< "${RESPONSE}" > /dev/null
