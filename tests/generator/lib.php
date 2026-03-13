@@ -217,7 +217,9 @@ class tool_ally_generator extends component_generator_base {
             $context = [];
         }
 
-        $logid = $logger->log($level, $message, $context);
+        $logger->log($level, $message, $context);
+        $logid = $logger->getlastlogentryid();
+
         if (empty($logid)) {
             throw new coding_exception("Log insert didn't return an id.");
         }
