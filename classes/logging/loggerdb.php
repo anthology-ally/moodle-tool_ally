@@ -18,9 +18,8 @@ namespace tool_ally\logging;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/../../vendor/autoload.php');
-
 use Exception;
+use Stringable;
 
 /**
  * Define database logging class.
@@ -30,6 +29,8 @@ use Exception;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class loggerdb extends loggerbase {
+    private ?int $lastlogentryid = null;
+
     /**
      * Logs with an arbitrary level.
      *
@@ -38,7 +39,7 @@ class loggerdb extends loggerbase {
      * @param array $context
      * @return null
      */
-    public function log($level, $message, array $context = []) {
+    public function log($level, Stringable|string $message, array $context = []): void {
         global $DB;
 
         if (!$DB->get_manager()->table_exists('tool_ally_log')) {
@@ -94,6 +95,11 @@ class loggerdb extends loggerbase {
             'data' => serialize($context),
             'exception' => $exception,
         ];
-        return $DB->insert_record('tool_ally_log', $record);
+
+        $this->lastlogentryid = $DB->insert_record('tool_ally_log', $record);
+    }
+
+    public function getlastlogentryid(): ?int {
+        return $this->lastlogentryid;
     }
 }

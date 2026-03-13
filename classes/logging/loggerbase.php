@@ -16,9 +16,10 @@
 
 namespace tool_ally\logging;
 defined('MOODLE_INTERNAL') || die();
-require_once(__DIR__ . '/../../vendor/autoload.php');
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
+use Stringable;
+
 /**
  * Define base logging class.
  *
@@ -52,7 +53,7 @@ abstract class loggerbase implements LoggerInterface {
      * @param array $context
      * @return null
      */
-    public function emergency($message, array $context = []) {
+    public function emergency(Stringable|string $message, array $context = []): void {
         // Only log if range is light or greater (Emergency|Alert|Critical).
         if ($this->logrange >= constants::RANGE_LIGHT) {
             $this->log(LogLevel::EMERGENCY, $message, $context);
@@ -68,7 +69,7 @@ abstract class loggerbase implements LoggerInterface {
      * @param array $context
      * @return null
      */
-    public function alert($message, array $context = []) {
+    public function alert(Stringable|string $message, array $context = []): void {
         // Only log if range is light or greater (Emergency|Alert|Critical).
         if ($this->logrange >= constants::RANGE_LIGHT) {
             $this->log(LogLevel::ALERT, $message, $context);
@@ -83,7 +84,7 @@ abstract class loggerbase implements LoggerInterface {
      * @param array $context
      * @return null
      */
-    public function critical($message, array $context = []) {
+    public function critical(Stringable|string $message, array $context = []): void {
         // Only log if range is light or greater (Emergency|Alert|Critical).
         if ($this->logrange >= constants::RANGE_LIGHT) {
             $this->log(LogLevel::CRITICAL, $message, $context);
@@ -97,7 +98,7 @@ abstract class loggerbase implements LoggerInterface {
      * @param array $context
      * @return null
      */
-    public function error($message, array $context = []) {
+    public function error(Stringable|string $message, array $context = []): void {
         // Only log if range is medium or greater (Emergency|Alert|Critical|Error|Warning).
         if ($this->logrange >= constants::RANGE_MEDIUM) {
             $this->log(LogLevel::ERROR, $message, $context);
@@ -113,7 +114,7 @@ abstract class loggerbase implements LoggerInterface {
      * @param array $context
      * @return null
      */
-    public function warning($message, array $context = []) {
+    public function warning(Stringable|string $message, array $context = []): void {
         // Only log if range is medium (Emergency|Alert|Critical|Error|Warning).
         if ($this->logrange >= constants::RANGE_MEDIUM) {
             $this->log(LogLevel::WARNING, $message, $context);
@@ -126,7 +127,7 @@ abstract class loggerbase implements LoggerInterface {
      * @param array $context
      * @return null
      */
-    public function notice($message, array $context = []) {
+    public function notice(Stringable|string $message, array $context = []): void {
         // Only log if range is all - every possible type of log.
         if ($this->logrange >= constants::RANGE_ALL) {
             $this->log(LogLevel::NOTICE, $message, $context);
@@ -141,7 +142,7 @@ abstract class loggerbase implements LoggerInterface {
      * @param array $context
      * @return null
      */
-    public function info($message, array $context = []) {
+    public function info(Stringable|string $message, array $context = []): void {
         // Only log if range is all - every possible type of log.
         if ($this->logrange >= constants::RANGE_ALL) {
             $this->log(LogLevel::INFO, $message, $context);
@@ -154,7 +155,7 @@ abstract class loggerbase implements LoggerInterface {
      * @param array $context
      * @return null
      */
-    public function debug($message, array $context = []) {
+    public function debug(Stringable|string $message, array $context = []): void {
         // Only log if range is all - every possible type of log.
         if ($this->logrange >= constants::RANGE_ALL) {
             $this->log(LogLevel::DEBUG, $message, $context);
@@ -168,5 +169,5 @@ abstract class loggerbase implements LoggerInterface {
      * @param array $context
      * @return null
      */
-    abstract public function log($level, $message, array $context = []);
+    abstract public function log($level, Stringable|string $message, array $context = []): void;
 }
