@@ -30,6 +30,10 @@ $plugin->release   = '4.5.1';
 $plugin->version   = 2026012800;
 $plugin->requires  = 2024092700;
 $plugin->maturity  = MATURITY_STABLE;
+$plugin->supported = [
+    405,
+    405,
+];
 $plugin->dependencies = [
     'filter_ally'    => 2026012800,
     'report_allylti' => 2026012800,
