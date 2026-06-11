@@ -131,7 +131,7 @@ final class components_question_component_test extends abstract_testcase {
      * @covers \tool_ally\componentsupport\question_component::get_question
      */
     public function test_get_question(): void {
-        $quest = \phpunit_util::call_internal_method(
+        $quest = \core\test\phpunit\phpunit_util::call_internal_method(
             $this->component,
             'get_question',
             [$this->quest1->id],

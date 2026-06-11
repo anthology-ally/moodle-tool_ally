@@ -51,7 +51,7 @@ final class local_content_test extends abstract_testcase {
      */
     public function test_component_supports_html_content(): void {
 
-        $supported = \phpunit_util::call_internal_method(
+        $supported = \core\test\phpunit\phpunit_util::call_internal_method(
             null,
             'component_supports_html_content',
             ['label'],
@@ -60,7 +60,7 @@ final class local_content_test extends abstract_testcase {
 
         $this->assertEquals(true, $supported);
 
-        $supported = \phpunit_util::call_internal_method(
+        $supported = \core\test\phpunit\phpunit_util::call_internal_method(
             null,
             'component_supports_html_content',
             ['unknowncomponent'],

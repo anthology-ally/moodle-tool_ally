@@ -49,7 +49,7 @@ final class version_information_test extends abstract_testcase {
         $versioninfo = new version_information();
 
         // Test out a module that we know will definitely be installed because it's core.
-        $info = \phpunit_util::call_internal_method(
+        $info = \core\test\phpunit\phpunit_util::call_internal_method(
             $versioninfo,
             'get_component_version',
             ['label'],
@@ -61,7 +61,7 @@ final class version_information_test extends abstract_testcase {
         $this->assertNotEmpty($info->requires);
 
         // Test out a fake module that definitely won't be installed.
-        $info = \phpunit_util::call_internal_method(
+        $info = \core\test\phpunit\phpunit_util::call_internal_method(
             $versioninfo,
             'get_component_version',
             ['some_fake_module'],

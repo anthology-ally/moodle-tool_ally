@@ -36,7 +36,6 @@ use core\event\course_section_created;
 use core\event\course_section_updated;
 use core\event\course_section_deleted;
 use core\event\group_created;
-use core\event\group_deleted;
 use core\event\group_updated;
 use mod_forum\event\discussion_created;
 use mod_forum\event\discussion_updated;

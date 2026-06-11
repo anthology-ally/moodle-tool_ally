@@ -160,7 +160,7 @@ final class components_glossary_component_test extends abstract_testcase {
 
 
     public function test_get_entry_html_content_items(): void {
-        $contentitems = \phpunit_util::call_internal_method(
+        $contentitems = \core\test\phpunit\phpunit_util::call_internal_method(
             $this->component,
             'get_entry_html_content_items',
             [

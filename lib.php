@@ -50,23 +50,6 @@ function tool_ally_after_file_deleted($filerecord) {
 }
 
 /**
- * Callback for after file created.
- *
- * This is a legacy callback that is used for compatibility with older Moodle
- * versions.
- * Moodle 4.5+ will use tool_ally\hook_callbacks::after_file_created instead.
- *
- * @param stdClass $filerecord
- */
-function tool_ally_after_file_created($filerecord) {
-    $fs = get_file_storage();
-    $file = $fs->get_file_instance($filerecord);
-    file_processor::push_file_update($file);
-
-    cache::instance()->invalidate_file_keys($file);
-}
-
-/**
  * Callback for after file updated.
  * @param stdClass $filerecord
  */

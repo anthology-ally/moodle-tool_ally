@@ -204,7 +204,7 @@ final class components_hsuforum_component_test extends abstract_testcase {
             return;
         }
 
-        $contentitems = \phpunit_util::call_internal_method(
+        $contentitems = \core\test\phpunit\phpunit_util::call_internal_method(
             $this->component,
             'get_discussion_html_content_items',
             [

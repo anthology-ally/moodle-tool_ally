@@ -95,7 +95,7 @@ final class components_block_html_component_test extends abstract_testcase {
 
         $sctc = new search_content_test('search_content_add_block');
 
-        $block = \phpunit_util::call_internal_method(
+        $block = \core\test\phpunit\phpunit_util::call_internal_method(
             $sctc,
             'create_block',
             ['course' => $this->course],
@@ -123,7 +123,7 @@ final class components_block_html_component_test extends abstract_testcase {
             $data['text']['itemid'] = $itemid;
         }
         $block->instance_config_save((object) $data);
-        $page = \phpunit_util::call_internal_method(
+        $page = \core\test\phpunit\phpunit_util::call_internal_method(
             $sctc,
             'construct_page',
             ['course' => $this->course],
@@ -184,7 +184,7 @@ final class components_block_html_component_test extends abstract_testcase {
 
         // Create an empty unconfigured block.
         // Ensure this does not trigger an error and that content has empty format and text.
-        $htmlblock = \phpunit_util::call_internal_method(
+        $htmlblock = \core\test\phpunit\phpunit_util::call_internal_method(
             $sctc,
             'create_block',
             ['course' => $this->course],
@@ -235,7 +235,7 @@ final class components_block_html_component_test extends abstract_testcase {
 
         // Create an empty unconfigured block.
         // Ensure this does not trigger an error and that content has empty format and text.
-        $htmlblock = \phpunit_util::call_internal_method(
+        $htmlblock = \core\test\phpunit\phpunit_util::call_internal_method(
             $sctc,
             'create_block',
             ['course' => $this->course],
