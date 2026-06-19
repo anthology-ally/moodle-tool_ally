@@ -28,6 +28,7 @@ use context;
 use core\context_helper;
 use file_storage;
 use stdClass;
+use stored_file;
 
 /**
  * Files that are processed for accessibility.
@@ -69,7 +70,7 @@ class files_iterator implements \Iterator {
     private $page = 0;
 
     /**
-     * @var \stored_file
+     * @var stored_file
      */
     private $current;
 
@@ -148,9 +149,9 @@ class files_iterator implements \Iterator {
      * Constructor.
      *
      * @param file_validator $validator
-     * @param \file_storage|null $storage
+     * @param file_storage|null $storage
      */
-    public function __construct(file_validator $validator, file_storage $storage = null) {
+    public function __construct(file_validator $validator, ?file_storage $storage = null) {
         global $CFG;
         $this->validator = $validator;
         $this->storage   = $storage ?: get_file_storage();
@@ -174,7 +175,7 @@ class files_iterator implements \Iterator {
     /**
      * Get current file
      *
-     * @return \stored_file
+     * @return stored_file
      */
     #[\ReturnTypeWillChange]
     public function current(): mixed {
@@ -232,7 +233,7 @@ class files_iterator implements \Iterator {
      */
     #[\ReturnTypeWillChange]
     public function key() {
-        if ($this->current instanceof \stored_file) {
+        if ($this->current instanceof stored_file) {
             return (int) $this->current->get_id();
         }
 
@@ -244,7 +245,7 @@ class files_iterator implements \Iterator {
      */
     #[\ReturnTypeWillChange]
     public function valid() {
-        return $this->current instanceof \stored_file;
+        return $this->current instanceof stored_file;
     }
 
     /**

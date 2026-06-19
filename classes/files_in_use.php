@@ -359,7 +359,7 @@ class files_in_use {
      * @param bool $inuse
      * @param stdClass|null $existing The existing record. If null, assumes no record exists.
      */
-    protected function update_file_in_use(stored_file $file, context $context, bool $inuse, stdClass $existing = null): void {
+    protected function update_file_in_use(stored_file $file, context $context, bool $inuse, ?stdClass $existing = null): void {
         global $DB;
 
         if (is_null($existing)) {
