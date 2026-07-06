@@ -49,7 +49,7 @@ class local_file {
      * @param file_validator|null $validator
      * @return files_iterator
      */
-    public static function iterator(file_validator $validator = null) {
+    public static function iterator(?file_validator $validator = null) {
         $validator = $validator ?: self::file_validator();
 
         return new files_iterator($validator);

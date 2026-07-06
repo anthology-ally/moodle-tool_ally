@@ -52,7 +52,7 @@ abstract class loggerbase implements LoggerInterface {
      * @param array $context
      * @return null
      */
-    public function emergency($message, array $context = []) {
+    public function emergency($message, array $context = array()) {
         // Only log if range is light or greater (Emergency|Alert|Critical).
         if ($this->logrange >= constants::RANGE_LIGHT) {
             $this->log(LogLevel::EMERGENCY, $message, $context);
