@@ -164,10 +164,11 @@ trait embedded_file_map {
         $cache = cache::make('tool_ally', 'fileinusecache');
         $contextid = $file->get_contextid();
 
+        $filescontenthash = [];
+
         $files = $cache->get($contextid);
         if ($files == false) {
             $files = [];
-            $filescontenthash = [];
             if (is_null($context)) {
                 $context = context::instance_by_id($contextid);
             }
@@ -222,7 +223,7 @@ trait embedded_file_map {
         }
 
         // When Ally asks too early, this might be a file going from the draft area into the intro area.
-        if (in_array($file->get_contenthash(), $filescontenthash)) {
+        if (in_array($file->get_contenthash(), $filescontenthash, true)) {
             return true;
         }
 
