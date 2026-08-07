@@ -130,7 +130,7 @@ class file_validator {
      * @param array $userids
      * @param role_assignments|null $assignments
      */
-    public function __construct(array $userids = [], role_assignments $assignments = null) {
+    public function __construct(array $userids = [], ?role_assignments $assignments = null) {
         $this->userids        = $userids;
         $this->assignments    = $assignments ?: new role_assignments();
         ;
@@ -155,7 +155,7 @@ class file_validator {
      * @return bool
      * @throws coding_exception
      */
-    public function validate_stored_file(stored_file $file, context $context = null, $skipinusecheck = false) {
+    public function validate_stored_file(stored_file $file, ?context $context = null, $skipinusecheck = false) {
         // Can a course context be gotten?
         try {
             $context = $context ?: context::instance_by_id($file->get_contextid());

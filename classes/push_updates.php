@@ -70,7 +70,7 @@ abstract class push_updates {
      * @param int $retrycount
      * @return bool - successful?
      */
-    public function send(array $payload, \curl $curl = null, $retrycount = 0) {
+    public function send(array $payload, ?\curl $curl = null, $retrycount = 0) {
         $content = json_encode(['key' => $this->config->get_key(), 'data' => $payload]);
 
         $curl = $curl ?: new \curl(['debug' => $this->config->get_debug()]);

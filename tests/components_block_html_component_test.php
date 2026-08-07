@@ -90,7 +90,7 @@ final class components_block_html_component_test extends abstract_testcase {
      * @param array|null $data
      * @return \block_html
      */
-    private function add_block(array $data = null): \block_html {
+    private function add_block(?array $data = null): \block_html {
         global $USER;
 
         $sctc = new search_content_test('search_content_add_block');

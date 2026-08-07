@@ -48,7 +48,7 @@ class files_in_use {
      * @param context|null $context Context if you already have it. Prevents needing to reload it.
      * @return bool
      */
-    public static function check_file_in_use(stored_file $file, context $context = null): bool {
+    public static function check_file_in_use(stored_file $file, ?context $context = null): bool {
         if (!get_config('tool_ally', 'excludeunused')) {
             // If the exclude setting is disabled, always return that the file is in use.
             return true;
@@ -195,7 +195,7 @@ class files_in_use {
      * @param stdClass|null $existing
      * @return bool
      */
-    protected function file_in_use_update(stored_file $file, context $context, stdClass $existing = null): bool {
+    protected function file_in_use_update(stored_file $file, context $context, ?stdClass $existing = null): bool {
         global $DB;
 
         $componentstr = $file->get_component();
@@ -359,7 +359,7 @@ class files_in_use {
      * @param bool $inuse
      * @param stdClass|null $existing The existing record. If null, assumes no record exists.
      */
-    protected function update_file_in_use(stored_file $file, context $context, bool $inuse, stdClass $existing = null): void {
+    protected function update_file_in_use(stored_file $file, context $context, bool $inuse, ?stdClass $existing = null): void {
         global $DB;
 
         if (is_null($existing)) {
