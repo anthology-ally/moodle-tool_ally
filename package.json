@@ -14,7 +14,7 @@
     "grunt-sass": "^3.0.2",
     "kind-of": ">=6.0.3",
     "load-grunt-tasks": "^5.1.0",
-    "minimist": ">=1.2.3",
+    "minimist": ">=1.2.6",
     "serialize-javascript": ">=2.1.1",
     "vue": "^2.6.10",
     "vue-template-compiler": "^2.6.10"
@@ -24,7 +24,7 @@
     "acorn": ">=6.4.1",
     "diff": ">=3.5.0",
     "kind-of": ">=6.0.3",
-    "minimist": ">=1.2.3",
+    "minimist": ">=1.2.6",
     "node": "^12.6.0",
     "node-sass": "^4.14.1",
     "sass": "^1.26.7",
