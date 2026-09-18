@@ -101,4 +101,105 @@ class components_label_component_test extends abstract_testcase {
         // This will double check that file iterator is working as expected.
         $this->check_file_iterator_exclusion($context, $usedfiles, $unusedfiles);
     }
+
+    /**
+     * A label's "Title in course index" must be used as-is, regardless of its content - even
+     * image-only content whose alt text would otherwise produce a garbled derived title
+     * (AB#191345).
+     *
+     * @covers \tool_ally\componentsupport\label_component::get_html_content
+     */
+    public function test_title_uses_course_index_name_regardless_of_content(): void {
+        global $DB;
+
+        $DB->update_record('label', (object) [
+            'id' => $this->label->id,
+            'name' => 'My Custom Title',
+            'intro' => '<img src="@@PLUGINFILE@@/pic.png" alt="A random gibberish alt description" />',
+        ]);
+
+        $content = $this->component->get_html_content($this->label->id, 'label', 'intro', $this->course->id);
+
+        $this->assertEquals('My Custom Title', $content->title);
+    }
+
+    /**
+     * A label with no "Title in course index" whose content is only an image with a non-empty alt
+     * attribute must not surface that alt text (bracketed by html_to_text()) as if it were a real
+     * title (AB#191345).
+     *
+     * @covers \tool_ally\componentsupport\label_component::get_html_content
+     * @covers \tool_ally\componentsupport\label_component::get_label_title_from_content
+     */
+    public function test_title_falls_back_when_content_is_only_an_image_with_alt_text(): void {
+        global $DB;
+
+        $DB->update_record('label', (object) [
+            'id' => $this->label->id,
+            'name' => '',
+            'intro' => '<img src="@@PLUGINFILE@@/pic.png" alt="A random gibberish alt description" />',
+        ]);
+
+        $content = $this->component->get_html_content($this->label->id, 'label', 'intro', $this->course->id);
+
+        $this->assertEquals(get_string('modulename', 'label'), $content->title);
+    }
+
+    /**
+     * A label with no "Title in course index" whose content is only an image with an empty alt
+     * attribute must fall back to the module's generic display name, not an empty or bracketed
+     * title (AB#191345).
+     *
+     * @covers \tool_ally\componentsupport\label_component::get_html_content
+     * @covers \tool_ally\componentsupport\label_component::get_label_title_from_content
+     */
+    public function test_title_falls_back_when_content_is_only_an_image_with_no_alt_text(): void {
+        global $DB;
+
+        $DB->update_record('label', (object) [
+            'id' => $this->label->id,
+            'name' => '',
+            'intro' => '<img src="@@PLUGINFILE@@/pic.png" alt="" />',
+        ]);
+
+        $content = $this->component->get_html_content($this->label->id, 'label', 'intro', $this->course->id);
+
+        $this->assertEquals(get_string('modulename', 'label'), $content->title);
+    }
+
+    /**
+     * A label with no "Title in course index" whose content is genuine text alongside an image
+     * must still derive its title from that text, ignoring the image, exactly as it did before
+     * AB#191345 was fixed.
+     *
+     * @covers \tool_ally\componentsupport\label_component::get_html_content
+     * @covers \tool_ally\componentsupport\label_component::get_label_title_from_content
+     */
+    public function test_title_derived_from_text_alongside_an_image(): void {
+        global $DB;
+
+        $DB->update_record('label', (object) [
+            'id' => $this->label->id,
+            'name' => '',
+            'intro' => '<p>A real description</p><img src="@@PLUGINFILE@@/pic.png" alt="A random gibberish alt description" />',
+        ]);
+
+        $content = $this->component->get_html_content($this->label->id, 'label', 'intro', $this->course->id);
+
+        $this->assertEquals('A real description', $content->title);
+    }
+
+    /**
+     * A label created through the normal Moodle flow with no explicit "Title in course index" and
+     * plain text content - core's own label_add_instance() (mod/label/lib.php) derives and
+     * persists a name from that text at creation time - must keep using that name unaffected by
+     * AB#191345.
+     *
+     * @covers \tool_ally\componentsupport\label_component::get_html_content
+     */
+    public function test_title_unaffected_for_plain_text_content(): void {
+        $content = $this->component->get_html_content($this->label->id, 'label', 'intro', $this->course->id);
+
+        $this->assertEquals('Text in intro', $content->title);
+    }
 }
