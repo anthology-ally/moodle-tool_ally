@@ -481,6 +481,214 @@ class local_file {
     }
 
     /**
+     * Get the @@PLUGINFILE@@ relative paths which may be used to reference a file in html.
+     *
+     * Moodle raw url encodes embedded file references, but content authored elsewhere (or imported) can
+     * hold the unencoded path, so both variants have to be considered.
+     *
+     * @param stored_file $file
+     * @return string[]
+     */
+    public static function pluginfile_path_variants(stored_file $file) {
+        $path = $file->get_filepath() . $file->get_filename();
+
+        $encoded = implode('/', array_map('rawurlencode', explode('/', $path)));
+
+        return array_values(array_unique([$encoded, $path]));
+    }
+
+    /**
+     * Strip img elements referencing a file out of html.
+     *
+     * Deleting the stored file on its own leaves the img element behind, which renders as a broken
+     * image, so the element itself has to go too.
+     *
+     * @param string $html
+     * @param string[] $paths @@PLUGINFILE@@ relative paths, see pluginfile_path_variants.
+     * @return string
+     */
+    public static function strip_pluginfile_elements($html, array $paths) {
+        if (empty($html) || empty($paths)) {
+            return $html;
+        }
+
+        $quoted = array_map(function($path) {
+            return preg_quote($path, '~');
+        }, $paths);
+
+        $target = '@@PLUGINFILE@@(?:' . implode('|', $quoted) . ')';
+
+        // An image linking to its own file would be left behind as an empty, but still clickable,
+        // anchor, so that anchor has to be removed as a whole.
+        $anchor = '~<a\b[^>]*\bhref\s*=\s*([\'"])\s*' . $target . '\s*\1[^>]*>\s*' .
+            '<img\b[^>]*\bsrc\s*=\s*([\'"])\s*' . $target . '\s*\2[^>]*>\s*</a>~is';
+
+        $img = '~<img\b[^>]*\bsrc\s*=\s*([\'"])\s*' . $target . '\s*\1[^>]*>~is';
+
+        return preg_replace($img, '', preg_replace($anchor, '', $html));
+    }
+
+    /**
+     * Remove references to a file from a html field.
+     *
+     * Only for content which has no component support class - where there is one,
+     * remove_filepaths_from_content is preferred as it also notifies Ally of the change.
+     *
+     * @param string $field
+     * @param string $table
+     * @param string $filter
+     * @param array $fparams filter parameters.
+     * @param string[] $paths @@PLUGINFILE@@ relative paths, see pluginfile_path_variants.
+     */
+    public static function remove_filepaths_from_html($field, $table, $filter, array $fparams, array $paths) {
+        global $DB;
+
+        $sql = "SELECT id, $field AS allyhtml
+                  FROM {" . $table . "}
+                 WHERE $field IS NOT NULL AND $filter";
+
+        $rows = $DB->get_records_sql($sql, $fparams);
+        foreach ($rows as $row) {
+            $stripped = self::strip_pluginfile_elements($row->allyhtml, $paths);
+            if ($stripped === $row->allyhtml) {
+                continue;
+            }
+            $DB->set_field($table, $field, $stripped, ['id' => $row->id]);
+        }
+    }
+
+    /**
+     * Remove references to a file from a component html content item.
+     *
+     * Goes through the component support so that the content update is pushed to Ally and any
+     * course cache holding the old content is cleared.
+     *
+     * @param int $id
+     * @param string $component
+     * @param string $table
+     * @param string $field
+     * @param string[] $paths @@PLUGINFILE@@ relative paths, see pluginfile_path_variants.
+     * @return bool true when content was updated.
+     */
+    public static function remove_filepaths_from_content($id, $component, $table, $field, array $paths) {
+        $content = local_content::get_html_content($id, $component, $table, $field);
+        if (empty($content) || empty($content->content)) {
+            return false;
+        }
+
+        $stripped = self::strip_pluginfile_elements($content->content, $paths);
+        if ($stripped === $content->content) {
+            return false;
+        }
+
+        return (bool) local_content::replace_html_content($id, $component, $table, $field, $stripped);
+    }
+
+    /**
+     * Can the content for this component / table / field be read and written through component support?
+     *
+     * @param string $component
+     * @param string $table
+     * @param string $field
+     * @return bool
+     */
+    private static function content_support_covers($component, $table, $field) {
+        if (!local_content::component_supports_html_content($component)) {
+            return false;
+        }
+
+        $instance = local::get_component_instance($component);
+
+        return in_array($field, $instance->get_table_fields($table));
+    }
+
+    /**
+     * Remove any references to a file from component html fields.
+     *
+     * Intended to be called when a file has been deleted, so that content stops pointing at a file
+     * which no longer exists.
+     *
+     * @param stored_file $file
+     */
+    public static function remove_html_links(stored_file $file) {
+        global $DB;
+
+        $paths = self::pluginfile_path_variants($file);
+
+        $component = $file->get_component();
+        $filearea = $file->get_filearea();
+
+        if ($component === 'course') {
+            if ($filearea === 'section') {
+                // Section files are itemised by section id, so only that section can reference them.
+                self::remove_filepaths_from_content($file->get_itemid(), 'course', 'course_sections', 'summary', $paths);
+            } else if ($filearea === 'summary') {
+                $coursecontext = self::course_context($file);
+                self::remove_filepaths_from_content($coursecontext->instanceid, 'course', 'course', 'summary', $paths);
+            }
+            return;
+        }
+
+        if ($component === 'block_html') {
+            $blockcontext = context::instance_by_id($file->get_contextid());
+            self::remove_filepaths_from_content(
+                $blockcontext->instanceid,
+                'block_html',
+                'block_instances',
+                'configdata',
+                $paths
+            );
+            return;
+        }
+
+        $cm = self::resolve_cm_from_file($file);
+        if ($cm) {
+            $component = $cm->modname;
+
+            $tables = $DB->get_tables();
+            if (!in_array($component, $tables)) {
+                return;
+            }
+
+            // Process the main table for the plugin if the file filearea is intro or content.
+            $stdfields = ['intro', 'content'];
+            if (in_array($filearea, $stdfields)) {
+                $instancerow = $DB->get_record($component, ['id' => $cm->instance]);
+
+                $fieldtoupdate = null;
+
+                foreach ($stdfields as $fld) {
+                    if (isset($instancerow->$fld) && $filearea === $fld) {
+                        $fieldtoupdate = $fld;
+                    }
+                }
+                if (!empty($fieldtoupdate)) {
+                    if (self::content_support_covers($component, $component, $fieldtoupdate)) {
+                        self::remove_filepaths_from_content($cm->instance, $component, $component, $fieldtoupdate, $paths);
+                    } else {
+                        // Modules without component support still hold embedded images in their intro.
+                        self::remove_filepaths_from_html(
+                            $fieldtoupdate,
+                            $component,
+                            'id = ?',
+                            [$cm->instance],
+                            $paths
+                        );
+                    }
+                }
+                return;
+            }
+        }
+
+        // Process any other tables related to this component.
+        $instance = local::get_component_instance($component);
+        if ($instance instanceof file_component_base) {
+            $instance->setup_file_and_validate($file->get_filename(), $file);
+            $instance->remove_file_links($paths);
+        }
+    }
+
+    /**
      * List copmonents which support html file replacements.
      * @return string[]
      */
