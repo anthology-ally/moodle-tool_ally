@@ -85,11 +85,34 @@ class forum_component extends file_component_base implements annotation_map, con
                 'message',
                 $this->type . '_posts',
                 ' id = ? ',
-                ['id' => $itemid],
+                [$itemid],
                 $this->oldfilename,
                 $file->get_filename()
             );
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links(array $paths): void {
+        if (!$this->module_installed()) {
+            return;
+        }
+
+        $file = $this->file;
+
+        if ($file->get_filearea() !== 'post') {
+            return;
+        }
+
+        local_file::remove_filepaths_from_html(
+            'message',
+            $this->type . '_posts',
+            ' id = ? ',
+            [$file->get_itemid()],
+            $paths
+        );
     }
 
     /**
