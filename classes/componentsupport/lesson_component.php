@@ -234,6 +234,24 @@ SQL;
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links(array $paths) {
+        $file = $this->file;
+        if ($file->get_filearea() !== 'page_contents') {
+            return;
+        }
+
+        local_file::remove_filepaths_from_html(
+            'contents',
+            'lesson_pages',
+            ' id = ? ',
+            [$file->get_itemid()],
+            $paths
+        );
+    }
+
     public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
         global $DB;
 
