@@ -77,4 +77,78 @@ final class local_file_test extends advanced_testcase {
         $this->assertEquals($samplefilename, basename($props->filename));
         $this->assertEquals($samplefilepath, $props->filepath);
     }
+
+    /**
+     * Only elements pointing at the given file should be stripped, everything else has to survive
+     * untouched.
+     *
+     * @dataProvider strip_pluginfile_elements_provider
+     * @param string $html
+     * @param string $expected
+     */
+    public function test_strip_pluginfile_elements($html, $expected): void {
+        $paths = ['/gd%20logo.png', '/gd logo.png'];
+
+        $this->assertSame($expected, local_file::strip_pluginfile_elements($html, $paths));
+    }
+
+    /**
+     * Data provider for test_strip_pluginfile_elements.
+     *
+     * @return array
+     */
+    public static function strip_pluginfile_elements_provider(): array {
+        return [
+            'encoded filename' => [
+                '<p>a<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100">b</p>',
+                '<p>ab</p>',
+            ],
+            'unencoded filename' => [
+                '<p>a<img src="@@PLUGINFILE@@/gd logo.png" />b</p>',
+                '<p>ab</p>',
+            ],
+            'single quoted src' => [
+                "<p><img src='@@PLUGINFILE@@/gd%20logo.png'></p>",
+                '<p></p>',
+            ],
+            'image linking to itself' => [
+                '<p><a href="@@PLUGINFILE@@/gd%20logo.png"><img src="@@PLUGINFILE@@/gd%20logo.png"></a></p>',
+                '<p></p>',
+            ],
+            'other files untouched' => [
+                '<p><img src="@@PLUGINFILE@@/other.png"><img src="@@PLUGINFILE@@/gd%20logo.png"></p>',
+                '<p><img src="@@PLUGINFILE@@/other.png"></p>',
+            ],
+            'same name in another folder untouched' => [
+                '<p><img src="@@PLUGINFILE@@/sub/gd%20logo.png"></p>',
+                '<p><img src="@@PLUGINFILE@@/sub/gd%20logo.png"></p>',
+            ],
+            'text link left alone' => [
+                '<p><a href="@@PLUGINFILE@@/gd%20logo.png">My logo</a></p>',
+                '<p><a href="@@PLUGINFILE@@/gd%20logo.png">My logo</a></p>',
+            ],
+            'empty content' => [
+                '',
+                '',
+            ],
+        ];
+    }
+
+    public function test_pluginfile_path_variants(): void {
+        $this->resetAfterTest();
+
+        $file = get_file_storage()->create_file_from_string([
+            'contextid' => \context_system::instance()->id,
+            'component' => 'tool_ally',
+            'filearea'  => 'unittest',
+            'itemid'    => 0,
+            'filepath'  => '/sub dir/',
+            'filename'  => 'gd logo.png',
+        ], 'test');
+
+        $this->assertSame(
+            ['/sub%20dir/gd%20logo.png', '/sub dir/gd logo.png'],
+            local_file::pluginfile_path_variants($file)
+        );
+    }
 }

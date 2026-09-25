@@ -252,11 +252,30 @@ SQL;
                 'contents',
                 'lesson_pages',
                 ' id = ? ',
-                ['id' => $itemid],
+                [$itemid],
                 $this->oldfilename,
                 $file->get_filename()
             );
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links(array $paths): void {
+        $file = $this->file;
+
+        if ($file->get_filearea() !== 'page_contents') {
+            return;
+        }
+
+        local_file::remove_filepaths_from_html(
+            'contents',
+            'lesson_pages',
+            ' id = ? ',
+            [$file->get_itemid()],
+            $paths
+        );
     }
 
     /**
