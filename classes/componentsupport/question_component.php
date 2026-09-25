@@ -101,9 +101,11 @@ class question_component extends file_component_base {
     }
 
     /**
-     * {@inheritdoc}
+     * Resolve the table, field and id field holding the html which references the file.
+     *
+     * @return array|null [table, field, idfield, questionid] or null when unsupported.
      */
-    public function replace_file_links(): void {
+    private function resolve_file_link_target(): ?array {
         global $DB;
 
         $file = $this->file;
@@ -156,7 +158,7 @@ class question_component extends file_component_base {
                         $idfield = 'questionid';
                     } else {
                         debugging('Area of ' . $area . ' is not yet supported for qtype_ddmatch_html');
-                        return;
+                        return null;
                     }
                     break;
                 case 'ddwtos':
@@ -180,7 +182,7 @@ class question_component extends file_component_base {
                     break;
                 default:
                     debugging('Question area of ' . $area . ' and question type ' . $qtype . ' is not yet supported');
-                    return;
+                    return null;
             }
         }
 
@@ -188,16 +190,50 @@ class question_component extends file_component_base {
             // We need this because questions are essentially plugins and new ones will be introduced to our code base
             // as and when customer demand necessitates them.
             debugging('Question area of ' . $area . ' is not yet supported');
+            return null;
+        }
+
+        return [$table, $field, $idfield, $questionid];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function replace_file_links(): void {
+        $target = $this->resolve_file_link_target();
+        if ($target === null) {
             return;
         }
+        [$table, $field, $idfield, $questionid] = $target;
 
         local_file::update_filenames_in_html(
             $field,
             $table,
             ' ' . $idfield . ' = ? ',
-            [$itemid],
+            [$this->file->get_itemid()],
             $this->oldfilename,
-            $file->get_filename()
+            $this->file->get_filename()
+        );
+
+        \question_finder::get_instance()->uncache_question($questionid);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links(array $paths): void {
+        $target = $this->resolve_file_link_target();
+        if ($target === null) {
+            return;
+        }
+        [$table, $field, $idfield, $questionid] = $target;
+
+        local_file::remove_filepaths_from_html(
+            $field,
+            $table,
+            ' ' . $idfield . ' = ? ',
+            [$this->file->get_itemid()],
+            $paths
         );
 
         \question_finder::get_instance()->uncache_question($questionid);
