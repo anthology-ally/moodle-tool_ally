@@ -45,15 +45,22 @@ class label_component extends component_base implements iface_html_content {
         return self::TYPE_MOD;
     }
 
-    /** Matches a self-closing <img> tag, optionally followed by a stray closing </img>. */
-    private const IMG_TAG_REGEX = '/<img\b[^>]*\/?>(\s*<\/img>)?/is';
+    /**
+     * Matches an <img> tag, along with any stray closing </img>. Quoted attribute values are
+     * consumed whole, so a '>' inside one - as in alt="1 > 0" - does not end the match early and
+     * leave the remainder of the tag behind to be read as text.
+     */
+    private const IMG_TAG_REGEX = '/<img\b(?:[^>"\']|"[^"]*"|\'[^\']*\')*>(\s*<\/img>)?/is';
 
     /**
-     * Fallback title derived from content when the label has no "Title in course index" of its
-     * own: images are stripped first so their alt text isn't surfaced as the title, falling back
-     * to the module's generic name if nothing else remains.
+     * Fallback title derived from a label's content, for use when the label has no "Title in
+     * course index" of its own. Images are stripped first so their alt text isn't surfaced as the
+     * title, falling back to the module's generic name if nothing else remains.
+     *
+     * @param string $content The label's HTML content.
+     * @return string
      */
-    private function get_label_title_from_content($content) {
+    public static function title_from_content($content) {
         $textonly = preg_replace(self::IMG_TAG_REGEX, '', $content);
         $title = trim(\core_text::substr(html_to_text($textonly), 0, 50));
         return $title !== '' ? $title : get_string('modulename', 'label');
@@ -69,7 +76,7 @@ class label_component extends component_base implements iface_html_content {
             return $content;
         }
         if (empty($content->title)) {
-            $content->title = $this->get_label_title_from_content($content->content);
+            $content->title = self::title_from_content($content->content);
         }
         return ($content);
     }
