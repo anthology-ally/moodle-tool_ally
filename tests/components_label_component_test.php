@@ -138,7 +138,7 @@ final class components_label_component_test extends abstract_testcase {
      * title (AB#191345).
      *
      * @covers \tool_ally\componentsupport\label_component::get_html_content
-     * @covers \tool_ally\componentsupport\label_component::get_label_title_from_content
+     * @covers \tool_ally\componentsupport\label_component::title_from_content
      */
     public function test_title_falls_back_when_content_is_only_an_image_with_alt_text(): void {
         global $DB;
@@ -160,7 +160,7 @@ final class components_label_component_test extends abstract_testcase {
      * title (AB#191345).
      *
      * @covers \tool_ally\componentsupport\label_component::get_html_content
-     * @covers \tool_ally\componentsupport\label_component::get_label_title_from_content
+     * @covers \tool_ally\componentsupport\label_component::title_from_content
      */
     public function test_title_falls_back_when_content_is_only_an_image_with_no_alt_text(): void {
         global $DB;
@@ -182,7 +182,7 @@ final class components_label_component_test extends abstract_testcase {
      * AB#191345 was fixed.
      *
      * @covers \tool_ally\componentsupport\label_component::get_html_content
-     * @covers \tool_ally\componentsupport\label_component::get_label_title_from_content
+     * @covers \tool_ally\componentsupport\label_component::title_from_content
      */
     public function test_title_derived_from_text_alongside_an_image(): void {
         global $DB;
@@ -210,5 +210,79 @@ final class components_label_component_test extends abstract_testcase {
         $content = $this->component->get_html_content($this->label->id, 'label', 'intro', $this->course->id);
 
         $this->assertEquals('Text in intro', $content->title);
+    }
+
+    /**
+     * An alt attribute may itself contain a '>'. The image must still be stripped whole, rather
+     * than leaving the tail of the tag behind for html_to_text() to surface as the title.
+     *
+     * @covers \tool_ally\componentsupport\label_component::get_html_content
+     * @covers \tool_ally\componentsupport\label_component::title_from_content
+     */
+    public function test_title_falls_back_when_image_alt_contains_a_closing_bracket(): void {
+        global $DB;
+
+        $DB->update_record('label', (object) [
+            'id' => $this->label->id,
+            'name' => '',
+            'intro' => '<img src="@@PLUGINFILE@@/pic.png" alt="1 > 0 is a true statement" />',
+        ]);
+
+        $content = $this->component->get_html_content($this->label->id, 'label', 'intro', $this->course->id);
+
+        $this->assertEquals(get_string('modulename', 'label'), $content->title);
+    }
+
+    /**
+     * The course-wide listing path must apply the same title semantics as the single-item lookup:
+     * an authored "Title in course index" is preserved rather than being replaced with text
+     * derived from the content (AB#191345).
+     *
+     * @covers \tool_ally\componentsupport\label_component::get_course_html_content_items
+     */
+    public function test_course_listing_preserves_course_index_name(): void {
+        global $DB;
+
+        $DB->update_record('label', (object) [
+            'id' => $this->label->id,
+            'name' => 'My Custom Title',
+            'intro' => '<img src="@@PLUGINFILE@@/pic.png" alt="A random gibberish alt description" />',
+        ]);
+
+        $this->assertEquals('My Custom Title', $this->listed_label_title());
+    }
+
+    /**
+     * A label with no "Title in course index" whose content is only an image must fall back to the
+     * module's generic name in the course-wide listing too, rather than to an empty title
+     * (AB#191345).
+     *
+     * @covers \tool_ally\componentsupport\label_component::get_course_html_content_items
+     */
+    public function test_course_listing_falls_back_for_image_only_content(): void {
+        global $DB;
+
+        $DB->update_record('label', (object) [
+            'id' => $this->label->id,
+            'name' => '',
+            'intro' => '<img src="@@PLUGINFILE@@/pic.png" alt="A random gibberish alt description" />',
+        ]);
+
+        $this->assertEquals(get_string('modulename', 'label'), $this->listed_label_title());
+    }
+
+    /**
+     * The title the course-wide listing reports for the label created in setUp().
+     *
+     * @return string|null
+     */
+    private function listed_label_title() {
+        foreach ($this->component->get_course_html_content_items($this->course->id) as $item) {
+            if ((int) $item->id === (int) $this->label->id) {
+                return $item->title;
+            }
+        }
+
+        return null;
     }
 }
