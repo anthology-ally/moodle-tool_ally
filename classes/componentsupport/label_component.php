@@ -54,15 +54,17 @@ class label_component extends component_base implements iface_html_content {
 
     /**
      * Fallback title derived from a label's content, for use when the label has no "Title in
-     * course index" of its own. Images are stripped first so their alt text isn't surfaced as the
-     * title, falling back to the module's generic name if nothing else remains.
+     * course index" of its own. Images are replaced with a space so that their alt text isn't
+     * surfaced as the title and the text on either side of one doesn't run together, falling back
+     * to the module's generic name if nothing else remains.
      *
      * @param string $content The label's HTML content.
      * @return string
      */
     public static function title_from_content($content) {
-        $textonly = preg_replace(self::IMG_TAG_REGEX, '', $content);
-        $title = trim(\core_text::substr(html_to_text($textonly), 0, 50));
+        $textonly = preg_replace(self::IMG_TAG_REGEX, ' ', $content);
+        $textonly = preg_replace('/\s+/u', ' ', html_to_text($textonly));
+        $title = trim(\core_text::substr(trim($textonly), 0, 50));
         return $title !== '' ? $title : get_string('modulename', 'label');
     }
 
