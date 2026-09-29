@@ -234,6 +234,27 @@ final class components_label_component_test extends abstract_testcase {
     }
 
     /**
+     * An image sits between two runs of text as a word break would, so removing it must not fuse
+     * them into one word.
+     *
+     * @covers \tool_ally\componentsupport\label_component::get_html_content
+     * @covers \tool_ally\componentsupport\label_component::title_from_content
+     */
+    public function test_title_keeps_words_apart_across_a_removed_image(): void {
+        global $DB;
+
+        $DB->update_record('label', (object) [
+            'id' => $this->label->id,
+            'name' => '',
+            'intro' => 'Hello<img src="@@PLUGINFILE@@/pic.png" alt="a picture" />World',
+        ]);
+
+        $content = $this->component->get_html_content($this->label->id, 'label', 'intro', $this->course->id);
+
+        $this->assertEquals('Hello World', $content->title);
+    }
+
+    /**
      * The course-wide listing path must apply the same title semantics as the single-item lookup:
      * an authored "Title in course index" is preserved rather than being replaced with text
      * derived from the content (AB#191345).
