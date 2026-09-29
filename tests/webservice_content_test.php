@@ -178,10 +178,8 @@ class webservice_content_test extends abstract_testcase {
 
         $DB->update_record($table, $modinst);
 
-        // A label's title always comes from its "Title in course index" (name) field, which stays
-        // at its originally-derived value here since intro was updated directly, not via the form.
         if ($modname === 'label') {
-            $expectedtitle = 'My original intro content';
+            $expectedtitle = 'My original intro content'.chr(10).'Modified with image file';
         } else {
             $expectedtitle = $modinst->$titlefield;
         }
