@@ -45,9 +45,18 @@ class label_component extends component_base implements iface_html_content {
         return self::TYPE_MOD;
     }
 
+    /** Matches a self-closing <img> tag, optionally followed by a stray closing </img>. */
+    private const IMG_TAG_REGEX = '/<img\b[^>]*\/?>(\s*<\/img>)?/is';
+
+    /**
+     * Fallback title derived from content when the label has no "Title in course index" of its
+     * own: images are stripped first so their alt text isn't surfaced as the title, falling back
+     * to the module's generic name if nothing else remains.
+     */
     private function get_label_title_from_content($content) {
-        $title = \core_text::substr(html_to_text($content), 0, 50);
-        return trim($title);
+        $textonly = preg_replace(self::IMG_TAG_REGEX, '', $content);
+        $title = trim(\core_text::substr(html_to_text($textonly), 0, 50));
+        return $title !== '' ? $title : get_string('modulename', 'label');
     }
 
     public function get_course_html_content_items($courseid) {
@@ -59,7 +68,9 @@ class label_component extends component_base implements iface_html_content {
         if (empty($content)) {
             return $content;
         }
-        $content->title = $this->get_label_title_from_content($content->content);
+        if (empty($content->title)) {
+            $content->title = $this->get_label_title_from_content($content->content);
+        }
         return ($content);
     }
 
