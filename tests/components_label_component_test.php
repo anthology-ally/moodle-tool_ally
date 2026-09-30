@@ -246,6 +246,21 @@ class components_label_component_test extends abstract_testcase {
     }
 
     /**
+     * Malformed UTF-8, which can reach a label through a legacy restore or import, makes
+     * preg_replace() return null. The generic name is the documented outcome for content that
+     * cannot be processed. Called directly rather than through a fixture because the database
+     * column is UTF-8 and rejects these bytes.
+     *
+     * @covers \tool_ally\componentsupport\label_component::title_from_content
+     */
+    public function test_title_falls_back_when_content_is_not_valid_utf8(): void {
+        $this->assertEquals(
+            get_string('modulename', 'label'),
+            label_component::title_from_content("ok \xC3\x28 bad")
+        );
+    }
+
+    /**
      * The course-wide listing path must apply the same title semantics as the single-item lookup:
      * an authored "Title in course index" is preserved rather than being replaced with text
      * derived from the content (AB#191345).
