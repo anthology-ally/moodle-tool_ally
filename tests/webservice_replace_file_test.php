@@ -112,6 +112,27 @@ final class webservice_replace_file_test extends abstract_testcase {
     }
 
     /**
+     * Test the replacement keeps the sort order, so it remains the main file of the resource.
+     *
+     * @covers \tool_ally\webservice\replace_file::service
+     */
+    public function test_service_keeps_sortorder(): void {
+        $datagen = $this->getDataGenerator();
+
+        $resource = $datagen->create_module('resource', ['course' => $this->course->id]);
+        $file = $this->get_resource_file($resource);
+        $file->set_sortorder(1);
+
+        $draftfile = $this->create_draft_file();
+
+        $return = replace_file::service($file->get_pathnamehash(), $this->teacher->id, $draftfile['itemid']);
+        $return = \external_api::clean_returnvalue(replace_file::service_returns(), $return);
+
+        $newfile = get_file_storage()->get_file_by_hash($return['newid']);
+        $this->assertEquals(1, $newfile->get_sortorder());
+    }
+
+    /**
      * Test service invalid user.
      *
      * @covers \tool_ally\webservice\replace_file::service
