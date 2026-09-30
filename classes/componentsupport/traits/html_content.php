@@ -77,8 +77,9 @@ trait html_content {
                 if (!empty($row->$field) && $row->$formatfield === FORMAT_HTML) {
                     // A label's "Title in course index" is authored, so it is kept as-is; a title is
                     // only derived from the content when the label has none of its own, matching
-                    // label_component::get_html_content().
-                    if ($component === 'label' && empty($row->name) && !empty($row->intro)) {
+                    // label_component::get_html_content(). The comparison is against the empty
+                    // string rather than empty(), which would discard the valid title "0".
+                    if ($component === 'label' && ($row->name ?? '') === '' && !empty($row->intro)) {
                         $PAGE->set_context(\context_course::instance($courseid));
                         $row->name = label_component::title_from_content($row->intro);
                     }

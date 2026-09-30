@@ -308,6 +308,24 @@ final class components_label_component_test extends abstract_testcase {
     }
 
     /**
+     * "0" is a valid authored title, so the listing must keep it rather than treating it as absent
+     * and replacing it with one derived from the content.
+     *
+     * @covers \tool_ally\componentsupport\label_component::get_course_html_content_items
+     */
+    public function test_course_listing_preserves_a_zero_title(): void {
+        global $DB;
+
+        $DB->update_record('label', (object) [
+            'id' => $this->label->id,
+            'name' => '0',
+            'intro' => '<img src="@@PLUGINFILE@@/pic.png" alt="A random gibberish alt description" />',
+        ]);
+
+        $this->assertEquals('0', $this->listed_label_title());
+    }
+
+    /**
      * The title the course-wide listing reports for the label created in setUp().
      *
      * @return string|null
