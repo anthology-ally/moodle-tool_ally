@@ -45,9 +45,28 @@ class label_component extends component_base implements iface_html_content {
         return self::TYPE_MOD;
     }
 
-    private function get_label_title_from_content($content) {
-        $title = \core_text::substr(html_to_text($content), 0, 50);
-        return trim($title);
+    /**
+     * Matches an <img> tag, along with any stray closing </img>. Quoted attribute values are
+     * consumed whole, so a '>' inside one - as in alt="1 > 0" - does not end the match early and
+     * leave the remainder of the tag behind to be read as text.
+     */
+    private const IMG_TAG_REGEX = '/<img\b(?:[^>"\']|"[^"]*"|\'[^\']*\')*>(\s*<\/img>)?/is';
+
+    /**
+     * Fallback title derived from a label's content, for use when the label has no "Title in
+     * course index" of its own. Images are replaced with a space so that their alt text isn't
+     * surfaced as the title and the text on either side of one doesn't run together, falling back
+     * to the module's generic name if nothing else remains. Content the patterns cannot process -
+     * malformed UTF-8 makes preg_replace() return null - yields that generic name too.
+     *
+     * @param string $content The label's HTML content.
+     * @return string
+     */
+    public static function title_from_content($content) {
+        $textonly = (string) preg_replace(self::IMG_TAG_REGEX, ' ', $content);
+        $textonly = (string) preg_replace('/\s+/u', ' ', html_to_text($textonly));
+        $title = trim(\core_text::substr(trim($textonly), 0, 50));
+        return $title !== '' ? $title : get_string('modulename', 'label');
     }
 
     public function get_course_html_content_items($courseid) {
@@ -59,7 +78,9 @@ class label_component extends component_base implements iface_html_content {
         if (empty($content)) {
             return $content;
         }
-        $content->title = $this->get_label_title_from_content($content->content);
+        if (empty($content->title)) {
+            $content->title = self::title_from_content($content->content);
+        }
         return ($content);
     }
 
