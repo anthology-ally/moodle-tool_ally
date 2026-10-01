@@ -110,11 +110,19 @@ class local_file_test extends advanced_testcase {
             ],
             'single quoted src' => [
                 "<p><img src='@@PLUGINFILE@@/gd%20logo.png'></p>",
-                '<p></p>',
+                '',
             ],
             'image linking to itself' => [
                 '<p><a href="@@PLUGINFILE@@/gd%20logo.png"><img src="@@PLUGINFILE@@/gd%20logo.png"></a></p>',
-                '<p></p>',
+                '',
+            ],
+            'only empty wrappers left' => [
+                '<p dir="ltr">&nbsp;<img src="@@PLUGINFILE@@/gd%20logo.png"></p><p><br></p>',
+                '',
+            ],
+            'other media kept' => [
+                '<p><img src="@@PLUGINFILE@@/gd%20logo.png"><video src="x.mp4"></video></p>',
+                '<p><video src="x.mp4"></video></p>',
             ],
             'other files untouched' => [
                 '<p><img src="@@PLUGINFILE@@/other.png"><img src="@@PLUGINFILE@@/gd%20logo.png"></p>',
