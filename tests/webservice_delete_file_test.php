@@ -202,7 +202,7 @@ class webservice_delete_file_test extends abstract_testcase {
 
         $this->assertTrue($return['success']);
 
-        $this->assertSame('<p></p>', $DB->get_field('label', 'intro', ['id' => $label->id]));
+        $this->assertSame('', $DB->get_field('label', 'intro', ['id' => $label->id]));
     }
 
     /**
@@ -268,5 +268,87 @@ class webservice_delete_file_test extends abstract_testcase {
 
         $summary = $DB->get_field('course_sections', 'summary', ['id' => $section->id]);
         $this->assertSame('<p>Section text</p>', $summary);
+    }
+
+    /**
+     * Test removal of an embedded file from a book chapter.
+     *
+     * @covers \tool_ally\webservice\delete_file::service
+     */
+    public function test_service_book_chapter_html(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        [$course, $teacher] = $this->setup_course_and_teacher();
+
+        $book = $this->getDataGenerator()->create_module('book', ['course' => $course->id]);
+        $context = \context_module::instance($book->cmid);
+
+        $bookgenerator = $this->getDataGenerator()->get_plugin_generator('mod_book');
+        $chapter = $bookgenerator->create_chapter([
+            'bookid' => $book->id,
+            'content' => '<p>Chapter text<img src="@@PLUGINFILE@@/gd%20logo.png" alt=""></p>',
+            'contentformat' => FORMAT_HTML,
+        ]);
+        $otherchapter = $bookgenerator->create_chapter([
+            'bookid' => $book->id,
+            'content' => '<p><img src="@@PLUGINFILE@@/gd%20logo.png" alt=""></p>',
+            'contentformat' => FORMAT_HTML,
+        ]);
+
+        $file = $this->create_test_file($context->id, 'mod_book', 'chapter', $chapter->id);
+
+        $return = delete_file::service($file->get_pathnamehash(), $teacher->id);
+        $return = \external_api::clean_returnvalue(delete_file::service_returns(), $return);
+
+        $this->assertTrue($return['success']);
+
+        $this->assertSame('<p>Chapter text</p>', $DB->get_field('book_chapters', 'content', ['id' => $chapter->id]));
+        // The other chapter holds its own file under the same name, so it must be left alone.
+        $this->assertStringContainsString(
+            'gd%20logo.png',
+            $DB->get_field('book_chapters', 'content', ['id' => $otherchapter->id])
+        );
+    }
+
+    /**
+     * Test removal of embedded files from lesson answers and responses.
+     *
+     * @covers \tool_ally\webservice\delete_file::service
+     */
+    public function test_service_lesson_answer_html(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        [$course, $teacher] = $this->setup_course_and_teacher();
+
+        $lesson = $this->getDataGenerator()->create_module('lesson', ['course' => $course->id]);
+        $context = \context_module::instance($lesson->cmid);
+
+        $lessongenerator = $this->getDataGenerator()->get_plugin_generator('mod_lesson');
+        $page = $lessongenerator->create_content($lesson, ['title' => 'Simple page']);
+
+        $html = '<p>Text<img src="@@PLUGINFILE@@/gd%20logo.png" alt=""></p>';
+        $answerid = $DB->insert_record('lesson_answers', (object) [
+            'lessonid' => $lesson->id,
+            'pageid' => $page->id,
+            'timecreated' => time(),
+            'answer' => $html,
+            'answerformat' => FORMAT_HTML,
+            'response' => $html,
+            'responseformat' => FORMAT_HTML,
+        ]);
+
+        foreach (['page_answers' => 'answer', 'page_responses' => 'response'] as $filearea => $field) {
+            $file = $this->create_test_file($context->id, 'mod_lesson', $filearea, $answerid);
+
+            $return = delete_file::service($file->get_pathnamehash(), $teacher->id);
+            $return = \external_api::clean_returnvalue(delete_file::service_returns(), $return);
+
+            $this->assertTrue($return['success']);
+            $this->assertSame('<p>Text</p>', $DB->get_field('lesson_answers', $field, ['id' => $answerid]));
+        }
     }
 }

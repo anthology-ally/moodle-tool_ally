@@ -128,6 +128,10 @@ class local_file_test extends advanced_testcase {
                 '<p><img src="@@PLUGINFILE@@/other.png"><img src="@@PLUGINFILE@@/gd%20logo.png"></p>',
                 '<p><img src="@@PLUGINFILE@@/other.png"></p>',
             ],
+            'same name differing by case untouched' => [
+                '<P><IMG SRC="@@PLUGINFILE@@/GD%20logo.png"><IMG SRC="@@PLUGINFILE@@/gd%20logo.png"></P>',
+                '<P><IMG SRC="@@PLUGINFILE@@/GD%20logo.png"></P>',
+            ],
             'same name in another folder untouched' => [
                 '<p><img src="@@PLUGINFILE@@/sub/gd%20logo.png"></p>',
                 '<p><img src="@@PLUGINFILE@@/sub/gd%20logo.png"></p>',

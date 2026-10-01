@@ -499,7 +499,8 @@ class local_file {
             return preg_quote($path, '~');
         }, $paths);
 
-        $target = '@@PLUGINFILE@@(?:' . implode('|', $quoted) . ')';
+        // Moodle file names are case-sensitive, so the path must not inherit the i modifier.
+        $target = '(?-i:@@PLUGINFILE@@(?:' . implode('|', $quoted) . '))';
 
         // An image linking to its own file would be left behind as an empty, but still clickable,
         // anchor, so that anchor has to be removed as a whole.
@@ -654,6 +655,15 @@ class local_file {
 
             $tables = $DB->get_tables();
             if (!in_array($component, $tables)) {
+                return;
+            }
+
+            if ($component === 'book' && $filearea === 'chapter') {
+                // Chapter files are itemised by chapter id, so only that chapter can reference them.
+                $chapterid = $file->get_itemid();
+                if ($DB->record_exists('book_chapters', ['id' => $chapterid, 'bookid' => $cm->instance])) {
+                    self::remove_filepaths_from_content($chapterid, 'book', 'book_chapters', 'content', $paths);
+                }
                 return;
             }
 
