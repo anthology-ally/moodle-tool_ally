@@ -234,6 +234,32 @@ SQL;
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links(array $paths) {
+        $file = $this->file;
+
+        $targets = [
+            'page_contents' => ['lesson_pages', 'contents'],
+            'page_answers' => ['lesson_answers', 'answer'],
+            'page_responses' => ['lesson_answers', 'response'],
+        ];
+        $area = $file->get_filearea();
+        if (!isset($targets[$area])) {
+            return;
+        }
+        [$table, $field] = $targets[$area];
+
+        local_file::remove_filepaths_from_html(
+            $field,
+            $table,
+            ' id = ? ',
+            [$file->get_itemid()],
+            $paths
+        );
+    }
+
     public function get_html_content($id, $table, $field, $courseid = null) : ?component_content {
         global $DB;
 

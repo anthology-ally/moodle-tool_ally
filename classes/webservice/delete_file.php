@@ -24,6 +24,8 @@
 
 namespace tool_ally\webservice;
 
+use tool_ally\local_file;
+
 /**
  * Delete a file.
  *
@@ -93,6 +95,15 @@ class delete_file extends loggable_external_api {
             $deleted = $file->delete();
         } else {
             throw new \moodle_exception('usercapabilitymissing', 'tool_ally');
+        }
+
+        if ($deleted) {
+            local_file::remove_html_links($file);
+
+            $courseid = local_file::courseid($file, IGNORE_MISSING);
+            if (!empty($courseid)) {
+                rebuild_course_cache($courseid, true);
+            }
         }
 
         return [

@@ -189,4 +189,61 @@ class question_component extends file_component_base {
 
         \question_finder::get_instance()->uncache_question($questionid);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links(array $paths) {
+        global $DB;
+
+        $file = $this->file;
+        $area = $file->get_filearea();
+        $itemid = $file->get_itemid();
+        $inorcorrectfbareas = ['correctfeedback', 'partiallycorrectfeedback', 'incorrectfeedback'];
+        $idfield = null;
+        $table = null;
+        $field = $area;
+        $questionid = null;
+
+        if ($area === 'questiontext' || $area === 'generalfeedback') {
+            $table = 'question';
+            $idfield = 'id';
+            $questionid = $itemid;
+        } else if ($area === 'answer' || $area === 'answerfeedback') {
+            $table = 'question_answers';
+            $idfield = 'id';
+            $field = $area === 'answer' ? 'answer' : 'feedback';
+            $sqrow = $DB->get_record($table, ['id' => $itemid]);
+            $questionid = $sqrow->question;
+        } else if (in_array($area, $inorcorrectfbareas)) {
+            $question = $this->get_question($itemid);
+            $questionid = $question->id;
+            $idfield = 'questionid';
+            switch ($question->qtype) {
+                case 'ddimageortext': $table = 'qtype_ddimageortext'; break;
+                case 'ddmarker': $table = 'qtype_ddmarker'; break;
+                case 'ddmatch': $table = 'qtype_ddmatch_options'; break;
+                case 'ddwtos': $table = 'question_ddwtos'; break;
+                case 'gapfill': $table = 'question_gapfill'; $idfield = 'question'; break;
+                case 'gapselect': $table = 'question_gapselect'; break;
+                case 'match': $table = 'qtype_match_options'; break;
+                case 'multichoice': $table = 'qtype_multichoice_options'; break;
+                case 'randomsamatch': $table = 'qtype_randomsamatch_options'; break;
+                default: return;
+            }
+        }
+
+        if ($idfield === null || $table === null) {
+            return;
+        }
+
+        local_file::remove_filepaths_from_html(
+            $field,
+            $table,
+            ' ' . $idfield . ' = ? ',
+            [$itemid],
+            $paths
+        );
+        \question_finder::get_instance()->uncache_question($questionid);
+    }
 }

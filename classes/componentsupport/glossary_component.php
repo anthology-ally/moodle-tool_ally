@@ -77,6 +77,25 @@ class glossary_component extends file_component_base implements
             [$idfield => $itemid], $this->oldfilename, $file->get_filename());
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links(array $paths) {
+        $file = $this->file;
+        if ($file->get_filearea() !== 'entry') {
+            debugging('Glossary area of ' . $file->get_filearea() . ' is not yet supported');
+            return;
+        }
+
+        local_file::remove_filepaths_from_html(
+            'definition',
+            'glossary_entries',
+            ' id = ? ',
+            [$file->get_itemid()],
+            $paths
+        );
+    }
+
     public function resolve_course_id($id, $table, $field) {
         global $DB;
 
