@@ -525,7 +525,31 @@ class local_file {
 
         $img = '~<img\b[^>]*\bsrc\s*=\s*([\'"])\s*' . $target . '\s*\1[^>]*>~is';
 
-        return preg_replace($img, '', preg_replace($anchor, '', $html));
+        $stripped = preg_replace($img, '', preg_replace($anchor, '', $html));
+
+        // Leftover empty wrappers (e.g. <p></p>) would still be annotated as rich content by the filter,
+        // showing the alternative formats icon on otherwise empty content.
+        if ($stripped !== $html && !self::html_has_content($stripped)) {
+            return '';
+        }
+
+        return $stripped;
+    }
+
+    /**
+     * Does html contain any visible text or embedded media?
+     *
+     * @param string $html
+     * @return bool
+     */
+    private static function html_has_content($html) {
+        $mediatags = '<img><picture><video><audio><iframe><object><embed><svg><canvas><math>' .
+            '<input><select><textarea><button><hr>';
+        $text = strip_tags($html, $mediatags);
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = preg_replace('~[\s\x{00A0}\x{200B}]+~u', '', $text);
+
+        return $text !== '';
     }
 
     /**
