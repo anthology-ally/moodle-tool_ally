@@ -213,7 +213,7 @@ final class webservice_delete_file_test extends abstract_testcase {
 
         $this->assertTrue($return['success']);
 
-        $this->assertSame('<p></p>', $DB->get_field('label', 'intro', ['id' => $label->id]));
+        $this->assertSame('', $DB->get_field('label', 'intro', ['id' => $label->id]));
     }
 
     /**

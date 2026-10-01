@@ -665,19 +665,18 @@ class local_file {
             return;
         }
 
-        $cm = self::resolve_cm_from_file($file);
-        if ($cm) {
-            $component = $cm->modname;
+        $supportcomponent = $component;
 
-            $tables = $DB->get_tables();
-            if (!in_array($component, $tables)) {
-                return;
-            }
+        $cm = self::resolve_cm_from_file($file);
+        if ($cm && $component === 'mod_' . $cm->modname) {
+            // Module support classes are named after the module, not its frankenstyle component.
+            $supportcomponent = $cm->modname;
+            $modtable = $cm->modname;
 
             // Process the main table for the plugin if the file filearea is intro or content.
             $stdfields = ['intro', 'content'];
-            if (in_array($filearea, $stdfields)) {
-                $instancerow = $DB->get_record($component, ['id' => $cm->instance]);
+            if (in_array($filearea, $stdfields) && in_array($modtable, $DB->get_tables())) {
+                $instancerow = $DB->get_record($modtable, ['id' => $cm->instance]);
 
                 $fieldtoupdate = null;
 
@@ -687,13 +686,13 @@ class local_file {
                     }
                 }
                 if (!empty($fieldtoupdate)) {
-                    if (self::content_support_covers($component, $component, $fieldtoupdate)) {
-                        self::remove_filepaths_from_content($cm->instance, $component, $component, $fieldtoupdate, $paths);
+                    if (self::content_support_covers($supportcomponent, $modtable, $fieldtoupdate)) {
+                        self::remove_filepaths_from_content($cm->instance, $supportcomponent, $modtable, $fieldtoupdate, $paths);
                     } else {
                         // Modules without component support still hold embedded images in their intro.
                         self::remove_filepaths_from_html(
                             $fieldtoupdate,
-                            $component,
+                            $modtable,
                             'id = ?',
                             [$cm->instance],
                             $paths
@@ -705,7 +704,7 @@ class local_file {
         }
 
         // Process any other tables related to this component.
-        $instance = local::get_component_instance($component);
+        $instance = local::get_component_instance($supportcomponent);
         if ($instance instanceof file_component_base) {
             $instance->setup_file_and_validate($file->get_filename(), $file);
             $instance->remove_file_links($paths);
