@@ -265,13 +265,20 @@ SQL;
     public function remove_file_links(array $paths): void {
         $file = $this->file;
 
-        if ($file->get_filearea() !== 'page_contents') {
+        $areas = [
+            'page_contents' => ['lesson_pages', 'contents'],
+            'page_answers' => ['lesson_answers', 'answer'],
+            'page_responses' => ['lesson_answers', 'response'],
+        ];
+        $area = $file->get_filearea();
+        if (!isset($areas[$area])) {
             return;
         }
 
+        [$table, $field] = $areas[$area];
         local_file::remove_filepaths_from_html(
-            'contents',
-            'lesson_pages',
+            $field,
+            $table,
             ' id = ? ',
             [$file->get_itemid()],
             $paths

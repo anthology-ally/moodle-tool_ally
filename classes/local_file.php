@@ -703,6 +703,17 @@ class local_file {
             }
         }
 
+        if ($supportcomponent === 'book' && $filearea === 'chapter') {
+            self::remove_filepaths_from_html(
+                'content',
+                'book_chapters',
+                'id = ?',
+                [$file->get_itemid()],
+                $paths
+            );
+            return;
+        }
+
         // Process any other tables related to this component.
         $instance = local::get_component_instance($supportcomponent);
         if ($instance instanceof file_component_base) {
