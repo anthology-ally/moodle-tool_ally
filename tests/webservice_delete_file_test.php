@@ -298,9 +298,11 @@ final class webservice_delete_file_test extends abstract_testcase {
      * @param \stdClass $user
      */
     private function delete_file(\stored_file $file, \stdClass $user): void {
-        $return = delete_file::service($file->get_pathnamehash(), $user->id);
+        $pathnamehash = $file->get_pathnamehash();
+        $return = delete_file::service($pathnamehash, $user->id);
         $return = \external_api::clean_returnvalue(delete_file::service_returns(), $return);
         $this->assertTrue($return['success']);
+        $this->assertFalse(get_file_storage()->get_file_by_hash($pathnamehash));
     }
 
     /**
@@ -494,6 +496,10 @@ final class webservice_delete_file_test extends abstract_testcase {
         $entryfile = $this->create_test_file($context->id, 'mod_glossary', 'entry', $entry->id);
         $DB->set_field('glossary_entries', 'definition', $this->img_html('Entry text'), ['id' => $entry->id]);
 
+        $otherentry = $this->getDataGenerator()->get_plugin_generator('mod_glossary')->create_content($glossary);
+        $otherfile = $this->create_test_file($context->id, 'mod_glossary', 'entry', $otherentry->id);
+        $DB->set_field('glossary_entries', 'definition', $this->img_html('Other entry'), ['id' => $otherentry->id]);
+
         $this->delete_file($introfile, $teacher);
 
         $this->assertSame('<p>Glossary text</p>', $DB->get_field('glossary', 'intro', ['id' => $glossary->id]));
@@ -502,6 +508,11 @@ final class webservice_delete_file_test extends abstract_testcase {
         $this->delete_file($entryfile, $teacher);
 
         $this->assertSame('<p>Entry text</p>', $DB->get_field('glossary_entries', 'definition', ['id' => $entry->id]));
+        $this->assertSame(
+            $this->img_html('Other entry'),
+            $DB->get_field('glossary_entries', 'definition', ['id' => $otherentry->id])
+        );
+        $this->assertInstanceOf(\stored_file::class, get_file_storage()->get_file_by_hash($otherfile->get_pathnamehash()));
     }
 
     /**
@@ -527,6 +538,11 @@ final class webservice_delete_file_test extends abstract_testcase {
         $pagefile = $this->create_test_file($context->id, 'mod_lesson', 'page_contents', $page->id);
         $DB->set_field('lesson_pages', 'contents', $this->img_html('Page text'), ['id' => $page->id]);
 
+        $otherpage = $this->getDataGenerator()->get_plugin_generator('mod_lesson')
+            ->create_content($lesson, ['title' => 'Other page']);
+        $otherfile = $this->create_test_file($context->id, 'mod_lesson', 'page_contents', $otherpage->id);
+        $DB->set_field('lesson_pages', 'contents', $this->img_html('Other page'), ['id' => $otherpage->id]);
+
         $this->delete_file($introfile, $teacher);
 
         $this->assertSame('<p>Lesson text</p>', $DB->get_field('lesson', 'intro', ['id' => $lesson->id]));
@@ -535,24 +551,37 @@ final class webservice_delete_file_test extends abstract_testcase {
         $this->delete_file($pagefile, $teacher);
 
         $this->assertSame('<p>Page text</p>', $DB->get_field('lesson_pages', 'contents', ['id' => $page->id]));
+        $this->assertSame(
+            $this->img_html('Other page'),
+            $DB->get_field('lesson_pages', 'contents', ['id' => $otherpage->id])
+        );
+        $this->assertInstanceOf(\stored_file::class, get_file_storage()->get_file_by_hash($otherfile->get_pathnamehash()));
     }
 
     /**
      * Test removal of embedded files from question text, combined feedback and answers.
      *
+     * @dataProvider question_html_context_provider
+     * @param bool $modulecontext
      * @covers \tool_ally\webservice\delete_file::service
      */
-    public function test_service_question_html(): void {
+    public function test_service_question_html(bool $modulecontext): void {
         global $DB;
 
         $this->resetAfterTest();
 
         [$course, $teacher] = $this->setup_course_and_teacher();
 
+        if ($modulecontext) {
+            $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $course->id]);
+            $context = \context_module::instance($quiz->cmid);
+        } else {
+            $context = \context_course::instance($course->id);
+        }
+
         $qgen = $this->getDataGenerator()->get_plugin_generator('core_question');
-        $cat = $qgen->create_question_category();
+        $cat = $qgen->create_question_category(['contextid' => $context->id]);
         $question = $qgen->create_question('multichoice', null, ['category' => $cat->id]);
-        $context = \context_course::instance($course->id);
 
         $DB->set_field('question', 'questiontext', $this->img_html('Question text'), ['id' => $question->id]);
         $DB->set_field('question', 'generalfeedback', $this->img_html('General'), ['id' => $question->id]);
@@ -610,6 +639,18 @@ final class webservice_delete_file_test extends abstract_testcase {
         $ans2 = $DB->get_record('question_answers', ['id' => $ans2id]);
         $this->assertSame($this->img_html('Answer'), $ans2->answer);
         $this->assertSame($this->img_html('Feedback'), $ans2->feedback);
+    }
+
+    /**
+     * Contexts in which question files can be stored.
+     *
+     * @return array
+     */
+    public static function question_html_context_provider(): array {
+        return [
+            'course context' => [false],
+            'quiz module context' => [true],
+        ];
     }
 
     /**

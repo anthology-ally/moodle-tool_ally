@@ -435,7 +435,7 @@ class local_file {
             return;
         }
 
-        $cm = self::resolve_cm_from_file($file);
+        $cm = $component === 'question' ? false : self::resolve_cm_from_file($file);
         if ($cm) {
             $component = $cm->modname;
 
