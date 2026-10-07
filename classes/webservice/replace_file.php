@@ -123,6 +123,8 @@ class replace_file extends loggable_external_api {
         $filerecord->license   = $oldfile->get_license();
         $filerecord->author    = $oldfile->get_author();
         $filerecord->source    = $oldfile->get_source();
+        // Keep the sort order so that the replacement stays the main file of modules such as mod_resource.
+        $filerecord->sortorder = $oldfile->get_sortorder();
 
         $usercontext = \context_user::instance($USER->id);
 
