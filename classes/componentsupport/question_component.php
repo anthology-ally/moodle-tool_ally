@@ -127,6 +127,9 @@ class question_component extends file_component_base {
             $idfield = 'id';
             $field = $area === 'answer' ? 'answer' : 'feedback';
             $sqrow = $DB->get_record($table, ['id' => $itemid]);
+            if (!$sqrow) {
+                return;
+            }
             $questionid = $sqrow->question;
         } else if (in_array($area, $inorcorrectfbareas)) {
             $question = $this->get_question($itemid);
@@ -214,36 +217,61 @@ class question_component extends file_component_base {
             $idfield = 'id';
             $field = $area === 'answer' ? 'answer' : 'feedback';
             $sqrow = $DB->get_record($table, ['id' => $itemid]);
+            if (!$sqrow) {
+                return false;
+            }
             $questionid = $sqrow->question;
         } else if (in_array($area, $inorcorrectfbareas)) {
             $question = $this->get_question($itemid);
             $questionid = $question->id;
-            $idfield = 'questionid';
-            switch ($question->qtype) {
-                case 'ddimageortext': $table = 'qtype_ddimageortext'; break;
-                case 'ddmarker': $table = 'qtype_ddmarker'; break;
-                case 'ddmatch': $table = 'qtype_ddmatch_options'; break;
-                case 'ddwtos': $table = 'question_ddwtos'; break;
-                case 'gapfill': $table = 'question_gapfill'; $idfield = 'question'; break;
-                case 'gapselect': $table = 'question_gapselect'; break;
-                case 'match': $table = 'qtype_match_options'; break;
-                case 'multichoice': $table = 'qtype_multichoice_options'; break;
-                case 'randomsamatch': $table = 'qtype_randomsamatch_options'; break;
-                default: return;
-            }
+            [$table, $idfield] = $this->get_question_feedback_target($question->qtype);
         }
 
         if ($idfield === null || $table === null) {
-            return;
+            return false;
         }
 
-        local_file::remove_filepaths_from_html(
+        $changed = local_file::remove_filepaths_from_html(
             $field,
             $table,
             ' ' . $idfield . ' = ? ',
             [$itemid],
             $paths
         );
-        \question_finder::get_instance()->uncache_question($questionid);
+        if ($changed) {
+            \question_finder::get_instance()->uncache_question($questionid);
+        }
+        return $changed;
+    }
+
+    /**
+     * Resolve the feedback table and question ID column for a question type.
+     *
+     * @param string $qtype
+     * @return array Table and column, or two nulls for an unsupported type.
+     */
+    private function get_question_feedback_target($qtype) {
+        switch ($qtype) {
+            case 'ddimageortext':
+                return ['qtype_ddimageortext', 'questionid'];
+            case 'ddmarker':
+                return ['qtype_ddmarker', 'questionid'];
+            case 'ddmatch':
+                return ['qtype_ddmatch_options', 'questionid'];
+            case 'ddwtos':
+                return ['question_ddwtos', 'questionid'];
+            case 'gapfill':
+                return ['question_gapfill', 'question'];
+            case 'gapselect':
+                return ['question_gapselect', 'questionid'];
+            case 'match':
+                return ['qtype_match_options', 'questionid'];
+            case 'multichoice':
+                return ['qtype_multichoice_options', 'questionid'];
+            case 'randomsamatch':
+                return ['qtype_randomsamatch_options', 'questionid'];
+            default:
+                return [null, null];
+        }
     }
 }

@@ -84,6 +84,7 @@ abstract class file_component_base extends component_base {
      * Remove references to the file from this component's html fields.
      *
      * @param string[] $paths @@PLUGINFILE@@ relative paths.
+    * @return bool true when content was updated.
      */
     abstract public function remove_file_links(array $paths);
 }

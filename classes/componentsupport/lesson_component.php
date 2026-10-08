@@ -247,11 +247,11 @@ SQL;
         ];
         $area = $file->get_filearea();
         if (!isset($targets[$area])) {
-            return;
+            return false;
         }
         [$table, $field] = $targets[$area];
 
-        local_file::remove_filepaths_from_html(
+        return local_file::remove_filepaths_from_html(
             $field,
             $table,
             ' id = ? ',

@@ -84,10 +84,10 @@ class glossary_component extends file_component_base implements
         $file = $this->file;
         if ($file->get_filearea() !== 'entry') {
             debugging('Glossary area of ' . $file->get_filearea() . ' is not yet supported');
-            return;
+            return false;
         }
 
-        local_file::remove_filepaths_from_html(
+        return local_file::remove_filepaths_from_html(
             'definition',
             'glossary_entries',
             ' id = ? ',

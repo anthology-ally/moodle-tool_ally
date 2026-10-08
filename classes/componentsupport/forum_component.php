@@ -80,15 +80,15 @@ class forum_component extends file_component_base implements
      */
     public function remove_file_links(array $paths) {
         if (!$this->module_installed()) {
-            return;
+            return false;
         }
 
         $file = $this->file;
         if ($file->get_filearea() !== 'post') {
-            return;
+            return false;
         }
 
-        local_file::remove_filepaths_from_html(
+        return local_file::remove_filepaths_from_html(
             'message',
             $this->type . '_posts',
             ' id = ? ',

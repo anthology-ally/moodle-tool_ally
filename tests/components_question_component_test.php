@@ -123,6 +123,39 @@ class components_question_component_test extends abstract_testcase {
         $this->assertEquals($this->quest1->idnumber, $quest->idnumber);
     }
 
+    /**
+     * @dataProvider question_feedback_target_provider
+     * @param string $qtype
+     * @param array $expected
+     */
+    public function test_get_question_feedback_target($qtype, array $expected): void {
+        $target = \phpunit_util::call_internal_method(
+            $this->component,
+            'get_question_feedback_target',
+            [$qtype],
+            question_component::class
+        );
+        $this->assertSame($expected, $target);
+    }
+
+    /**
+     * @return array
+     */
+    public static function question_feedback_target_provider(): array {
+        return [
+            'ddimageortext' => ['ddimageortext', ['qtype_ddimageortext', 'questionid']],
+            'ddmarker' => ['ddmarker', ['qtype_ddmarker', 'questionid']],
+            'ddmatch' => ['ddmatch', ['qtype_ddmatch_options', 'questionid']],
+            'ddwtos' => ['ddwtos', ['question_ddwtos', 'questionid']],
+            'gapfill' => ['gapfill', ['question_gapfill', 'question']],
+            'gapselect' => ['gapselect', ['question_gapselect', 'questionid']],
+            'match' => ['match', ['qtype_match_options', 'questionid']],
+            'multichoice' => ['multichoice', ['qtype_multichoice_options', 'questionid']],
+            'randomsamatch' => ['randomsamatch', ['qtype_randomsamatch_options', 'questionid']],
+            'unsupported' => ['shortanswer', [null, null]],
+        ];
+    }
+
     public function test_list_intro_and_content(): void {
         $this->markTestSkipped('HTML content not yet supported');
     }
