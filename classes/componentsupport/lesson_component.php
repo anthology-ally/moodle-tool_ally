@@ -263,6 +263,13 @@ SQL;
      * {@inheritdoc}
      */
     public function remove_file_links(array $paths): void {
+        $this->remove_file_links_with_result($paths);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links_with_result(array $paths): bool {
         $file = $this->file;
 
         $areas = [
@@ -272,11 +279,11 @@ SQL;
         ];
         $area = $file->get_filearea();
         if (!isset($areas[$area])) {
-            return;
+            return false;
         }
 
         [$table, $field] = $areas[$area];
-        local_file::remove_filepaths_from_html(
+        return local_file::remove_filepaths_from_html(
             $field,
             $table,
             ' id = ? ',

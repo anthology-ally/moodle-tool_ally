@@ -103,11 +103,9 @@ class delete_file extends loggable_external_api {
             throw new \moodle_exception('usercapabilitymissing', 'tool_ally');
         }
 
-        if ($deleted) {
+        if ($deleted && local_file::remove_html_links($file)) {
             // Deleting the stored file leaves any img element which embeds it behind as a broken image,
             // so the references have to be taken out of the content as well.
-            local_file::remove_html_links($file);
-
             $courseid = local_file::courseid($file, IGNORE_MISSING);
             if (!empty($courseid)) {
                 // We have to do this so that module text gets regenerated without the removed file.
