@@ -263,13 +263,20 @@ SQL;
      * {@inheritdoc}
      */
     public function remove_file_links(array $paths): void {
+        $this->remove_file_links_with_result($paths);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links_with_result(array $paths): bool {
         $file = $this->file;
 
         if ($file->get_filearea() !== 'page_contents') {
-            return;
+            return false;
         }
 
-        local_file::remove_filepaths_from_html(
+        return local_file::remove_filepaths_from_html(
             'contents',
             'lesson_pages',
             ' id = ? ',

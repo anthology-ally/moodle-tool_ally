@@ -135,11 +135,77 @@ final class local_file_test extends advanced_testcase {
                 '<p><a href="@@PLUGINFILE@@/gd%20logo.png">My logo</a></p>',
                 '<p><a href="@@PLUGINFILE@@/gd%20logo.png">My logo</a></p>',
             ],
+            'unquoted source and greater-than in another attribute' => [
+                '<p><img src=@@PLUGINFILE@@/gd%20logo.png alt="width > 0"></p>',
+                '',
+            ],
+            'filename remains case-sensitive' => [
+                '<P><IMG SRC="@@PLUGINFILE@@/GD%20logo.png"><IMG SRC="@@PLUGINFILE@@/gd%20logo.png"></P>',
+                '<p><img src="@@PLUGINFILE@@/GD%20logo.png"></p>',
+            ],
             'empty content' => [
                 '',
                 '',
             ],
         ];
+    }
+
+    /**
+     * @dataProvider invalid_html_filter_provider
+     * @param string $field
+     * @param string $table
+     * @param string $filter
+     * @param array $fparams
+     */
+    public function test_remove_filepaths_from_html_rejects_invalid_sql($field, $table, $filter, array $fparams): void {
+        $this->expectException(\coding_exception::class);
+
+        local_file::remove_filepaths_from_html($field, $table, $filter, $fparams, ['/image.png']);
+    }
+
+    /**
+     * @return array
+     */
+    public static function invalid_html_filter_provider(): array {
+        return [
+            'field expression' => ['summary, fullname', 'course', 'id = ?', [1]],
+            'field comment' => ['summary --', 'course', 'id = ?', [1]],
+            'table injection' => ['summary', 'course} WHERE 1 = 1 --', 'id = ?', [1]],
+            'table alias' => ['summary', 'course c', 'id = ?', [1]],
+            'unindexed filter field' => ['summary', 'course', 'summary = ?', [1]],
+            'unbound filter value' => ['summary', 'course', 'id = 1', [1]],
+            'filter disjunction' => ['summary', 'course', 'id = ? OR 1 = 1', [1]],
+            'missing filter parameter' => ['summary', 'course', 'id = ?', []],
+            'extra filter parameter' => ['summary', 'course', 'id = ?', [1, 2]],
+        ];
+    }
+
+    public function test_remove_filepaths_from_html_reports_content_changes(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $html = '<p>Keep<img src="@@PLUGINFILE@@/image.png"></p>';
+        $course = $this->getDataGenerator()->create_course(['summary' => $html]);
+        $othercourse = $this->getDataGenerator()->create_course(['summary' => $html]);
+
+        $this->assertTrue(local_file::remove_filepaths_from_html(
+            'summary',
+            'course',
+            'id = ?',
+            [$course->id],
+            ['/image.png']
+        ));
+        $this->assertFalse(local_file::remove_filepaths_from_html(
+            'summary',
+            'course',
+            'id = ?',
+            [$course->id],
+            ['/image.png']
+        ));
+        $this->assertFalse(local_file::remove_filepaths_from_html('summary', 'course', 'id = ?', [0], ['/image.png']));
+
+        $this->assertSame('<p>Keep</p>', $DB->get_field('course', 'summary', ['id' => $course->id]));
+        $this->assertSame($html, $DB->get_field('course', 'summary', ['id' => $othercourse->id]));
     }
 
     public function test_pluginfile_path_variants(): void {
