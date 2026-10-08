@@ -81,4 +81,28 @@ abstract class file_component_base extends component_base {
      * Replace file links.
      */
     abstract public function replace_file_links(): void;
+
+    /**
+     * Remove references to the file from this component's html fields.
+     *
+     * Called when the file itself has been deleted, so that content stops pointing at a file which
+     * no longer exists. Components which do not support this leave their html untouched.
+     *
+     * @param string[] $paths @@PLUGINFILE@@ relative paths, see local_file::pluginfile_path_variants.
+     */
+    abstract public function remove_file_links(array $paths): void;
+
+    /**
+     * Remove file links and report whether content changed.
+     *
+     * Existing component implementations keep the original void contract; implementations which
+     * can detect updates may override this method to avoid unnecessary cache rebuilds.
+     *
+     * @param string[] $paths
+     * @return bool true when content was updated.
+     */
+    public function remove_file_links_with_result(array $paths): bool {
+        $this->remove_file_links($paths);
+        return true;
+    }
 }

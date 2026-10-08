@@ -252,11 +252,44 @@ SQL;
                 'contents',
                 'lesson_pages',
                 ' id = ? ',
-                ['id' => $itemid],
+                [$itemid],
                 $this->oldfilename,
                 $file->get_filename()
             );
         }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links(array $paths): void {
+        $this->remove_file_links_with_result($paths);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links_with_result(array $paths): bool {
+        $file = $this->file;
+
+        $areas = [
+            'page_contents' => ['lesson_pages', 'contents'],
+            'page_answers' => ['lesson_answers', 'answer'],
+            'page_responses' => ['lesson_answers', 'response'],
+        ];
+        $area = $file->get_filearea();
+        if (!isset($areas[$area])) {
+            return false;
+        }
+
+        [$table, $field] = $areas[$area];
+        return local_file::remove_filepaths_from_html(
+            $field,
+            $table,
+            ' id = ? ',
+            [$file->get_itemid()],
+            $paths
+        );
     }
 
     /**
