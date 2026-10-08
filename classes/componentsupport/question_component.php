@@ -134,56 +134,21 @@ class question_component extends file_component_base {
             $idfield = 'id';
             $field = $area === 'answer' ? 'answer' : 'feedback';
             $sqrow = $DB->get_record($table, ['id' => $itemid]);
+            if (!$sqrow) {
+                return null;
+            }
             $questionid = $sqrow->question;
         } else if (in_array($area, $inorcorrectfbareas)) {
             $question = $this->get_question($itemid);
-            $questionid = $question->id;
-            $qtype = $question->qtype;
-            $idfield = 'questionid';
-
-            switch ($qtype) {
-                case 'ddimageortext':
-                    $table = 'qtype_ddimageortext';
-                    break;
-                case 'ddmarker':
-                    $table = 'qtype_ddmarker';
-                    break;
-                case 'ddmatch':
-                    if (
-                        $area === 'correctfeedback'
-                        || $area === 'incorrectfeedback'
-                        || $area === 'partiallycorrectfeedback'
-                    ) {
-                        $table = 'qtype_ddmatch_options';
-                        $idfield = 'questionid';
-                    } else {
-                        debugging('Area of ' . $area . ' is not yet supported for qtype_ddmatch_html');
-                        return null;
-                    }
-                    break;
-                case 'ddwtos':
-                    $table = 'question_ddwtos';
-                    break;
-                case 'gapfill':
-                    $table = 'question_gapfill';
-                    $idfield = 'question';
-                    break;
-                case 'gapselect':
-                    $table = 'question_gapselect';
-                    break;
-                case 'match':
-                    $table = 'qtype_match_options';
-                    break;
-                case 'multichoice':
-                    $table = 'qtype_multichoice_options';
-                    break;
-                case 'randomsamatch':
-                    $table = 'qtype_randomsamatch_options';
-                    break;
-                default:
-                    debugging('Question area of ' . $area . ' and question type ' . $qtype . ' is not yet supported');
-                    return null;
+            if (!$question) {
+                return null;
             }
+            $questionid = $question->id;
+            $target = $this->resolve_question_type_file_link_target($question->qtype, $area);
+            if ($target === null) {
+                return null;
+            }
+            [$table, $idfield] = $target;
         }
 
         if ($idfield === null || $table === null) {
@@ -194,6 +159,43 @@ class question_component extends file_component_base {
         }
 
         return [$table, $field, $idfield, $questionid];
+    }
+
+    /**
+     * Resolve the table and question ID field for a question-type feedback area.
+     *
+     * @param string $qtype
+     * @param string $area
+     * @return array|null [table, idfield] or null when unsupported.
+     */
+    private function resolve_question_type_file_link_target($qtype, $area): ?array {
+        switch ($qtype) {
+            case 'ddimageortext':
+                return ['qtype_ddimageortext', 'questionid'];
+            case 'ddmarker':
+                return ['qtype_ddmarker', 'questionid'];
+            case 'ddmatch':
+                if (!in_array($area, ['correctfeedback', 'incorrectfeedback', 'partiallycorrectfeedback'])) {
+                    debugging('Area of ' . $area . ' is not yet supported for qtype_ddmatch_html');
+                    return null;
+                }
+                return ['qtype_ddmatch_options', 'questionid'];
+            case 'ddwtos':
+                return ['question_ddwtos', 'questionid'];
+            case 'gapfill':
+                return ['question_gapfill', 'question'];
+            case 'gapselect':
+                return ['question_gapselect', 'questionid'];
+            case 'match':
+                return ['qtype_match_options', 'questionid'];
+            case 'multichoice':
+                return ['qtype_multichoice_options', 'questionid'];
+            case 'randomsamatch':
+                return ['qtype_randomsamatch_options', 'questionid'];
+            default:
+                debugging('Question area of ' . $area . ' and question type ' . $qtype . ' is not yet supported');
+                return null;
+        }
     }
 
     /**
@@ -222,13 +224,20 @@ class question_component extends file_component_base {
      * {@inheritdoc}
      */
     public function remove_file_links(array $paths): void {
+        $this->remove_file_links_with_result($paths);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links_with_result(array $paths): bool {
         $target = $this->resolve_file_link_target();
         if ($target === null) {
-            return;
+            return false;
         }
         [$table, $field, $idfield, $questionid] = $target;
 
-        local_file::remove_filepaths_from_html(
+        $changed = local_file::remove_filepaths_from_html(
             $field,
             $table,
             ' ' . $idfield . ' = ? ',
@@ -236,6 +245,9 @@ class question_component extends file_component_base {
             $paths
         );
 
-        \question_finder::get_instance()->uncache_question($questionid);
+        if ($changed) {
+            \question_finder::get_instance()->uncache_question($questionid);
+        }
+        return $changed;
     }
 }

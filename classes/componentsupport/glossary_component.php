@@ -95,16 +95,23 @@ class glossary_component extends file_component_base implements annotation_map, 
      * {@inheritdoc}
      */
     public function remove_file_links(array $paths): void {
+        $this->remove_file_links_with_result($paths);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links_with_result(array $paths): bool {
 
         $file = $this->file;
 
         $area = $file->get_filearea();
         if ($area !== 'entry') {
             debugging('Glossary area of ' . $area . ' is not yet supported');
-            return;
+            return false;
         }
 
-        local_file::remove_filepaths_from_html(
+        return local_file::remove_filepaths_from_html(
             'definition',
             'glossary_entries',
             ' id = ? ',

@@ -96,17 +96,24 @@ class forum_component extends file_component_base implements annotation_map, con
      * {@inheritdoc}
      */
     public function remove_file_links(array $paths): void {
+        $this->remove_file_links_with_result($paths);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links_with_result(array $paths): bool {
         if (!$this->module_installed()) {
-            return;
+            return false;
         }
 
         $file = $this->file;
 
         if ($file->get_filearea() !== 'post') {
-            return;
+            return false;
         }
 
-        local_file::remove_filepaths_from_html(
+        return local_file::remove_filepaths_from_html(
             'message',
             $this->type . '_posts',
             ' id = ? ',
