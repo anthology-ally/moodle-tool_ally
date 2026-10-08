@@ -435,7 +435,7 @@ class local_file {
             return;
         }
 
-        $cm = self::resolve_cm_from_file($file);
+        $cm = $component === 'question' ? false : self::resolve_cm_from_file($file);
         if ($cm) {
             $component = $cm->modname;
 
@@ -478,6 +478,378 @@ class local_file {
             $instance->setup_file_and_validate($oldfilename, $file);
             $instance->replace_file_links();
         }
+    }
+
+    /**
+     * Get the @@PLUGINFILE@@ relative paths which may be used to reference a file in html.
+     *
+     * Moodle raw url encodes embedded file references, but content authored elsewhere (or imported) can
+     * hold the unencoded path, so both variants have to be considered.
+     *
+     * @param stored_file $file
+     * @return string[]
+     */
+    public static function pluginfile_path_variants(stored_file $file) {
+        $path = $file->get_filepath() . $file->get_filename();
+
+        $encoded = implode('/', array_map('rawurlencode', explode('/', $path)));
+
+        return array_values(array_unique([$encoded, $path]));
+    }
+
+    /**
+     * Strip img elements referencing a file out of html.
+     *
+     * Deleting the stored file on its own leaves the img element behind, which renders as a broken
+     * image, so the element itself has to go too.
+     *
+     * @param string $html
+     * @param string[] $paths @@PLUGINFILE@@ relative paths, see pluginfile_path_variants.
+     * @return string
+     */
+    public static function strip_pluginfile_elements($html, array $paths) {
+        if (empty($html) || empty($paths)) {
+            return $html;
+        }
+
+        $targets = array_map(function($path) {
+            return '@@PLUGINFILE@@' . $path;
+        }, $paths);
+
+        $document = new \DOMDocument('1.0', 'UTF-8');
+        $previouslibxmlsetting = libxml_use_internal_errors(true);
+        $document->loadHTML('<?xml encoding="UTF-8"><div id="ally-content">' . $html . '</div>',
+            LIBXML_HTML_NODEFDTD | LIBXML_NONET);
+        libxml_clear_errors();
+        libxml_use_internal_errors($previouslibxmlsetting);
+
+        $xpath = new \DOMXPath($document);
+        $wrapper = $xpath->query('//*[@id="ally-content"]')->item(0);
+        if (!$wrapper) {
+            return $html;
+        }
+
+        $changed = false;
+        $anchors = [];
+        foreach ($wrapper->getElementsByTagName('a') as $anchor) {
+            $anchors[] = $anchor;
+        }
+        foreach ($anchors as $anchor) {
+            if (self::is_pluginfile_image_anchor($anchor, $targets)) {
+                $anchor->parentNode->removeChild($anchor);
+                $changed = true;
+            }
+        }
+
+        $images = [];
+        foreach ($wrapper->getElementsByTagName('img') as $image) {
+            $images[] = $image;
+        }
+        foreach ($images as $image) {
+            if (self::is_pluginfile_reference($image->getAttribute('src'), $targets)) {
+                $image->parentNode->removeChild($image);
+                $changed = true;
+            }
+        }
+
+        $stripped = '';
+        foreach ($wrapper->childNodes as $child) {
+            $stripped .= $document->saveHTML($child);
+        }
+
+        // Leftover empty wrappers (e.g. <p></p>) would still be annotated as rich content by the filter,
+        // showing the alternative formats icon on otherwise empty content.
+        if ($changed && !self::html_has_content($stripped)) {
+            return '';
+        }
+
+        return $stripped;
+    }
+
+    /**
+     * Determine whether an anchor links to its sole image child, which references a target file.
+     *
+     * @param \DOMElement $anchor
+     * @param string[] $targets
+     * @return bool
+     */
+    private static function is_pluginfile_image_anchor(\DOMElement $anchor, array $targets) {
+        if (!self::is_pluginfile_reference($anchor->getAttribute('href'), $targets)) {
+            return false;
+        }
+
+        $hasimage = false;
+        foreach ($anchor->childNodes as $child) {
+            if ($child instanceof \DOMElement && strtolower($child->tagName) === 'img' &&
+                    self::is_pluginfile_reference($child->getAttribute('src'), $targets)) {
+                if ($hasimage) {
+                    return false;
+                }
+                $hasimage = true;
+            } else if ($child instanceof \DOMText && trim($child->textContent) === '') {
+                continue;
+            } else {
+                return false;
+            }
+        }
+
+        return $hasimage;
+    }
+
+    /**
+     * Determine whether a URL references one of the target plugin files.
+     *
+     * @param string $url
+     * @param string[] $targets
+     * @return bool
+     */
+    private static function is_pluginfile_reference($url, array $targets) {
+        return in_array(trim($url), $targets, true);
+    }
+
+    /**
+     * Does html contain any visible text or embedded media?
+     *
+     * @param string $html
+     * @return bool
+     */
+    private static function html_has_content($html) {
+        $mediatags = '<img><picture><video><audio><iframe><object><embed><svg><canvas><math>' .
+            '<input><select><textarea><button><hr>';
+        $text = strip_tags($html, $mediatags);
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = preg_replace('~[\s\x{00A0}\x{200B}]+~u', '', $text);
+
+        return $text !== '';
+    }
+
+    /**
+     * Remove references to a file from a html field.
+     *
+     * Only for content which has no component support class - where there is one,
+     * remove_filepaths_from_content is preferred as it also notifies Ally of the change.
+     *
+     * @param string $field Plain SQL column identifier.
+     * @param string $table Plain SQL table identifier.
+     * @param string $filter Equality on an indexed id, questionid, or question column.
+     * @param array $fparams One bound filter parameter.
+     * @param string[] $paths @@PLUGINFILE@@ relative paths, see pluginfile_path_variants.
+     * @return bool true when content was updated.
+     * @throws \coding_exception If identifiers or the filter are invalid.
+     */
+    public static function remove_filepaths_from_html($field, $table, $filter, array $fparams, array $paths) {
+        global $DB;
+
+        if (!preg_match('/\A[a-z][a-z0-9_]*\z/', $field) || !preg_match('/\A[a-z][a-z0-9_]*\z/', $table)) {
+            throw new \coding_exception('Invalid table or field identifier');
+        }
+        if (!preg_match('/\A\s*(?:id|questionid|question)\s*=\s*\?\s*\z/', $filter) || count($fparams) !== 1) {
+            throw new \coding_exception('Expected an indexed key equality filter with one bound parameter');
+        }
+
+        $sql = "SELECT id, $field AS allyhtml
+                  FROM {" . $table . "}
+                 WHERE $field IS NOT NULL AND $filter";
+
+        $rows = $DB->get_records_sql($sql, $fparams);
+        $changed = false;
+        foreach ($rows as $row) {
+            $stripped = self::strip_pluginfile_elements($row->allyhtml, $paths);
+            if ($stripped === $row->allyhtml) {
+                continue;
+            }
+            $changed = $DB->set_field($table, $field, $stripped, ['id' => $row->id]) || $changed;
+        }
+        return $changed;
+    }
+
+    /**
+     * Remove references to a file from a component html content item.
+     *
+     * Goes through the component support so that the content update is pushed to Ally and any
+     * course cache holding the old content is cleared.
+     *
+     * @param int $id
+     * @param string $component
+     * @param string $table
+     * @param string $field
+     * @param string[] $paths @@PLUGINFILE@@ relative paths, see pluginfile_path_variants.
+     * @return bool true when content was updated.
+     */
+    public static function remove_filepaths_from_content($id, $component, $table, $field, array $paths) {
+        $content = local_content::get_html_content($id, $component, $table, $field);
+        if (empty($content) || empty($content->content)) {
+            return false;
+        }
+
+        $stripped = self::strip_pluginfile_elements($content->content, $paths);
+        if ($stripped === $content->content) {
+            return false;
+        }
+
+        return (bool) local_content::replace_html_content($id, $component, $table, $field, $stripped);
+    }
+
+    /**
+     * Can the content for this component / table / field be read and written through component support?
+     *
+     * @param string $component
+     * @param string $table
+     * @param string $field
+     * @return bool
+     */
+    private static function content_support_covers($component, $table, $field) {
+        if (!local_content::component_supports_html_content($component)) {
+            return false;
+        }
+
+        $instance = local::get_component_instance($component);
+
+        return in_array($field, $instance->get_table_fields($table));
+    }
+
+    /**
+     * Remove any references to a file from component html fields.
+     *
+     * Intended to be called when a file has been deleted, so that content stops pointing at a file
+     * which no longer exists.
+     *
+     * @param stored_file $file
+     * @return bool true when content was updated.
+     */
+    public static function remove_html_links(stored_file $file) {
+        $paths = self::pluginfile_path_variants($file);
+        $component = $file->get_component();
+        $filearea = $file->get_filearea();
+
+        if ($component === 'course') {
+            return self::remove_course_file_links($file, $paths);
+        }
+
+        if ($component === 'block_html') {
+            return self::remove_block_html_file_links($file, $paths);
+        }
+
+        $supportcomponent = $component;
+        $cm = self::resolve_cm_from_file($file);
+        if ($cm && $component === 'mod_' . $cm->modname) {
+            // Module support classes are named after the module, not its frankenstyle component.
+            $supportcomponent = $cm->modname;
+            $modtable = $cm->modname;
+
+            if (in_array($filearea, ['intro', 'content'])) {
+                $changed = self::remove_module_file_links($supportcomponent, $modtable, $cm->instance, $filearea, $paths);
+                if ($changed !== null) {
+                    return $changed;
+                }
+            }
+        }
+
+        if ($supportcomponent === 'book' && $filearea === 'chapter') {
+            return self::remove_book_chapter_file_links($file, $cm ? $cm->instance : null, $paths);
+        }
+
+        return self::remove_component_file_links($file, $supportcomponent, $paths);
+    }
+
+    /**
+     * Remove file references from course or section summaries.
+     *
+     * @param stored_file $file
+     * @param string[] $paths
+     * @return bool
+     */
+    private static function remove_course_file_links(stored_file $file, array $paths) {
+        if ($file->get_filearea() === 'section') {
+            return self::remove_filepaths_from_content($file->get_itemid(), 'course', 'course_sections', 'summary', $paths);
+        } else if ($file->get_filearea() === 'summary') {
+            $coursecontext = self::course_context($file);
+            return self::remove_filepaths_from_content($coursecontext->instanceid, 'course', 'course', 'summary', $paths);
+        }
+        return false;
+    }
+
+    /**
+     * Remove file references from an HTML block.
+     *
+     * @param stored_file $file
+     * @param string[] $paths
+     * @return bool
+     */
+    private static function remove_block_html_file_links(stored_file $file, array $paths) {
+        $blockcontext = context::instance_by_id($file->get_contextid());
+        return self::remove_filepaths_from_content(
+            $blockcontext->instanceid,
+            'block_html',
+            'block_instances',
+            'configdata',
+            $paths
+        );
+    }
+
+    /**
+     * Remove file references from the main content field of a module.
+     *
+     * @param string $component
+     * @param string $table
+     * @param int $instanceid
+     * @param string $field
+     * @param string[] $paths
+     * @return bool|null Null when the module table is unavailable.
+     */
+    private static function remove_module_file_links($component, $table, $instanceid, $field, array $paths) {
+        global $DB;
+
+        if (!in_array($table, $DB->get_tables())) {
+            return null;
+        }
+
+        $instancerow = $DB->get_record($table, ['id' => $instanceid]);
+        if (!isset($instancerow->$field)) {
+            return false;
+        }
+
+        if (self::content_support_covers($component, $table, $field)) {
+            return self::remove_filepaths_from_content($instanceid, $component, $table, $field, $paths);
+        }
+
+        return self::remove_filepaths_from_html($field, $table, 'id = ?', [$instanceid], $paths);
+    }
+
+    /**
+     * Remove file references only from the chapter belonging to this book.
+     *
+     * @param stored_file $file
+     * @param int|null $bookid
+     * @param string[] $paths
+     * @return bool
+     */
+    private static function remove_book_chapter_file_links(stored_file $file, $bookid, array $paths) {
+        global $DB;
+
+        if (!$bookid || !$DB->record_exists('book_chapters', ['id' => $file->get_itemid(), 'bookid' => $bookid])) {
+            return false;
+        }
+
+        return self::remove_filepaths_from_html('content', 'book_chapters', 'id = ?', [$file->get_itemid()], $paths);
+    }
+
+    /**
+     * Delegate file reference removal to component-specific support.
+     *
+     * @param stored_file $file
+     * @param string $component
+     * @param string[] $paths
+     * @return bool
+     */
+    private static function remove_component_file_links(stored_file $file, $component, array $paths) {
+        $instance = local::get_component_instance($component);
+        if (!$instance instanceof file_component_base) {
+            return false;
+        }
+
+        $instance->setup_file_and_validate($file->get_filename(), $file);
+        return $instance->remove_file_links_with_result($paths);
     }
 
     /**
