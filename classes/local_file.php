@@ -495,29 +495,99 @@ class local_file {
             return $html;
         }
 
-        $quoted = array_map(function($path) {
-            return preg_quote($path, '~');
+        $targets = array_map(function($path) {
+            return '@@PLUGINFILE@@' . $path;
         }, $paths);
 
-        // Moodle file names are case-sensitive, so the path must not inherit the i modifier.
-        $target = '(?-i:@@PLUGINFILE@@(?:' . implode('|', $quoted) . '))';
+        $document = new \DOMDocument('1.0', 'UTF-8');
+        $previouslibxmlsetting = libxml_use_internal_errors(true);
+        $document->loadHTML('<?xml encoding="UTF-8"><div id="ally-content">' . $html . '</div>',
+            LIBXML_HTML_NODEFDTD | LIBXML_NONET);
+        libxml_clear_errors();
+        libxml_use_internal_errors($previouslibxmlsetting);
 
-        // An image linking to its own file would be left behind as an empty, but still clickable,
-        // anchor, so that anchor has to be removed as a whole.
-        $anchor = '~<a\b[^>]*\bhref\s*=\s*([\'"])\s*' . $target . '\s*\1[^>]*>\s*' .
-            '<img\b[^>]*\bsrc\s*=\s*([\'"])\s*' . $target . '\s*\2[^>]*>\s*</a>~is';
+        $xpath = new \DOMXPath($document);
+        $wrapper = $xpath->query('//*[@id="ally-content"]')->item(0);
+        if (!$wrapper) {
+            return $html;
+        }
 
-        $img = '~<img\b[^>]*\bsrc\s*=\s*([\'"])\s*' . $target . '\s*\1[^>]*>~is';
+        $changed = false;
+        $anchors = [];
+        foreach ($wrapper->getElementsByTagName('a') as $anchor) {
+            $anchors[] = $anchor;
+        }
+        foreach ($anchors as $anchor) {
+            if (self::is_pluginfile_image_anchor($anchor, $targets)) {
+                $anchor->parentNode->removeChild($anchor);
+                $changed = true;
+            }
+        }
 
-        $stripped = preg_replace($img, '', preg_replace($anchor, '', $html));
+        $images = [];
+        foreach ($wrapper->getElementsByTagName('img') as $image) {
+            $images[] = $image;
+        }
+        foreach ($images as $image) {
+            if (self::is_pluginfile_reference($image->getAttribute('src'), $targets)) {
+                $image->parentNode->removeChild($image);
+                $changed = true;
+            }
+        }
+
+        $stripped = '';
+        foreach ($wrapper->childNodes as $child) {
+            $stripped .= $document->saveHTML($child);
+        }
 
         // Leftover empty wrappers (e.g. <p></p>) would still be annotated as rich content by the filter,
         // showing the alternative formats icon on otherwise empty content.
-        if ($stripped !== $html && !self::html_has_content($stripped)) {
+        if ($changed && !self::html_has_content($stripped)) {
             return '';
         }
 
         return $stripped;
+    }
+
+    /**
+     * Determine whether an anchor links to its sole image child, which references a target file.
+     *
+     * @param \DOMElement $anchor
+     * @param string[] $targets
+     * @return bool
+     */
+    private static function is_pluginfile_image_anchor(\DOMElement $anchor, array $targets) {
+        if (!self::is_pluginfile_reference($anchor->getAttribute('href'), $targets)) {
+            return false;
+        }
+
+        $hasimage = false;
+        foreach ($anchor->childNodes as $child) {
+            if ($child instanceof \DOMElement && strtolower($child->tagName) === 'img' &&
+                    self::is_pluginfile_reference($child->getAttribute('src'), $targets)) {
+                if ($hasimage) {
+                    return false;
+                }
+                $hasimage = true;
+            } else if ($child instanceof \DOMText && trim($child->textContent) === '') {
+                continue;
+            } else {
+                return false;
+            }
+        }
+
+        return $hasimage;
+    }
+
+    /**
+     * Determine whether a URL references one of the target plugin files.
+     *
+     * @param string $url
+     * @param string[] $targets
+     * @return bool
+     */
+    private static function is_pluginfile_reference($url, array $targets) {
+        return in_array(trim($url), $targets, true);
     }
 
     /**

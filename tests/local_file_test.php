@@ -130,7 +130,7 @@ class local_file_test extends advanced_testcase {
             ],
             'same name differing by case untouched' => [
                 '<P><IMG SRC="@@PLUGINFILE@@/GD%20logo.png"><IMG SRC="@@PLUGINFILE@@/gd%20logo.png"></P>',
-                '<P><IMG SRC="@@PLUGINFILE@@/GD%20logo.png"></P>',
+                '<p><img src="@@PLUGINFILE@@/GD%20logo.png"></p>',
             ],
             'same name in another folder untouched' => [
                 '<p><img src="@@PLUGINFILE@@/sub/gd%20logo.png"></p>',
@@ -139,6 +139,10 @@ class local_file_test extends advanced_testcase {
             'text link left alone' => [
                 '<p><a href="@@PLUGINFILE@@/gd%20logo.png">My logo</a></p>',
                 '<p><a href="@@PLUGINFILE@@/gd%20logo.png">My logo</a></p>',
+            ],
+            'unquoted source and greater-than in another attribute' => [
+                '<p><img src=@@PLUGINFILE@@/gd%20logo.png alt="width > 0"></p>',
+                '',
             ],
             'empty content' => [
                 '',
