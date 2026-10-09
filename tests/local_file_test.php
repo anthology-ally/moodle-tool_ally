@@ -78,4 +78,148 @@ class local_file_test extends advanced_testcase {
         $this->assertEquals($samplefilename, basename($props->filename));
         $this->assertEquals($samplefilepath, $props->filepath);
     }
+
+    /**
+     * Only elements pointing at the given file should be stripped, everything else has to survive
+     * untouched.
+     *
+     * @dataProvider strip_pluginfile_elements_provider
+     * @param string $html
+     * @param string $expected
+     */
+    public function test_strip_pluginfile_elements($html, $expected): void {
+        $paths = ['/gd%20logo.png', '/gd logo.png'];
+
+        $this->assertSame($expected, local_file::strip_pluginfile_elements($html, $paths));
+    }
+
+    /**
+     * Data provider for test_strip_pluginfile_elements.
+     *
+     * @return array
+     */
+    public static function strip_pluginfile_elements_provider(): array {
+        return [
+            'encoded filename' => [
+                '<p>a<img src="@@PLUGINFILE@@/gd%20logo.png" alt="" width="100">b</p>',
+                '<p>ab</p>',
+            ],
+            'unencoded filename' => [
+                '<p>a<img src="@@PLUGINFILE@@/gd logo.png" />b</p>',
+                '<p>ab</p>',
+            ],
+            'single quoted src' => [
+                "<p><img src='@@PLUGINFILE@@/gd%20logo.png'></p>",
+                '',
+            ],
+            'image linking to itself' => [
+                '<p><a href="@@PLUGINFILE@@/gd%20logo.png"><img src="@@PLUGINFILE@@/gd%20logo.png"></a></p>',
+                '',
+            ],
+            'only empty wrappers left' => [
+                '<p dir="ltr">&nbsp;<img src="@@PLUGINFILE@@/gd%20logo.png"></p><p><br></p>',
+                '',
+            ],
+            'other media kept' => [
+                '<p><img src="@@PLUGINFILE@@/gd%20logo.png"><video src="x.mp4"></video></p>',
+                '<p><video src="x.mp4"></video></p>',
+            ],
+            'other files untouched' => [
+                '<p><img src="@@PLUGINFILE@@/other.png"><img src="@@PLUGINFILE@@/gd%20logo.png"></p>',
+                '<p><img src="@@PLUGINFILE@@/other.png"></p>',
+            ],
+            'same name differing by case untouched' => [
+                '<P><IMG SRC="@@PLUGINFILE@@/GD%20logo.png"><IMG SRC="@@PLUGINFILE@@/gd%20logo.png"></P>',
+                '<p><img src="@@PLUGINFILE@@/GD%20logo.png"></p>',
+            ],
+            'same name in another folder untouched' => [
+                '<p><img src="@@PLUGINFILE@@/sub/gd%20logo.png"></p>',
+                '<p><img src="@@PLUGINFILE@@/sub/gd%20logo.png"></p>',
+            ],
+            'text link left alone' => [
+                '<p><a href="@@PLUGINFILE@@/gd%20logo.png">My logo</a></p>',
+                '<p><a href="@@PLUGINFILE@@/gd%20logo.png">My logo</a></p>',
+            ],
+            'unquoted source and greater-than in another attribute' => [
+                '<p><img src=@@PLUGINFILE@@/gd%20logo.png alt="width > 0"></p>',
+                '',
+            ],
+            'empty content' => [
+                '',
+                '',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider invalid_html_filter_provider
+     * @param string $field
+     * @param string $table
+     * @param string $filter
+     * @param array $fparams
+     */
+    public function test_remove_filepaths_from_html_rejects_invalid_sql($field, $table, $filter, array $fparams): void {
+        $this->expectException(\coding_exception::class);
+
+        local_file::remove_filepaths_from_html($field, $table, $filter, $fparams, ['/image.png']);
+    }
+
+    /**
+     * @return array
+     */
+    public static function invalid_html_filter_provider(): array {
+        return [
+            'field expression' => ['summary, fullname', 'course', 'id = ?', [1]],
+            'field comment' => ['summary --', 'course', 'id = ?', [1]],
+            'table injection' => ['summary', 'course} WHERE 1 = 1 --', 'id = ?', [1]],
+            'table alias' => ['summary', 'course c', 'id = ?', [1]],
+            'empty filter' => ['summary', 'course', '', [1]],
+            'unbound value' => ['summary', 'course', 'id = 1', [1]],
+            'filter disjunction' => ['summary', 'course', 'id = ? OR 1 = 1', [1]],
+            'filter comment' => ['summary', 'course', 'id = ? --', [1]],
+            'filter subquery' => ['summary', 'course', 'id IN (SELECT id FROM {course})', [1]],
+            'missing parameter' => ['summary', 'course', 'id = ?', []],
+            'extra parameter' => ['summary', 'course', 'id = ?', [1, 2]],
+        ];
+    }
+
+    public function test_remove_filepaths_from_html_updates_only_matching_record(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $html = '<p>Keep<img src="@@PLUGINFILE@@/image.png"></p>';
+        $course = $this->getDataGenerator()->create_course(['summary' => $html]);
+        $othercourse = $this->getDataGenerator()->create_course(['summary' => $html]);
+
+        $this->assertTrue(
+            local_file::remove_filepaths_from_html('summary', 'course', ' id = ? ', [$course->id], ['/image.png'])
+        );
+
+        $this->assertSame('<p>Keep</p>', $DB->get_field('course', 'summary', ['id' => $course->id]));
+        $this->assertSame($html, $DB->get_field('course', 'summary', ['id' => $othercourse->id]));
+        $this->assertFalse(
+            local_file::remove_filepaths_from_html('summary', 'course', ' id = ? ', [$course->id], ['/image.png'])
+        );
+        $this->assertFalse(
+            local_file::remove_filepaths_from_html('summary', 'course', ' id = ? ', [0], ['/image.png'])
+        );
+    }
+
+    public function test_pluginfile_path_variants(): void {
+        $this->resetAfterTest();
+
+        $file = get_file_storage()->create_file_from_string([
+            'contextid' => \context_system::instance()->id,
+            'component' => 'tool_ally',
+            'filearea'  => 'unittest',
+            'itemid'    => 0,
+            'filepath'  => '/sub dir/',
+            'filename'  => 'gd logo.png',
+        ], 'test');
+
+        $this->assertSame(
+            ['/sub%20dir/gd%20logo.png', '/sub dir/gd logo.png'],
+            local_file::pluginfile_path_variants($file)
+        );
+    }
 }
