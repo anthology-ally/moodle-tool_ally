@@ -34,3 +34,7 @@ $plugin->dependencies = [
     'filter_ally'    => 2026012850,
     'report_allylti' => 2026012850,
 ];
+$plugin->supported    = [
+    502,
+    502
+];
