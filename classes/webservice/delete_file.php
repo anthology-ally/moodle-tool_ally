@@ -28,6 +28,7 @@ use core_external\external_function_parameters;
 use core_external\external_multiple_structure;
 use core_external\external_single_structure;
 use core_external\external_value;
+use tool_ally\local_file;
 
 /**
  * Delete a file.
@@ -100,6 +101,14 @@ class delete_file extends loggable_external_api {
             $deleted = $file->delete();
         } else {
             throw new \moodle_exception('usercapabilitymissing', 'tool_ally');
+        }
+
+        if ($deleted && local_file::remove_html_links($file)) {
+            $courseid = local_file::courseid($file, IGNORE_MISSING);
+            if (!empty($courseid)) {
+                // We have to do this so that module text gets regenerated without the removed file.
+                rebuild_course_cache($courseid, true);
+            }
         }
 
         return [

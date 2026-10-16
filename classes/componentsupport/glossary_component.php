@@ -85,9 +85,38 @@ class glossary_component extends file_component_base implements annotation_map, 
             $repfield,
             $table,
             ' id = ? ',
-            [$idfield => $itemid],
+            [$itemid],
             $this->oldfilename,
             $file->get_filename()
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links(array $paths): void {
+        $this->remove_file_links_with_result($paths);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links_with_result(array $paths): bool {
+
+        $file = $this->file;
+
+        $area = $file->get_filearea();
+        if ($area !== 'entry') {
+            debugging('Glossary area of ' . $area . ' is not yet supported');
+            return false;
+        }
+
+        return local_file::remove_filepaths_from_html(
+            'definition',
+            'glossary_entries',
+            ' id = ? ',
+              [$file->get_itemid()],
+            $paths
         );
     }
 

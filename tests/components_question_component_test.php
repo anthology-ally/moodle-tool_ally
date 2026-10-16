@@ -143,6 +143,63 @@ final class components_question_component_test extends abstract_testcase {
     }
 
     /**
+     * @dataProvider question_type_file_link_target_provider
+     * @param string $qtype
+     * @param string $area
+     * @param array|null $expected
+     */
+    public function test_resolve_question_type_file_link_target($qtype, $area, ?array $expected): void {
+        $target = \phpunit_util::call_internal_method(
+            $this->component,
+            'resolve_question_type_file_link_target',
+            [$qtype, $area],
+            question_component::class
+        );
+
+        $this->assertSame($expected, $target);
+    }
+
+    /**
+     * @return array
+     */
+    public static function question_type_file_link_target_provider(): array {
+        return [
+            'ddimageortext' => ['ddimageortext', 'correctfeedback', ['qtype_ddimageortext', 'questionid']],
+            'ddmarker' => ['ddmarker', 'correctfeedback', ['qtype_ddmarker', 'questionid']],
+            'ddmatch' => ['ddmatch', 'correctfeedback', ['qtype_ddmatch_options', 'questionid']],
+            'ddmatch unsupported area' => ['ddmatch', 'questiontext', null],
+            'ddwtos' => ['ddwtos', 'correctfeedback', ['question_ddwtos', 'questionid']],
+            'gapfill' => ['gapfill', 'correctfeedback', ['question_gapfill', 'question']],
+            'gapselect' => ['gapselect', 'correctfeedback', ['question_gapselect', 'questionid']],
+            'match' => ['match', 'correctfeedback', ['qtype_match_options', 'questionid']],
+            'multichoice' => ['multichoice', 'correctfeedback', ['qtype_multichoice_options', 'questionid']],
+            'randomsamatch' => ['randomsamatch', 'correctfeedback', ['qtype_randomsamatch_options', 'questionid']],
+            'unsupported' => ['shortanswer', 'correctfeedback', null],
+        ];
+    }
+
+    /**
+     * A deleted answer record should be ignored when its file cleanup runs.
+     *
+     * @covers \tool_ally\componentsupport\question_component::resolve_file_link_target
+     * @covers \tool_ally\componentsupport\question_component::remove_file_links
+     */
+    public function test_remove_file_links_ignores_missing_answer(): void {
+        $file = get_file_storage()->create_file_from_string([
+            'contextid' => $this->coursecontext->id,
+            'component' => 'question',
+            'filearea' => 'answer',
+            'itemid' => 999999,
+            'filepath' => '/',
+            'filename' => 'missing-answer.png',
+        ], 'test');
+
+        $this->component->setup_file_and_validate($file->get_filename(), $file);
+
+        $this->assertFalse($this->component->remove_file_links_with_result(['/missing-answer.png']));
+    }
+
+    /**
      * Test listing intro and content.
      *
      * @covers \tool_ally\componentsupport\question_component::list_intro_and_content
