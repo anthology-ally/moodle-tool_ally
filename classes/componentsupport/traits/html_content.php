@@ -23,6 +23,7 @@
 
 namespace tool_ally\componentsupport\traits;
 
+use tool_ally\componentsupport\label_component;
 use tool_ally\local;
 use tool_ally\local_content;
 use tool_ally\models\component;
@@ -74,9 +75,13 @@ trait html_content {
             foreach ($fields as $field) {
                 $formatfield = $field . 'format';
                 if (!empty($row->$field) && $row->$formatfield === FORMAT_HTML) {
-                    if ($component == 'label' && !empty($row->intro)) {
+                    // A label's "Title in course index" is authored, so it is kept as-is; a title is
+                    // only derived from the content when the label has none of its own, matching
+                    // label_component::get_html_content(). The comparison is against the empty
+                    // string rather than empty(), which would discard the valid title "0".
+                    if ($component === 'label' && ($row->name ?? '') === '' && !empty($row->intro)) {
                         $PAGE->set_context(\context_course::instance($courseid));
-                        $row->name = strip_tags(format_string($row->intro, true));
+                        $row->name = label_component::title_from_content($row->intro);
                     }
                     $array[] = new component(
                         $row->id,
