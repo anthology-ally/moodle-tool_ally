@@ -29,6 +29,7 @@ require_once(__DIR__ . '/abstract_testcase.php');
 
 use tool_ally\abstract_testcase;
 use tool_ally\logging\constants;
+use tool_ally\logging\logger;
 use tool_ally\webservice\log;
 use tool_ally\webservice\version_info;
 use Psr\Log\LogLevel;
@@ -52,6 +53,7 @@ final class loggable_external_api_test extends abstract_testcase {
         require_once($CFG->dirroot . '/lib/externallib.php');
         // Log all log levels.
         set_config('logrange', constants::RANGE_ALL, 'tool_ally');
+        logger::get()->setlevelrange(constants::RANGE_ALL);
     }
 
     /**
@@ -79,5 +81,80 @@ final class loggable_external_api_test extends abstract_testcase {
                 'params' => var_export([], true),
             ]), $logentries['data'][0]->explanation);
         }
+    }
+
+    public function test_log_service_normalises_query_sorting(): void {
+        $this->resetAfterTest();
+        $this->setAdminUser();
+
+        /** @var \tool_ally_generator $generator */
+        $generator = $this->getDataGenerator()->get_plugin_generator('tool_ally');
+        $generator->create_log_entry(['time' => time() - 1]);
+        $generator->create_log_entry(['time' => time()]);
+
+        $results = log::service(json_encode([
+            'limit' => 20,
+            'offset' => 0,
+            'sort' => 'id DESC, (SELECT 1)',
+            'order' => null,
+        ]));
+
+        $this->assertNull($results['query']->sort);
+        $this->assertNull($results['query']->order);
+
+        $results = log::service(json_encode([
+            'limit' => 20,
+            'offset' => 0,
+            'sort' => 'id',
+            'order' => null,
+        ]));
+
+        $this->assertSame('id', $results['query']->sort);
+        $this->assertSame('DESC', $results['query']->order);
+
+        $results = log::service(json_encode([
+            'limit' => 20,
+            'offset' => 0,
+            'sort' => 'level',
+            'order' => 'ASC',
+        ]));
+
+        $this->assertSame('level', $results['query']->sort);
+        $this->assertSame('ASC', $results['query']->order);
+    }
+
+    public function test_content_queue_log_excludes_rich_content(): void {
+        global $DB;
+
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        set_config('push_cli_only', 1, 'tool_ally');
+        content_processor::get_config(true);
+
+        $content = new \tool_ally\models\component_content(
+            42,
+            'mod_page',
+            'page',
+            'content',
+            7,
+            time(),
+            FORMAT_HTML,
+            '<img src=x onerror=alert(1)>'
+        );
+        content_processor::push_content_update($content, 'updated');
+
+        $logentry = $DB->get_record('tool_ally_log', ['code' => 'logger:addingconenttoqueue'], '*', MUST_EXIST);
+        $logcontext = unserialize($logentry->data);
+
+        $this->assertSame([
+            [
+                'id' => 42,
+                'component' => 'mod_page',
+                'table' => 'page',
+                'field' => 'content',
+                'courseid' => 7,
+            ],
+        ], $logcontext['content']);
+        $this->assertStringNotContainsString('<img src=x onerror=alert(1)>', $logentry->data);
     }
 }
