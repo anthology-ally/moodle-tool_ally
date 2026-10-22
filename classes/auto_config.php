@@ -75,7 +75,7 @@ class auto_config {
             $user->password = $webuserpwd;
             $user->policyagreed = 1;
             $user = $this->load_user_profile($user);
-            user_update_user($user);
+            $this->update_user($user);
             profile_save_data($user);
             $this->user = $user;
             return $user;
@@ -100,9 +100,23 @@ class auto_config {
         $user->lastname = 'Webservice';
         $user->email = 'allywebservice@test.local'; // Fake email address.
         $user = $this->load_user_profile($user);
-        user_update_user($user);
+        $this->update_user($user);
         profile_save_data($user);
         $this->user = $user;
+    }
+
+    /**
+     * Update a user, using the Moodle 5.3+ API where it exists.
+     *
+     * user_update_user() is deprecated from 5.3 (MDL-82650); \core\user::update_user() does not exist before it.
+     * @param \stdClass $user User object.
+     */
+    private function update_user(stdClass $user): void {
+        if (method_exists(\core\user::class, 'update_user')) {
+            \core\user::update_user($user);
+        } else {
+            user_update_user($user);
+        }
     }
 
     /**
@@ -283,9 +297,9 @@ class auto_config {
         if ($existing) {
             $this->token = $existing->token;
         } else {
-            $this->token = \external_generate_token(
+            $this->token = \core_external\util::generate_token(
                 EXTERNAL_TOKEN_PERMANENT,
-                $service->id,
+                $service,
                 $this->user->id,
                 $context
             );
