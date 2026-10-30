@@ -26,8 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component    = 'tool_ally';
-$plugin->release      = '5.1.2';
-$plugin->version      = 2026101550; // Note sub version of 50 is to avoid collision with backports to 5 and 4.5.
+$plugin->release      = '5.1.3';
+$plugin->version      = 2026103050; // Note sub version of 50 is to avoid collision with backports to 5 and 4.5.
 $plugin->requires     = 2025041400;
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->dependencies = [
