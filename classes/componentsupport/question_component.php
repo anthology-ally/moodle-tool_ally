@@ -127,6 +127,9 @@ class question_component extends file_component_base {
             $idfield = 'id';
             $field = $area === 'answer' ? 'answer' : 'feedback';
             $sqrow = $DB->get_record($table, ['id' => $itemid]);
+            if (!$sqrow) {
+                return;
+            }
             $questionid = $sqrow->question;
         } else if (in_array($area, $inorcorrectfbareas)) {
             $question = $this->get_question($itemid);
@@ -188,5 +191,87 @@ class question_component extends file_component_base {
             [$itemid], $this->oldfilename, $file->get_filename());
 
         \question_finder::get_instance()->uncache_question($questionid);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links(array $paths) {
+        global $DB;
+
+        $file = $this->file;
+        $area = $file->get_filearea();
+        $itemid = $file->get_itemid();
+        $inorcorrectfbareas = ['correctfeedback', 'partiallycorrectfeedback', 'incorrectfeedback'];
+        $idfield = null;
+        $table = null;
+        $field = $area;
+        $questionid = null;
+
+        if ($area === 'questiontext' || $area === 'generalfeedback') {
+            $table = 'question';
+            $idfield = 'id';
+            $questionid = $itemid;
+        } else if ($area === 'answer' || $area === 'answerfeedback') {
+            $table = 'question_answers';
+            $idfield = 'id';
+            $field = $area === 'answer' ? 'answer' : 'feedback';
+            $sqrow = $DB->get_record($table, ['id' => $itemid]);
+            if (!$sqrow) {
+                return false;
+            }
+            $questionid = $sqrow->question;
+        } else if (in_array($area, $inorcorrectfbareas)) {
+            $question = $this->get_question($itemid);
+            $questionid = $question->id;
+            [$table, $idfield] = $this->get_question_feedback_target($question->qtype);
+        }
+
+        if ($idfield === null || $table === null) {
+            return false;
+        }
+
+        $changed = local_file::remove_filepaths_from_html(
+            $field,
+            $table,
+            ' ' . $idfield . ' = ? ',
+            [$itemid],
+            $paths
+        );
+        if ($changed) {
+            \question_finder::get_instance()->uncache_question($questionid);
+        }
+        return $changed;
+    }
+
+    /**
+     * Resolve the feedback table and question ID column for a question type.
+     *
+     * @param string $qtype
+     * @return array Table and column, or two nulls for an unsupported type.
+     */
+    private function get_question_feedback_target($qtype) {
+        switch ($qtype) {
+            case 'ddimageortext':
+                return ['qtype_ddimageortext', 'questionid'];
+            case 'ddmarker':
+                return ['qtype_ddmarker', 'questionid'];
+            case 'ddmatch':
+                return ['qtype_ddmatch_options', 'questionid'];
+            case 'ddwtos':
+                return ['question_ddwtos', 'questionid'];
+            case 'gapfill':
+                return ['question_gapfill', 'question'];
+            case 'gapselect':
+                return ['question_gapselect', 'questionid'];
+            case 'match':
+                return ['qtype_match_options', 'questionid'];
+            case 'multichoice':
+                return ['qtype_multichoice_options', 'questionid'];
+            case 'randomsamatch':
+                return ['qtype_randomsamatch_options', 'questionid'];
+            default:
+                return [null, null];
+        }
     }
 }
