@@ -20,13 +20,13 @@ Moodle offers any higher `$plugin->version` as an update and refuses to install 
 5. **`$plugin->dependencies`** never exceed what the sibling plugin has released on the same line.
 6. **`$plugin->requires`** is the oldest Moodle a build installs on, and the only Moodle check Moodle enforces: `supported` only shows a warning. It stays as it is in a version bump. Change it only in its own pull request that says why.
 
-Before you push a version.php change, run `.github/scripts/check-version-order.sh <line>`. The `Version order` workflow runs the same check on every pull request, and a `FAIL` blocks the merge.
+Before you push a version.php change, run `.github/scripts/check-version-order.sh <line>`. On a pull request into `MOODLE_*_STABLE` that changes version.php, the `Version order` workflow runs the same check and a `FAIL` fails it. On any other pull request it only reports.
 
 ## Branches
 
 - A fix that isn't specific to one Moodle version goes to `master` first. Then `git cherry-pick -x` it onto each supported `MOODLE_*_STABLE` branch: one pull request per branch, each with its own version bump. A fix for one Moodle version only goes straight to that branch.
 - Never copy version.php between branches. The date, `supported`, `requires` and dependency minimums differ per line, so a cherry-pick that touches version.php needs fixing by hand.
-- filter_ally's CI checks out the branch with the same name in tool_ally and report_allylti, or else that line's `MOODLE_<line>_STABLE`. For a change across repos, push the branches to tool_ally and report_allylti first.
+- filter_ally's CI checks out tool_ally and report_allylti at the branch with the same name, else `MOODLE_<line>_STABLE`, else `MOODLE_<line>_WIP`, and fails if none exists. For a change across repos, push the branches to tool_ally and report_allylti first.
 
 ## Releasing
 
@@ -67,14 +67,15 @@ php public/admin/tool/ally/cli/autoconfig.php             # create Ally's web se
 php public/admin/tool/ally/cli/queryfiles.php --help      # list the files Ally will process
 ```
 
-This repo has no test CI: filter_ally's CI runs these tests. `.travis.yml` is dead. `Gruntfile.js` loads `../../../Gruntfile.js`, which doesn't exist on Moodle 5.x, so `grunt compile`, `grunt vue` and `grunt decache` fail until that is fixed.
+This repo has no test CI: filter_ally's CI runs these tests. `.travis.yml` is dead. `Gruntfile.js` loads `../../../Gruntfile.js`, which on Moodle 5.x is `public/Gruntfile.js` and doesn't exist: core's Gruntfile is at the Moodle root. So `grunt compile`, `grunt vue` and `grunt decache` fail until a fourth `../` is added.
 
 ### How it works
 
 - **Pull.** `db/services.php` exposes 17 `tool_ally_*` web services, one class each in `classes/webservice/`, most extending `loggable_external_api`. A new service needs its class, an entry in `db/services.php` (in the `tool_ally` service's function list too) and a test.
-- **Push.** Event or hook → `event_handlers` → `content_processor` / `file_processor` / `course_processor` → queue tables → per-minute tasks in `classes/task/` → `push_*_updates` (signed POST with retry) → Ally. The tasks do nothing while `push_config::is_valid()` is false.
+- **Push.** Event or hook → `event_handlers` → `content_processor` / `file_processor` / `course_processor` → queue tables → per-minute tasks in `classes/task/` → `push_*_updates` (signed POST with retry) → Ally. The tasks do nothing while `push_config::is_valid()` is false. The three processors extend `traceable_processor`: tests check what was pushed with `get_push_traces()` and reset with `clear_push_traces()`.
 - **Content ids** are `component:table:field:id`, with `contenthash = sha1(content)`. `local_content::to_crud()` builds the payload for both pull and push, so treat its shape as a public contract.
 - **File selection.** `file_validator` (component and file-area whitelists, author role check), `files_iterator`, and `files_in_use` when the `excludeunused` setting is on.
+- **Files for Ally.** `wspluginfile.php` runs without cookies. `wspluginfile::get_file()` checks the `token`, `signature` and `iat` parameters before `require_login` and `send_stored_file()`.
 - **Log viewer.** `logs.php` runs a Vue 2 app from `vue/comps/*/`. Its `dist/` bundles are committed, and Vue is vendored in `vendorjs/`.
 
 ### Supporting a new module
@@ -91,4 +92,5 @@ This repo has no test CI: filter_ally's CI runs these tests. `.travis.yml` is de
 
 - A `db/install.xml` change needs a `db/upgrade.php` step ending in `upgrade_plugin_savepoint(true, <version>, 'tool', 'ally')`, with the version bump from rule 1.
 - Tests extend `tests/abstract_testcase.php`; shared assertions are in `classes/testing/traits/component_assertions.php`. Tag tests `@group tool_ally` and `@group ally`.
+- `local::duringtesting()` is true under PHPUnit and Behat. Code that must not run in tests checks it.
 - Component tests for `hsuforum` and `qtype_ddmatch` skip when those plugins are absent. CI no longer installs `qtype_ddmatch`, so its tests always skip there.
