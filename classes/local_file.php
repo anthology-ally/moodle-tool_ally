@@ -552,14 +552,18 @@ class local_file {
     /**
      * Determine whether an anchor links to its sole image child, which references a target file.
      *
-     * @param \DOMElement $anchor
-     * @param string[] $targets
-     * @return bool
-     */
-    private static function is_pluginfile_image_anchor(\DOMElement $anchor, array $targets) {
-        if (!self::is_pluginfile_reference($anchor->getAttribute('href'), $targets)) {
-            return false;
+     * @if (!$changed) {
+            return $html;
         }
+
+        $stripped = '';
+        foreach ($wrapper->childNodes as $child) {
+            $stripped .= $document->saveHTML($child);
+        }
+
+        // Leftover empty wrappers (e.g. <p></p>) would still be annotated as rich content by the filter,
+        // showing the alternative formats icon on otherwise empty content.
+        if (
 
         $hasimage = false;
         foreach ($anchor->childNodes as $child) {
