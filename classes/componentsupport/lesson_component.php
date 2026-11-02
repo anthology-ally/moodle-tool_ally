@@ -272,17 +272,18 @@ SQL;
     public function remove_file_links_with_result(array $paths): bool {
         $file = $this->file;
 
-        if ($file->get_filearea() !== 'page_contents') {
+        $areas = [
+            'page_contents'  => ['lesson_pages', 'contents'],
+            'page_answers'   => ['lesson_answers', 'answer'],
+            'page_responses' => ['lesson_answers', 'response'],
+        ];
+        $area = $file->get_filearea();
+        if (!isset($areas[$area])) {
             return false;
         }
 
-        return local_file::remove_filepaths_from_html(
-            'contents',
-            'lesson_pages',
-            ' id = ? ',
-            [$file->get_itemid()],
-            $paths
-        );
+        [$table, $field] = $areas[$area];
+        return local_file::remove_filepaths_from_html($field, $table, ' id = ? ', [$file->get_itemid()], $paths);
     }
 
     /**
