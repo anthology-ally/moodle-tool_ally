@@ -551,7 +551,6 @@ class local_file {
             }
         }
 
-        $stripped = '';
         if (!$changed) {
             return $html;
         }
@@ -563,7 +562,8 @@ class local_file {
 
         // Leftover empty wrappers (e.g. <p></p>) would still be annotated as rich content by the filter,
         // showing the alternative formats icon on otherwise empty content.
-        if (
+        if (!self::html_has_content($stripped)) {
+            return '';
         }
 
         return $stripped;
