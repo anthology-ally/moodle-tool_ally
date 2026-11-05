@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->component    = 'tool_ally';
 $plugin->release      = '5.2.2';
 $plugin->version      = 2026103075;
-$plugin->requires     = 2025041400;
+$plugin->requires     = 2026042000; // Moodle 5.2
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->dependencies = [
     'filter_ally'    => 2026012850,
