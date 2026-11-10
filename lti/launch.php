@@ -35,6 +35,13 @@ $config = get_config('tool_ally');
 $launchconfig = new launch_config($config, $CFG);
 $launchcontainer = $launchconfig->get_launchcontainer();
 
+$lti13typeid = \tool_ally\lti\lti13::find_type($config, 'config');
+if ($lti13typeid) {
+    echo \tool_ally\lti\lti13::login_form($lti13typeid, SITEID);
+    die;
+}
+// No registered LTI 1.3 tool: LTI 1.1 launch below, unchanged.
+
 $instance = (object) [
     'id' => 0,
     'course' => SITEID,
