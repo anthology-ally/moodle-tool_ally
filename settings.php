@@ -104,6 +104,27 @@ if ($hassiteconfig) {
         new moodle_url('/admin/tool/ally/lti/view.php')
     ));
 
+    if ($ADMIN->fulltree) {
+        require_once($CFG->dirroot . '/admin/tool/ally/classes/lti/lti13.php');
+        $pluginconfig = get_config('tool_ally');
+        $lti13apps = '';
+        foreach (\tool_ally\lti\lti13::APPS as $app) {
+            $url = \tool_ally\lti\lti13::registration_url($pluginconfig, $app);
+            if ($url === null) {
+                continue;
+            }
+            $status = \tool_ally\lti\lti13::find_type($pluginconfig, $app) ? 'lti13registered' : 'lti13notregistered';
+            $lti13apps .= html_writer::tag('li', get_string('lti13app_' . $app, 'tool_ally') . ': ' .
+                html_writer::tag('code', s($url)) . ' - ' . get_string($status, 'tool_ally'));
+        }
+        $settings->add(new admin_setting_heading(
+            'tool_ally/lti13',
+            new lang_string('lti13', 'tool_ally'),
+            get_string('lti13desc', 'tool_ally') .
+                ($lti13apps ? html_writer::tag('ul', $lti13apps) : get_string('lti13noadminurl', 'tool_ally'))
+        ));
+    }
+
     $setting = new admin_setting_configcheckbox(
         'tool_ally/excludeunused',
         new lang_string('excludeunused', 'tool_ally'),
