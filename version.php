@@ -26,8 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 /** @var stdClass $plugin */
 $plugin->component    = 'tool_ally';
-$plugin->release      = '5.2.2';
-$plugin->version      = 2026103075;
+$plugin->release      = '5.2.3';
+$plugin->version      = 2026110200; // 20261102 = frozen line date YYYYMMDD - do not modify!
 $plugin->requires     = 2026042000; // Moodle 5.2
 $plugin->maturity     = MATURITY_STABLE;
 $plugin->dependencies = [
