@@ -140,6 +140,8 @@ final class webservice_delete_file_test extends abstract_testcase {
         $roleid = $this->assignUserCapability('moodle/course:view', \context_system::instance()->id);
         $this->assignUserCapability('moodle/course:viewhiddencourses', \context_system::instance()->id, $roleid);
         $this->assignUserCapability('moodle/course:managefiles', \context_system::instance()->id, $roleid);
+        // The Ally web service role holds the teacher archetype's capabilities (auto_config), including mod/quiz:view.
+        $this->assignUserCapability('mod/quiz:view', \context_system::instance()->id, $roleid);
 
         $teacher = $datagen->create_user();
         $course = $datagen->create_course();
