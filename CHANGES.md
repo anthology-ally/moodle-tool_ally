@@ -17,3 +17,13 @@ needs doing. Example, indented so the workflow ignores it (write yours without t
 
     ### Upgrade notes
     - No database changes and no new settings.
+
+## 5.2.3 (2026110200)
+
+### Fixed
+- AB#190228: Fixed an issue in the Instructor Feedback where removing a GIF that could cause
+  seizures removed only its accessibility score. The GIF is now also removed from the course
+  content, so students no longer see it.
+
+### Upgrade notes
+- No database changes and no new settings.
