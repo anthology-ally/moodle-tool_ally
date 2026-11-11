@@ -82,15 +82,26 @@ class content_processor extends traceable_processor {
     private static function add_to_content_queue($content, $eventname) {
         global $DB;
 
+        if (!is_array($content)) {
+            $content = [$content];
+        }
+
         $config = self::get_config();
+        $logcontent = [];
+        foreach ($content as $contentitem) {
+            $logcontent[] = [
+                'id' => $contentitem->id,
+                'component' => $contentitem->component,
+                'table' => $contentitem->table,
+                'field' => $contentitem->field,
+                'courseid' => $contentitem->get_courseid(),
+            ];
+        }
         logger::get()->info('logger:addingconenttoqueue', [
             'configvalid' => $config->is_valid(),
             'configclionly' => $config->is_cli_only(),
-            'content' => $content,
+            'content' => $logcontent,
         ]);
-        if (![$content]) {
-            $content = [$content];
-        }
         $dataobjects = [];
         foreach ($content as $contentitem) {
             if (empty($contentitem->content)) {
