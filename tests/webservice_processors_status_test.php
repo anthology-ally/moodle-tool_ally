@@ -44,7 +44,7 @@ require_once(__DIR__ . '/abstract_testcase.php');
 final class webservice_processors_status_test extends abstract_testcase {
     public function test_service_return(): void {
         $returns = processors_status::service_returns();
-        $this->assertTrue($returns instanceof \external_single_structure);
+        $this->assertTrue($returns instanceof \core_external\external_single_structure);
     }
     public function test_service(): void {
 
