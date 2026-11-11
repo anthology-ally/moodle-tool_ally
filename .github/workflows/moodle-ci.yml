@@ -111,7 +111,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           path: plugin
 
@@ -183,15 +183,18 @@ jobs:
           moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
 
       # Reported, not enforced yet: tool_ally has never been through these checks.
+      # A problem shows as a warning naming the step, not as a red error on a green run.
       - name: Moodle Code Checker
-        continue-on-error: true
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: moodle-plugin-ci codechecker --max-warnings 0
+        run: |
+          moodle-plugin-ci codechecker --max-warnings 0 \
+            || echo "::warning::Code checker found problems (reported only, see this step's log)"
 
       - name: Moodle PHPDoc Checker
-        continue-on-error: true
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
-        run: moodle-plugin-ci phpdoc
+        run: |
+          moodle-plugin-ci phpdoc \
+            || echo "::warning::PHPDoc checker found problems (reported only, see this step's log)"
 
       - name: Validating
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
