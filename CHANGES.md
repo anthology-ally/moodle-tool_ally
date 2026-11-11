@@ -10,10 +10,10 @@ needs doing. Example, indented so the workflow ignores it (write yours without t
     ## X.Y.Z (YYYYMMDDXX)
 
     ### Fixed
-    - AB#nnnnnn: Ally feedback icons on images inside tables sit next to the image again.
+    - Ally feedback icons on images inside tables sit next to the image again.
 
     ### Changed
-    - AB#nnnnnn: <one line on behaviour an admin or teacher will notice>
+    - <one line on behaviour an admin or teacher will notice>
 
     ### Upgrade notes
     - No database changes and no new settings.
@@ -21,9 +21,9 @@ needs doing. Example, indented so the workflow ignores it (write yours without t
 ## 5.2.3 (2026110200)
 
 ### Fixed
-- AB#190228: Fixed an issue in the Instructor Feedback where removing a GIF that could cause
-  seizures removed only its accessibility score. The GIF is now also removed from the course
-  content, so students no longer see it.
+- Fixed an issue in the Instructor Feedback where removing a GIF that could cause seizures
+  removed only its accessibility score. The GIF is now also removed from the course content,
+  so students no longer see it.
 
 ### Upgrade notes
 - No database changes and no new settings.
