@@ -65,11 +65,57 @@ class qtype_ddmatch_component extends question_component {
             $field,
             $table,
             ' id = ? ',
-            ['id' => $itemid],
+              [$itemid],
             $this->oldfilename,
             $file->get_filename()
         );
 
         \question_finder::get_instance()->uncache_question($subquestion->questionid);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links(array $paths): void {
+        $this->remove_file_links_with_result($paths);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function remove_file_links_with_result(array $paths): bool {
+        global $DB;
+
+        $file = $this->file;
+
+        $area = $file->get_filearea();
+        $itemid = $file->get_itemid();
+
+        if ($area === 'subquestion') {
+            $field = 'questiontext';
+        } else if ($area === 'subanswer') {
+            $field = 'answertext';
+        } else {
+            debugging('Area of ' . $area . ' is not yet supported for qtype_ddmatch_component');
+            return false;
+        }
+
+        $subquestion = $DB->get_record('qtype_ddmatch_subquestions', ['id' => $itemid]);
+        if (!$subquestion) {
+            return false;
+        }
+
+        $changed = local_file::remove_filepaths_from_html(
+            $field,
+            'qtype_ddmatch_subquestions',
+            ' id = ? ',
+              [$itemid],
+            $paths
+        );
+
+        if ($changed) {
+            \question_finder::get_instance()->uncache_question($subquestion->questionid);
+        }
+        return $changed;
     }
 }
