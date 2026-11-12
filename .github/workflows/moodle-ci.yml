@@ -114,9 +114,12 @@ jobs:
         uses: actions/checkout@v5
         with:
           path: plugin
+          # Nothing later in the job needs the token, so do not leave it in git config.
+          persist-credentials: false
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        # Pinned to a commit, not the moving v2 tag, so upstream cannot change what runs.
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
         with:
           php-version: ${{ env.DEFAULT_PHP_VERSION }}
           ini-values: max_input_vars=5000
