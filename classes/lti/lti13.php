@@ -77,14 +77,17 @@ class lti13 {
         if (!$host) {
             return null;
         }
+        // Site tools only: a course tool is made by a teacher, who can point it at any login and redirect URL.
+        // Explicit length: with the default of 32, SQL Server compares only the start of the URL.
         $sql = 'SELECT id FROM {lti_types}
-                 WHERE ' . $DB->sql_compare_text('baseurl') . ' = ' . $DB->sql_compare_text(':baseurl') . '
-                   AND ltiversion = :ltiversion AND state = :state
+                 WHERE ' . $DB->sql_compare_text('baseurl', 255) . ' = ' . $DB->sql_compare_text(':baseurl', 255) . '
+                   AND ltiversion = :ltiversion AND state = :state AND course = :siteid
               ORDER BY id';
         $ids = $DB->get_fieldset_sql($sql, [
             'baseurl' => "https://{$app}.{$host}/api/v2/auth/lti/1.3/target",
             'ltiversion' => LTI_VERSION_1P3,
             'state' => LTI_TOOL_STATE_CONFIGURED,
+            'siteid' => SITEID,
         ]);
         return $ids ? (int) reset($ids) : null;
     }

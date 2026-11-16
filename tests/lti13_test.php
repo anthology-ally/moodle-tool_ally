@@ -57,9 +57,11 @@ final class lti13_test extends \advanced_testcase {
      * @param string $app
      * @param int $state
      * @param string $host
+     * @param int|null $courseid A course, for a course tool; null for a site tool, as dynamic registration makes.
      * @return int lti_types id
      */
-    private function register(string $app, int $state = LTI_TOOL_STATE_CONFIGURED, string $host = 'ally.example'): int {
+    private function register(string $app, int $state = LTI_TOOL_STATE_CONFIGURED, string $host = 'ally.example',
+            ?int $courseid = null): int {
         $type = (object) [
             'name' => "Ally {$app}",
             'baseurl' => "https://{$app}.{$host}/api/v2/auth/lti/1.3/target",
@@ -70,6 +72,9 @@ final class lti13_test extends \advanced_testcase {
             'coursevisible' => LTI_COURSEVISIBLE_PRECONFIGURED,
             'timemodified' => time(),
         ];
+        if ($courseid !== null) {
+            $type->course = $courseid;
+        }
         $config = (object) [
             'lti_initiatelogin' => "https://{$host}/api/v2/auth/lti/1.3/login",
             'lti_redirectionuris' => "https://{$host}/api/v2/auth/lti/1.3/callback",
@@ -96,6 +101,16 @@ final class lti13_test extends \advanced_testcase {
         $active = $this->register('config');
         $this->assertSame($active, lti13::find_type($this->pluginconfig, 'config'));
         $this->assertNull(lti13::find_type((object) [], 'config'), 'no adminurl');
+    }
+
+    public function test_find_type_ignores_a_course_tool(): void {
+        $course = $this->getDataGenerator()->create_course();
+        // A teacher's course tool for the same Ally URL, made before the site registration so its id is lower.
+        $this->register('config', LTI_TOOL_STATE_CONFIGURED, 'ally.example', $course->id);
+        $this->assertNull(lti13::find_type($this->pluginconfig, 'config'), 'course tool only');
+
+        $site = $this->register('config');
+        $this->assertSame($site, lti13::find_type($this->pluginconfig, 'config'));
     }
 
     public function test_app_for_type(): void {
