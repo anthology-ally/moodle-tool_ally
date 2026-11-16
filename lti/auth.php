@@ -118,8 +118,10 @@ if ($ok && !empty($prompt) && ($prompt !== 'none')) {
 
 if ($ok) {
     $app = \tool_ally\lti\lti13::app_for_type($config);
-    if ($id || $messagetype !== 'basic-lti-launch-request' || $app === null) {
-        // Only Ally's own resource-link launches, which have no course module, belong here.
+    if ($id || $messagetype !== 'basic-lti-launch-request' || $app === null ||
+            \tool_ally\lti\lti13::find_type(get_config('tool_ally'), $app) !== (int) $typeid) {
+        // Only Ally's own resource-link launches, which have no course module, belong here, and only through the
+        // site tool registered for that app on the configured Ally host.
         throw new moodle_exception('invalidrequest', 'error');
     }
     \tool_ally\lti\lti13::require_access($app, (int) $courseid);
