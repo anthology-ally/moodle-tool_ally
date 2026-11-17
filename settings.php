@@ -104,7 +104,9 @@ if ($hassiteconfig) {
         new moodle_url('/admin/tool/ally/lti/view.php')
     ));
 
-    if ($ADMIN->fulltree) {
+    // External tool can be uninstalled; without it there are no LTI 1.3 tools to list.
+    if ($ADMIN->fulltree && file_exists($CFG->dirroot . '/mod/lti/locallib.php') &&
+            get_config('mod_lti', 'version')) {
         require_once($CFG->dirroot . '/admin/tool/ally/classes/lti/lti13.php');
         $pluginconfig = get_config('tool_ally');
         $lti13apps = '';
