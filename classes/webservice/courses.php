@@ -109,8 +109,8 @@ class courses extends loggable_external_api {
             $context = \context_course::instance($course->id);
             $courseinfos[] = [
                 'id' => $course->id,
-                'fullname' => \external_format_string($course->fullname, $context->id),
-                'shortname' => \external_format_string($course->shortname, $context->id),
+                'fullname' => \core_external\util::format_string($course->fullname, $context->id),
+                'shortname' => \core_external\util::format_string($course->shortname, $context->id),
             ];
         }
 
