@@ -18,7 +18,7 @@
  * Tests for LTI 1.3 launches without a course module.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2026 Anthology Inc. and its affiliates
+ * @copyright Copyright (c) 2026 Blackboard T&L LLC
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,7 +32,7 @@ use tool_ally\lti\lti13;
  * Tests for LTI 1.3 launches without a course module.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2026 Anthology Inc. and its affiliates
+ * @copyright Copyright (c) 2026 Blackboard T&L LLC
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 #[Group('tool_ally')]

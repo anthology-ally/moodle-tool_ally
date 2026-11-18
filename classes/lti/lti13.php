@@ -18,7 +18,7 @@
  * LTI 1.3 launches for Ally links that have no course module.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2026 Anthology Inc. and its affiliates
+ * @copyright Copyright (c) 2026 Blackboard T&L LLC
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -40,7 +40,7 @@ require_once($CFG->dirroot . '/mod/lti/locallib.php');
  * "ally": true in lti_message_hint; Ally then sends the authentication request to this plugin's lti/auth.php.
  *
  * @package   tool_ally
- * @copyright Copyright (c) 2026 Anthology Inc. and its affiliates
+ * @copyright Copyright (c) 2026 Blackboard T&L LLC
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class lti13 {
