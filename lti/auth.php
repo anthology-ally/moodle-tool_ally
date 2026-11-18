@@ -21,7 +21,7 @@
  * without a course module as a deep-linking request, which is wrong for Ally's links. Every request check is core's.
  *
  * @package    tool_ally
- * @copyright  2019 Stephen Vickers / 2026 Anthology Inc. and its affiliates
+ * @copyright  2019 Stephen Vickers / 2026 Blackboard T&L LLC
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
