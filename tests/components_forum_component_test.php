@@ -24,6 +24,8 @@
  */
 namespace tool_ally;
 
+require_once('abstract_testcase.php');
+
 use tool_ally\local_content;
 use tool_ally\componentsupport\forum_component;
 use tool_ally\testing\traits\component_assertions;
