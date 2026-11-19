@@ -24,8 +24,7 @@ needs doing. Example, indented so the workflow ignores it (write yours without t
 - Support for Moodle 5.3. This version requires Moodle 5.3.
 
 ### Fixed
-- Moodle 5.3 removed functions that Ally used to list a site's courses and to connect a new site.
-  Ally now uses their replacements, so both work on Moodle 5.3.
+- Moodle 5.3 removed functions that Ally used to list a site's courses and to connect a new site. Ally now uses their replacements, so both work on Moodle 5.3.
 
 ### Upgrade notes
 - Requires Moodle 5.3. No database changes and no new settings.
