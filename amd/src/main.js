@@ -33,16 +33,8 @@
         enforceDefine: false,
         paths: {
             // Vendor code.
-            "tool_ally/vue_2_5_16": [
-                "https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.min",
-                // CDN Fallback - whoop whoop!
-                pluginJSURL("vendorjs/vue")
-            ],
-            "tool_ally/vuerouter_2_5_3": [
-                "https://cdn.jsdelivr.net/npm/vue-router@2.5.3/dist/vue-router.min",
-                // CDN Fallback - whoop whoop!
-                pluginJSURL("vendorjs/vuerouter")
-            ],
+            "tool_ally/vue_2_5_16": pluginJSURL("vendorjs/vue"),
+            "tool_ally/vuerouter_2_5_3": pluginJSURL("vendorjs/vuerouter"),
 
             // Note, vuedatable is not via a CDN because it has been customised (made more accessible).
             "tool_ally/vuedatatable": pluginJSURL("vendorjs/vuedatatable"),

@@ -41,6 +41,7 @@ echo $OUTPUT->heading(get_string('autoconfigure', 'tool_ally'));
 
 if ($action === 'confirm' || $action === 'view') {
     if ($action === 'confirm') {
+        require_sesskey();
         $ac = new auto_config();
         $ac->configure();
     }
@@ -55,7 +56,7 @@ if ($action === 'confirm' || $action === 'view') {
     echo $OUTPUT->render_from_template('tool_ally/auto_conf_result', $context);
     echo $OUTPUT->continue_button(new moodle_url('/admin/settings.php', ['section' => 'tool_ally']));
 } else {
-    $continueurl = new moodle_url('/admin/tool/ally/autoconfigws.php', ['action' => 'confirm']);
+    $continueurl = new moodle_url('/admin/tool/ally/autoconfigws.php', ['action' => 'confirm', 'sesskey' => sesskey()]);
     $cancelurl = new moodle_url('/admin/settings.php', ['section' => 'tool_ally']);
     echo $OUTPUT->confirm(get_string('autoconfigureconfirmation', 'tool_ally'), $continueurl, $cancelurl);
 }

@@ -108,16 +108,7 @@ class log extends \external_api {
         self::validate_context(\context_system::instance());
         require_capability('tool/ally:viewlogs', \context_system::instance());
 
-        if ($query === null) {
-            $query = (object) [
-                'limit' => 20,
-                'offset' => 0,
-                'sort' => null,
-                'order' => null,
-            ];
-        } else {
-            $query = json_decode($query);
-        }
+        $query = self::normalise_query($query);
 
         $columns = [
             [
@@ -150,10 +141,10 @@ class log extends \external_api {
 
         $total = $DB->count_records('tool_ally_log');
         $sort = '';
-        if ($query->sort && $query->order) {
-            $sort = $query->sort . ' ' . $query->order;
+        if ($query->sort !== null && $query->order !== null) {
+            $sort = "{$query->sort} {$query->order}";
         }
-        $rs = $DB->get_records('tool_ally_log', null, $sort, '*', $query->offset, $query->limit);
+        $rs = $DB->get_records('tool_ally_log', null, $sort, '*', (int) $query->offset, (int) $query->limit);
         $data = [];
         foreach ($rs as $row) {
             $row->time = userdate($row->time);
@@ -162,15 +153,15 @@ class log extends \external_api {
             $details->data = null;
             $details->explanation = null;
 
-            if (strpos($row->code, 'logger:') === 0) {
+            if (strpos($row->code ?? '', 'logger:') === 0) {
                 $details->message = get_string($row->code, 'tool_ally');
             }
             if ($row->data) {
                 $rowdata = unserialize($row->data);
-                $details->data = '<pre>' . var_export($rowdata, true) . '</pre>';
+                $details->data = '<pre>' . s(var_export($rowdata, true)) . '</pre>';
             }
-            $details->exception = !empty(trim($row->exception)) ? $row->exception : null;
-            $details->explanation = !empty(trim($row->explanation)) ? $row->explanation : null;
+            $details->exception = !empty(trim($row->exception ?? '')) ? $row->exception : null;
+            $details->explanation = !empty(trim($row->explanation ?? '')) ? $row->explanation : null;
             $row->details = $details;
             $data[] = $row;
         }
@@ -182,5 +173,50 @@ class log extends \external_api {
         ];
 
         return $return;
+    }
+
+    /**
+     * Normalise the JSON query accepted by the legacy web service contract.
+     *
+     * @param ?string $query
+     * @return \stdClass
+     */
+    private static function normalise_query(?string $query): \stdClass {
+        $normalised = (object) [
+            'limit' => 20,
+            'offset' => 0,
+            'sort' => null,
+            'order' => null,
+        ];
+
+        if ($query === null) {
+            return $normalised;
+        }
+
+        $query = json_decode($query);
+        if (!is_object($query)) {
+            return $normalised;
+        }
+
+        foreach (['limit', 'offset'] as $field) {
+            if (isset($query->$field) && is_scalar($query->$field)) {
+                $normalised->$field = (int) $query->$field;
+            }
+        }
+
+        $allowedcolumns = ['id', 'time', 'level', 'code'];
+        if (!empty($query->sort) && is_string($query->sort) && in_array($query->sort, $allowedcolumns, true)) {
+            $normalised->sort = $query->sort;
+        }
+
+        if (!empty($normalised->sort)) {
+            if (!empty($query->order) && is_string($query->order) && in_array(strtoupper($query->order), ['ASC', 'DESC'], true)) {
+                $normalised->order = strtoupper($query->order);
+            } else {
+                $normalised->order = 'DESC';
+            }
+        }
+
+        return $normalised;
     }
 }
