@@ -18,6 +18,15 @@ needs doing. Example, indented so the workflow ignores it (write yours without t
     ### Upgrade notes
     - No database changes and no new settings.
 
+## 5.3.1 (2026110301)
+
+### Added
+- Ally's configuration link and the institution and course reports can launch over LTI 1.3. Each one uses LTI 1.3 once its Ally tool is registered in Moodle (Add LTI Advantage) and active; until then it launches over LTI 1.1 with the key and secret, as before.
+- A new LTI 1.3 section in the Ally settings lists the registration URL for each Ally tool and whether it is registered.
+
+### Upgrade notes
+- No database changes and no new settings. LTI 1.3 is optional: nothing changes until an admin registers the Ally tools.
+
 ## 5.3.0 (2026110300)
 
 ### Added
